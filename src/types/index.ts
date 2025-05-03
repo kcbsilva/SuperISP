@@ -1,21 +1,5 @@
-/**
- * Represents a network device with its basic information.
- */
-export interface NetworkDevice {
-  /**
-   * The IP address of the device.
-   */
-  ipAddress: string;
-  /**
-   * The MAC address of the device.
-   */
-  macAddress: string;
-  /**
-   * The hostname of the device. Can be user-defined name or scanned hostname.
-   */
-  hostname: string;
-  /**
-   * Optional flag to indicate if the device was added manually.
-   */
-  manual?: boolean;
-}
+// src/types/index.ts - Keep other general types if they exist
+// NetworkDevice type has been removed as it's no longer used in the current implementation.
+// If needed later, it can be restored or redefined.
+
+// PoP types are now in src/types/pops.ts
