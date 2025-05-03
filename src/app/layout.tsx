@@ -46,9 +46,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SidebarProvider defaultOpen>
+        <SidebarProvider defaultOpen={false}> {/* Collapsed by default */}
           {/* Sidebar Component */}
-          <Sidebar side="left">
+          <Sidebar side="left" collapsible="icon"> {/* Ensure collapsible is set */}
             <SidebarHeader>
               {/* App Logo/Title in Sidebar Header */}
               <Link
@@ -77,13 +77,13 @@ export default function RootLayout({
                    </SidebarMenuButton>
                    <SidebarMenuSub>
                      <SidebarMenuSubItem>
-                       <SidebarMenuSubButton href="#">
+                       <SidebarMenuSubButton href="/subscribers/list">
                           <List/>
                           <span>List</span>
                        </SidebarMenuSubButton>
                      </SidebarMenuSubItem>
                      <SidebarMenuSubItem>
-                       <SidebarMenuSubButton href="#">
+                       <SidebarMenuSubButton href="/subscribers/add">
                           <UserPlus/>
                           <span>Add New</span>
                        </SidebarMenuSubButton>

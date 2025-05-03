@@ -1,3 +1,4 @@
+// src/components/ui/sidebar.tsx
 "use client"
 
 import * as React from "react"
@@ -70,9 +71,22 @@ const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
 
-    // This is the internal state of the sidebar.
-    // We use openProp and setOpenProp for control from outside the component.
-    const [_open, _setOpen] = React.useState(defaultOpen)
+    // Initialize state from cookie if available, otherwise use defaultOpen
+    const getInitialOpenState = () => {
+      if (typeof window !== 'undefined') {
+        const cookieValue = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`))
+          ?.split('=')[1];
+        if (cookieValue) {
+          return cookieValue === 'true';
+        }
+      }
+      return defaultOpen;
+    };
+
+    const [_open, _setOpen] = React.useState(getInitialOpenState);
+
     const open = openProp ?? _open
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
@@ -84,7 +98,9 @@ const SidebarProvider = React.forwardRef<
         }
 
         // This sets the cookie to keep the sidebar state.
-        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+        if (typeof window !== 'undefined') {
+           document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+        }
       },
       [setOpenProp, open]
     )
@@ -168,14 +184,14 @@ const Sidebar = React.forwardRef<
     {
       side = "left",
       variant = "sidebar",
-      collapsible = "offcanvas",
+      collapsible = "icon", // Default to icon collapsible
       className,
       children,
       ...props
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+    const { isMobile, state, openMobile, setOpenMobile, setOpen } = useSidebar() // Added setOpen
 
     if (collapsible === "none") {
       return (
@@ -220,6 +236,8 @@ const Sidebar = React.forwardRef<
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
         data-side={side}
+        onMouseEnter={() => !isMobile && setOpen(true)} // Expand on hover (desktop)
+        onMouseLeave={() => !isMobile && setOpen(false)} // Collapse on leave (desktop)
       >
         {/* This is what handles the sidebar gap on desktop */}
         <div
@@ -324,6 +342,11 @@ const SidebarInset = React.forwardRef<
       className={cn(
         "relative flex min-h-svh flex-1 flex-col bg-background",
         "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
+        // Adjust left margin based on sidebar state and type
+        "md:peer-data-[state=expanded]:peer-data-[variant!=inset]:peer-data-[collapsible!=offcanvas]:ml-[var(--sidebar-width)]",
+        "md:peer-data-[state=collapsed]:peer-data-[collapsible=icon]:peer-data-[variant!=inset]:ml-[var(--sidebar-width-icon)]",
+        "md:peer-data-[state=expanded]:peer-data-[collapsible=icon]:peer-data-[variant=inset]:ml-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]",
+        "duration-200 transition-[margin-left] ease-linear", // Added transition
         className
       )}
       {...props}
@@ -549,12 +572,31 @@ const SidebarMenuButton = React.forwardRef<
       size = "default",
       tooltip,
       className,
+      children, // Get children to determine tooltip content if not provided
       ...props
     },
     ref
   ) => {
     const Comp = asChild ? Slot : "button"
     const { isMobile, state } = useSidebar()
+
+     // Default tooltip content to the button's text content if tooltip prop is undefined
+     const tooltipContent = React.useMemo(() => {
+       if (tooltip) {
+         return typeof tooltip === 'string' ? { children: tooltip } : tooltip;
+       }
+       // Try to extract text from children for default tooltip
+       let textContent = '';
+       React.Children.forEach(children, (child) => {
+         if (typeof child === 'string') {
+           textContent += child;
+         } else if (React.isValidElement(child) && typeof child.props.children === 'string') {
+             // Look one level deeper for simple spans etc.
+             textContent += child.props.children;
+         }
+       });
+       return textContent ? { children: textContent.trim() } : undefined;
+     }, [tooltip, children]);
 
     const button = (
       <Comp
@@ -564,18 +606,15 @@ const SidebarMenuButton = React.forwardRef<
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
         {...props}
-      />
+      >
+          {children}
+      </Comp>
     )
 
-    if (!tooltip) {
+    if (!tooltipContent) {
       return button
     }
 
-    if (typeof tooltip === "string") {
-      tooltip = {
-        children: tooltip,
-      }
-    }
 
     return (
       <Tooltip>
@@ -584,7 +623,7 @@ const SidebarMenuButton = React.forwardRef<
           side="right"
           align="center"
           hidden={state !== "collapsed" || isMobile}
-          {...tooltip}
+          {...tooltipContent} // Use the determined tooltip content
         />
       </Tooltip>
     )
@@ -711,26 +750,65 @@ const SidebarMenuSubButton = React.forwardRef<
     asChild?: boolean
     size?: "sm" | "md"
     isActive?: boolean
+    tooltip?: string | React.ComponentProps<typeof TooltipContent> // Added tooltip prop
   }
->(({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
+>(({ asChild = false, size = "md", isActive, className, children, tooltip, ...props }, ref) => { // Added tooltip, children
   const Comp = asChild ? Slot : "a"
+  const { isMobile, state } = useSidebar()
+
+   // Default tooltip content to the button's text content if tooltip prop is undefined
+   const tooltipContent = React.useMemo(() => {
+    if (tooltip) {
+      return typeof tooltip === 'string' ? { children: tooltip } : tooltip;
+    }
+    // Try to extract text from children for default tooltip
+    let textContent = '';
+    React.Children.forEach(children, (child) => {
+      if (typeof child === 'string') {
+        textContent += child;
+      } else if (React.isValidElement(child) && typeof child.props.children === 'string') {
+        textContent += child.props.children;
+      }
+    });
+    return textContent ? { children: textContent.trim() } : undefined;
+  }, [tooltip, children]);
+
+
+  const button = (
+     <Comp
+       ref={ref}
+       data-sidebar="menu-sub-button"
+       data-size={size}
+       data-active={isActive}
+       className={cn(
+         "flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground",
+         "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
+         size === "sm" && "text-xs",
+         size === "md" && "text-sm",
+         "group-data-[collapsible=icon]:hidden",
+         className
+       )}
+       {...props}
+     >
+        {children}
+    </Comp>
+  )
+
+  if (!tooltipContent) {
+      return button
+  }
+
 
   return (
-    <Comp
-      ref={ref}
-      data-sidebar="menu-sub-button"
-      data-size={size}
-      data-active={isActive}
-      className={cn(
-        "flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground",
-        "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
-        size === "sm" && "text-xs",
-        size === "md" && "text-sm",
-        "group-data-[collapsible=icon]:hidden",
-        className
-      )}
-      {...props}
-    />
+      <Tooltip>
+        <TooltipTrigger asChild>{button}</TooltipTrigger>
+        <TooltipContent
+          side="right"
+          align="center"
+          hidden={state !== "collapsed" || isMobile}
+          {...tooltipContent} // Use the determined tooltip content
+        />
+      </Tooltip>
   )
 })
 SidebarMenuSubButton.displayName = "SidebarMenuSubButton"
