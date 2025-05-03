@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { Geist, Geist_Mono } from 'next/font/google';
-import { LayoutDashboard, ShieldCheck, Settings, Users, List, UserPlus } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, Settings, Users, Network, List, UserPlus } from 'lucide-react'; // Added Network icon
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -51,6 +51,7 @@ export default function RootLayout({
   // Determine if a link is active
   const isActive = (href: string) => pathname === href;
   const isSubscribersActive = pathname.startsWith('/subscribers');
+  const isNetworkActive = pathname.startsWith('/network'); // Added for Network active state
 
   return (
     <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
@@ -73,7 +74,7 @@ export default function RootLayout({
                    <path d="M12 .75a8.25 8.25 0 0 0-5.162 14.564.75.75 0 0 1-.318.47l-3.75 2.25a.75.75 0 0 0 0 1.332l3.75 2.25a.75.75 0 0 1 .318.47A8.25 8.25 0 0 0 12 23.25a8.25 8.25 0 0 0 8.25-8.25v-6a8.25 8.25 0 0 0-8.25-8.25Zm-3 9a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Zm0 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" />
                  </svg>
 
-                 <span className="ml-2 hidden">NetHub</span> {/* Text is always hidden */}
+                 {/* Text is always hidden */}
               </Link>
             </SidebarHeader>
             <SidebarContent>
@@ -96,7 +97,15 @@ export default function RootLayout({
                          <span className="hidden">Subscribers</span> {/* Text always hidden */}
                        </Link>
                     </SidebarMenuButton>
-                    {/* Removed Submenu */}
+                 </SidebarMenuItem>
+                 {/* Network Menu Item */}
+                 <SidebarMenuItem>
+                    <SidebarMenuButton isActive={isNetworkActive} tooltip="Network">
+                       <Link href="/network" className="flex items-center justify-center gap-2 w-full"> {/* Center content, Link to /network */}
+                         <Network />
+                         <span className="hidden">Network</span> {/* Text always hidden */}
+                       </Link>
+                    </SidebarMenuButton>
                  </SidebarMenuItem>
                 <SidebarMenuItem>
                   {/* Example: Adjust if Security page exists */}
