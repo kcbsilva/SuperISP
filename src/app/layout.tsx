@@ -11,7 +11,8 @@ import {
   Router, // Added for Devices
   Share2, // Added for CGNAT
   Server, // Added for RADIUS
-  Split // Added for VLAN
+  Split, // Added for VLAN
+  DollarSign // Added for Finances
 } from 'lucide-react'; // Added Globe and GitFork icons
 
 import './globals.css';
@@ -61,6 +62,7 @@ export default function RootLayout({
   const isNetworkActive = pathname.startsWith('/network'); // Added for Network active state
   const isMapsActive = pathname.startsWith('/maps'); // Added for Maps active state
   const isMapElementsActive = pathname.startsWith('/maps/elements'); // Added for Elements active state
+  const isFinancesActive = pathname.startsWith('/finances'); // Added for Finances active state
 
   return (
     <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
@@ -296,6 +298,16 @@ export default function RootLayout({
                    </SidebarMenuSub>
                  </SidebarMenuItem>
 
+                 {/* Finances Menu Item */}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={isFinancesActive} tooltip="Finances">
+                      <Link href="#" className="flex items-center gap-2">
+                        <DollarSign />
+                        <span>Finances</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+
 
                 <SidebarMenuItem>
                   {/* Example: Adjust if Security page exists */}
@@ -332,4 +344,3 @@ export default function RootLayout({
     </html>
   );
 }
-
