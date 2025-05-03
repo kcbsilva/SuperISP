@@ -12,7 +12,8 @@ import {
   Share2, // Added for CGNAT
   Server, // Added for RADIUS
   Split, // Added for VLAN
-  DollarSign // Added for Finances
+  DollarSign, // Added for Finances
+  BarChart3 // Added for Reports
 } from 'lucide-react'; // Added Globe and GitFork icons
 
 import './globals.css';
@@ -63,6 +64,7 @@ export default function RootLayout({
   const isMapsActive = pathname.startsWith('/maps'); // Added for Maps active state
   const isMapElementsActive = pathname.startsWith('/maps/elements'); // Added for Elements active state
   const isFinancesActive = pathname.startsWith('/finances'); // Added for Finances active state
+  const isReportsActive = pathname.startsWith('/reports'); // Added for Reports active state
 
   return (
     <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
@@ -304,6 +306,16 @@ export default function RootLayout({
                       <Link href="#" className="flex items-center gap-2">
                         <DollarSign />
                         <span>Finances</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+
+                  {/* Reports Menu Item */}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={isReportsActive} tooltip="Reports">
+                      <Link href="#" className="flex items-center gap-2">
+                        <BarChart3 />
+                        <span>Reports</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
