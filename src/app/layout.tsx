@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { Geist, Geist_Mono } from 'next/font/google';
-import { LayoutDashboard, ShieldCheck, Settings, Users, Network, List, UserPlus } from 'lucide-react'; // Added Network icon
+import { LayoutDashboard, ShieldCheck, Settings, Users, Network } from 'lucide-react'; // Removed List, UserPlus
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -18,9 +18,9 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
+  // SidebarMenuSub, // Removed
+  // SidebarMenuSubButton, // Removed
+  // SidebarMenuSubItem, // Removed
   SidebarInset,
   SidebarCollapseButton, // Import the collapse button
 } from '@/components/ui/sidebar';
@@ -61,13 +61,13 @@ export default function RootLayout({
         suppressHydrationWarning /* Add suppressHydrationWarning */
       >
         {/* Configure SidebarProvider for icon-collapsible behavior */}
-        <SidebarProvider side="left" collapsible="icon">
+        <SidebarProvider side="left" collapsible="icon" defaultCollapsed={false}> {/* Ensure defaultCollapsed is false initially */}
           <Sidebar>
             <SidebarHeader>
               {/* App Logo/Title in Sidebar Header */}
               <Link
                 href="/"
-                className="flex items-center gap-2 text-lg font-semibold text-sidebar-primary"
+                className="flex items-center gap-2 text-lg font-semibold text-sidebar-primary px-2" // Added padding for consistency
               >
                  {/* Placeholder Icon */}
                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
@@ -90,7 +90,7 @@ export default function RootLayout({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                  <SidebarMenuItem>
-                    {/* Link directly to subscribers list */}
+                    {/* Link directly to subscribers list - No submenu needed */}
                     <SidebarMenuButton asChild isActive={isSubscribersActive} tooltip="Subscribers">
                        <Link href="/subscribers/list" className="flex items-center gap-2">
                          <Users />
