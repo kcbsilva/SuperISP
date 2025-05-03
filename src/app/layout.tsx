@@ -53,6 +53,7 @@ export default function RootLayout({
   const isSubscribersActive = pathname.startsWith('/subscribers');
   const isNetworkActive = pathname.startsWith('/network'); // Added for Network active state
   const isMapsActive = pathname.startsWith('/maps'); // Added for Maps active state
+  const isMapElementsActive = pathname.startsWith('/maps/elements'); // Added for Elements active state
 
   return (
     <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
@@ -212,14 +213,64 @@ export default function RootLayout({
                        </div>
                      </SidebarMenuSubTrigger>
                      <SidebarMenuSubContent>
-                       {/* Elements Item */}
+                       {/* Elements Item - Now a Submenu Trigger */}
                        <SidebarMenuItem>
-                         <SidebarMenuButton asChild isActive={isActive('/maps/elements')} size="sm">
-                           <Link href="#" className="flex items-center gap-2"> {/* Adjusted padding */}
-                             <Dot className="text-muted-foreground"/>
-                             <span>Elements</span>
-                           </Link>
-                         </SidebarMenuButton>
+                         <SidebarMenuSub>
+                           <SidebarMenuSubTrigger
+                             isActive={isMapElementsActive}
+                             size="sm"
+                             className="pl-3 pr-2 py-1.5" // Adjust padding for nested trigger
+                           >
+                             <div className="flex items-center gap-2 cursor-pointer w-full">
+                               <Dot className="text-muted-foreground"/>
+                               <span className="truncate">Elements</span>
+                               <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                             </div>
+                           </SidebarMenuSubTrigger>
+                           <SidebarMenuSubContent>
+                              {/* Nested Submenu Items for Elements */}
+                              <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/maps/elements/polls')} size="sm">
+                                  <Link href="#" className="flex items-center gap-2">
+                                    <Dot className="text-muted-foreground"/>
+                                    <span>Hydro Polls</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                              <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/maps/elements/fdhs')} size="sm">
+                                  <Link href="#" className="flex items-center gap-2">
+                                    <Dot className="text-muted-foreground"/>
+                                    <span>FDHs</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                              <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/maps/elements/foscs')} size="sm">
+                                  <Link href="#" className="flex items-center gap-2">
+                                    <Dot className="text-muted-foreground"/>
+                                    <span>FOSCs</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                              <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/maps/elements/peds')} size="sm">
+                                  <Link href="#" className="flex items-center gap-2">
+                                    <Dot className="text-muted-foreground"/>
+                                    <span>PEDs</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                               <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/maps/elements/accessories')} size="sm">
+                                  <Link href="#" className="flex items-center gap-2">
+                                    <Dot className="text-muted-foreground"/>
+                                    <span>Accessories</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                           </SidebarMenuSubContent>
+                         </SidebarMenuSub>
                        </SidebarMenuItem>
                        {/* Map Item */}
                        <SidebarMenuItem>

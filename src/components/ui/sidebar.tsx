@@ -5,7 +5,7 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import type { VariantProps} from "class-variance-authority";
 import { cva } from "class-variance-authority"
-import { PanelLeft, ChevronRight, PanelRight, ChevronLeft } from "lucide-react"; // Added ChevronRight, PanelRight, ChevronLeft
+import { PanelLeft, ChevronDown, PanelRight, ChevronLeft } from "lucide-react"; // Changed ChevronRight to ChevronDown
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible" // Import Collapsible
 
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -24,7 +24,7 @@ import {
 import Link from "next/link"; // Import Link for submenus
 
 // CSS Variables for Widths
-const SIDEBAR_WIDTH = "14rem";
+const SIDEBAR_WIDTH = "14rem"; // Default width
 const SIDEBAR_WIDTH_ICON = "3.5rem"; // Width when collapsed
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 
@@ -66,7 +66,7 @@ const SidebarProvider = React.forwardRef<
     {
       side = "left",
       variant = "sidebar",
-      collapsible = 'button', // Default to button collapsible
+      collapsible = 'none', // Default to no collapsing
       defaultCollapsed = false,
       onCollapseChange,
       className,
@@ -78,7 +78,9 @@ const SidebarProvider = React.forwardRef<
   ) => {
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
-    const [collapsed, setCollapsedInternal] = React.useState(defaultCollapsed);
+    // Use defaultCollapsed only if collapsible is enabled
+    const initialCollapsed = collapsible !== 'none' ? defaultCollapsed : false;
+    const [collapsed, setCollapsedInternal] = React.useState(initialCollapsed);
 
      // Handle collapse state change internally and call the callback
     const setCollapsed = React.useCallback(
@@ -98,8 +100,10 @@ const SidebarProvider = React.forwardRef<
         setCollapsedInternal(false); // Always expanded on mobile sheet
         onCollapseChange?.(false);
       } else {
-        setCollapsedInternal(defaultCollapsed);
-        onCollapseChange?.(defaultCollapsed);
+        // Reset to initial state for desktop, respecting collapsible setting
+        const desktopInitialCollapsed = collapsible !== 'none' ? defaultCollapsed : false;
+        setCollapsedInternal(desktopInitialCollapsed);
+        onCollapseChange?.(desktopInitialCollapsed);
       }
     }, [isMobile, defaultCollapsed, collapsible, onCollapseChange]);
 
@@ -111,7 +115,8 @@ const SidebarProvider = React.forwardRef<
         side,
         variant,
         collapsible,
-        collapsed: isMobile ? false : collapsed, // Ensure mobile sheet isn't collapsed
+        // Ensure collapsed is false if collapsible is 'none' or on mobile
+        collapsed: isMobile || collapsible === 'none' ? false : collapsed,
         setCollapsed,
       }),
       [ openMobile, setOpenMobile, isMobile, side, variant, collapsible, collapsed, setCollapsed]
@@ -160,8 +165,8 @@ const Sidebar = React.forwardRef<
   ) => {
     const { isMobile, openMobile, setOpenMobile, side, variant, collapsible, collapsed } = useSidebar()
 
-    // Mobile Offcanvas Logic (remains the same)
-    if (isMobile) { // No need to check collapsible anymore
+    // Mobile Offcanvas Logic
+    if (isMobile) {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
           <SheetContent
@@ -188,7 +193,8 @@ const Sidebar = React.forwardRef<
         data-collapsed={collapsed} // Add data attribute for state
         data-collapsible={collapsible !== 'none'} // Data attribute for styling based on collapsibility
         className={cn(
-            "group/sidebar peer relative hidden md:block text-sidebar-foreground transition-[width] duration-300 ease-in-out", // Add transition
+            "group/sidebar peer relative hidden md:block text-sidebar-foreground transition-[width] duration-300 ease-in-out",
+             "w-[var(--sidebar-width)]", //set width to sidebar width for default
              collapsible !== 'none' && collapsed ? "w-[var(--sidebar-width-icon)]" : "w-[var(--sidebar-width)]", // Dynamic width if collapsible
              collapsible === 'none' && "w-[var(--sidebar-width)]", // Fixed width if not collapsible
              (variant === "floating" || variant === "inset") && "p-2",
@@ -204,7 +210,7 @@ const Sidebar = React.forwardRef<
         <div
           data-sidebar="sidebar"
           className={cn(
-              "relative flex h-svh w-full flex-col bg-sidebar overflow-hidden", // Ensure content is visible
+              "relative flex h-svh w-full flex-col bg-sidebar overflow-y-auto overflow-x-hidden", // Enable vertical scroll, hide horizontal
               variant === 'inset' && 'rounded-xl',
               variant === 'floating' && 'rounded-lg border border-sidebar-border shadow'
             )}
@@ -246,12 +252,12 @@ const SidebarTrigger = React.forwardRef<
 })
 SidebarTrigger.displayName = "SidebarTrigger"
 
-// SidebarCollapseButton - Now handles desktop collapse/expand
+// SidebarCollapseButton - Handles desktop collapse/expand
 const SidebarCollapseButton = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button> & { tooltip?: string }
 >(({ className, tooltip, onClick, ...props }, ref) => {
-  const { collapsible, collapsed, setCollapsed, side, isMobile } = useSidebar();
+  const { collapsible, collapsed, setCollapsed, side, isMobile, variant } = useSidebar(); // Added variant
 
   // Return null if not collapsible on desktop or if on mobile
   if (collapsible === 'none' || isMobile) {
@@ -262,8 +268,8 @@ const SidebarCollapseButton = React.forwardRef<
     setCollapsed(!collapsed);
   };
 
-  const CollapseIcon = side === 'left' ? ChevronLeft : ChevronRight;
-  const ExpandIcon = side === 'left' ? ChevronRight : ChevronLeft;
+  const CollapseIcon = side === 'left' ? ChevronLeft : ChevronDown; // Use ChevronDown for right side collapse
+  const ExpandIcon = side === 'left' ? ChevronDown : ChevronLeft; // Use ChevronDown for right side expand
 
   const button = (
     <Button
@@ -274,10 +280,17 @@ const SidebarCollapseButton = React.forwardRef<
       className={cn(
         'absolute z-10 h-7 w-7 group-data-[collapsible=icon]/sidebar:opacity-0 group-hover/sidebar:opacity-100 group-data-[collapsible=icon]/sidebar:group-hover/sidebar:opacity-100 transition-opacity duration-200 ease-in-out',
          // Positioning based on side and state
-         'top-[calc(50%_-_theme(spacing.8))]', // Center vertically
-         side === 'left' ? (collapsed ? '-right-3.5' : 'right-0 translate-x-1/2') : (collapsed ? '-left-3.5' : 'left-0 -translate-x-1/2'),
-         // Adjust position to be slightly outside when expanded for better click area
-         // Ensure button is centered within the narrow bar when collapsed
+         'top-[calc(50%_-_theme(spacing.8))]', // Vertically center
+         // Adjust horizontal position based on side, collapsed state, and variant
+         side === 'left' ? (
+             collapsed ?
+                 (variant === 'floating' || variant === 'inset' ? 'right-0 translate-x-[125%]' : 'right-0 translate-x-1/2') // More outside for floating/inset when collapsed
+                 : 'right-0 translate-x-1/2' // Standard position when expanded
+         ) : ( // Right side
+             collapsed ?
+                 (variant === 'floating' || variant === 'inset' ? 'left-0 -translate-x-[125%]' : 'left-0 -translate-x-1/2') // More outside for floating/inset when collapsed
+                 : 'left-0 -translate-x-1/2' // Standard position when expanded
+         ),
         className
       )}
       onClick={(event) => {
@@ -323,7 +336,7 @@ const SidebarInset = React.forwardRef<
               return collapsed ? 'md:mr-[var(--sidebar-width-icon)]' : 'md:mr-[var(--sidebar-width)]';
           }
       } else {
-          // Non-collapsible sidebar
+          // Non-collapsible sidebar (always uses full width)
           if (side === 'left') {
               return 'md:ml-[var(--sidebar-width)]';
           } else { // side === 'right'
@@ -877,21 +890,25 @@ const SidebarMenuSubContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => {
   const { collapsed, collapsible } = useSidebar();
 
-  // Render null if the sidebar is collapsed
-  if (collapsible !== 'none' && collapsed) {
-    return null;
-  }
+  // Render null if the sidebar is collapsed and non-collapsible submenus aren't desired
+  // if (collapsible !== 'none' && collapsed) {
+  //   return null; // Original behavior: hide submenu content when sidebar is collapsed
+  // }
 
   return (
     <CollapsiblePrimitive.CollapsibleContent
       ref={ref}
       className={cn(
         "overflow-hidden transition-all data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down",
+        // Conditional rendering/styling for collapsed state can be added here if needed
+        // For example, to make submenus pop out instead of indenting when collapsed:
+        // collapsed ? "absolute left-full top-0 ml-2 z-50 bg-sidebar border rounded-md shadow-md p-1" : "pl-6",
         className
       )}
       {...props}
     >
-      <ul className="flex flex-col gap-1 py-1 pl-6 pr-2">{children}</ul> {/* Add padding for indentation */}
+      {/* Adjust padding based on collapsed state if needed */}
+      <ul className={cn("flex flex-col gap-1 py-1", collapsed ? "px-0" : "pl-6 pr-2")}>{children}</ul>
     </CollapsiblePrimitive.CollapsibleContent>
   );
 });
