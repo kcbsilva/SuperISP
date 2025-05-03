@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { Geist, Geist_Mono } from 'next/font/google';
-import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin, TowerControl, Cable } from 'lucide-react'; // Changed ChevronRight to ChevronDown, added MapPin, TowerControl, Cable
+import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse } from 'lucide-react'; // Changed ChevronRight to ChevronDown, added MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -105,7 +105,7 @@ export default function RootLayout({
                       <SidebarMenuSubContent>
                          <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/subscribers/list')} size="sm">
-                               <Link href="#" className="flex items-center gap-2">
+                               <Link href="/subscribers/list" className="flex items-center gap-2"> {/* Updated href */}
                                   <Dot className="text-muted-foreground"/>
                                   <span>List</span>
                                </Link>
@@ -113,7 +113,7 @@ export default function RootLayout({
                          </SidebarMenuItem>
                          <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/subscribers/add')} size="sm">
-                               <Link href="#" className="flex items-center gap-2">
+                               <Link href="/subscribers/add" className="flex items-center gap-2"> {/* Updated href */}
                                   <Dot className="text-muted-foreground"/>
                                   <span>Add New</span>
                                </Link>
@@ -218,7 +218,7 @@ export default function RootLayout({
                               <SidebarMenuItem>
                                 <SidebarMenuButton asChild isActive={isActive('/maps/elements/polls')} size="sm">
                                   <Link href="#" className="flex items-center gap-2">
-                                    <Dot className="text-muted-foreground"/>
+                                    <Power className="h-4 w-4 text-muted-foreground"/> {/* Icon Added */}
                                     <span>Hydro Polls</span>
                                   </Link>
                                 </SidebarMenuButton>
@@ -226,7 +226,7 @@ export default function RootLayout({
                               <SidebarMenuItem>
                                 <SidebarMenuButton asChild isActive={isActive('/maps/elements/fdhs')} size="sm">
                                   <Link href="#" className="flex items-center gap-2">
-                                    <Dot className="text-muted-foreground"/>
+                                    <Box className="h-4 w-4 text-muted-foreground"/> {/* Icon Added */}
                                     <span>FDHs</span>
                                   </Link>
                                 </SidebarMenuButton>
@@ -234,7 +234,7 @@ export default function RootLayout({
                               <SidebarMenuItem>
                                 <SidebarMenuButton asChild isActive={isActive('/maps/elements/foscs')} size="sm">
                                   <Link href="#" className="flex items-center gap-2">
-                                    <Dot className="text-muted-foreground"/>
+                                     <Warehouse className="h-4 w-4 text-muted-foreground"/> {/* Icon Added */}
                                     <span>FOSCs</span>
                                   </Link>
                                 </SidebarMenuButton>
@@ -242,7 +242,7 @@ export default function RootLayout({
                               <SidebarMenuItem>
                                 <SidebarMenuButton asChild isActive={isActive('/maps/elements/peds')} size="sm">
                                   <Link href="#" className="flex items-center gap-2">
-                                    <Dot className="text-muted-foreground"/>
+                                    <Box className="h-4 w-4 text-muted-foreground"/> {/* Icon Added */}
                                     <span>PEDs</span>
                                   </Link>
                                 </SidebarMenuButton>
@@ -250,7 +250,7 @@ export default function RootLayout({
                                <SidebarMenuItem>
                                 <SidebarMenuButton asChild isActive={isActive('/maps/elements/accessories')} size="sm">
                                   <Link href="#" className="flex items-center gap-2">
-                                    <Dot className="text-muted-foreground"/>
+                                    <Puzzle className="h-4 w-4 text-muted-foreground"/> {/* Icon Added */}
                                     <span>Accessories</span>
                                   </Link>
                                 </SidebarMenuButton>
