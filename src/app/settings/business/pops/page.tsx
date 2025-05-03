@@ -1,7 +1,7 @@
 // src/app/settings/business/pops/page.tsx
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Pencil, Trash2 } from "lucide-react"; // Added Pencil and Trash2 icons
 
 export default function PoPsPage() {
   // Placeholder data - replace with actual data fetching later
@@ -59,15 +59,22 @@ export default function PoPsPage() {
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             pop.status === "Active"
                               ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
+                              : "bg-red-100 text-red-800" // Use red for inactive status background
                           }`}
                         >
                           {pop.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        {/* Placeholder for action buttons like Edit, Delete */}
-                        <Button variant="ghost" size="sm">Edit</Button>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                        {/* Action buttons */}
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                           <Pencil className="h-4 w-4" />
+                           <span className="sr-only">Edit PoP</span>
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10">
+                           <Trash2 className="h-4 w-4" />
+                           <span className="sr-only">Remove PoP</span>
+                        </Button>
                       </td>
                     </tr>
                   ))}

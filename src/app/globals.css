@@ -48,6 +48,10 @@ body {
     --green-600: 134 61% 41%;
     --green-700: 134 61% 36%;
     --green-800: 134 61% 31%;
+
+    /* Red colors for badges */
+    --red-100: 0 70% 90%; /* Light red background */
+    --red-800: 0 70% 35%; /* Dark red text */
   }
   .dark {
     /* Dark Theme Colors (Optional - Keeping defaults for now) */
@@ -89,6 +93,10 @@ body {
     --green-600: 134 61% 41%;
     --green-700: 134 61% 46%;
     --green-800: 134 61% 51%;
+
+    /* Dark theme red colors */
+    --red-100: 0 70% 15%; /* Darker red background */
+    --red-800: 0 70% 70%; /* Lighter red text */
   }
 }
 
@@ -107,3 +115,7 @@ body {
 .bg-green-600 { background-color: hsl(var(--green-600)); }
 .hover\:bg-green-700:hover { background-color: hsl(var(--green-700)); }
 .text-white { color: white; } /* Assuming white text on dark green button */
+
+/* Utility classes for red colors */
+.bg-red-100 { background-color: hsl(var(--red-100)); }
+.text-red-800 { color: hsl(var(--red-800)); }
