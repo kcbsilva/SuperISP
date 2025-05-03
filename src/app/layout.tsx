@@ -1,5 +1,5 @@
 // src/app/layout.tsx
-'use client'; // Required for usePathname hook
+'use client'; // Required for usePathname hook and state
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -22,6 +22,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarInset,
+  SidebarCollapseButton, // Import the collapse button
 } from '@/components/ui/sidebar';
 import { AppHeader } from '@/components/app-header';
 
@@ -59,22 +60,21 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning /* Add suppressHydrationWarning */
       >
-        {/* Configure SidebarProvider for icon-only behavior */}
-        <SidebarProvider side="left" collapsible="icon"> {/* Always icon mode */}
-          {/* Sidebar Component - always collapsed */}
+        {/* Configure SidebarProvider for icon-collapsible behavior */}
+        <SidebarProvider side="left" collapsible="icon">
           <Sidebar>
             <SidebarHeader>
               {/* App Logo/Title in Sidebar Header */}
               <Link
                 href="/"
-                className="flex items-center justify-center h-10 text-lg font-semibold text-sidebar-primary" // Always centered
+                className="flex items-center gap-2 text-lg font-semibold text-sidebar-primary"
               >
                  {/* Placeholder Icon */}
                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                    <path d="M12 .75a8.25 8.25 0 0 0-5.162 14.564.75.75 0 0 1-.318.47l-3.75 2.25a.75.75 0 0 0 0 1.332l3.75 2.25a.75.75 0 0 1 .318.47A8.25 8.25 0 0 0 12 23.25a8.25 8.25 0 0 0 8.25-8.25v-6a8.25 8.25 0 0 0-8.25-8.25Zm-3 9a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Zm0 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" />
                  </svg>
-
-                 {/* Text is always hidden */}
+                 {/* Text visible when expanded */}
+                 <span className="font-bold">NetHub</span>
               </Link>
             </SidebarHeader>
             <SidebarContent>
@@ -82,55 +82,55 @@ export default function RootLayout({
               <SidebarMenu>
                 <SidebarMenuItem>
                   {/* Set isActive based on current path */}
-                  <SidebarMenuButton isActive={isActive('/')} tooltip="Dashboard">
-                    <Link href="/" className="flex items-center gap-2 w-full justify-center"> {/* Center content */}
+                  <SidebarMenuButton asChild isActive={isActive('/')} tooltip="Dashboard">
+                    <Link href="/" className="flex items-center gap-2">
                       <LayoutDashboard />
-                      <span className="hidden">Dashboard</span> {/* Text always hidden */}
+                      <span>Dashboard</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                  <SidebarMenuItem>
                     {/* Link directly to subscribers list */}
-                    <SidebarMenuButton isActive={isSubscribersActive} tooltip="Subscribers">
-                       <Link href="/subscribers/list" className="flex items-center justify-center gap-2 w-full"> {/* Center content */}
+                    <SidebarMenuButton asChild isActive={isSubscribersActive} tooltip="Subscribers">
+                       <Link href="/subscribers/list" className="flex items-center gap-2">
                          <Users />
-                         <span className="hidden">Subscribers</span> {/* Text always hidden */}
+                         <span>Subscribers</span>
                        </Link>
                     </SidebarMenuButton>
                  </SidebarMenuItem>
                  {/* Network Menu Item */}
                  <SidebarMenuItem>
-                    <SidebarMenuButton isActive={isNetworkActive} tooltip="Network">
-                       <Link href="/network" className="flex items-center justify-center gap-2 w-full"> {/* Center content, Link to /network */}
+                    <SidebarMenuButton asChild isActive={isNetworkActive} tooltip="Network">
+                       <Link href="/network" className="flex items-center gap-2">
                          <Network />
-                         <span className="hidden">Network</span> {/* Text always hidden */}
+                         <span>Network</span>
                        </Link>
                     </SidebarMenuButton>
                  </SidebarMenuItem>
                 <SidebarMenuItem>
                   {/* Example: Adjust if Security page exists */}
-                  <SidebarMenuButton isActive={isActive('/security')} tooltip="Security">
-                    <Link href="#" className="flex items-center gap-2 w-full justify-center"> {/* Center content */}
+                  <SidebarMenuButton asChild isActive={isActive('/security')} tooltip="Security">
+                    <Link href="#" className="flex items-center gap-2">
                       <ShieldCheck />
-                      <span className="hidden">Security</span> {/* Text always hidden */}
+                      <span>Security</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                    {/* Example: Adjust if Settings page exists */}
-                   <SidebarMenuButton isActive={isActive('/settings')} tooltip="Settings">
-                    <Link href="#" className="flex items-center gap-2 w-full justify-center"> {/* Center content */}
+                   <SidebarMenuButton asChild isActive={isActive('/settings')} tooltip="Settings">
+                    <Link href="#" className="flex items-center gap-2">
                       <Settings />
-                      <span className="hidden">Settings</span> {/* Text always hidden */}
+                      <span>Settings</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarContent>
             <SidebarFooter>
-              {/* Footer content remains centered */}
+               {/* Add the collapse button back */}
+              <SidebarCollapseButton />
             </SidebarFooter>
-             {/* No collapse button needed */}
           </Sidebar>
 
           <SidebarInset>
