@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { useState, useEffect } from 'react'; // Import useState and useEffect
-// Remove Geist font imports
+// Import specific icons
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
   Code, // Added for IPv4/6
@@ -46,18 +46,6 @@ import { AppHeader } from '@/components/app-header';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'; // Import Tooltip components
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
 import { Progress } from '@/components/ui/progress'; // Import Progress component
-
-// Remove Geist font setup
-// const geistSans = Geist({
-//   variable: '--font-geist-sans',
-//   subsets: ['latin'],
-// });
-//
-// const geistMono = Geist_Mono({
-//   variable: '--font-geist-mono',
-//   subsets: ['latin'],
-// });
-
 
 // Create a client
 const queryClient = new QueryClient();
@@ -107,21 +95,21 @@ export default function RootLayout({
 
   // Determine if a link is active
   const isActive = (href: string) => pathname === href;
-  const isSubscribersActive = pathname.startsWith('/subscribers');
-  const isNetworkActive = pathname.startsWith('/network'); // Added for Network active state
-  const isMapsActive = pathname.startsWith('/maps'); // Added for Maps active state
-  const isMapElementsActive = pathname.startsWith('/maps/elements'); // Added for Elements active state
-  const isFinancesActive = pathname.startsWith('/finances'); // Added for Finances active state
-  const isReportsActive = pathname.startsWith('/reports'); // Added for Reports active state
-  const isSettingsActive = pathname.startsWith('/settings'); // Added for Settings active state
-  const isSettingsIntegrationsActive = pathname.startsWith('/settings/integrations'); // Added for Integrations active state
-  const isSettingsBusinessActive = pathname.startsWith('/settings/business'); // Added for Business active state
+  // Remove boolean checks for parent active state as they are no longer used for highlighting triggers
+  // const isSubscribersActive = pathname.startsWith('/subscribers');
+  // const isNetworkActive = pathname.startsWith('/network');
+  // const isMapsActive = pathname.startsWith('/maps');
+  // const isMapElementsActive = pathname.startsWith('/maps/elements');
+  // const isFinancesActive = pathname.startsWith('/finances');
+  // const isReportsActive = pathname.startsWith('/reports');
+  // const isSettingsActive = pathname.startsWith('/settings');
+  // const isSettingsIntegrationsActive = pathname.startsWith('/settings/integrations');
+  // const isSettingsBusinessActive = pathname.startsWith('/settings/business');
 
 
   return (
     <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
       <body
-        // Remove Geist font variables from className
         className={`antialiased`}
         suppressHydrationWarning /* Add suppressHydrationWarning */
       >
@@ -162,7 +150,8 @@ export default function RootLayout({
                         {/* Wrap SidebarMenuSubTrigger with Tooltip */}
                          <Tooltip>
                            <TooltipTrigger asChild>
-                             <SidebarMenuSubTrigger isActive={isSubscribersActive}>
+                             {/* Removed isActive prop from trigger */}
+                             <SidebarMenuSubTrigger>
                                <div className="flex items-center gap-2 cursor-pointer">
                                  <Users />
                                  <span className="truncate">Subscribers</span>
@@ -196,9 +185,8 @@ export default function RootLayout({
                         {/* Wrap SidebarMenuSubTrigger with Tooltip */}
                          <Tooltip>
                            <TooltipTrigger asChild>
-                             <SidebarMenuSubTrigger
-                               isActive={isNetworkActive} // Use isActive for styling only
-                             >
+                             {/* Removed isActive prop from trigger */}
+                             <SidebarMenuSubTrigger>
                                {/* This doesn't navigate, just opens/closes submenu */}
                                <div className="flex items-center gap-2 cursor-pointer">
                                  <Network />
@@ -253,9 +241,8 @@ export default function RootLayout({
                         {/* Wrap SidebarMenuSubTrigger with Tooltip */}
                          <Tooltip>
                            <TooltipTrigger asChild>
-                             <SidebarMenuSubTrigger
-                               isActive={isMapsActive}
-                             >
+                             {/* Removed isActive prop from trigger */}
+                             <SidebarMenuSubTrigger>
                                <div className="flex items-center gap-2 cursor-pointer">
                                  <MapPin /> {/* Changed icon */}
                                  <span className="truncate">Maps</span>
@@ -272,8 +259,8 @@ export default function RootLayout({
                                {/* Wrap SidebarMenuSubTrigger with Tooltip */}
                                <Tooltip>
                                  <TooltipTrigger asChild>
+                                   {/* Removed isActive prop from nested trigger */}
                                    <SidebarMenuSubTrigger
-                                     isActive={isMapElementsActive}
                                      size="sm"
                                      className="pl-3 pr-2 py-1.5" // Adjust padding for nested trigger
                                    >
@@ -352,7 +339,8 @@ export default function RootLayout({
                           {/* Wrap SidebarMenuSubTrigger with Tooltip */}
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <SidebarMenuSubTrigger isActive={isFinancesActive}>
+                              {/* Removed isActive prop from trigger */}
+                              <SidebarMenuSubTrigger>
                                 <div className="flex items-center gap-2 cursor-pointer">
                                   <DollarSign />
                                   <span className="truncate">Finances</span>
@@ -382,7 +370,7 @@ export default function RootLayout({
 
                       {/* Reports Menu Item */}
                       <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={isReportsActive} tooltip="Reports">
+                        <SidebarMenuButton asChild isActive={isActive('/reports')} tooltip="Reports">
                           <Link href="#" className="flex items-center gap-2">
                             <BarChart3 />
                             <span>Reports</span>
@@ -406,7 +394,8 @@ export default function RootLayout({
                        {/* Wrap SidebarMenuSubTrigger with Tooltip */}
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <SidebarMenuSubTrigger isActive={isSettingsActive}>
+                            {/* Removed isActive prop from trigger */}
+                            <SidebarMenuSubTrigger>
                               <div className="flex items-center gap-2 cursor-pointer">
                                 <Settings />
                                 <span className="truncate">Settings</span>
@@ -422,8 +411,8 @@ export default function RootLayout({
                              <SidebarMenuSub>
                                <Tooltip>
                                  <TooltipTrigger asChild>
+                                   {/* Removed isActive prop from nested trigger */}
                                    <SidebarMenuSubTrigger
-                                     isActive={isSettingsBusinessActive}
                                      size="sm"
                                      className="pl-3 pr-2 py-1.5"
                                    >
@@ -456,8 +445,8 @@ export default function RootLayout({
                               {/* Wrap SidebarMenuSubTrigger with Tooltip */}
                               <Tooltip>
                                 <TooltipTrigger asChild>
+                                  {/* Removed isActive prop from nested trigger */}
                                   <SidebarMenuSubTrigger
-                                    isActive={isSettingsIntegrationsActive}
                                     size="sm"
                                     className="pl-3 pr-2 py-1.5" // Adjust padding
                                   >
