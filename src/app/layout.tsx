@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { Geist, Geist_Mono } from 'next/font/google';
-import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse } from 'lucide-react'; // Changed ChevronRight to ChevronDown, added MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse
+import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe } from 'lucide-react'; // Added Globe icon
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -208,7 +208,7 @@ export default function RootLayout({
                              className="pl-3 pr-2 py-1.5" // Adjust padding for nested trigger
                            >
                              <div className="flex items-center gap-2 cursor-pointer w-full">
-                               <Dot className="text-muted-foreground"/>
+                               <Dot className="text-muted-foreground"/> {/* Icon for Elements trigger */}
                                <span className="truncate">Elements</span>
                                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                              </div>
@@ -280,7 +280,7 @@ export default function RootLayout({
                        <SidebarMenuItem>
                          <SidebarMenuButton asChild isActive={isActive('/maps/map')} size="sm">
                            <Link href="#" className="flex items-center gap-2"> {/* Adjusted padding */}
-                             <Dot className="text-muted-foreground"/>
+                             <Globe className="h-4 w-4 text-muted-foreground"/> {/* Globe Icon Added */}
                              <span>Map</span>
                            </Link>
                          </SidebarMenuButton>
