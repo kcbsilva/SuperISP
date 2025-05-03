@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button"; // Ensure buttonVariants is imported
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -40,8 +40,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { QueryClient, QueryClientProvider, useQuery, useMutation } from '@tanstack/react-query';
-import { getPops, addPop, deletePop, updatePop } from '@/services/firestore/pops'; // Import Firestore service functions
+import { QueryClient, QueryClientProvider, useQuery, useMutation, QueryKey } from '@tanstack/react-query';
+// Import MySQL service functions instead of Firestore
+import { getPops, addPop, deletePop, updatePop } from '@/services/mysql/pops';
 import type { Pop, PopData } from '@/types/pops'; // Import types
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -53,6 +54,9 @@ const popSchema = z.object({
 });
 
 type PopFormData = z.infer<typeof popSchema>;
+
+// Define query key
+const popsQueryKey: QueryKey = ['pops'];
 
 // Create a client
 const queryClient = new QueryClient();
@@ -73,14 +77,14 @@ function PoPsPage() {
 
   // --- React Query Setup ---
   const { data: pops = [], isLoading: isLoadingPops, error: popsError } = useQuery<Pop[], Error>({
-    queryKey: ['pops'],
-    queryFn: getPops,
+    queryKey: popsQueryKey, // Use defined query key
+    queryFn: getPops, // Use MySQL getPops
   });
 
-  const addPopMutation = useMutation<string, Error, PopData>({
-    mutationFn: addPop,
+  const addPopMutation = useMutation<number, Error, PopData>({ // Return type might be number (ID)
+    mutationFn: addPop, // Use MySQL addPop
     onSuccess: (newPopId, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['pops'] }); // Refetch pops list
+      queryClient.invalidateQueries({ queryKey: popsQueryKey }); // Refetch pops list
       toast({
         title: 'PoP Added',
         description: `${variables.name} has been added successfully.`,
@@ -97,18 +101,14 @@ function PoPsPage() {
     },
   });
 
-  const deletePopMutation = useMutation<void, Error, string>({
-    mutationFn: deletePop,
+  const deletePopMutation = useMutation<void, Error, string | number>({ // ID can be string or number
+    mutationFn: deletePop, // Use MySQL deletePop
     onSuccess: (_, popId) => {
-       // Optimistic update (optional): remove from cache immediately
-       // queryClient.setQueryData(['pops'], (oldData: Pop[] | undefined) =>
-       //   oldData ? oldData.filter((pop) => pop.id !== popId) : []
-       // );
-      queryClient.invalidateQueries({ queryKey: ['pops'] }); // Refetch pops list
+      queryClient.invalidateQueries({ queryKey: popsQueryKey }); // Refetch pops list
       toast({
         title: 'PoP Removed',
         description: `PoP has been removed.`,
-        variant: 'destructive' // Use default variant for removal confirmation
+        variant: 'destructive' // Use destructive variant for removal confirmation
       });
     },
     onError: (error) => {
@@ -119,6 +119,28 @@ function PoPsPage() {
       });
     },
   });
+
+   // --- Update Mutation (Placeholder/Example) ---
+   const updatePopMutation = useMutation<void, Error, { id: string | number; data: Partial<PopData> }>({
+    mutationFn: ({ id, data }) => updatePop(id, data), // Use MySQL updatePop
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: popsQueryKey });
+      toast({
+        title: 'PoP Updated',
+        description: `PoP has been updated successfully.`,
+      });
+      // Close edit dialog if open
+      // setIsEditDialogOpen(false);
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error Updating PoP',
+        description: error.message || 'Could not update the PoP.',
+        variant: 'destructive',
+      });
+    },
+  });
+
 
   // --- Form Handling ---
   const form = useForm<PopFormData>({
@@ -135,17 +157,21 @@ function PoPsPage() {
   };
 
   // Handle removing a PoP
-  const handleRemovePopConfirm = (id: string) => {
+  const handleRemovePopConfirm = (id: string | number) => { // ID can be string or number
     deletePopMutation.mutate(id); // Use react-query mutation
   };
 
   // Handle editing a PoP (placeholder - implement edit modal/logic later)
    const handleEditPop = (pop: Pop) => {
      console.log("Editing PoP:", pop);
-     // TODO: Implement edit modal
-     // Example: Set form defaults, open an edit dialog
+     // TODO: Implement edit modal - Open dialog, set form defaults, handle update submission
      // form.reset({ name: pop.name, location: pop.location });
+     // setSelectedPopForEdit(pop); // Need state to hold the pop being edited
      // setIsEditDialogOpen(true); // Need an edit dialog state
+
+     // Example: Using update mutation directly (replace with modal logic)
+     // updatePopMutation.mutate({ id: pop.id, data: { name: pop.name + ' Updated' } });
+
      toast({
        title: 'Edit PoP (Not Implemented)',
        description: `Editing for "${pop.name}" is not yet implemented.`,
@@ -234,6 +260,9 @@ function PoPsPage() {
               <table className="min-w-full divide-y divide-border">
                 <thead className="bg-muted/50">
                   <tr>
+                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-16"> {/* Added ID column */}
+                       ID
+                     </th>
                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                        Name
                      </th>
@@ -254,6 +283,9 @@ function PoPsPage() {
                 <tbody className="bg-background divide-y divide-border">
                   {pops.map((pop) => (
                     <tr key={pop.id}>
+                       <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-muted-foreground"> {/* ID data */}
+                        {pop.id}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                         {pop.name}
                       </td>
@@ -263,16 +295,17 @@ function PoPsPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            pop.status === "Active"
+                            pop.status && pop.status.toLowerCase() === "active" // Handle potential null/undefined status
                               ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
+                              : "bg-red-100 text-red-800" // Default to inactive/red if status is not 'Active'
                           }`}
                         >
-                          {pop.status}
+                          {pop.status || 'Unknown'} {/* Display status or Unknown */}
                         </span>
                       </td>
-                       <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground"> {/* Added Created At Data */}
-                         {pop.createdAt ? pop.createdAt.toDate().toLocaleDateString() : 'N/A'}
+                       <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground"> {/* Created At Data */}
+                         {/* Check if createdAt is a Date object before calling methods */}
+                         {pop.createdAt instanceof Date ? pop.createdAt.toLocaleDateString() : 'N/A'}
                        </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditPop(pop)}>
@@ -291,7 +324,7 @@ function PoPsPage() {
                              <AlertDialogHeader>
                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                <AlertDialogDescription>
-                                 This action cannot be undone. This will permanently delete the PoP named "{pop.name}".
+                                 This action cannot be undone. This will permanently delete the PoP named "{pop.name}" (ID: {pop.id}).
                                </AlertDialogDescription>
                              </AlertDialogHeader>
                              <AlertDialogFooter>
