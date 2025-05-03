@@ -350,13 +350,14 @@ const SidebarCollapseButton = React.forwardRef<
           variant="ghost"
           size="icon"
           className={cn(
-            "h-8 w-8 absolute top-2 z-20",
-             // Position based on side
-            side === 'left' ? 'right-2' : 'left-2',
-             // Ensure button is always visible for toggling
-            // state === 'collapsed' && collapsible === 'icon' ? 'hidden' : '', // Removed this line
-             // Adjust position slightly when collapsed in icon mode to stay visually consistent
-            state === 'collapsed' && collapsible === 'icon' ? (side === 'left' ? 'right-0.5' : 'left-0.5') : '',
+            "h-8 w-8 absolute z-20",
+             // Positioning logic for expanded state
+            state === 'expanded' && 'top-2',
+            state === 'expanded' && (side === 'left' ? 'right-2' : 'left-2'),
+             // Positioning logic for collapsed state (centered)
+            state === 'collapsed' && 'top-1/2 -translate-y-1/2',
+            state === 'collapsed' && (side === 'left' ? 'left-1/2 -translate-x-1/2' : 'right-1/2 translate-x-1/2'), // Center horizontally within the collapsed bar
+            state === 'collapsed' && collapsible === 'icon' && (variant === 'floating' || variant === 'inset') && 'mx-auto', // Handle inset/floating variants when collapsed
             className
           )}
           onClick={toggleSidebar}
