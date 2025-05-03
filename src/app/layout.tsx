@@ -122,7 +122,7 @@ export default function RootLayout({
                             <SidebarMenuButton asChild isActive={isActive('/subscribers/add')} size="sm">
                                <Link href="/subscribers/add" className="flex items-center gap-2"> {/* Updated href */}
                                   <Dot className="text-muted-foreground"/>
-                                  <span>Add New</span>
+                                  <span>(+) New</span> {/* Updated text */}
                                </Link>
                             </SidebarMenuButton>
                          </SidebarMenuItem>
