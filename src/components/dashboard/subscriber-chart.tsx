@@ -1,0 +1,60 @@
+// src/components/dashboard/subscriber-chart.tsx
+"use client"
+
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts"
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart"
+import type { ChartConfig } from "@/components/ui/chart"
+
+// Placeholder data for the last 6 months
+const chartData = [
+  { month: "January", newSubscribers: 186 },
+  { month: "February", newSubscribers: 305 },
+  { month: "March", newSubscribers: 237 },
+  { month: "April", newSubscribers: 273 },
+  { month: "May", newSubscribers: 209 },
+  { month: "June", newSubscribers: 214 },
+]
+
+const chartConfig = {
+  newSubscribers: {
+    label: "New Subscribers",
+    color: "hsl(var(--chart-1))", // Use theme color variable
+  },
+} satisfies ChartConfig
+
+export function SubscriberChart() {
+  return (
+    <ChartContainer config={chartConfig} className="min-h-[200px] w-full aspect-video">
+      <ResponsiveContainer width="100%" height={350}>
+         <BarChart data={chartData}>
+           <CartesianGrid vertical={false} />
+           <XAxis
+             dataKey="month"
+             tickLine={false}
+             tickMargin={10}
+             axisLine={false}
+             // tickFormatter={(value) => value.slice(0, 3)} // Abbreviate month names if needed
+           />
+           <YAxis
+             tickLine={false}
+             axisLine={false}
+             tickMargin={10}
+             // tickCount={6} // Adjust based on expected data range
+           />
+           <ChartTooltip
+             cursor={false}
+             content={<ChartTooltipContent indicator="dot" />}
+           />
+           <ChartLegend content={<ChartLegendContent />} />
+           <Bar dataKey="newSubscribers" fill="var(--color-newSubscribers)" radius={4} />
+         </BarChart>
+      </ResponsiveContainer>
+    </ChartContainer>
+  )
+}
