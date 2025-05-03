@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { Geist, Geist_Mono } from 'next/font/google';
-import { LayoutDashboard, ShieldCheck, Settings, Wifi, Users, List, UserPlus } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, Settings, Users, List, UserPlus } from 'lucide-react';
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -66,10 +66,9 @@ export default function RootLayout({
               {/* App Logo/Title in Sidebar Header */}
               <Link
                 href="/"
-                className="flex items-center gap-2 text-lg font-semibold text-sidebar-primary"
+                className="flex items-center gap-2 h-6 text-lg font-semibold text-sidebar-primary" // Adjust height if needed
               >
-                <Wifi className="h-6 w-6" />
-                {/* Text removed as requested */}
+                {/* Wifi icon removed */}
               </Link>
             </SidebarHeader>
             <SidebarContent>
