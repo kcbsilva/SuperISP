@@ -2,6 +2,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link'; // Import Link for the Add New button
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, Building, Search, Filter, Edit, Trash2 } from "lucide-react";
+import { User, Building, Search, Filter, Edit, Trash2, RefreshCw, PlusCircle } from "lucide-react"; // Added RefreshCw, PlusCircle
 import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
@@ -47,6 +48,7 @@ export default function ListSubscribersPage() {
         type: [],
         status: [],
     });
+    const [isLoading, setIsLoading] = React.useState(false); // Add loading state for refresh
 
      // Filter logic
     const filteredSubscribers = React.useMemo(() => {
@@ -73,12 +75,40 @@ export default function ListSubscribersPage() {
         });
     };
 
+    // Handle Refresh (Simulated)
+    const handleRefresh = () => {
+        setIsLoading(true);
+        console.log('Refreshing subscriber list...');
+        // Simulate data fetching
+        setTimeout(() => {
+        setIsLoading(false);
+        console.log('Subscriber list refreshed.');
+        // In a real app, you'd call refetch() from react-query or similar
+        }, 1000);
+    };
+
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Subscribers List</h1>
-        {/* Add New Subscriber button can link here or be elsewhere */}
+        {/* Add New and Refresh Buttons */}
+        <div className="flex items-center gap-2">
+            <Button
+                variant="default"
+                onClick={handleRefresh}
+                disabled={isLoading}
+                className="bg-primary hover:bg-primary/90"
+            >
+                <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                Refresh
+            </Button>
+            <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
+              <Link href="/subscribers/add">
+                <PlusCircle className="mr-2 h-4 w-4" /> Add New
+              </Link>
+            </Button>
+        </div>
       </div>
 
        {/* Search and Filter Bar */}

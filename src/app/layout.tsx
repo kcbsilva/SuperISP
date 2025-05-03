@@ -94,18 +94,8 @@ export default function RootLayout({
 
 
   // Determine if a link is active
-  const isActive = (href: string) => pathname === href;
-  // Remove boolean checks for parent active state as they are no longer used for highlighting triggers
-  // const isSubscribersActive = pathname.startsWith('/subscribers');
-  // const isNetworkActive = pathname.startsWith('/network');
-  // const isMapsActive = pathname.startsWith('/maps');
-  // const isMapElementsActive = pathname.startsWith('/maps/elements');
-  // const isFinancesActive = pathname.startsWith('/finances');
-  // const isReportsActive = pathname.startsWith('/reports');
-  // const isSettingsActive = pathname.startsWith('/settings');
-  // const isSettingsIntegrationsActive = pathname.startsWith('/settings/integrations');
-  // const isSettingsBusinessActive = pathname.startsWith('/settings/business');
-
+  const isActive = (href: string) => pathname.startsWith(href); // Use startsWith for active state in menus
+  // Removed boolean checks for parent active state as they are no longer used for highlighting triggers
 
   return (
     <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
@@ -138,44 +128,21 @@ export default function RootLayout({
                   <SidebarMenu>
                     <SidebarMenuItem>
                       {/* Set isActive based on current path */}
-                      <SidebarMenuButton asChild isActive={isActive('/')} tooltip="Dashboard">
+                      <SidebarMenuButton asChild isActive={isActive('/') && pathname === '/'} tooltip="Dashboard">
                         <Link href="/" className="flex items-center gap-2">
                           <LayoutDashboard />
                           <span>Dashboard</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
+                    {/* Changed Subscribers to a direct link */}
                      <SidebarMenuItem>
-                       <SidebarMenuSub>
-                        {/* Wrap SidebarMenuSubTrigger with Tooltip */}
-                         <Tooltip>
-                           <TooltipTrigger asChild>
-                             {/* Removed isActive prop from trigger */}
-                             <SidebarMenuSubTrigger>
-                               <div className="flex items-center gap-2 cursor-pointer">
-                                 <Users />
-                                 <span className="truncate">Subscribers</span>
-                                 <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                               </div>
-                             </SidebarMenuSubTrigger>
-                           </TooltipTrigger>
-                           <TooltipContent side="right" align="center">Subscribers</TooltipContent>
-                         </Tooltip>
-                         <SidebarMenuSubContent>
-                            <SidebarMenuItem >
-                               <SidebarMenuButton asChild isActive={isActive('/subscribers/list')} size="sm"><Link href="/subscribers/list" className="flex items-center gap-2"> {/* Updated href */}
-                                     <Dot  className="text-muted-foreground"/>
-                                     <span>List</span>
-                                  </Link></SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                               <SidebarMenuButton asChild isActive={isActive('/subscribers/add')} size="sm"><Link href="/subscribers/add" className="flex items-center gap-2"> {/* Updated href */}
-                                     <Dot className="text-muted-foreground"/>
-                                     <span>New</span> {/* Updated text */}
-                                  </Link></SidebarMenuButton>
-                            </SidebarMenuItem>
-                         </SidebarMenuSubContent>
-                       </SidebarMenuSub>
+                       <SidebarMenuButton asChild isActive={isActive('/subscribers')} tooltip="Subscribers">
+                         <Link href="/subscribers/list" className="flex items-center gap-2">
+                           <Users />
+                           <span>Subscribers</span>
+                         </Link>
+                       </SidebarMenuButton>
                      </SidebarMenuItem>
 
                      {/* Network Menu Item with Submenu */}
@@ -506,7 +473,7 @@ export default function RootLayout({
               <SidebarInset>
                 {/* Progress Bar */}
                 <div className="fixed top-0 left-0 w-full z-50 h-1"> {/* Added fixed positioning */}
-                   {isLoading && <Progress value={progress} className="w-full h-1 rounded-none bg-transparent [&>*]:bg-green-600" />} {/* Use green color */}
+                   {isLoading && <Progress value={progress} className="w-full h-1 rounded-none bg-transparent [&>*]:bg-green-600" indicatorClassName="bg-green-600" />} {/* Use green color */}
                 </div>
                  <AppHeader />
                 <div className="p-4 md:p-6">{children}</div>
