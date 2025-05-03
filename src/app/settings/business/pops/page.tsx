@@ -184,6 +184,9 @@ export default function PoPsPage() {
               <table className="min-w-full divide-y divide-border">
                 <thead className="bg-muted/50">
                   <tr>
+                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-20"> {/* Added ID column header */}
+                       ID
+                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Name
                     </th>
@@ -201,6 +204,9 @@ export default function PoPsPage() {
                 <tbody className="bg-background divide-y divide-border">
                   {pops.map((pop) => (
                     <tr key={pop.id}>
+                       <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground"> {/* Added ID data cell */}
+                         {pop.id}
+                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                         {pop.name}
                       </td>
