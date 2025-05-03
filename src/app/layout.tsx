@@ -5,7 +5,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { Geist, Geist_Mono } from 'next/font/google';
-import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork } from 'lucide-react'; // Added Globe and GitFork icons
+import {
+  LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
+  Code, // Added for IPv4/6
+  Router, // Added for Devices
+  Share2, // Added for CGNAT
+  Server, // Added for RADIUS
+  Split // Added for VLAN
+} from 'lucide-react'; // Added Globe and GitFork icons
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -143,7 +150,7 @@ export default function RootLayout({
                          <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/network/ip')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Dot className="text-muted-foreground"/>
+                                <Code className="h-4 w-4 text-muted-foreground"/> {/* Icon Added */}
                                 <span>IPv4/6</span>
                               </Link>
                             </SidebarMenuButton>
@@ -151,7 +158,7 @@ export default function RootLayout({
                          <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/network/devices')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Dot className="text-muted-foreground"/>
+                                <Router className="h-4 w-4 text-muted-foreground"/> {/* Icon Added */}
                                 <span>Devices</span>
                               </Link>
                             </SidebarMenuButton>
@@ -159,7 +166,7 @@ export default function RootLayout({
                          <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/network/cgnat')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Dot className="text-muted-foreground"/>
+                                <Share2 className="h-4 w-4 text-muted-foreground"/> {/* Icon Added */}
                                 <span>CGNAT</span>
                               </Link>
                             </SidebarMenuButton>
@@ -167,7 +174,7 @@ export default function RootLayout({
                          <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/network/radius')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Dot className="text-muted-foreground"/>
+                                <Server className="h-4 w-4 text-muted-foreground"/> {/* Icon Added */}
                                 <span>RADIUS(NAS)</span>
                               </Link>
                             </SidebarMenuButton>
@@ -175,7 +182,7 @@ export default function RootLayout({
                          <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/network/vlan')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Dot className="text-muted-foreground"/>
+                                <Split className="h-4 w-4 text-muted-foreground"/> {/* Icon Added */}
                                 <span>VLAN</span>
                               </Link>
                             </SidebarMenuButton>
