@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, Building, Search, Filter, Edit, Trash2, RefreshCw, PlusCircle } from "lucide-react"; // Added RefreshCw, PlusCircle
+import { User, Building, Search, Filter, RefreshCw, PlusCircle } from "lucide-react"; // Removed Edit, Trash2
 import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
@@ -177,7 +177,8 @@ export default function ListSubscribersPage() {
                   <TableHead>Address</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
-                  <TableHead className="w-24 text-right">Actions</TableHead>
+                  {/* Removed Actions Header */}
+                  {/* <TableHead className="w-24 text-right">Actions</TableHead> */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -217,6 +218,8 @@ export default function ListSubscribersPage() {
                       <TableCell className="text-muted-foreground text-sm">{subscriber.address}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">{subscriber.email}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">{subscriber.phone}</TableCell>
+                      {/* Removed Actions Cell */}
+                      {/*
                       <TableCell className="text-right">
                         <Button variant="ghost" size="icon" className="h-8 w-8">
                           <Edit className="h-4 w-4" />
@@ -227,11 +230,12 @@ export default function ListSubscribersPage() {
                           <span className="sr-only">Delete</span>
                         </Button>
                       </TableCell>
+                      */}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8"> {/* Adjusted colSpan */}
                       No subscribers found matching your criteria.
                     </TableCell>
                   </TableRow>

@@ -2,10 +2,12 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; // Added CardFooter
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package } from 'lucide-react'; // Rename Server to avoid conflict
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2 } from 'lucide-react'; // Rename Server to avoid conflict, Added Edit, Trash2
 import { useParams } from 'next/navigation'; // Import useParams to get the ID
+import { Button } from '@/components/ui/button'; // Import Button
+import { useToast } from '@/hooks/use-toast'; // Import useToast for feedback
 
 // Placeholder data - replace with actual data fetching based on ID
 const getSubscriberData = (id: string | string[]) => {
@@ -26,9 +28,23 @@ const getSubscriberData = (id: string | string[]) => {
 export default function SubscriberProfilePage() {
   const params = useParams();
   const subscriberId = params.id; // Get the ID from the route parameters
+  const { toast } = useToast();
 
   // Simulate fetching subscriber data
   const subscriber = React.useMemo(() => getSubscriberData(subscriberId), [subscriberId]);
+
+  const handleEdit = () => {
+    // Placeholder for edit action
+    console.log("Edit subscriber:", subscriberId);
+    toast({ title: "Edit Subscriber (Not Implemented)", description: `Editing for ${subscriber.name} is not yet functional.` });
+  };
+
+  const handleDelete = () => {
+    // Placeholder for delete action - Add confirmation dialog in real app
+    console.log("Delete subscriber:", subscriberId);
+    toast({ title: "Delete Subscriber (Not Implemented)", description: `Deletion for ${subscriber.name} is not yet functional.`, variant: "destructive" });
+  };
+
 
   if (!subscriber) {
     return <div>Loading subscriber data...</div>; // Or a proper loading state
@@ -90,6 +106,15 @@ export default function SubscriberProfilePage() {
               <p><strong>Phone:</strong> {subscriber.phone}</p>
               {/* Add more details */}
             </CardContent>
+            <CardFooter className="border-t pt-6 flex justify-end gap-2"> {/* Added footer with buttons */}
+                <Button variant="outline" onClick={handleEdit}>
+                   <Edit className="mr-2 h-4 w-4" /> Edit Client
+                </Button>
+                 {/* Consider adding an AlertDialog for delete confirmation */}
+                 <Button variant="destructive" onClick={handleDelete}>
+                     <Trash2 className="mr-2 h-4 w-4" /> Delete Client
+                 </Button>
+            </CardFooter>
           </Card>
         </TabsContent>
 
