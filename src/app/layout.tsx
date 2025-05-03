@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { useState, useEffect } from 'react'; // Import useState and useEffect
-import { Geist, Geist_Mono } from 'next/font/google';
+// Remove Geist font imports
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
   Code, // Added for IPv4/6
@@ -47,15 +47,17 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
 import { Progress } from '@/components/ui/progress'; // Import Progress component
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
+// Remove Geist font setup
+// const geistSans = Geist({
+//   variable: '--font-geist-sans',
+//   subsets: ['latin'],
+// });
+//
+// const geistMono = Geist_Mono({
+//   variable: '--font-geist-mono',
+//   subsets: ['latin'],
+// });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
 
 // Create a client
 const queryClient = new QueryClient();
@@ -119,7 +121,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        // Remove Geist font variables from className
+        className={`antialiased`}
         suppressHydrationWarning /* Add suppressHydrationWarning */
       >
         {/* Wrap entire content with QueryClientProvider */}
