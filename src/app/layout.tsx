@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { Geist, Geist_Mono } from 'next/font/google';
-import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronRight, Dot } from 'lucide-react'; // Added ChevronRight, Dot
+import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot } from 'lucide-react'; // Changed ChevronRight to ChevronDown
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -103,15 +103,14 @@ export default function RootLayout({
                     {/* Removed open prop - let trigger control state */}
                     <SidebarMenuSub>
                       <SidebarMenuSubTrigger
-                        // Removed asChild
+                        // Removed asChild and tooltip
                         isActive={isNetworkActive} // Use isActive for styling only
-                        tooltip="Network"
                       >
                         {/* This doesn't navigate, just opens/closes submenu */}
                         <div className="flex items-center gap-2 cursor-pointer">
                            <Network />
                            <span className="truncate">Network</span>
-                           <ChevronRight className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
+                           <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" /> {/* Changed icon and rotation */}
                         </div>
                       </SidebarMenuSubTrigger>
                       <SidebarMenuSubContent>
@@ -211,3 +210,4 @@ export default function RootLayout({
     </html>
   );
 }
+
