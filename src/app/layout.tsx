@@ -125,18 +125,10 @@ export default function RootLayout({
                             </SidebarMenuButton>
                          </SidebarMenuItem>
                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/network/router')} size="sm">
+                            <SidebarMenuButton asChild isActive={isActive('/network/devices')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
                                 <Dot className="text-muted-foreground"/>
-                                <span>Router</span>
-                              </Link>
-                            </SidebarMenuButton>
-                         </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/network/switch')} size="sm">
-                              <Link href="#" className="flex items-center gap-2">
-                                <Dot className="text-muted-foreground"/>
-                                <span>Switch</span>
+                                <span>Devices</span>
                               </Link>
                             </SidebarMenuButton>
                          </SidebarMenuItem>
