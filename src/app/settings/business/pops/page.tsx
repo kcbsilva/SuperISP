@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PlusCircle, Pencil, Trash2, Loader2 } from "lucide-react";
+import { PlusCircle, Pencil, Trash2, Loader2, RefreshCw } from "lucide-react"; // Added RefreshCw
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -76,7 +76,7 @@ function PoPsPage() {
   const { toast } = useToast();
 
   // --- React Query Setup ---
-  const { data: pops = [], isLoading: isLoadingPops, error: popsError } = useQuery<Pop[], Error>({
+  const { data: pops = [], isLoading: isLoadingPops, error: popsError, refetch: refetchPops } = useQuery<Pop[], Error>({
     queryKey: popsQueryKey, // Use defined query key
     queryFn: getPops, // Use MySQL getPops
   });
@@ -178,66 +178,89 @@ function PoPsPage() {
      });
    };
 
+    // Handle refresh
+    const handleRefresh = () => {
+      refetchPops();
+      toast({
+        title: 'Refreshing PoPs...',
+        description: 'Fetching the latest list of PoPs.',
+      });
+    };
+
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Points of Presence (PoPs)</h1>
 
-        {/* Add PoP Dialog */}
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-green-600 hover:bg-green-700 text-white">
-              <PlusCircle className="mr-2 h-4 w-4" /> Add PoP
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Add New Point of Presence</DialogTitle>
-              <DialogDescription>
-                Enter the details for the new PoP. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleAddPopSubmit)} className="grid gap-4 py-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right">Name</FormLabel>
-                      <FormControl className="col-span-3">
-                        <Input placeholder="e.g., Central Hub" {...field} disabled={addPopMutation.isPending}/>
-                      </FormControl>
-                      <FormMessage className="col-span-4 text-right" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right">Location</FormLabel>
-                      <FormControl className="col-span-3">
-                        <Input placeholder="e.g., 123 Fiber Lane" {...field} disabled={addPopMutation.isPending}/>
-                      </FormControl>
-                       <FormMessage className="col-span-4 text-right" />
-                    </FormItem>
-                  )}
-                />
-                 <DialogFooter>
-                    <DialogClose asChild>
-                      <Button type="button" variant="outline" disabled={addPopMutation.isPending}>Cancel</Button>
-                    </DialogClose>
-                    <Button type="submit" disabled={addPopMutation.isPending}>
-                        {addPopMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Save PoP
-                    </Button>
-                 </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2"> {/* Wrapper for buttons */}
+          {/* Refresh Button */}
+          <Button
+              variant="default" // Use default blue theme color
+              onClick={handleRefresh}
+              disabled={isLoadingPops || addPopMutation.isPending || deletePopMutation.isPending || updatePopMutation.isPending}
+              className="bg-primary hover:bg-primary/90" // Explicitly use primary theme colors
+          >
+              <RefreshCw className={`mr-2 h-4 w-4 ${isLoadingPops ? 'animate-spin' : ''}`} />
+              Refresh
+          </Button>
+
+          {/* Add PoP Dialog */}
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                <PlusCircle className="mr-2 h-4 w-4" /> Add PoP
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add New Point of Presence</DialogTitle>
+                <DialogDescription>
+                  Enter the details for the new PoP. Click save when you're done.
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleAddPopSubmit)} className="grid gap-4 py-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-center gap-4">
+                        <FormLabel className="text-right">Name</FormLabel>
+                        <FormControl className="col-span-3">
+                          <Input placeholder="e.g., Central Hub" {...field} disabled={addPopMutation.isPending}/>
+                        </FormControl>
+                        <FormMessage className="col-span-4 text-right" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-center gap-4">
+                        <FormLabel className="text-right">Location</FormLabel>
+                        <FormControl className="col-span-3">
+                          <Input placeholder="e.g., 123 Fiber Lane" {...field} disabled={addPopMutation.isPending}/>
+                        </FormControl>
+                         <FormMessage className="col-span-4 text-right" />
+                      </FormItem>
+                    )}
+                  />
+                   <DialogFooter>
+                      <DialogClose asChild>
+                        <Button type="button" variant="outline" disabled={addPopMutation.isPending}>Cancel</Button>
+                      </DialogClose>
+                      <Button type="submit" disabled={addPopMutation.isPending}>
+                          {addPopMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          Save PoP
+                      </Button>
+                   </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div> {/* End button wrapper */}
 
       </div>
 
