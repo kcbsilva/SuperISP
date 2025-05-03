@@ -15,6 +15,8 @@ import {
   DollarSign, // Added for Finances
   BarChart3, // Added for Reports
   Plug, // Added for Integrations
+  MessageSquare, // For messaging integrations
+  Text, // For SMS integration
 } from 'lucide-react'; // Added Globe and GitFork icons
 
 import './globals.css';
@@ -67,6 +69,7 @@ export default function RootLayout({
   const isFinancesActive = pathname.startsWith('/finances'); // Added for Finances active state
   const isReportsActive = pathname.startsWith('/reports'); // Added for Reports active state
   const isSettingsActive = pathname.startsWith('/settings'); // Added for Settings active state
+  const isSettingsIntegrationsActive = pathname.startsWith('/settings/integrations'); // Added for Integrations active state
 
   return (
     <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
@@ -344,12 +347,58 @@ export default function RootLayout({
                      </SidebarMenuSubTrigger>
                      <SidebarMenuSubContent>
                        <SidebarMenuItem>
-                         <SidebarMenuButton asChild isActive={isActive('/settings/integrations')} size="sm">
-                           <Link href="#" className="flex items-center gap-2">
-                             <Plug className="h-4 w-4 text-muted-foreground"/>
-                             <span>Integrations</span>
-                           </Link>
-                         </SidebarMenuButton>
+                          {/* Nested Submenu for Integrations */}
+                         <SidebarMenuSub>
+                           <SidebarMenuSubTrigger
+                             isActive={isSettingsIntegrationsActive}
+                             size="sm"
+                             className="pl-3 pr-2 py-1.5" // Adjust padding
+                           >
+                             <div className="flex items-center gap-2 cursor-pointer w-full">
+                               <Plug className="h-4 w-4 text-muted-foreground"/>
+                               <span className="truncate">Integrations</span>
+                               <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                             </div>
+                           </SidebarMenuSubTrigger>
+                           <SidebarMenuSubContent>
+                              {/* Integration Sub-Items */}
+                              <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/settings/integrations/whatsapp')} size="sm">
+                                  <Link href="#" className="flex items-center gap-2">
+                                    {/* Placeholder Icon - Replace with actual WhatsApp icon if available or use SVG */}
+                                    <MessageSquare className="h-4 w-4 text-muted-foreground"/>
+                                    <span>WhatsApp</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                              <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/settings/integrations/telegram')} size="sm">
+                                  <Link href="#" className="flex items-center gap-2">
+                                     {/* Placeholder Icon */}
+                                    <MessageSquare className="h-4 w-4 text-muted-foreground"/>
+                                    <span>Telegram</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                               <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/settings/integrations/meta')} size="sm">
+                                  <Link href="#" className="flex items-center gap-2">
+                                     {/* Placeholder Icon */}
+                                    <MessageSquare className="h-4 w-4 text-muted-foreground"/>
+                                    <span>Meta</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                               <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/settings/integrations/sms')} size="sm">
+                                  <Link href="#" className="flex items-center gap-2">
+                                    <Text className="h-4 w-4 text-muted-foreground"/>
+                                    <span>SMS</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                           </SidebarMenuSubContent>
+                         </SidebarMenuSub>
                        </SidebarMenuItem>
                        {/* Add more settings sub-items here if needed */}
                      </SidebarMenuSubContent>
