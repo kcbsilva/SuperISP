@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { LayoutDashboard, ShieldCheck, Settings, Wifi } from 'lucide-react'; // Import icons
+import { LayoutDashboard, ShieldCheck, Settings, Wifi, Users, List, UserPlus } from 'lucide-react'; // Import icons
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -14,6 +14,9 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarInset,
 } from '@/components/ui/sidebar';
 import { AppHeader } from '@/components/app-header'; // Import the new AppHeader
@@ -60,7 +63,6 @@ export default function RootLayout({
               {/* Navigation Menu */}
               <SidebarMenu>
                 <SidebarMenuItem>
-                  {/* Remove asChild, let SidebarMenuButton wrap the Link */}
                   <SidebarMenuButton isActive>
                     <Link href="/" className="flex items-center gap-2 w-full">
                       <LayoutDashboard />
@@ -69,7 +71,26 @@ export default function RootLayout({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                   {/* Remove asChild, let SidebarMenuButton wrap the Link */}
+                   <SidebarMenuButton>
+                     <Users />
+                     <span>Subscribers</span>
+                   </SidebarMenuButton>
+                   <SidebarMenuSub>
+                     <SidebarMenuSubItem>
+                       <SidebarMenuSubButton href="#">
+                          <List/>
+                          <span>List</span>
+                       </SidebarMenuSubButton>
+                     </SidebarMenuSubItem>
+                     <SidebarMenuSubItem>
+                       <SidebarMenuSubButton href="#">
+                          <UserPlus/>
+                          <span>Add New</span>
+                       </SidebarMenuSubButton>
+                     </SidebarMenuSubItem>
+                   </SidebarMenuSub>
+                 </SidebarMenuItem>
+                <SidebarMenuItem>
                   <SidebarMenuButton>
                     <Link href="#" className="flex items-center gap-2 w-full">
                       <ShieldCheck />
@@ -78,7 +99,6 @@ export default function RootLayout({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                   {/* Remove asChild, let SidebarMenuButton wrap the Link */}
                    <SidebarMenuButton >
                     <Link href="#" className="flex items-center gap-2 w-full">
                       <Settings />
