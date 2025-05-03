@@ -403,41 +403,7 @@ export default function RootLayout({
                            </SidebarMenuSubContent>
                          </SidebarMenuSub>
                        </SidebarMenuItem>
-                       {/* Separator and Chat Submenu */}
-                        <SidebarSeparator className="my-1" />
-                       <SidebarMenuItem>
-                         <SidebarMenuSub>
-                           <SidebarMenuSubTrigger
-                             isActive={isSettingsChatActive}
-                             size="sm"
-                             className="pl-3 pr-2 py-1.5"
-                           >
-                             <div className="flex items-center gap-2 cursor-pointer w-full">
-                               <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                               <span className="truncate">Chat</span>
-                               <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                             </div>
-                           </SidebarMenuSubTrigger>
-                           <SidebarMenuSubContent>
-                             <SidebarMenuItem>
-                               <SidebarMenuButton asChild isActive={isActive('/settings/chat/general')} size="sm">
-                                 <Link href="#" className="flex items-center gap-2">
-                                   <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                                   <span>Chat</span>
-                                 </Link>
-                               </SidebarMenuButton>
-                             </SidebarMenuItem>
-                             <SidebarMenuItem>
-                               <SidebarMenuButton asChild isActive={isActive('/settings/chat/config')} size="sm">
-                                 <Link href="#" className="flex items-center gap-2">
-                                   <Settings2 className="h-4 w-4 text-muted-foreground" />
-                                   <span>Configuration</span>
-                                 </Link>
-                               </SidebarMenuButton>
-                             </SidebarMenuItem>
-                           </SidebarMenuSubContent>
-                         </SidebarMenuSub>
-                       </SidebarMenuItem>
+                       {/* Remove Separator and Chat Submenu */}
                        {/* Add more settings sub-items here if needed */}
                      </SidebarMenuSubContent>
                    </SidebarMenuSub>
