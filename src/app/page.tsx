@@ -53,6 +53,14 @@ type DashboardView = "General" | "Financial" | "Network" | "Technician";
 
 export default function DashboardPage() {
   const [currentView, setCurrentView] = React.useState<DashboardView>("General");
+  const [formattedSubscribers, setFormattedSubscribers] = React.useState<string | null>(null);
+  const [formattedMrr, setFormattedMrr] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    // Format numbers on the client side after hydration
+    setFormattedSubscribers(dashboardData.totalSubscribers.toLocaleString());
+    setFormattedMrr(dashboardData.mrr.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  }, []); // Empty dependency array ensures this runs once on mount
 
   const handleViewChange = (view: DashboardView) => {
     setCurrentView(view);
@@ -103,7 +111,8 @@ export default function DashboardPage() {
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{dashboardData.totalSubscribers.toLocaleString()}</div>
+                   {/* Use state variable for formatted number */}
+                  <div className="text-2xl font-bold">{formattedSubscribers ?? '...'}</div>
                   <p className="text-xs text-muted-foreground">
                     +{dashboardData.subscriberChange}% from last month
                   </p>
@@ -117,7 +126,8 @@ export default function DashboardPage() {
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">${dashboardData.mrr.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                   {/* Use state variable for formatted number */}
+                  <div className="text-2xl font-bold">${formattedMrr ?? '...'}</div>
                   <p className="text-xs text-muted-foreground">
                     +{dashboardData.mrrChange}% from last month
                   </p>
@@ -220,3 +230,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
