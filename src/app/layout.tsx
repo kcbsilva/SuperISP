@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { Geist, Geist_Mono } from 'next/font/google';
-import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin } from 'lucide-react'; // Changed ChevronRight to ChevronDown, added MapPin
+import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin, TowerControl, Cable } from 'lucide-react'; // Changed ChevronRight to ChevronDown, added MapPin, TowerControl, Cable
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -180,22 +180,8 @@ export default function RootLayout({
                               </Link>
                             </SidebarMenuButton>
                          </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/network/towers')} size="sm">
-                              <Link href="#" className="flex items-center gap-2">
-                                <Dot className="text-muted-foreground"/>
-                                <span>Towers</span>
-                              </Link>
-                            </SidebarMenuButton>
-                         </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/network/polls')} size="sm">
-                              <Link href="#" className="flex items-center gap-2">
-                                <Dot className="text-muted-foreground"/>
-                                <span>Hydro Polls</span>
-                              </Link>
-                            </SidebarMenuButton>
-                         </SidebarMenuItem>
+                         {/* Towers removed from Network */}
+                         {/* Hydro Polls removed from Network */}
                       </SidebarMenuSubContent>
                     </SidebarMenuSub>
                  </SidebarMenuItem>
@@ -266,6 +252,24 @@ export default function RootLayout({
                                   <Link href="#" className="flex items-center gap-2">
                                     <Dot className="text-muted-foreground"/>
                                     <span>Accessories</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                              {/* Towers moved here */}
+                              <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/maps/elements/towers')} size="sm">
+                                  <Link href="#" className="flex items-center gap-2">
+                                    <TowerControl className="h-4 w-4 text-muted-foreground"/>
+                                    <span>Towers</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                              {/* Cables added here */}
+                               <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/maps/elements/cables')} size="sm">
+                                  <Link href="#" className="flex items-center gap-2">
+                                    <Cable className="h-4 w-4 text-muted-foreground"/>
+                                    <span>Cables</span>
                                   </Link>
                                 </SidebarMenuButton>
                               </SidebarMenuItem>
