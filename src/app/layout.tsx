@@ -88,32 +88,15 @@ export default function RootLayout({
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                   {/* Set isActive for the parent button if any sub-item is active */}
-                   <SidebarMenuButton isActive={isSubscribersActive} tooltip="Subscribers">
-                     {/* Center content */}
-                     <div className="flex items-center justify-center gap-2 w-full">
-                       <Users />
-                       <span className="hidden">Subscribers</span> {/* Text always hidden */}
-                     </div>
-                   </SidebarMenuButton>
-                   {/* Submenu still appears on hover of parent item */}
-                   <SidebarMenuSub>
-                     <SidebarMenuSubItem>
-                       {/* Set isActive for sub-button */}
-                       <SidebarMenuSubButton href="/subscribers/list" isActive={isActive('/subscribers/list')}>
-                          <List/>
-                          <span>List</span>
-                       </SidebarMenuSubButton>
-                     </SidebarMenuSubItem>
-                     <SidebarMenuSubItem>
-                        {/* Set isActive for sub-button */}
-                       <SidebarMenuSubButton href="/subscribers/add" isActive={isActive('/subscribers/add')}>
-                          <UserPlus/>
-                          <span>Add New</span>
-                       </SidebarMenuSubButton>
-                     </SidebarMenuSubItem>
-                   </SidebarMenuSub>
+                 <SidebarMenuItem>
+                    {/* Link directly to subscribers list */}
+                    <SidebarMenuButton isActive={isSubscribersActive} tooltip="Subscribers">
+                       <Link href="/subscribers/list" className="flex items-center justify-center gap-2 w-full"> {/* Center content */}
+                         <Users />
+                         <span className="hidden">Subscribers</span> {/* Text always hidden */}
+                       </Link>
+                    </SidebarMenuButton>
+                    {/* Removed Submenu */}
                  </SidebarMenuItem>
                 <SidebarMenuItem>
                   {/* Example: Adjust if Security page exists */}
