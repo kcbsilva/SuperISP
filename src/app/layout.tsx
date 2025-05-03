@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { Geist, Geist_Mono } from 'next/font/google';
-import { LayoutDashboard, ShieldCheck, Settings, Users, Network } from 'lucide-react'; // Removed List, UserPlus
+import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronRight, Dot } from 'lucide-react'; // Added ChevronRight, Dot
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -19,7 +19,9 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarInset,
-  // Removed SidebarCollapseButton
+  SidebarMenuSub, // Import submenu components
+  SidebarMenuSubTrigger,
+  SidebarMenuSubContent,
 } from '@/components/ui/sidebar';
 import { AppHeader } from '@/components/app-header';
 
@@ -95,15 +97,52 @@ export default function RootLayout({
                        </Link>
                     </SidebarMenuButton>
                  </SidebarMenuItem>
-                 {/* Network Menu Item */}
+
+                 {/* Network Menu Item with Submenu */}
                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isNetworkActive} tooltip="Network">
-                       <Link href="/network" className="flex items-center gap-2">
-                         <Network />
-                         <span>Network</span>
-                       </Link>
-                    </SidebarMenuButton>
+                    <SidebarMenuSub open={isNetworkActive}> {/* Keep submenu open if a network subpage is active */}
+                      <SidebarMenuSubTrigger
+                        asChild
+                        isActive={isNetworkActive}
+                        tooltip="Network"
+                      >
+                        {/* This doesn't navigate, just opens/closes submenu */}
+                        <div className="flex items-center gap-2 cursor-pointer">
+                           <Network />
+                           <span>Network</span>
+                           <ChevronRight className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
+                        </div>
+                      </SidebarMenuSubTrigger>
+                      <SidebarMenuSubContent>
+                         {/* Submenu Items */}
+                         <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/network/ip')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Dot className="text-muted-foreground"/>
+                                <span>IPv4/6</span>
+                              </Link>
+                            </SidebarMenuButton>
+                         </SidebarMenuItem>
+                         <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/network/router')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Dot className="text-muted-foreground"/>
+                                <span>Router</span>
+                              </Link>
+                            </SidebarMenuButton>
+                         </SidebarMenuItem>
+                         <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/network/switch')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Dot className="text-muted-foreground"/>
+                                <span>Switch</span>
+                              </Link>
+                            </SidebarMenuButton>
+                         </SidebarMenuItem>
+                      </SidebarMenuSubContent>
+                    </SidebarMenuSub>
                  </SidebarMenuItem>
+
                 <SidebarMenuItem>
                   {/* Example: Adjust if Security page exists */}
                   <SidebarMenuButton asChild isActive={isActive('/security')} tooltip="Security">
