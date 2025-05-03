@@ -13,7 +13,8 @@ import {
   Server, // Added for RADIUS
   Split, // Added for VLAN
   DollarSign, // Added for Finances
-  BarChart3 // Added for Reports
+  BarChart3, // Added for Reports
+  Plug, // Added for Integrations
 } from 'lucide-react'; // Added Globe and GitFork icons
 
 import './globals.css';
@@ -65,6 +66,7 @@ export default function RootLayout({
   const isMapElementsActive = pathname.startsWith('/maps/elements'); // Added for Elements active state
   const isFinancesActive = pathname.startsWith('/finances'); // Added for Finances active state
   const isReportsActive = pathname.startsWith('/reports'); // Added for Reports active state
+  const isSettingsActive = pathname.startsWith('/settings'); // Added for Settings active state
 
   return (
     <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
@@ -331,14 +333,28 @@ export default function RootLayout({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                   {/* Example: Adjust if Settings page exists */}
-                   <SidebarMenuButton asChild isActive={isActive('/settings')} tooltip="Settings">
-                    <Link href="#" className="flex items-center gap-2">
-                      <Settings />
-                      <span>Settings</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                   {/* Settings Menu Item with Submenu */}
+                   <SidebarMenuSub>
+                     <SidebarMenuSubTrigger isActive={isSettingsActive}>
+                       <div className="flex items-center gap-2 cursor-pointer">
+                         <Settings />
+                         <span className="truncate">Settings</span>
+                         <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                       </div>
+                     </SidebarMenuSubTrigger>
+                     <SidebarMenuSubContent>
+                       <SidebarMenuItem>
+                         <SidebarMenuButton asChild isActive={isActive('/settings/integrations')} size="sm">
+                           <Link href="#" className="flex items-center gap-2">
+                             <Plug className="h-4 w-4 text-muted-foreground"/>
+                             <span>Integrations</span>
+                           </Link>
+                         </SidebarMenuButton>
+                       </SidebarMenuItem>
+                       {/* Add more settings sub-items here if needed */}
+                     </SidebarMenuSubContent>
+                   </SidebarMenuSub>
+                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarContent>
             <SidebarFooter>
