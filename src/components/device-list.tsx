@@ -13,7 +13,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { scanNetwork } from '@/services/network-scanner';
 import type { NetworkDevice } from '@/types';
-import { Wifi, Laptop, Router, Server, Smartphone, Loader2, Monitor } from 'lucide-react';
+import { Wifi, Laptop, Router, Server, Smartphone, Monitor } from 'lucide-react'; // Removed Loader2 as we use Skeleton
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Function to get an appropriate icon based on hostname or type (basic)
@@ -30,40 +30,60 @@ const getDeviceIcon = (hostname: string): React.ReactNode => {
 interface DeviceListProps {
   initialDevices?: NetworkDevice[];
   manuallyAddedDevices?: NetworkDevice[];
+  onDevicesUpdate?: (devices: NetworkDevice[]) => void; // Callback prop
 }
 
-export function DeviceList({ initialDevices = [], manuallyAddedDevices = [] }: DeviceListProps) {
-  const [devices, setDevices] = useState<NetworkDevice[]>(initialDevices);
+export function DeviceList({
+  initialDevices = [],
+  manuallyAddedDevices = [],
+  onDevicesUpdate
+}: DeviceListProps) {
+  const [devices, setDevices] = useState<NetworkDevice[]>([]);
   const [loading, setLoading] = useState(true); // Start loading initially
 
+  // Helper function to combine and set devices, and call the update callback
+  const updateAndNotify = (scanned: NetworkDevice[], manual: NetworkDevice[]) => {
+    const combined = [...scanned, ...manual];
+    const uniqueDevices = Array.from(new Map(combined.map(device => [device.macAddress || device.ipAddress, device])).values());
+    setDevices(uniqueDevices);
+    onDevicesUpdate?.(uniqueDevices); // Call the callback with the updated list
+    setLoading(false);
+  };
+
   useEffect(() => {
-    // Only scan if initialDevices is empty, otherwise use initialDevices
+    let isMounted = true; // Flag to prevent state updates on unmounted component
+
+    // Scan network if initialDevices is empty
     if (initialDevices.length === 0) {
       const fetchDevices = async () => {
+        if (!isMounted) return; // Don't proceed if unmounted
         setLoading(true);
         try {
           const scannedDevices = await scanNetwork();
-          // Combine scanned and manually added devices, avoiding duplicates based on MAC address
-          const combined = [...scannedDevices, ...manuallyAddedDevices];
-          const uniqueDevices = Array.from(new Map(combined.map(device => [device.macAddress || device.ipAddress, device])).values());
-          setDevices(uniqueDevices);
+          if (isMounted) {
+            updateAndNotify(scannedDevices, manuallyAddedDevices);
+          }
         } catch (error) {
           console.error("Failed to scan network:", error);
-          // Optionally show an error message to the user
-          setDevices(manuallyAddedDevices); // Show manual devices even if scan fails
-        } finally {
-          setLoading(false);
+          if (isMounted) {
+            // Show manual devices even if scan fails, and notify
+            updateAndNotify([], manuallyAddedDevices);
+          }
         }
       };
       fetchDevices();
     } else {
-        // Combine initial and manually added devices
-        const combined = [...initialDevices, ...manuallyAddedDevices];
-        const uniqueDevices = Array.from(new Map(combined.map(device => [device.macAddress || device.ipAddress, device])).values());
-        setDevices(uniqueDevices);
-        setLoading(false); // Data is ready
+        // Combine initial and manually added devices immediately, and notify
+        updateAndNotify(initialDevices, manuallyAddedDevices);
     }
-  }, [initialDevices, manuallyAddedDevices]); // Rerun when manual devices change
+
+     // Cleanup function
+    return () => {
+        isMounted = false;
+    };
+  // Include manuallyAddedDevices in dependency array to react to manual additions
+  // Also include onDevicesUpdate to ensure the latest callback is used
+  }, [initialDevices, manuallyAddedDevices, onDevicesUpdate]);
 
 
   return (
@@ -107,7 +127,7 @@ export function DeviceList({ initialDevices = [], manuallyAddedDevices = [] }: D
             ) : (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-muted-foreground">
-                  No devices found on the network.
+                  No devices found on the network. Try scanning or adding manually.
                 </TableCell>
               </TableRow>
             )}
