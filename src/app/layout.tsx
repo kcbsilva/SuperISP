@@ -476,7 +476,7 @@ export default function RootLayout({
                    {isLoading && <Progress value={progress} className="w-full h-1 rounded-none bg-transparent [&>*]:bg-green-600" indicatorClassName="bg-green-600" />} {/* Use green color */}
                 </div>
                  <AppHeader />
-                <div className="p-4 md:p-6">{children}</div>
+                <div className="p-2 md:p-4">{children}</div> {/* Reduced padding */}
                 <Toaster />
               </SidebarInset>
             </SidebarProvider>
