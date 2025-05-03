@@ -69,11 +69,8 @@ export default function RootLayout({
                 className="flex items-center gap-2 text-lg font-semibold text-sidebar-primary"
               >
                 <Wifi className="h-6 w-6" />
-                {/* Use span and conditionally hide based on CSS in Sidebar component */}
-                <span>NetHub Manager</span>
+                {/* Text removed as requested */}
               </Link>
-               {/* Add the collapse button inside the header */}
-               <SidebarCollapseButton />
             </SidebarHeader>
             <SidebarContent>
               {/* Navigation Menu */}
@@ -133,6 +130,8 @@ export default function RootLayout({
             <SidebarFooter>
               {/* Footer content */}
             </SidebarFooter>
+             {/* Move the collapse button outside SidebarFooter but still within Sidebar */}
+             <SidebarCollapseButton />
           </Sidebar>
 
           <SidebarInset>

@@ -260,9 +260,10 @@ const Sidebar = React.forwardRef<
 
      // Desktop / Mobile Icon Logic
     return (
+       // Added 'relative' positioning context for the collapse button
       <div
         ref={ref}
-        className="group peer hidden md:block text-sidebar-foreground"
+        className="group peer relative hidden md:block text-sidebar-foreground"
         data-state={state}
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
@@ -305,7 +306,8 @@ const Sidebar = React.forwardRef<
         >
           <div
             data-sidebar="sidebar"
-            className={cn("flex h-full w-full flex-col bg-sidebar",
+             // Added 'relative' positioning context for the collapse button
+            className={cn("relative flex h-full w-full flex-col bg-sidebar",
                // Apply styles based on variant only when expanded
               state === 'expanded' && variant === "floating" ? "rounded-lg border border-sidebar-border shadow" : ""
             )}
@@ -342,14 +344,19 @@ const SidebarCollapseButton = React.forwardRef<
   return (
     <Tooltip>
       <TooltipTrigger asChild>
+         {/* Button positioned absolutely relative to the Sidebar component */}
         <Button
           ref={ref}
           variant="ghost"
           size="icon"
-          className={cn("h-8 w-8 absolute top-2 z-20",
+          className={cn(
+            "h-8 w-8 absolute top-2 z-20",
+             // Position based on side
             side === 'left' ? 'right-2' : 'left-2',
-            // Hide button when sidebar is collapsed in icon mode
-            state === 'collapsed' && collapsible === 'icon' ? 'hidden' : '',
+             // Ensure button is always visible for toggling
+            // state === 'collapsed' && collapsible === 'icon' ? 'hidden' : '', // Removed this line
+             // Adjust position slightly when collapsed in icon mode to stay visually consistent
+            state === 'collapsed' && collapsible === 'icon' ? (side === 'left' ? 'right-0.5' : 'left-0.5') : '',
             className
           )}
           onClick={toggleSidebar}
