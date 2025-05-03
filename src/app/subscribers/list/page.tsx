@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link'; // Import Link for the Add New button
+import Link from 'next/link'; // Import Link for navigation
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -191,7 +191,12 @@ export default function ListSubscribersPage() {
                           <Building className="h-5 w-5 text-muted-foreground" title="Commercial" />
                         )}
                       </TableCell>
-                      <TableCell className="font-medium">{subscriber.name}</TableCell>
+                      <TableCell className="font-medium">
+                        {/* Wrap name in Link */}
+                        <Link href={`/subscribers/profile/${subscriber.id}`} className="hover:underline text-primary">
+                          {subscriber.name}
+                        </Link>
+                      </TableCell>
                       <TableCell>
                         <Badge
                             variant={
