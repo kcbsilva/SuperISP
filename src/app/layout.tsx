@@ -52,6 +52,7 @@ export default function RootLayout({
   const isActive = (href: string) => pathname === href;
   const isSubscribersActive = pathname.startsWith('/subscribers');
   const isNetworkActive = pathname.startsWith('/network'); // Added for Network active state
+  const isMapsActive = pathname.startsWith('/maps'); // Added for Maps active state
 
   return (
     <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
@@ -194,47 +195,45 @@ export default function RootLayout({
                               </Link>
                             </SidebarMenuButton>
                          </SidebarMenuItem>
-
-                         {/* Maps Submenu */}
-                         <SidebarMenuItem>
-                             <SidebarMenuSub>
-                               <SidebarMenuSubTrigger
-                                 // Removed asChild and tooltip
-                                 // isActive={isMapsActive} // Define this if needed for styling
-                                 size="sm" // Make trigger same size as other subitems
-                               >
-                                 <div className="flex items-center gap-2 cursor-pointer">
-                                    <MapPin className="h-4 w-4 text-muted-foreground"/> {/* Adjust icon size/color */}
-                                    <span className="truncate">Maps</span>
-                                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                                 </div>
-                               </SidebarMenuSubTrigger>
-                               <SidebarMenuSubContent>
-                                  {/* Elements Item */}
-                                  <SidebarMenuItem>
-                                     <SidebarMenuButton asChild isActive={isActive('/network/maps/elements')} size="sm">
-                                        <Link href="#" className="flex items-center gap-2 pl-4"> {/* Increased padding */}
-                                           <Dot className="text-muted-foreground"/>
-                                           <span>Elements</span>
-                                        </Link>
-                                     </SidebarMenuButton>
-                                  </SidebarMenuItem>
-                                  {/* Map Item */}
-                                  <SidebarMenuItem>
-                                     <SidebarMenuButton asChild isActive={isActive('/network/maps/map')} size="sm">
-                                        <Link href="#" className="flex items-center gap-2 pl-4"> {/* Increased padding */}
-                                           <Dot className="text-muted-foreground"/>
-                                           <span>Map</span>
-                                        </Link>
-                                     </SidebarMenuButton>
-                                  </SidebarMenuItem>
-                               </SidebarMenuSubContent>
-                            </SidebarMenuSub>
-                         </SidebarMenuItem>
-
                       </SidebarMenuSubContent>
                     </SidebarMenuSub>
                  </SidebarMenuItem>
+
+                 {/* Maps Menu Item with Submenu - Now Top Level */}
+                 <SidebarMenuItem>
+                   <SidebarMenuSub>
+                     <SidebarMenuSubTrigger
+                       isActive={isMapsActive}
+                     >
+                       <div className="flex items-center gap-2 cursor-pointer">
+                         <MapPin /> {/* Changed icon */}
+                         <span className="truncate">Maps</span>
+                         <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                       </div>
+                     </SidebarMenuSubTrigger>
+                     <SidebarMenuSubContent>
+                       {/* Elements Item */}
+                       <SidebarMenuItem>
+                         <SidebarMenuButton asChild isActive={isActive('/maps/elements')} size="sm">
+                           <Link href="#" className="flex items-center gap-2"> {/* Adjusted padding */}
+                             <Dot className="text-muted-foreground"/>
+                             <span>Elements</span>
+                           </Link>
+                         </SidebarMenuButton>
+                       </SidebarMenuItem>
+                       {/* Map Item */}
+                       <SidebarMenuItem>
+                         <SidebarMenuButton asChild isActive={isActive('/maps/map')} size="sm">
+                           <Link href="#" className="flex items-center gap-2"> {/* Adjusted padding */}
+                             <Dot className="text-muted-foreground"/>
+                             <span>Map</span>
+                           </Link>
+                         </SidebarMenuButton>
+                       </SidebarMenuItem>
+                     </SidebarMenuSubContent>
+                   </SidebarMenuSub>
+                 </SidebarMenuItem>
+
 
                 <SidebarMenuItem>
                   {/* Example: Adjust if Security page exists */}
