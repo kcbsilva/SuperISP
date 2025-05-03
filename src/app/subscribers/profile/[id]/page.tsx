@@ -36,7 +36,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useQuery } from '@tanstack/react-query'; // Import useQuery
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'; // Import useQuery and QueryClientProvider
 import { getPops } from '@/services/mysql/pops'; // Import PoP service
 import type { Pop } from '@/types/pops'; // Import PoP type
 import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
@@ -99,7 +99,20 @@ const getSubscriberData = (id: string | string[]) => {
     return baseData;
 };
 
-export default function SubscriberProfilePage() {
+// Create a client
+const queryClient = new QueryClient();
+
+// Main component wrapped with QueryClientProvider
+export default function SubscriberProfilePageWrapper() {
+    return (
+        <QueryClientProvider client={queryClient}>
+            <SubscriberProfilePage />
+        </QueryClientProvider>
+    );
+}
+
+
+function SubscriberProfilePage() {
   const params = useParams();
   const subscriberId = params.id; // Get the ID from the route parameters
   const { toast } = useToast();
@@ -236,7 +249,7 @@ export default function SubscriberProfilePage() {
                   <CardTitle>Services</CardTitle>
                   <CardDescription>Services currently subscribed to by the customer.</CardDescription>
               </div>
-               {/* Add Service Dialog */}
+               {/* Add Service Dialog Trigger */}
                <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
                  <DialogTrigger asChild>
                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
@@ -293,6 +306,10 @@ export default function SubscriberProfilePage() {
                                      {pop.name} ({pop.location})
                                    </SelectItem>
                                  ))}
+                                  {/* Add message if loading or error */}
+                                  {isLoadingPops && <div className="p-2 text-center text-muted-foreground">Loading...</div>}
+                                  {popsError && <div className="p-2 text-center text-destructive">Error loading PoPs</div>}
+                                  {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground">No PoPs found</div>}
                                </SelectContent>
                              </Select>
                              <FormMessage />
