@@ -54,9 +54,10 @@ export default function RootLayout({
   const isSubscribersActive = pathname.startsWith('/subscribers');
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning /* Add suppressHydrationWarning */
       >
         {/* Configure SidebarProvider with desired side and collapsible mode */}
         <SidebarProvider defaultOpen={true} side="left" collapsible="icon"> {/* Default to open */}
