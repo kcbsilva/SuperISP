@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { Geist, Geist_Mono } from 'next/font/google';
-import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot } from 'lucide-react'; // Changed ChevronRight to ChevronDown
+import { LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin } from 'lucide-react'; // Changed ChevronRight to ChevronDown, added MapPin
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -89,13 +89,36 @@ export default function RootLayout({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                  <SidebarMenuItem>
-                    {/* Link directly to subscribers list */}
-                    <SidebarMenuButton asChild isActive={isSubscribersActive} tooltip="Subscribers">
-                       <Link href="/subscribers/list" className="flex items-center gap-2">
-                         <Users />
-                         <span>Subscribers</span>
-                       </Link>
-                    </SidebarMenuButton>
+                   <SidebarMenuSub>
+                      <SidebarMenuSubTrigger
+                         isActive={isSubscribersActive}
+                         // Removed tooltip and asChild
+                      >
+                         <div className="flex items-center gap-2 cursor-pointer">
+                           <Users />
+                           <span className="truncate">Subscribers</span>
+                           <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                         </div>
+                      </SidebarMenuSubTrigger>
+                      <SidebarMenuSubContent>
+                         <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/subscribers/list')} size="sm">
+                               <Link href="#" className="flex items-center gap-2">
+                                  <Dot className="text-muted-foreground"/>
+                                  <span>List</span>
+                               </Link>
+                            </SidebarMenuButton>
+                         </SidebarMenuItem>
+                         <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/subscribers/add')} size="sm">
+                               <Link href="#" className="flex items-center gap-2">
+                                  <Dot className="text-muted-foreground"/>
+                                  <span>Add New</span>
+                               </Link>
+                            </SidebarMenuButton>
+                         </SidebarMenuItem>
+                      </SidebarMenuSubContent>
+                   </SidebarMenuSub>
                  </SidebarMenuItem>
 
                  {/* Network Menu Item with Submenu */}
@@ -171,6 +194,44 @@ export default function RootLayout({
                               </Link>
                             </SidebarMenuButton>
                          </SidebarMenuItem>
+
+                         {/* Maps Submenu */}
+                         <SidebarMenuItem>
+                             <SidebarMenuSub>
+                               <SidebarMenuSubTrigger
+                                 // Removed asChild and tooltip
+                                 // isActive={isMapsActive} // Define this if needed for styling
+                                 size="sm" // Make trigger same size as other subitems
+                               >
+                                 <div className="flex items-center gap-2 cursor-pointer">
+                                    <MapPin className="h-4 w-4 text-muted-foreground"/> {/* Adjust icon size/color */}
+                                    <span className="truncate">Maps</span>
+                                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                                 </div>
+                               </SidebarMenuSubTrigger>
+                               <SidebarMenuSubContent>
+                                  {/* Elements Item */}
+                                  <SidebarMenuItem>
+                                     <SidebarMenuButton asChild isActive={isActive('/network/maps/elements')} size="sm">
+                                        <Link href="#" className="flex items-center gap-2 pl-4"> {/* Increased padding */}
+                                           <Dot className="text-muted-foreground"/>
+                                           <span>Elements</span>
+                                        </Link>
+                                     </SidebarMenuButton>
+                                  </SidebarMenuItem>
+                                  {/* Map Item */}
+                                  <SidebarMenuItem>
+                                     <SidebarMenuButton asChild isActive={isActive('/network/maps/map')} size="sm">
+                                        <Link href="#" className="flex items-center gap-2 pl-4"> {/* Increased padding */}
+                                           <Dot className="text-muted-foreground"/>
+                                           <span>Map</span>
+                                        </Link>
+                                     </SidebarMenuButton>
+                                  </SidebarMenuItem>
+                               </SidebarMenuSubContent>
+                            </SidebarMenuSub>
+                         </SidebarMenuItem>
+
                       </SidebarMenuSubContent>
                     </SidebarMenuSub>
                  </SidebarMenuItem>
@@ -210,4 +271,3 @@ export default function RootLayout({
     </html>
   );
 }
-
