@@ -22,7 +22,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarInset,
-  // SidebarCollapseButton, // Removed import
 } from '@/components/ui/sidebar';
 import { AppHeader } from '@/components/app-header';
 
@@ -59,22 +58,22 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning /* Add suppressHydrationWarning */
       >
-        {/* Configure SidebarProvider for hover-expand behavior */}
-        <SidebarProvider side="left" collapsible="icon"> {/* Always collapsible icon mode */}
-          {/* Sidebar Component - inherits side and collapsible from provider */}
+        {/* Configure SidebarProvider for icon-only behavior */}
+        <SidebarProvider side="left" collapsible="icon"> {/* Always icon mode */}
+          {/* Sidebar Component - always collapsed */}
           <Sidebar>
             <SidebarHeader>
-              {/* App Logo/Title in Sidebar Header - removed */}
+              {/* App Logo/Title in Sidebar Header */}
               <Link
                 href="/"
-                className="flex items-center justify-center h-10 text-lg font-semibold text-sidebar-primary group-hover/sidebar:justify-start group-hover/sidebar:px-2" // Adjust alignment and padding on hover
+                className="flex items-center justify-center h-10 text-lg font-semibold text-sidebar-primary" // Always centered
               >
-                 {/* Placeholder Icon - replace if needed */}
+                 {/* Placeholder Icon */}
                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                    <path d="M12 .75a8.25 8.25 0 0 0-5.162 14.564.75.75 0 0 1-.318.47l-3.75 2.25a.75.75 0 0 0 0 1.332l3.75 2.25a.75.75 0 0 1 .318.47A8.25 8.25 0 0 0 12 23.25a8.25 8.25 0 0 0 8.25-8.25v-6a8.25 8.25 0 0 0-8.25-8.25Zm-3 9a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Zm0 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" />
                  </svg>
 
-                 <span className="ml-2 hidden group-hover/sidebar:inline">NetHub</span>{/* Text appears on hover */}
+                 <span className="ml-2 hidden">NetHub</span> {/* Text is always hidden */}
               </Link>
             </SidebarHeader>
             <SidebarContent>
@@ -83,19 +82,22 @@ export default function RootLayout({
                 <SidebarMenuItem>
                   {/* Set isActive based on current path */}
                   <SidebarMenuButton isActive={isActive('/')} tooltip="Dashboard">
-                    <Link href="/" className="flex items-center gap-2 w-full">
+                    <Link href="/" className="flex items-center gap-2 w-full justify-center"> {/* Center content */}
                       <LayoutDashboard />
-                      <span className="hidden group-hover/sidebar:inline">Dashboard</span>
+                      <span className="hidden">Dashboard</span> {/* Text always hidden */}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                    {/* Set isActive for the parent button if any sub-item is active */}
                    <SidebarMenuButton isActive={isSubscribersActive} tooltip="Subscribers">
-                     <Users />
-                     <span className="hidden group-hover/sidebar:inline">Subscribers</span>
+                     {/* Center content */}
+                     <div className="flex items-center justify-center gap-2 w-full">
+                       <Users />
+                       <span className="hidden">Subscribers</span> {/* Text always hidden */}
+                     </div>
                    </SidebarMenuButton>
-                   {/* Submenu visibility handled by CSS on hover/focus within parent */}
+                   {/* Submenu still appears on hover of parent item */}
                    <SidebarMenuSub>
                      <SidebarMenuSubItem>
                        {/* Set isActive for sub-button */}
@@ -116,27 +118,27 @@ export default function RootLayout({
                 <SidebarMenuItem>
                   {/* Example: Adjust if Security page exists */}
                   <SidebarMenuButton isActive={isActive('/security')} tooltip="Security">
-                    <Link href="#" className="flex items-center gap-2 w-full">
+                    <Link href="#" className="flex items-center gap-2 w-full justify-center"> {/* Center content */}
                       <ShieldCheck />
-                      <span className="hidden group-hover/sidebar:inline">Security</span>
+                      <span className="hidden">Security</span> {/* Text always hidden */}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                    {/* Example: Adjust if Settings page exists */}
                    <SidebarMenuButton isActive={isActive('/settings')} tooltip="Settings">
-                    <Link href="#" className="flex items-center gap-2 w-full">
+                    <Link href="#" className="flex items-center gap-2 w-full justify-center"> {/* Center content */}
                       <Settings />
-                      <span className="hidden group-hover/sidebar:inline">Settings</span>
+                      <span className="hidden">Settings</span> {/* Text always hidden */}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarContent>
             <SidebarFooter>
-              {/* Footer content can also hide/show text on hover if needed */}
+              {/* Footer content remains centered */}
             </SidebarFooter>
-             {/* Collapse button removed */}
+             {/* No collapse button needed */}
           </Sidebar>
 
           <SidebarInset>
