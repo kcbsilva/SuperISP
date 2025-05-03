@@ -60,7 +60,7 @@ export default function RootLayout({
         suppressHydrationWarning /* Add suppressHydrationWarning */
       >
         {/* Configure SidebarProvider - Removed collapsible props */}
-        <SidebarProvider side="left">
+        <SidebarProvider side="left" collapsible="none">
           <Sidebar>
             <SidebarHeader>
               {/* App Logo/Title in Sidebar Header */}
@@ -100,16 +100,17 @@ export default function RootLayout({
 
                  {/* Network Menu Item with Submenu */}
                  <SidebarMenuItem>
-                    <SidebarMenuSub open={isNetworkActive}> {/* Keep submenu open if a network subpage is active */}
+                    {/* Removed open prop - let trigger control state */}
+                    <SidebarMenuSub>
                       <SidebarMenuSubTrigger
-                        asChild
-                        isActive={isNetworkActive}
+                        // Removed asChild
+                        isActive={isNetworkActive} // Use isActive for styling only
                         tooltip="Network"
                       >
                         {/* This doesn't navigate, just opens/closes submenu */}
                         <div className="flex items-center gap-2 cursor-pointer">
                            <Network />
-                           <span>Network</span>
+                           <span className="truncate">Network</span>
                            <ChevronRight className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
                         </div>
                       </SidebarMenuSubTrigger>
