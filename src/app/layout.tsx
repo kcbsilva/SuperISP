@@ -398,7 +398,7 @@ export default function RootLayout({
                              <SidebarMenuSubContent>
                                <SidebarMenuItem>
                                  <SidebarMenuButton asChild isActive={isActive('/settings/business/pops')} size="sm">
-                                   <Link href="#" className="flex items-center gap-2">
+                                   <Link href="/settings/business/pops" className="flex items-center gap-2"> {/* Updated href */}
                                      <Building className="h-4 w-4 text-muted-foreground"/>
                                      <span>PoPs (Place of Presence)</span>
                                    </Link>
