@@ -1,9 +1,10 @@
 // src/app/layout.tsx
-'use client'; // Required for usePathname hook and state
+'use client'; // Required for hooks and state
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
+import { useState, useEffect } from 'react'; // Import useState and useEffect
 import { Geist, Geist_Mono } from 'next/font/google';
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
@@ -22,7 +23,7 @@ import {
   SlidersHorizontal, // Added for Financial Config
   Briefcase, // Added for Business
   Building, // Added for PoPs
-} from 'lucide-react'; // Added Globe and GitFork icons
+} from 'lucide-react';
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -44,6 +45,7 @@ import {
 import { AppHeader } from '@/components/app-header';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'; // Import Tooltip components
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
+import { Progress } from '@/components/ui/progress'; // Import Progress component
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -70,6 +72,36 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname(); // Get current path
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  // Simulate loading progress on route change
+  useEffect(() => {
+    // Don't show progress on initial load
+    if (pathname) {
+        setIsLoading(true);
+        setProgress(10); // Start progress
+
+        const timer = setTimeout(() => {
+            setProgress(90); // Simulate loading quickly
+        }, 100); // Short delay before jumping progress
+
+        const finishTimer = setTimeout(() => {
+            setProgress(100); // Complete progress
+            const hideTimer = setTimeout(() => {
+                setIsLoading(false);
+                setProgress(0); // Reset progress
+            }, 300); // Short delay before hiding
+            return () => clearTimeout(hideTimer);
+        }, 500); // Total simulated loading time
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(finishTimer);
+      };
+    }
+  }, [pathname]); // Trigger effect when pathname changes
+
 
   // Determine if a link is active
   const isActive = (href: string) => pathname === href;
@@ -480,7 +512,11 @@ export default function RootLayout({
               </Sidebar>
 
               <SidebarInset>
-                <AppHeader />
+                {/* Progress Bar */}
+                <div className="fixed top-0 left-0 w-full z-50 h-1"> {/* Added fixed positioning */}
+                   {isLoading && <Progress value={progress} className="w-full h-1 rounded-none bg-transparent [&>*]:bg-green-600" />} {/* Use green color */}
+                </div>
+                 <AppHeader />
                 <div className="p-4 md:p-6">{children}</div>
                 <Toaster />
               </SidebarInset>
