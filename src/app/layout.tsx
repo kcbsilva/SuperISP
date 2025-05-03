@@ -20,6 +20,8 @@ import {
   Settings2, // Added for Config/Settings icons
   BookOpen, // Added for Cash Book
   SlidersHorizontal, // Added for Financial Config
+  Briefcase, // Added for Business
+  Building, // Added for PoPs
 } from 'lucide-react'; // Added Globe and GitFork icons
 
 import './globals.css';
@@ -75,6 +77,7 @@ export default function RootLayout({
   const isReportsActive = pathname.startsWith('/reports'); // Added for Reports active state
   const isSettingsActive = pathname.startsWith('/settings'); // Added for Settings active state
   const isSettingsIntegrationsActive = pathname.startsWith('/settings/integrations'); // Added for Integrations active state
+  const isSettingsBusinessActive = pathname.startsWith('/settings/business'); // Added for Business active state
 
 
   return (
@@ -373,6 +376,39 @@ export default function RootLayout({
                         <TooltipContent side="right" align="center">Settings</TooltipContent>
                       </Tooltip>
                       <SidebarMenuSubContent>
+                         {/* Business Submenu */}
+                         <SidebarMenuItem>
+                           <SidebarMenuSub>
+                             <Tooltip>
+                               <TooltipTrigger asChild>
+                                 <SidebarMenuSubTrigger
+                                   isActive={isSettingsBusinessActive}
+                                   size="sm"
+                                   className="pl-3 pr-2 py-1.5"
+                                 >
+                                   <div className="flex items-center gap-2 cursor-pointer w-full">
+                                     <Briefcase className="h-4 w-4 text-muted-foreground"/>
+                                     <span className="truncate">Business</span>
+                                     <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                                   </div>
+                                 </SidebarMenuSubTrigger>
+                               </TooltipTrigger>
+                               <TooltipContent side="right" align="center">Business</TooltipContent>
+                             </Tooltip>
+                             <SidebarMenuSubContent>
+                               <SidebarMenuItem>
+                                 <SidebarMenuButton asChild isActive={isActive('/settings/business/pops')} size="sm">
+                                   <Link href="#" className="flex items-center gap-2">
+                                     <Building className="h-4 w-4 text-muted-foreground"/>
+                                     <span>PoPs (Place of Presence)</span>
+                                   </Link>
+                                 </SidebarMenuButton>
+                               </SidebarMenuItem>
+                               {/* Add more Business sub-items here */}
+                             </SidebarMenuSubContent>
+                           </SidebarMenuSub>
+                         </SidebarMenuItem>
+
                         <SidebarMenuItem>
                            {/* Nested Submenu for Integrations */}
                           <SidebarMenuSub>
