@@ -27,6 +27,8 @@ const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
+type SidebarVariant = "sidebar" | "floating" | "inset"; // Define variant type
+
 type SidebarContext = {
   state: "expanded" | "collapsed"
   open: boolean
@@ -37,6 +39,7 @@ type SidebarContext = {
   toggleSidebar: () => void
   side: "left" | "right" // Add side to context
   collapsible: "offcanvas" | "icon" | "none" // Add collapsible to context
+  variant: SidebarVariant; // Add variant to context
 }
 
 const SidebarContext = React.createContext<SidebarContext | null>(null)
@@ -58,6 +61,7 @@ const SidebarProvider = React.forwardRef<
     onOpenChange?: (open: boolean) => void
     side?: "left" | "right" // Accept side prop
     collapsible?: "offcanvas" | "icon" | "none" // Accept collapsible prop
+    variant?: SidebarVariant // Accept variant prop
   }
 >(
   (
@@ -67,6 +71,7 @@ const SidebarProvider = React.forwardRef<
       onOpenChange: setOpenProp,
       side = "left", // Default side
       collapsible = "icon", // Default collapsible
+      variant = "sidebar", // Default variant
       className,
       style,
       children,
@@ -167,8 +172,9 @@ const SidebarProvider = React.forwardRef<
         toggleSidebar,
         side, // Pass side
         collapsible, // Pass collapsible
+        variant, // Pass variant
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar, side, collapsible]
+      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar, side, collapsible, variant] // Add variant to dependencies
     )
 
     return (
@@ -183,7 +189,9 @@ const SidebarProvider = React.forwardRef<
               } as React.CSSProperties
             }
             className={cn(
-              "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar",
+               // Use variant from context for background
+               "group/sidebar-wrapper flex min-h-svh w-full",
+              variant === 'inset' && 'bg-sidebar', // Apply background only for inset variant
               className
             )}
             ref={ref}
@@ -200,27 +208,19 @@ SidebarProvider.displayName = "SidebarProvider"
 
 const Sidebar = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div"> & {
-    side?: "left" | "right" // Already here from previous step
-    variant?: "sidebar" | "floating" | "inset"
-    collapsible?: "offcanvas" | "icon" | "none" // Already here from previous step
-  }
+  React.ComponentProps<"div">
+  // Removed variant and collapsible props as they are now managed by the provider context
 >(
   (
     {
-      side: sideProp, // Rename prop to avoid conflict with context value
-      variant = "sidebar",
-      collapsible: collapsibleProp, // Rename prop to avoid conflict
       className,
       children,
       ...props
     },
     ref
   ) => {
-    // Use context values first, then fall back to props if needed (though props aren't expected here)
-    const { isMobile, state, openMobile, setOpenMobile, side: contextSide, collapsible: contextCollapsible } = useSidebar()
-    const side = sideProp ?? contextSide;
-    const collapsible = collapsibleProp ?? contextCollapsible;
+    // Use context values
+    const { isMobile, state, openMobile, setOpenMobile, side, collapsible, variant } = useSidebar()
 
     if (collapsible === "none") {
       return (
@@ -268,9 +268,6 @@ const Sidebar = React.forwardRef<
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
         data-side={side}
-        // REMOVED onMouseEnter and onMouseLeave
-        // onMouseEnter={() => !isMobile && setOpen(true)}
-        // onMouseLeave={() => !isMobile && setOpen(false)}
       >
         {/* This is what handles the sidebar gap on desktop */}
         <div
@@ -327,7 +324,8 @@ const SidebarCollapseButton = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
 >(({ className, ...props }, ref) => {
-  const { toggleSidebar, state, side, isMobile, collapsible } = useSidebar();
+  // Get variant from context
+  const { toggleSidebar, state, side, isMobile, collapsible, variant } = useSidebar();
 
   // Don't render on mobile unless it's offcanvas mode (where it won't be visible anyway)
   // Don't render if collapsible is 'none'
@@ -724,13 +722,12 @@ const SidebarMenuButton = React.forwardRef<
     isActive?: boolean
     tooltip?: string | React.ComponentProps<typeof TooltipContent>
     // Remove variant props from here, apply directly in cn
-  } & Omit<VariantProps<typeof sidebarMenuButtonVariants>, 'collapsed'> // Omit collapsed variant prop
+  } & Omit<VariantProps<typeof sidebarMenuButtonVariants>, 'collapsed' | 'variant'> // Omit collapsed and variant props
 >(
   (
     {
       asChild = false,
       isActive = false,
-      variant = "default", // Keep default variant
       size = "default", // Keep default size
       tooltip,
       className,
@@ -740,7 +737,8 @@ const SidebarMenuButton = React.forwardRef<
     ref
   ) => {
     const Comp = asChild ? Slot : "button"
-    const { isMobile, state, collapsible } = useSidebar() // Get state and collapsible
+    // Get variant from context
+    const { isMobile, state, collapsible, variant } = useSidebar()
 
      // Determine if the button should be in collapsed state
     const isCollapsed = state === 'collapsed' && collapsible === 'icon';
@@ -777,7 +775,7 @@ const SidebarMenuButton = React.forwardRef<
         data-size={size}
         data-active={isActive}
          // Apply collapsed variant class based on state
-        className={cn(sidebarMenuButtonVariants({ variant, size, collapsed: isCollapsed }), className)}
+        className={cn(sidebarMenuButtonVariants({ variant: 'default', size, collapsed: isCollapsed }), className)} // Use variant from context or default
         {...props}
       >
         {/* Ensure SVG icon is always visible and sized correctly */}
