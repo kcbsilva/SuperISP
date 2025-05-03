@@ -176,12 +176,15 @@ export default function DashboardPage() {
                       <div key={activity.id} className="flex items-center gap-4">
                         <Activity className="h-5 w-5 text-muted-foreground" /> {/* Generic icon */}
                         <div className="grid gap-1">
-                          <p className="text-sm font-medium leading-none">
+                          {/* Changed p to div to fix hydration error */}
+                          <div className="text-sm font-medium leading-none">
                             {activity.type}
                             {activity.level && (
-                              <Badge variant={activity.level === 'warning' ? 'destructive' : 'secondary'} className="ml-2">{activity.level}</Badge>
+                              <Badge variant={activity.level === 'warning' ? 'destructive' : 'secondary'} className="ml-2">
+                                {activity.level}
+                              </Badge>
                             )}
-                          </p>
+                          </div>
                           <p className="text-sm text-muted-foreground">{activity.description}</p>
                         </div>
                         <div className="ml-auto text-sm text-muted-foreground">{activity.time}</div>
