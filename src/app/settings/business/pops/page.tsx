@@ -30,6 +30,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select" // Import Select components
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -51,6 +58,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const popSchema = z.object({
   name: z.string().min(1, 'PoP name is required'),
   location: z.string().min(1, 'Location is required'),
+  status: z.enum(['Active', 'Inactive', 'Planned']).default('Active'), // Add status field with enum and default
 });
 
 type PopFormData = z.infer<typeof popSchema>;
@@ -148,6 +156,7 @@ function PoPsPage() {
     defaultValues: {
       name: '',
       location: '',
+      status: 'Active', // Set default value for status
     },
   });
 
@@ -247,6 +256,29 @@ function PoPsPage() {
                       </FormItem>
                     )}
                   />
+                  {/* Add Status Field */}
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-center gap-4">
+                        <FormLabel className="text-right">Status</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={addPopMutation.isPending}>
+                          <FormControl className="col-span-3">
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Active">Active</SelectItem>
+                            <SelectItem value="Inactive">Inactive</SelectItem>
+                            <SelectItem value="Planned">Planned</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage className="col-span-4 text-right" />
+                      </FormItem>
+                    )}
+                  />
                    <DialogFooter>
                       <DialogClose asChild>
                         <Button type="button" variant="outline" disabled={addPopMutation.isPending}>Cancel</Button>
@@ -320,7 +352,9 @@ function PoPsPage() {
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             pop.status && pop.status.toLowerCase() === "active" // Handle potential null/undefined status
                               ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800" // Default to inactive/red if status is not 'Active'
+                              : pop.status && pop.status.toLowerCase() === "planned"
+                                ? "bg-yellow-100 text-yellow-800" // Yellow for Planned
+                                : "bg-red-100 text-red-800" // Default to inactive/red
                           }`}
                         >
                           {pop.status || 'Unknown'} {/* Display status or Unknown */}

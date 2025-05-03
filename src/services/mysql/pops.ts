@@ -19,7 +19,9 @@ import type { Pop, PopData } from '@/types/pops';
 // Function to add a new PoP to MySQL
 export const addPop = async (popData: PopData): Promise<number> => {
   const sql = 'INSERT INTO pops (name, location, status) VALUES (?, ?, ?)';
-  const params = [popData.name, popData.location, popData.status || 'Active'];
+  // Use provided status or default to 'Active' if undefined/null
+  const status = popData.status ?? 'Active';
+  const params = [popData.name, popData.location, status];
   try {
     const result = await query(sql, params);
     console.log("PoP added with ID (MySQL Simulated): ", result.insertId);

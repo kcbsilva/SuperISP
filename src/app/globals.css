@@ -52,6 +52,10 @@ body {
     /* Red colors for badges */
     --red-100: 0 70% 90%; /* Light red background */
     --red-800: 0 70% 35%; /* Dark red text */
+
+    /* Yellow colors for badges */
+    --yellow-100: 45 90% 90%; /* Light yellow background */
+    --yellow-800: 45 70% 35%; /* Dark yellow text */
   }
   .dark {
     /* Dark Theme Colors (Optional - Keeping defaults for now) */
@@ -97,6 +101,10 @@ body {
     /* Dark theme red colors */
     --red-100: 0 70% 15%; /* Darker red background */
     --red-800: 0 70% 70%; /* Lighter red text */
+
+    /* Dark theme yellow colors */
+    --yellow-100: 45 70% 15%; /* Darker yellow background */
+    --yellow-800: 45 70% 70%; /* Lighter yellow text */
   }
 }
 
@@ -119,3 +127,7 @@ body {
 /* Utility classes for red colors */
 .bg-red-100 { background-color: hsl(var(--red-100)); }
 .text-red-800 { color: hsl(var(--red-800)); }
+
+/* Utility classes for yellow colors */
+.bg-yellow-100 { background-color: hsl(var(--yellow-100)); }
+.text-yellow-800 { color: hsl(var(--yellow-800)); }
