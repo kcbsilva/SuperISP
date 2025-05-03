@@ -140,6 +140,46 @@ export default function RootLayout({
                               </Link>
                             </SidebarMenuButton>
                          </SidebarMenuItem>
+                         <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/network/cgnat')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Dot className="text-muted-foreground"/>
+                                <span>CGNAT</span>
+                              </Link>
+                            </SidebarMenuButton>
+                         </SidebarMenuItem>
+                         <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/network/radius')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Dot className="text-muted-foreground"/>
+                                <span>RADIUS(NAS)</span>
+                              </Link>
+                            </SidebarMenuButton>
+                         </SidebarMenuItem>
+                         <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/network/vlan')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Dot className="text-muted-foreground"/>
+                                <span>VLAN</span>
+                              </Link>
+                            </SidebarMenuButton>
+                         </SidebarMenuItem>
+                         <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/network/towers')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Dot className="text-muted-foreground"/>
+                                <span>Towers</span>
+                              </Link>
+                            </SidebarMenuButton>
+                         </SidebarMenuItem>
+                         <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/network/polls')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Dot className="text-muted-foreground"/>
+                                <span>Hydro Polls</span>
+                              </Link>
+                            </SidebarMenuButton>
+                         </SidebarMenuItem>
                       </SidebarMenuSubContent>
                     </SidebarMenuSub>
                  </SidebarMenuItem>
