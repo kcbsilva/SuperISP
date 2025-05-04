@@ -100,7 +100,7 @@ export default function RootLayout({
   // Removed boolean checks for parent active state as they are no longer used for highlighting triggers
 
   return (
-    <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
+    <html lang="en" suppressHydrationWarning>{/* Add suppressHydrationWarning */}
       <body
         className={`antialiased`}
         suppressHydrationWarning /* Add suppressHydrationWarning */
