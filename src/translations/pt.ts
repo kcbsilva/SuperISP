@@ -48,12 +48,24 @@ const pt = {
     elements_label: 'Elementos',
     no_results_found: 'Nenhum resultado encontrado para "{term}"',
   },
-  // Header Icons
+  // Header Icons & Dropdowns
   header: {
     changelog: 'Registro de alterações',
-    changelog_tooltip: 'Ver registro de alterações',
+    changelog_label: 'Versão 0.1.0', // Example Version
+    changelog_new: 'Novo',
+    changelog_new_desc: 'Recursos da versão inicial.',
+    changelog_fixes: 'Correções',
+    changelog_fixes_desc: 'Vários ajustes na interface do usuário.',
+    changelog_improvements: 'Melhorias',
+    changelog_improvements_desc: 'Layout da barra lateral e do painel.',
     profile: 'Perfil do usuário',
-    profile_tooltip: 'Perfil do usuário e configurações',
+    my_account: 'Minha Conta',
+    profile_menu_item: 'Perfil',
+    logout_menu_item: 'Sair',
+    profile_action_title: 'Perfil',
+    profile_action_desc: 'Navegar para a página de perfil (Não Implementado)',
+    logout_action_title: 'Sair',
+    logout_action_desc: 'Processo de logout iniciado (Não Implementado)',
   },
   // Global Settings Page
   global_settings: {

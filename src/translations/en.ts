@@ -48,12 +48,24 @@ const en = {
     elements_label: 'Elements',
     no_results_found: 'No results found for "{term}"',
   },
-  // Header Icons
+  // Header Icons & Dropdowns
   header: {
     changelog: 'Changelog',
-    changelog_tooltip: 'View Changelog',
+    changelog_label: 'Version 0.1.0', // Example Version
+    changelog_new: 'New',
+    changelog_new_desc: 'Initial release features.',
+    changelog_fixes: 'Fixes',
+    changelog_fixes_desc: 'Various UI adjustments.',
+    changelog_improvements: 'Improvements',
+    changelog_improvements_desc: 'Sidebar and dashboard layout.',
     profile: 'User Profile',
-    profile_tooltip: 'User Profile & Settings',
+    my_account: 'My Account',
+    profile_menu_item: 'Profile',
+    logout_menu_item: 'Logout',
+    profile_action_title: 'Profile',
+    profile_action_desc: 'Navigate to profile page (Not Implemented)',
+    logout_action_title: 'Logout',
+    logout_action_desc: 'Logout process initiated (Not Implemented)',
   },
   // Global Settings Page
   global_settings: {

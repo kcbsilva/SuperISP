@@ -48,12 +48,24 @@ const fr = {
     elements_label: 'Éléments',
     no_results_found: 'Aucun résultat trouvé pour "{term}"',
   },
-  // Header Icons
+  // Header Icons & Dropdowns
   header: {
     changelog: 'Journal des modifications',
-    changelog_tooltip: 'Voir le journal des modifications',
+    changelog_label: 'Version 0.1.0', // Example Version
+    changelog_new: 'Nouveau',
+    changelog_new_desc: 'Fonctionnalités de la version initiale.',
+    changelog_fixes: 'Corrections',
+    changelog_fixes_desc: 'Ajustements divers de l\'interface utilisateur.',
+    changelog_improvements: 'Améliorations',
+    changelog_improvements_desc: 'Mise en page de la barre latérale et du tableau de bord.',
     profile: 'Profil utilisateur',
-    profile_tooltip: 'Profil utilisateur et paramètres',
+    my_account: 'Mon compte',
+    profile_menu_item: 'Profil',
+    logout_menu_item: 'Déconnexion',
+    profile_action_title: 'Profil',
+    profile_action_desc: 'Naviguer vers la page de profil (Non implémenté)',
+    logout_action_title: 'Déconnexion',
+    logout_action_desc: 'Processus de déconnexion initié (Non implémenté)',
   },
   // Global Settings Page
   global_settings: {

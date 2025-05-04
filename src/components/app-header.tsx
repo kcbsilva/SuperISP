@@ -5,11 +5,19 @@ import * as React from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from '@/components/ui/popover'; // Import Popover components
-import { Search, User, Box, Cable, Info } from 'lucide-react'; // Import icons, added Info icon
+import { Search, User, Box, Cable, Info, LogOut, UserCircle } from 'lucide-react'; // Import icons, added Info, LogOut, UserCircle icons
 import { Button } from '@/components/ui/button'; // Import Button
 import Link from 'next/link'; // Import Link
 import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"; // Import Tooltip
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"; // Import DropdownMenu components
+import { useToast } from '@/hooks/use-toast'; // Import useToast
 
 // Placeholder data for search results
 const searchResultsPlaceholder = {
@@ -31,6 +39,7 @@ export function AppHeader() {
   const [searchResults, setSearchResults] = React.useState<typeof searchResultsPlaceholder | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { t } = useLocale(); // Get translation function
+  const { toast } = useToast(); // Get toast function
 
   // Simulate search logic
   React.useEffect(() => {
@@ -64,15 +73,23 @@ export function AppHeader() {
     // Optionally clear search term: setSearchTerm('');
   };
 
-   // Placeholder functions for icon clicks
+   // Placeholder functions for profile/logout actions
    const handleProfileClick = () => {
-     console.log("Profile icon clicked");
-     // TODO: Implement profile menu logic
+     console.log("Profile option clicked");
+     // TODO: Navigate to profile page or open profile modal
+     toast({
+        title: t('header.profile_action_title', 'Profile'),
+        description: t('header.profile_action_desc', 'Navigate to profile page (Not Implemented)'),
+     });
    };
 
-   const handleInfoClick = () => {
-     console.log("Info icon clicked");
-     // TODO: Implement changelog modal/link logic
+   const handleLogoutClick = () => {
+     console.log("Logout clicked");
+     // TODO: Implement logout logic
+      toast({
+        title: t('header.logout_action_title', 'Logout'),
+        description: t('header.logout_action_desc', 'Logout process initiated (Not Implemented)'),
+     });
    };
 
 
@@ -190,33 +207,49 @@ export function AppHeader() {
       </div>
 
 
-      {/* Right-side icons */}
+      {/* Right-side icons - Now Dropdowns */}
        <div className="flex items-center gap-2">
-         <TooltipProvider>
-           <Tooltip>
-             <TooltipTrigger asChild>
-               <Button variant="ghost" size="icon" onClick={handleInfoClick}>
+         {/* Changelog Dropdown */}
+         <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
                  <Info className="h-5 w-5" />
                  <span className="sr-only">{t('header.changelog', 'Changelog')}</span>
-               </Button>
-             </TooltipTrigger>
-             <TooltipContent>
-               <p>{t('header.changelog_tooltip', 'View Changelog')}</p>
-             </TooltipContent>
-           </Tooltip>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+               <DropdownMenuLabel>{t('header.changelog_label', 'Version 0.1.0')}</DropdownMenuLabel>
+               <DropdownMenuSeparator />
+               <div className="px-2 py-1 text-sm">
+                  <p><strong>{t('header.changelog_new', 'New')}:</strong> {t('header.changelog_new_desc', 'Initial release features.')}</p>
+                  <p><strong>{t('header.changelog_fixes', 'Fixes')}:</strong> {t('header.changelog_fixes_desc', 'Various UI adjustments.')}</p>
+                  <p><strong>{t('header.changelog_improvements', 'Improvements')}:</strong> {t('header.changelog_improvements_desc', 'Sidebar and dashboard layout.')}</p>
+               </div>
+            </DropdownMenuContent>
+         </DropdownMenu>
 
-           <Tooltip>
-             <TooltipTrigger asChild>
-               <Button variant="ghost" size="icon" onClick={handleProfileClick}>
+          {/* Profile Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+               <Button variant="ghost" size="icon">
                  <User className="h-5 w-5" />
                  <span className="sr-only">{t('header.profile', 'User Profile')}</span>
                </Button>
-             </TooltipTrigger>
-             <TooltipContent>
-               <p>{t('header.profile_tooltip', 'User Profile & Settings')}</p>
-             </TooltipContent>
-           </Tooltip>
-          </TooltipProvider>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+               <DropdownMenuLabel>{t('header.my_account', 'My Account')}</DropdownMenuLabel>
+               <DropdownMenuSeparator />
+               <DropdownMenuItem onClick={handleProfileClick} className="cursor-pointer">
+                   <UserCircle className="mr-2 h-4 w-4" />
+                   <span>{t('header.profile_menu_item', 'Profile')}</span>
+               </DropdownMenuItem>
+               <DropdownMenuItem onClick={handleLogoutClick} className="cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>{t('header.logout_menu_item', 'Logout')}</span>
+               </DropdownMenuItem>
+            </DropdownMenuContent>
+         </DropdownMenu>
+
        </div>
     </header>
   );
