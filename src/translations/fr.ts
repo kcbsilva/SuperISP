@@ -304,10 +304,10 @@ const fr = {
    },
    // Map Page
    maps_page: {
-     title: 'Carte du réseau',
+     // Removed title and description
      layers_tooltip: 'Gérer les couches',
-     map_view_title: 'Vue Carte',
-     map_view_desc: 'Visualisez et gérez les éléments du réseau.',
+     // map_view_title: 'Vue Carte', // Removed
+     // map_view_desc: 'Visualisez et gérez les éléments du réseau.', // Removed
      map_placeholder_label: 'Espace réservé pour la carte',
      map_integration_placeholder: '[Zone d\'intégration du composant Carte]',
      zoom_in_tooltip: 'Zoom avant',

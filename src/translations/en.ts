@@ -304,10 +304,10 @@ const en = {
    },
    // Map Page
    maps_page: {
-     title: 'Network Map',
+     // Removed title and description translations
      layers_tooltip: 'Manage Layers',
-     map_view_title: 'Map View',
-     map_view_desc: 'Visualize and manage network elements.',
+     // map_view_title: 'Map View', // Removed
+     // map_view_desc: 'Visualize and manage network elements.', // Removed
      map_placeholder_label: 'Map Placeholder',
      map_integration_placeholder: '[Map Component Integration Area]',
      zoom_in_tooltip: 'Zoom In',

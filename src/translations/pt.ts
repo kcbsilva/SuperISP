@@ -304,10 +304,10 @@ const pt = {
   },
    // Map Page
    maps_page: {
-     title: 'Mapa da Rede',
+     // Removed title and description
      layers_tooltip: 'Gerenciar Camadas',
-     map_view_title: 'Visualização do Mapa',
-     map_view_desc: 'Visualize e gerencie elementos da rede.',
+     // map_view_title: 'Visualização do Mapa', // Removed
+     // map_view_desc: 'Visualize e gerencie elementos da rede.', // Removed
      map_placeholder_label: 'Espaço reservado para o mapa',
      map_integration_placeholder: '[Área de Integração do Componente de Mapa]',
      zoom_in_tooltip: 'Aproximar',

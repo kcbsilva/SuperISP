@@ -2,8 +2,8 @@
 'use client';
 
 import * as React from 'react';
-import { MapPin, Layers, Plus, Minus, Maximize, Cable, Warehouse, Box } from 'lucide-react'; // Added element icons
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Layers, Plus, Minus, Maximize, Cable, Warehouse, Box } from 'lucide-react'; // Removed MapPin, added element icons
+import { Card, CardContent } from '@/components/ui/card'; // Removed CardDescription, CardHeader, CardTitle
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -16,34 +16,12 @@ export default function MapPage() {
   return (
     <TooltipProvider>
       {/* Adjust height to be closer to full screen, considering header/padding */}
-      <div className="flex flex-col gap-6 h-[calc(100vh-8rem)]"> {/* Increased height */}
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold flex items-center gap-2">
-            <MapPin className="h-6 w-6" />
-            {t('maps_page.title', 'Network Map')}
-          </h1>
-          <div className="flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Layers className="h-4 w-4" />
-                  <span className="sr-only">{t('maps_page.layers_tooltip', 'Manage Layers')}</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{t('maps_page.layers_tooltip', 'Manage Layers')}</p>
-              </TooltipContent>
-            </Tooltip>
-             {/* Add more actions if needed */}
-          </div>
-        </div>
+      {/* Removed the top div containing the title and layers button */}
+      <div className="flex flex-col gap-6 h-[calc(100vh-5rem)]"> {/* Adjusted height, removed gap */}
 
         {/* Ensure card takes remaining space and allows content to fill */}
         <Card className="flex-1 flex flex-col overflow-hidden">
-          <CardHeader className="border-b p-4"> {/* Reduced padding */}
-            <CardTitle className="text-lg">{t('maps_page.map_view_title', 'Map View')}</CardTitle>
-            <CardDescription>{t('maps_page.map_view_desc', 'Visualize and manage network elements.')}</CardDescription>
-          </CardHeader>
+          {/* Removed CardHeader */}
           {/* Ensure content area fills remaining space */}
           <CardContent className="flex-1 p-0 relative">
 
@@ -88,6 +66,18 @@ export default function MapPage() {
                      <p>{t('maps_page.fullscreen_tooltip', 'Toggle Fullscreen')}</p>
                    </TooltipContent>
                  </Tooltip>
+                 {/* Layers button moved here */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon" className="bg-background">
+                        <Layers className="h-4 w-4" />
+                        <span className="sr-only">{t('maps_page.layers_tooltip', 'Manage Layers')}</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                      <p>{t('maps_page.layers_tooltip', 'Manage Layers')}</p>
+                    </TooltipContent>
+                  </Tooltip>
              </div>
 
              {/* Element Addition Buttons Overlay (Left Side) */}
