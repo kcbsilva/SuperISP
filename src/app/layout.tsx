@@ -41,6 +41,7 @@ import {
   SidebarMenuSubTrigger,
   SidebarMenuSubContent,
   SidebarSeparator, // Import Separator
+  // SidebarCollapseButton, // Removed as sidebar is no longer collapsible
 } from '@/components/ui/sidebar';
 import { AppHeader } from '@/components/app-header';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'; // Import Tooltip components
@@ -476,7 +477,7 @@ export default function RootLayout({
                    {isLoading && <Progress value={progress} className="w-full h-1 rounded-none bg-transparent [&>*]:bg-green-600" indicatorClassName="bg-green-600" />} {/* Use green color */}
                 </div>
                  <AppHeader />
-                <div className="p-2 md:p-4">{children}</div> {/* Reduced padding */}
+                <div className="p-5">{children}</div> {/* Use p-5 for 20px padding */}
                 <Toaster />
               </SidebarInset>
             </SidebarProvider>
