@@ -1,13 +1,15 @@
+// src/components/app-header.tsx
 'use client';
 
 import * as React from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from '@/components/ui/popover'; // Import Popover components
-import { Search, User, Box, Cable } from 'lucide-react'; // Import icons
+import { Search, User, Box, Cable, Info } from 'lucide-react'; // Import icons, added Info icon
 import { Button } from '@/components/ui/button'; // Import Button
 import Link from 'next/link'; // Import Link
 import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"; // Import Tooltip
 
 // Placeholder data for search results
 const searchResultsPlaceholder = {
@@ -61,6 +63,18 @@ export function AppHeader() {
     setIsPopoverOpen(false);
     // Optionally clear search term: setSearchTerm('');
   };
+
+   // Placeholder functions for icon clicks
+   const handleProfileClick = () => {
+     console.log("Profile icon clicked");
+     // TODO: Implement profile menu logic
+   };
+
+   const handleInfoClick = () => {
+     console.log("Info icon clicked");
+     // TODO: Implement changelog modal/link logic
+   };
+
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b bg-background px-4 md:px-6">
@@ -176,9 +190,33 @@ export function AppHeader() {
       </div>
 
 
-      {/* Spacer - Keep empty div for right alignment */}
-       <div className="flex items-center"> {/* Wrapper for potential right-side items */}
-          {/* Optional: User menu, notifications, etc. can go here */}
+      {/* Right-side icons */}
+       <div className="flex items-center gap-2">
+         <TooltipProvider>
+           <Tooltip>
+             <TooltipTrigger asChild>
+               <Button variant="ghost" size="icon" onClick={handleInfoClick}>
+                 <Info className="h-5 w-5" />
+                 <span className="sr-only">{t('header.changelog', 'Changelog')}</span>
+               </Button>
+             </TooltipTrigger>
+             <TooltipContent>
+               <p>{t('header.changelog_tooltip', 'View Changelog')}</p>
+             </TooltipContent>
+           </Tooltip>
+
+           <Tooltip>
+             <TooltipTrigger asChild>
+               <Button variant="ghost" size="icon" onClick={handleProfileClick}>
+                 <User className="h-5 w-5" />
+                 <span className="sr-only">{t('header.profile', 'User Profile')}</span>
+               </Button>
+             </TooltipTrigger>
+             <TooltipContent>
+               <p>{t('header.profile_tooltip', 'User Profile & Settings')}</p>
+             </TooltipContent>
+           </Tooltip>
+          </TooltipProvider>
        </div>
     </header>
   );

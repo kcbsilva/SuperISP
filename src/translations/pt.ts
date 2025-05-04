@@ -48,6 +48,13 @@ const pt = {
     elements_label: 'Elementos',
     no_results_found: 'Nenhum resultado encontrado para "{term}"',
   },
+  // Header Icons
+  header: {
+    changelog: 'Registro de alterações',
+    changelog_tooltip: 'Ver registro de alterações',
+    profile: 'Perfil do usuário',
+    profile_tooltip: 'Perfil do usuário e configurações',
+  },
   // Global Settings Page
   global_settings: {
     title: 'Configurações Globais',

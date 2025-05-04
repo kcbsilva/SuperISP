@@ -48,6 +48,13 @@ const en = {
     elements_label: 'Elements',
     no_results_found: 'No results found for "{term}"',
   },
+  // Header Icons
+  header: {
+    changelog: 'Changelog',
+    changelog_tooltip: 'View Changelog',
+    profile: 'User Profile',
+    profile_tooltip: 'User Profile & Settings',
+  },
   // Global Settings Page
   global_settings: {
     title: 'Global Settings',
