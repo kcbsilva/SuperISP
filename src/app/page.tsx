@@ -73,9 +73,9 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+      <main className="flex flex-1 flex-col gap-4 p-2 md:gap-6 md:p-4"> {/* Reduced padding */}
         {/* Dashboard Selector Dropdown */}
-        <div className="flex justify-start mb-4">
+        <div className="flex justify-start mb-2"> {/* Reduced margin-bottom */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
@@ -106,7 +106,7 @@ export default function DashboardPage() {
         {currentView === "General" && (
           <>
             {/* Stat Cards Grid */}
-            <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4"> {/* Adjusted gap */}
               <Card x-chunk="dashboard-01-chunk-0">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
@@ -168,7 +168,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Chart and Activity Grid */}
-            <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 md:gap-6 lg:grid-cols-2 xl:grid-cols-3"> {/* Adjusted gap */}
               <Card className="xl:col-span-2" x-chunk="dashboard-01-chunk-4">
                 <CardHeader className="flex flex-row items-center">
                   <div className="grid gap-2">
