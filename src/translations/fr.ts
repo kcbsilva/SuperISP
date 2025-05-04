@@ -301,7 +301,21 @@ const fr = {
      quick_actions_label: 'Actions Rapides', // Added
      quick_action_tooltip: 'Action rapide {action} (ex: Ajouter Client)', // Ajouté
      quick_action_sr: 'Ajouter {action}', // Ajouté (Texte pour lecteur d'écran)
-   }
+   },
+   // Map Page
+   maps_page: {
+     title: 'Carte du réseau',
+     layers_tooltip: 'Gérer les couches',
+     map_view_title: 'Vue Carte',
+     map_view_desc: 'Visualisez et gérez les éléments du réseau.',
+     map_placeholder_label: 'Espace réservé pour la carte',
+     map_integration_placeholder: '[Zone d\'intégration du composant Carte]',
+     zoom_in_tooltip: 'Zoom avant',
+     zoom_out_tooltip: 'Zoom arrière',
+     fullscreen_tooltip: 'Basculer en plein écran',
+     add_element_button: 'Ajouter un élément',
+     add_element_tooltip: 'Ajouter un nouvel élément réseau à la carte',
+   },
 };
 
 export default fr;

@@ -301,7 +301,21 @@ const pt = {
     quick_actions_label: 'Ações Rápidas', // Added
     quick_action_tooltip: 'Ação Rápida {action} (ex: Adicionar Cliente)', // Adicionado
     quick_action_sr: 'Adicionar {action}', // Adicionado (Texto para leitor de tela)
-  }
+  },
+   // Map Page
+   maps_page: {
+     title: 'Mapa da Rede',
+     layers_tooltip: 'Gerenciar Camadas',
+     map_view_title: 'Visualização do Mapa',
+     map_view_desc: 'Visualize e gerencie elementos da rede.',
+     map_placeholder_label: 'Espaço reservado para o mapa',
+     map_integration_placeholder: '[Área de Integração do Componente de Mapa]',
+     zoom_in_tooltip: 'Aproximar',
+     zoom_out_tooltip: 'Afastar',
+     fullscreen_tooltip: 'Alternar Tela Cheia',
+     add_element_button: 'Adicionar Elemento',
+     add_element_tooltip: 'Adicionar um novo elemento de rede ao mapa',
+   },
 };
 
 export default pt;

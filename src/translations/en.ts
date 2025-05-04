@@ -301,7 +301,21 @@ const en = {
      quick_actions_label: 'Quick Actions', // Added
      quick_action_tooltip: 'Quick Action {action} (e.g., Add Client)', // Added
      quick_action_sr: 'Add {action}', // Added (Screen reader text)
-   }
+   },
+   // Map Page
+   maps_page: {
+     title: 'Network Map',
+     layers_tooltip: 'Manage Layers',
+     map_view_title: 'Map View',
+     map_view_desc: 'Visualize and manage network elements.',
+     map_placeholder_label: 'Map Placeholder',
+     map_integration_placeholder: '[Map Component Integration Area]',
+     zoom_in_tooltip: 'Zoom In',
+     zoom_out_tooltip: 'Zoom Out',
+     fullscreen_tooltip: 'Toggle Fullscreen',
+     add_element_button: 'Add Element',
+     add_element_tooltip: 'Add a new network element to the map',
+   },
 };
 
 export default en;
