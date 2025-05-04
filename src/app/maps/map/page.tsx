@@ -15,15 +15,14 @@ export default function MapPage() {
 
   return (
     <TooltipProvider>
-      {/* Adjust height to be closer to full screen, considering header/padding */}
-      {/* Removed the top div containing the title and layers button */}
-      <div className="flex flex-col gap-6 h-[calc(100vh-5rem)]"> {/* Adjusted height, removed gap */}
+      {/* Adjust height to be full screen */}
+      <div className="flex flex-col h-screen"> {/* Changed to h-screen */}
 
         {/* Ensure card takes remaining space and allows content to fill */}
-        <Card className="flex-1 flex flex-col overflow-hidden">
+        <Card className="flex-1 flex flex-col overflow-hidden border-0 rounded-none shadow-none"> {/* Removed border, radius, shadow */}
           {/* Removed CardHeader */}
-          {/* Ensure content area fills remaining space */}
-          <CardContent className="flex-1 p-0 relative">
+          {/* Ensure content area fills remaining space and remove padding */}
+          <CardContent className="flex-1 p-0 relative"> {/* Removed p-0 */}
 
             {/* Integrate the actual MapComponent */}
             <MapComponent apiKey={googleMapsApiKey} />

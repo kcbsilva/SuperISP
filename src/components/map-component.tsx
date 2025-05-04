@@ -38,19 +38,19 @@ export function MapComponent({ apiKey }: MapComponentProps) {
 
   if (error) {
     return (
-      <div className="absolute inset-0 bg-destructive/10 flex items-center justify-center border rounded-b-lg">
+      <div className="absolute inset-0 bg-destructive/10 flex items-center justify-center"> {/* Removed border and rounded */}
         <p className="text-destructive text-center p-4">{error}</p>
       </div>
     );
   }
 
   if (loading || !apiKey) { // Show skeleton while loading or if apiKey is still undefined briefly
-    return <Skeleton className="absolute inset-0 rounded-b-lg" />;
+    return <Skeleton className="absolute inset-0" />; {/* Removed rounded */}
   }
 
   return (
     <APIProvider apiKey={apiKey}>
-      <div className="absolute inset-0 border rounded-b-lg overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden"> {/* Removed border and rounded */}
         <Map
           defaultCenter={position}
           defaultZoom={11}

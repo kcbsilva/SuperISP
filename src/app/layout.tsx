@@ -42,7 +42,6 @@ import {
   SidebarMenuSubTrigger,
   SidebarMenuSubContent,
   SidebarSeparator, // Import Separator
-  // SidebarCollapseButton, // Removed import as component no longer exists
 } from '@/components/ui/sidebar';
 import { AppHeader } from '@/components/app-header';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'; // Import Tooltip components
@@ -95,6 +94,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
   // Determine if a link is active
   const isActive = (href: string) => pathname.startsWith(href);
+
+  // Check if the current route is the map page
+  const isMapPage = pathname === '/maps/map';
 
   return (
     <TooltipProvider>
@@ -476,7 +478,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarContent>
           <SidebarFooter>
              {/* Collapse button removed */}
-            {/* <SidebarCollapseButton tooltipExpand="Expand sidebar" tooltipCollapse="Collapse sidebar" /> */}
           </SidebarFooter>
         </Sidebar>
 
@@ -484,8 +485,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="fixed top-0 left-0 w-full z-50 h-1">
             {isLoading && <Progress value={progress} className="w-full h-1 rounded-none bg-transparent [&>*]:bg-green-600" indicatorClassName="bg-green-600" />}
           </div>
-          <AppHeader />
-          <div className="p-5">{children}</div>
+          {/* Conditionally render the AppHeader */}
+          {!isMapPage && <AppHeader />}
+          {/* Apply conditional padding to the content area */}
+          <div className={isMapPage ? 'p-0' : 'p-5'}>
+             {children}
+          </div>
           <Toaster />
         </SidebarInset>
       </SidebarProvider>
