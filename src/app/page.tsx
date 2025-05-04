@@ -85,8 +85,8 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      {/* Reduce left padding on main element */}
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:pl-2 md:pr-4"> {/* Reduced left padding for medium screens and up */}
+      {/* Remove padding from main element, rely on layout */}
+      <main className="flex flex-1 flex-col gap-4 md:gap-6"> {/* Removed p-4 and md:pl-2 md:pr-4 */}
 
          {/* Header Row with Dropdown and Quick Actions */}
         <div className="flex items-start gap-4 mb-2"> {/* Changed items-center to items-start for label alignment */}
