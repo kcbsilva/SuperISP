@@ -179,7 +179,7 @@ const Sidebar = React.forwardRef<
         data-collapsed={false} // Always false
         data-collapsible={false} // Always false
         className={cn(
-            "group/sidebar peer relative hidden md:block text-sidebar-foreground",
+            "group/sidebar peer relative hidden md:block text-sidebar-foreground transition-[width] duration-300 ease-in-out",
              "w-[var(--sidebar-width)]", // Always use full width
              (variant === "floating" || variant === "inset") && "p-2",
              side === 'left' ? 'left-0' : 'right-0',
@@ -247,20 +247,11 @@ const SidebarInset = React.forwardRef<
    // Calculate margin based on side and noMargin prop
    const marginClass = React.useMemo(() => {
       if (noMargin) return ''; // No margin if noMargin is true
-      if (variant === 'inset') {
-         // Specific margin for inset variant (if needed, otherwise remove this block)
-         if (side === 'left') {
-            return 'md:ml-[calc(var(--sidebar-width)_+_theme(spacing.2))]';
-         } else {
-            return 'md:mr-[calc(var(--sidebar-width)_+_theme(spacing.2))]';
-         }
+      // Default margin for all variants (apply based on sidebar side)
+      if (side === 'left') {
+         return 'md:ml-[var(--sidebar-width)]'; // Use fixed sidebar width variable
       } else {
-         // Default margin for other variants
-         if (side === 'left') {
-            return 'md:ml-[var(--sidebar-width)]'; // Use sidebar width variable
-         } else {
-            return 'md:mr-[var(--sidebar-width)]'; // Use sidebar width variable
-         }
+         return 'md:mr-[var(--sidebar-width)]'; // Use fixed sidebar width variable
       }
    }, [side, variant, noMargin]);
 
@@ -271,7 +262,7 @@ const SidebarInset = React.forwardRef<
       className={cn(
         "relative flex min-h-svh flex-1 flex-col bg-background",
         // Apply margin class conditionally based on screen size and noMargin prop
-        !noMargin && marginClass,
+        marginClass, // Apply calculated margin
         // Styles specific to inset variant
         variant === "inset" && "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
         className
@@ -535,8 +526,11 @@ const SidebarMenuButton = React.forwardRef<
      // Text is always visible now
     const hideText = false;
 
-     // Children are passed directly
-    const buttonChildren = children;
+     // Wrap children in a span for proper flex layout
+    const buttonChildren = React.Children.toArray(children).length > 1
+      ? <span className="flex items-center gap-2">{children}</span>
+      : children;
+
 
     const button = (
       <Comp
@@ -713,8 +707,11 @@ const SidebarMenuSubTrigger = React.forwardRef<
    // Text is always visible
    const hideText = false;
 
-   // Children are passed directly
-   const filteredChildren = children;
+    // Wrap children in a span for proper flex layout
+    const filteredChildren = React.Children.toArray(children).length > 1
+      ? <span className="flex items-center gap-2">{children}</span>
+      : children;
+
 
    const triggerElement = (
       <Comp
