@@ -2,16 +2,26 @@
 'use client';
 
 import * as React from 'react';
-import { Layers, Plus, Minus, Maximize, Cable, Warehouse, Box } from 'lucide-react'; // Removed MapPin, added element icons
-import { Card, CardContent } from '@/components/ui/card'; // Removed CardDescription, CardHeader, CardTitle
+import { Layers, Plus, Minus, Maximize, Cable, Warehouse, Box, Power, TowerControl, Building, Search } from 'lucide-react'; // Added Power, TowerControl, Building, Search icons
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input'; // Import Input component
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useLocale } from '@/contexts/LocaleContext';
-import { MapComponent } from '@/components/map-component'; // Import the new MapComponent
+import { MapComponent } from '@/components/map-component';
 
 export default function MapPage() {
   const { t } = useLocale();
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const [searchTerm, setSearchTerm] = React.useState('');
+
+  // Placeholder function for handling address search
+  const handleSearch = (event: React.FormEvent) => {
+    event.preventDefault();
+    console.log('Searching for address:', searchTerm);
+    // In a real app, you would integrate with Google Maps Geocoding API here
+    // to find coordinates for the searched address and pan/zoom the map.
+  };
 
   return (
     <TooltipProvider>
@@ -80,7 +90,7 @@ export default function MapPage() {
              </div>
 
              {/* Element Addition Buttons Overlay (Left Side) */}
-              <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+              <div className="absolute top-16 left-4 flex flex-col gap-2 z-10"> {/* Adjusted top to make space for search */}
                  <Tooltip>
                    <TooltipTrigger asChild>
                      <Button variant="outline" size="icon" className="bg-background">
@@ -114,8 +124,60 @@ export default function MapPage() {
                       <p>{t('maps_page.add_fdh_tooltip', 'Add FDH')}</p>
                     </TooltipContent>
                   </Tooltip>
-                  {/* Add more buttons for PEDs, Accessories, Towers etc. if needed */}
+                  {/* Added Hydro Polls Button */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon" className="bg-background">
+                        <Power className="h-4 w-4" />
+                        <span className="sr-only">{t('maps_page.add_poll_tooltip', 'Add Hydro Poll')}</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{t('maps_page.add_poll_tooltip', 'Add Hydro Poll')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  {/* Added Tower Button */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon" className="bg-background">
+                        <TowerControl className="h-4 w-4" />
+                        <span className="sr-only">{t('maps_page.add_tower_tooltip', 'Add Tower')}</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{t('maps_page.add_tower_tooltip', 'Add Tower')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  {/* Added PoP Button */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon" className="bg-background">
+                        <Building className="h-4 w-4" />
+                        <span className="sr-only">{t('maps_page.add_pop_tooltip', 'Add PoP')}</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{t('maps_page.add_pop_tooltip', 'Add PoP')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  {/* Add more buttons for PEDs, Accessories etc. if needed */}
               </div>
+
+             {/* Address Search Bar Overlay (Top Left) */}
+             <div className="absolute top-4 left-4 z-10">
+                 <form onSubmit={handleSearch} className="relative">
+                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                     <Input
+                         type="search"
+                         placeholder={t('maps_page.search_address_placeholder', 'Search address...')}
+                         className="pl-8 w-full sm:w-64 md:w-80 bg-background" // Responsive width
+                         value={searchTerm}
+                         onChange={(e) => setSearchTerm(e.target.value)}
+                     />
+                      {/* Hidden submit button to allow form submission on enter */}
+                     <button type="submit" className="hidden" aria-hidden="true">Search</button>
+                 </form>
+             </div>
 
           </CardContent>
         </Card>

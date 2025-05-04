@@ -318,6 +318,10 @@ const fr = {
      add_cable_tooltip: 'Ajouter un câble',
      add_fosc_tooltip: 'Ajouter un FOSC',
      add_fdh_tooltip: 'Ajouter un FDH',
+     add_poll_tooltip: 'Ajouter un poteau Hydro', // Added
+     add_tower_tooltip: 'Ajouter une tour', // Added
+     add_pop_tooltip: 'Ajouter un PoP', // Added
+     search_address_placeholder: 'Rechercher une adresse...', // Added
      api_key_missing_error: 'La clé API Google Maps est manquante. Veuillez l\'ajouter à votre fichier .env.',
      api_key_error_title: 'Erreur de carte',
      example_marker_info: 'Élément de réseau exemple',

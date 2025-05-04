@@ -318,6 +318,10 @@ const en = {
      add_cable_tooltip: 'Add Cable',
      add_fosc_tooltip: 'Add FOSC',
      add_fdh_tooltip: 'Add FDH',
+     add_poll_tooltip: 'Add Hydro Poll', // Added
+     add_tower_tooltip: 'Add Tower', // Added
+     add_pop_tooltip: 'Add PoP', // Added
+     search_address_placeholder: 'Search address...', // Added
      api_key_missing_error: 'Google Maps API key is missing. Please add it to your .env file.',
      api_key_error_title: 'Map Error',
      example_marker_info: 'Example Network Element',
