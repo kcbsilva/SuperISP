@@ -2,11 +2,11 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; // Added CardFooter
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Save } from 'lucide-react';
+import { Save, Globe } from 'lucide-react'; // Added Globe icon
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -19,6 +19,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"; // Import Select components
 
 // Example schema for global settings
 const globalSettingsSchema = z.object({
@@ -26,6 +33,9 @@ const globalSettingsSchema = z.object({
   companyLogoUrl: z.string().url('Invalid URL format').optional().or(z.literal('')),
   defaultCurrency: z.string().length(3, 'Currency code must be 3 letters (e.g., USD)'),
   timezone: z.string().min(1, 'Timezone is required'),
+  language: z.enum(['en', 'fr', 'pt'], { // Add language field with enum
+    required_error: "Please select a default language.",
+  }).default('en'),
 });
 
 type GlobalSettingsFormData = z.infer<typeof globalSettingsSchema>;
@@ -40,6 +50,7 @@ const loadGlobalSettings = async (): Promise<GlobalSettingsFormData> => {
     companyLogoUrl: '',
     defaultCurrency: 'USD',
     timezone: 'America/New_York',
+    language: 'en', // Default language
   };
 };
 
@@ -72,6 +83,7 @@ export default function GlobalSettingsPage() {
           companyLogoUrl: '',
           defaultCurrency: 'USD',
           timezone: '',
+          language: 'en',
         };
       }
     },
@@ -164,6 +176,30 @@ export default function GlobalSettingsPage() {
                   </FormItem>
                 )}
               />
+
+               {/* Language Selection */}
+               <FormField
+                 control={form.control}
+                 name="language"
+                 render={({ field }) => (
+                   <FormItem>
+                     <FormLabel>Default Language *</FormLabel>
+                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                       <FormControl>
+                         <SelectTrigger>
+                           <SelectValue placeholder="Select default language" />
+                         </SelectTrigger>
+                       </FormControl>
+                       <SelectContent>
+                         <SelectItem value="en">English</SelectItem>
+                         <SelectItem value="fr">Français (French)</SelectItem>
+                         <SelectItem value="pt">Português (Portuguese)</SelectItem>
+                       </SelectContent>
+                     </Select>
+                     <FormMessage />
+                   </FormItem>
+                 )}
+               />
             </CardContent>
             <CardFooter className="border-t px-6 py-4">
               <Button type="submit" disabled={form.formState.isSubmitting}>
