@@ -488,7 +488,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           {/* Conditionally render the AppHeader */}
           {!isMapPage && <AppHeader />}
           {/* Apply conditional padding to the content area */}
-          <div className={isMapPage ? 'p-0' : 'p-2'}> {/* Apply padding 2 for non map pages */}
+          <div className={isMapPage ? 'p-0' : 'p-4'}> {/* Adjusted padding to p-4 */}
               {children}
            </div>
            <Toaster />
