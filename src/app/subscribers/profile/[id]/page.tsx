@@ -1,3 +1,4 @@
+
 // src/app/subscribers/profile/[id]/page.tsx
 'use client';
 
@@ -85,6 +86,7 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.address = '123 Fantasy Lane';
         baseData.email = 'alice@example.com';
         baseData.phone = '555-1111';
+        baseData.billing.balance = 0.00; // No outstanding balance for Alice
     } else if (id === 'sub-2') {
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
@@ -94,6 +96,7 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.services = [
              { id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: 'sim-2' }
         ];
+        baseData.billing.balance = 150.75; // Bob has an outstanding balance
     }
 
     return baseData;
@@ -135,6 +138,10 @@ function SubscriberProfilePage() {
 
   // Simulate fetching subscriber data
   const subscriber = React.useMemo(() => getSubscriberData(subscriberId), [subscriberId]);
+
+  // Check for outstanding balance
+  const hasOutstandingBalance = (subscriber?.billing?.balance ?? 0) > 0;
+
 
   const handleEdit = () => {
     // Placeholder for edit action
@@ -204,6 +211,11 @@ function SubscriberProfilePage() {
           </TabsTrigger>
           <TabsTrigger value="billing">
              <DollarSign className="mr-2 h-4 w-4" /> Billing
+              {hasOutstandingBalance && (
+                  <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs font-bold">
+                      ! {/* Simple indicator */}
+                  </span>
+              )}
           </TabsTrigger>
           <TabsTrigger value="service-calls">
              <Wrench className="mr-2 h-4 w-4" /> Service Calls
