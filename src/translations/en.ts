@@ -313,8 +313,11 @@ const en = {
      zoom_in_tooltip: 'Zoom In',
      zoom_out_tooltip: 'Zoom Out',
      fullscreen_tooltip: 'Toggle Fullscreen',
-     add_element_button: 'Add Element',
-     add_element_tooltip: 'Add a new network element to the map',
+     add_element_button: 'Add Element', // Kept for reference, button removed
+     add_element_tooltip: 'Add a new network element to the map', // Kept for reference
+     add_cable_tooltip: 'Add Cable',
+     add_fosc_tooltip: 'Add FOSC',
+     add_fdh_tooltip: 'Add FDH',
      api_key_missing_error: 'Google Maps API key is missing. Please add it to your .env file.',
      api_key_error_title: 'Map Error',
      example_marker_info: 'Example Network Element',

@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { MapPin, Layers, Plus, Minus, Maximize } from 'lucide-react';
+import { MapPin, Layers, Plus, Minus, Maximize, Cable, Warehouse, Box } from 'lucide-react'; // Added element icons
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
@@ -15,7 +15,8 @@ export default function MapPage() {
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col gap-6 h-[calc(100vh-10rem)]"> {/* Adjust height as needed */}
+      {/* Adjust height to be closer to full screen, considering header/padding */}
+      <div className="flex flex-col gap-6 h-[calc(100vh-8rem)]"> {/* Increased height */}
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-semibold flex items-center gap-2">
             <MapPin className="h-6 w-6" />
@@ -37,17 +38,19 @@ export default function MapPage() {
           </div>
         </div>
 
-        <Card className="flex-1 flex flex-col overflow-hidden"> {/* Ensure card takes remaining space */}
+        {/* Ensure card takes remaining space and allows content to fill */}
+        <Card className="flex-1 flex flex-col overflow-hidden">
           <CardHeader className="border-b p-4"> {/* Reduced padding */}
             <CardTitle className="text-lg">{t('maps_page.map_view_title', 'Map View')}</CardTitle>
             <CardDescription>{t('maps_page.map_view_desc', 'Visualize and manage network elements.')}</CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 p-0 relative"> {/* Remove padding, make relative for controls */}
+          {/* Ensure content area fills remaining space */}
+          <CardContent className="flex-1 p-0 relative">
 
             {/* Integrate the actual MapComponent */}
             <MapComponent apiKey={googleMapsApiKey} />
 
-             {/* Map Controls Overlay */}
+             {/* Map Controls Overlay (Right Side) */}
              <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
                <Tooltip>
                  <TooltipTrigger asChild>
@@ -87,19 +90,42 @@ export default function MapPage() {
                  </Tooltip>
              </div>
 
-             {/* Add Element Button Overlay */}
-              <div className="absolute bottom-4 left-4 z-10">
+             {/* Element Addition Buttons Overlay (Left Side) */}
+              <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
                  <Tooltip>
                    <TooltipTrigger asChild>
-                     <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90">
-                       <Plus className="mr-1 h-4 w-4" />
-                       {t('maps_page.add_element_button', 'Add Element')}
+                     <Button variant="outline" size="icon" className="bg-background">
+                       <Cable className="h-4 w-4" />
+                       <span className="sr-only">{t('maps_page.add_cable_tooltip', 'Add Cable')}</span>
                      </Button>
                    </TooltipTrigger>
-                   <TooltipContent>
-                     <p>{t('maps_page.add_element_tooltip', 'Add a new network element to the map')}</p>
+                   <TooltipContent side="right">
+                     <p>{t('maps_page.add_cable_tooltip', 'Add Cable')}</p>
                    </TooltipContent>
                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon" className="bg-background">
+                        <Warehouse className="h-4 w-4" /> {/* Using Warehouse for FOSC */}
+                        <span className="sr-only">{t('maps_page.add_fosc_tooltip', 'Add FOSC')}</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{t('maps_page.add_fosc_tooltip', 'Add FOSC')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon" className="bg-background">
+                        <Box className="h-4 w-4" /> {/* Using Box for FDH */}
+                        <span className="sr-only">{t('maps_page.add_fdh_tooltip', 'Add FDH')}</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{t('maps_page.add_fdh_tooltip', 'Add FDH')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  {/* Add more buttons for PEDs, Accessories, Towers etc. if needed */}
               </div>
 
           </CardContent>
