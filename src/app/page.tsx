@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { BarChart, DollarSign, Network, Users, MessageSquareWarning, Activity, ArrowUpRight, ChevronDown, Plus } from 'lucide-react'; // Added Plus icon
+import { BarChart, DollarSign, Network, Users, MessageSquareWarning, Activity, ArrowUpRight, ChevronDown, Plus, PieChart } from 'lucide-react'; // Added Plus icon, PieChart icon
 import {
   Card,
   CardContent,
@@ -145,7 +145,7 @@ export default function DashboardPage() {
          </div>
 
 
-        {/* Content based on currentView - For now, showing general content */}
+        {/* Content based on currentView */}
         {currentView === "General" && (
           <>
             {/* Stat Cards Grid */}
@@ -261,8 +261,60 @@ export default function DashboardPage() {
           </>
         )}
 
+         {/* Placeholder for Financial dashboard view */}
+         {currentView === "Financial" && (
+           <div className="grid gap-4 md:gap-6 lg:grid-cols-2 xl:grid-cols-3">
+              <Card className="xl:col-span-1">
+                <CardHeader className="flex flex-row items-center">
+                  <div className="grid gap-2">
+                     <CardTitle>{t('dashboard.financial.revenue_by_plan_title')}</CardTitle>
+                     <CardDescription>{t('dashboard.financial.revenue_by_plan_desc')}</CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                   {/* Placeholder for Pie Chart 1 */}
+                   <div className="flex items-center justify-center h-48 border rounded-lg bg-muted text-muted-foreground">
+                     <PieChart className="h-8 w-8 mr-2" />
+                     <span>{t('dashboard.financial.pie_chart_placeholder')}</span>
+                   </div>
+                </CardContent>
+              </Card>
+              <Card className="xl:col-span-1">
+                <CardHeader className="flex flex-row items-center">
+                   <div className="grid gap-2">
+                      <CardTitle>{t('dashboard.financial.expense_category_title')}</CardTitle>
+                      <CardDescription>{t('dashboard.financial.expense_category_desc')}</CardDescription>
+                   </div>
+                </CardHeader>
+                <CardContent>
+                   {/* Placeholder for Pie Chart 2 */}
+                   <div className="flex items-center justify-center h-48 border rounded-lg bg-muted text-muted-foreground">
+                     <PieChart className="h-8 w-8 mr-2" />
+                     <span>{t('dashboard.financial.pie_chart_placeholder')}</span>
+                   </div>
+                </CardContent>
+              </Card>
+               <Card className="xl:col-span-1">
+                 <CardHeader className="flex flex-row items-center">
+                    <div className="grid gap-2">
+                       <CardTitle>{t('dashboard.financial.payment_status_title')}</CardTitle>
+                       <CardDescription>{t('dashboard.financial.payment_status_desc')}</CardDescription>
+                    </div>
+                 </CardHeader>
+                 <CardContent>
+                   {/* Placeholder for Pie Chart 3 */}
+                   <div className="flex items-center justify-center h-48 border rounded-lg bg-muted text-muted-foreground">
+                     <PieChart className="h-8 w-8 mr-2" />
+                     <span>{t('dashboard.financial.pie_chart_placeholder')}</span>
+                   </div>
+                 </CardContent>
+               </Card>
+              {/* Add more financial-specific cards or charts here */}
+            </div>
+         )}
+
          {/* Placeholder for other dashboard views */}
-         {currentView !== "General" && (
+         {(currentView === "Network" || currentView === "Technician") && (
            <div className="flex items-center justify-center h-64 border rounded-lg bg-card text-card-foreground">
              <p className="text-muted-foreground">
                {t('dashboard.other_view_placeholder', 'Displaying {view} Dashboard Content (Not Implemented)').replace('{view}', currentView)}

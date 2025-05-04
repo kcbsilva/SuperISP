@@ -301,6 +301,16 @@ const fr = {
      quick_actions_label: 'Actions Rapides', // Added
      quick_action_tooltip: 'Action rapide {action} (ex: Ajouter Client)', // Ajouté
      quick_action_sr: 'Ajouter {action}', // Ajouté (Texte pour lecteur d'écran)
+      // Financial Dashboard Specific
+      financial: {
+        revenue_by_plan_title: 'Revenu par Plan',
+        revenue_by_plan_desc: 'Répartition du MRR par plan d\'abonnement.',
+        expense_category_title: 'Dépenses par Catégorie',
+        expense_category_desc: 'Répartition mensuelle des dépenses.',
+        payment_status_title: 'Statut des Paiements',
+        payment_status_desc: 'Aperçu des statuts de paiement des factures récentes.',
+        pie_chart_placeholder: 'Données du graphique circulaire non disponibles.',
+      },
    },
    // Map Page
    maps_page: {

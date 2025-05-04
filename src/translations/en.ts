@@ -301,6 +301,16 @@ const en = {
      quick_actions_label: 'Quick Actions', // Added
      quick_action_tooltip: 'Quick Action {action} (e.g., Add Client)', // Added
      quick_action_sr: 'Add {action}', // Added (Screen reader text)
+     // Financial Dashboard Specific
+     financial: {
+        revenue_by_plan_title: 'Revenue by Plan',
+        revenue_by_plan_desc: 'Breakdown of MRR by subscription plan.',
+        expense_category_title: 'Expenses by Category',
+        expense_category_desc: 'Monthly expenses breakdown.',
+        payment_status_title: 'Payment Status',
+        payment_status_desc: 'Overview of recent invoice payment statuses.',
+        pie_chart_placeholder: 'Pie chart data not available.',
+      },
    },
    // Map Page
    maps_page: {

@@ -301,7 +301,17 @@ const pt = {
     quick_actions_label: 'Ações Rápidas', // Added
     quick_action_tooltip: 'Ação Rápida {action} (ex: Adicionar Cliente)', // Adicionado
     quick_action_sr: 'Adicionar {action}', // Adicionado (Texto para leitor de tela)
-  },
+    // Financial Dashboard Specific
+    financial: {
+        revenue_by_plan_title: 'Receita por Plano',
+        revenue_by_plan_desc: 'Divisão do MRR por plano de assinatura.',
+        expense_category_title: 'Despesas por Categoria',
+        expense_category_desc: 'Divisão mensal das despesas.',
+        payment_status_title: 'Status do Pagamento',
+        payment_status_desc: 'Visão geral dos status de pagamento das faturas recentes.',
+        pie_chart_placeholder: 'Dados do gráfico de pizza não disponíveis.',
+      },
+   },
    // Map Page
    maps_page: {
      // Removed title and description
