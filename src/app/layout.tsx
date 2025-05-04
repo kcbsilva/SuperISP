@@ -125,40 +125,15 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              {/* Subscribers Menu */}
+              {/* Subscribers Menu - Direct Links */}
               <SidebarMenuItem>
-                 <SidebarMenuSub>
-                   <Tooltip>
-                     <TooltipTrigger asChild>
-                       <SidebarMenuSubTrigger tooltip={t('sidebar.subscribers')}>
-                         <div className="flex items-center gap-2 cursor-pointer">
-                           <Users />
-                           <span className="truncate">{t('sidebar.subscribers')}</span>
-                           <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                         </div>
-                       </SidebarMenuSubTrigger>
-                     </TooltipTrigger>
-                     <TooltipContent side="right" align="center">{t('sidebar.subscribers')}</TooltipContent>
-                   </Tooltip>
-                   <SidebarMenuSubContent>
-                     <SidebarMenuItem>
-                       <SidebarMenuButton asChild isActive={isActive('/subscribers/list')} size="sm">
-                         <Link href="/subscribers/list" className="flex items-center gap-2">
-                           <Dot className="text-muted-foreground" />
-                           <span>{t('sidebar.subscribers_list')}</span>
-                         </Link>
-                       </SidebarMenuButton>
-                     </SidebarMenuItem>
-                     <SidebarMenuItem>
-                       <SidebarMenuButton asChild isActive={isActive('/subscribers/add')} size="sm">
-                         <Link href="/subscribers/add" className="flex items-center gap-2">
-                           <Dot className="text-muted-foreground" />
-                           <span>{t('sidebar.subscribers_new')}</span>
-                         </Link>
-                       </SidebarMenuButton>
-                     </SidebarMenuItem>
-                   </SidebarMenuSubContent>
-                 </SidebarMenuSub>
+                <SidebarMenuButton asChild isActive={isActive('/subscribers/list')} tooltip={t('sidebar.subscribers')}>
+                  <Link href="/subscribers/list" className="flex items-center gap-2">
+                    <Users />
+                    <span className="truncate">{t('sidebar.subscribers')}</span>
+                    {/* Removed ChevronDown */}
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
 
               {/* Network Menu */}
