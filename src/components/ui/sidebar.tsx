@@ -236,7 +236,6 @@ const SidebarTrigger = React.forwardRef<
 })
 SidebarTrigger.displayName = "SidebarTrigger"
 
-// SidebarCollapseButton is removed as the sidebar is no longer collapsible
 
 const SidebarInset = React.forwardRef<
   HTMLDivElement,
@@ -248,12 +247,11 @@ const SidebarInset = React.forwardRef<
    const marginClass = React.useMemo(() => {
       if (noMargin) return ''; // No margin if noMargin is true
       // Default margin for all variants (apply based on sidebar side)
-      if (side === 'left') {
-         return 'md:ml-[var(--sidebar-width)]'; // Use fixed sidebar width variable
-      } else {
-         return 'md:mr-[var(--sidebar-width)]'; // Use fixed sidebar width variable
-      }
+     return 'md:ml-5'; // set marging to 5, for a gap of 20px
    }, [side, variant, noMargin]);
+
+
+
 
 
   return (
@@ -527,7 +525,8 @@ const SidebarMenuButton = React.forwardRef<
     const hideText = false;
 
      // Wrap children in a span for proper flex layout
-    const buttonChildren = React.Children.toArray(children).length > 1
+    // Ensure only one child is passed if asChild is true
+    const buttonChildren = asChild ? children : React.Children.toArray(children).length > 1
       ? <span className="flex items-center gap-2">{children}</span>
       : children;
 
@@ -708,7 +707,7 @@ const SidebarMenuSubTrigger = React.forwardRef<
    const hideText = false;
 
     // Wrap children in a span for proper flex layout
-    const filteredChildren = React.Children.toArray(children).length > 1
+    const filteredChildren = asChild ? children : React.Children.toArray(children).length > 1
       ? <span className="flex items-center gap-2">{children}</span>
       : children;
 
@@ -772,7 +771,6 @@ SidebarMenuSubContent.displayName = "SidebarMenuSubContent";
 
 export {
   Sidebar,
-  // SidebarCollapseButton, // Removed as sidebar is no longer collapsible
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
