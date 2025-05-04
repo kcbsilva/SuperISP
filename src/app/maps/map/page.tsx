@@ -17,10 +17,12 @@ export default function MapPage() {
 
   // Placeholder function for handling address search
   const handleSearch = (event: React.FormEvent) => {
-    event.preventDefault();
+    event.preventDefault(); // Prevent page reload
     console.log('Searching for address:', searchTerm);
     // In a real app, you would integrate with Google Maps Geocoding API here
     // to find coordinates for the searched address and pan/zoom the map.
+    // Example: const coordinates = await geocodeAddress(searchTerm);
+    // mapRef.current?.panTo(coordinates);
   };
 
   return (
@@ -90,7 +92,7 @@ export default function MapPage() {
              </div>
 
              {/* Element Addition Buttons Overlay (Left Side) */}
-              <div className="absolute top-16 left-4 flex flex-col gap-2 z-10"> {/* Adjusted top to make space for search */}
+              <div className="absolute top-4 left-4 flex flex-col gap-2 z-10"> {/* Keep on left */}
                  <Tooltip>
                    <TooltipTrigger asChild>
                      <Button variant="outline" size="icon" className="bg-background">
@@ -163,14 +165,14 @@ export default function MapPage() {
                   {/* Add more buttons for PEDs, Accessories etc. if needed */}
               </div>
 
-             {/* Address Search Bar Overlay (Top Left) */}
-             <div className="absolute top-4 left-4 z-10">
+             {/* Address Search Bar Overlay (Top Center) */}
+             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-md px-4"> {/* Center using left-1/2 and translate, add padding */}
                  <form onSubmit={handleSearch} className="relative">
                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                      <Input
                          type="search"
                          placeholder={t('maps_page.search_address_placeholder', 'Search address...')}
-                         className="pl-8 w-full sm:w-64 md:w-80 bg-background" // Responsive width
+                         className="pl-8 w-full bg-background shadow-md" // Added shadow for better visibility
                          value={searchTerm}
                          onChange={(e) => setSearchTerm(e.target.value)}
                      />
