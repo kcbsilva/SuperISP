@@ -279,6 +279,7 @@ const fr = {
      activity_type_ticket_resolved: 'Ticket résolu',
      activity_type_network_alert: 'Alerte réseau',
      activity_type_payment_received: 'Paiement reçu',
+     quick_actions_label: 'Actions Rapides', // Added
      quick_action_tooltip: 'Action rapide {action} (ex: Ajouter Client)', // Ajouté
      quick_action_sr: 'Ajouter {action}', // Ajouté (Texte pour lecteur d'écran)
    }

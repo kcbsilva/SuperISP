@@ -88,7 +88,7 @@ export default function DashboardPage() {
       <main className="flex flex-1 flex-col gap-4 p-2 md:gap-6 md:p-4"> {/* Reduced padding */}
 
          {/* Header Row with Dropdown and Quick Actions */}
-        <div className="flex items-center gap-2 mb-2"> {/* Wrapper for Dropdown and Buttons */}
+        <div className="flex items-start gap-4 mb-2"> {/* Changed items-center to items-start for label alignment */}
           {/* Dashboard Selector Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -115,27 +115,32 @@ export default function DashboardPage() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-           {/* Quick Action Buttons */}
-           <TooltipProvider>
-             {Array.from({ length: 5 }).map((_, index) => (
-               <Tooltip key={index}>
-                 <TooltipTrigger asChild>
-                   <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-9 w-9" // Slightly smaller square button
-                      onClick={() => handleQuickActionClick(index)}
-                   >
-                     <Plus className="h-4 w-4" />
-                     <span className="sr-only">{t('dashboard.quick_action_sr', 'Add {action}').replace('{action}', `${index + 1}`)}</span>
-                   </Button>
-                 </TooltipTrigger>
-                 <TooltipContent>
-                   <p>{t('dashboard.quick_action_tooltip', 'Quick Action {action} (e.g., Add Client)').replace('{action}', `${index + 1}`)}</p>
-                 </TooltipContent>
-               </Tooltip>
-             ))}
-           </TooltipProvider>
+           {/* Quick Actions Container */}
+           <div className="flex flex-col items-start gap-1">
+             <div className="text-xs font-medium text-muted-foreground px-1">{t('dashboard.quick_actions_label', 'Quick Actions')}</div>
+             <div className="flex items-center gap-2">
+               <TooltipProvider>
+                 {Array.from({ length: 5 }).map((_, index) => (
+                   <Tooltip key={index}>
+                     <TooltipTrigger asChild>
+                       <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-9 w-9" // Slightly smaller square button
+                          onClick={() => handleQuickActionClick(index)}
+                       >
+                         <Plus className="h-4 w-4" />
+                         <span className="sr-only">{t('dashboard.quick_action_sr', 'Add {action}').replace('{action}', `${index + 1}`)}</span>
+                       </Button>
+                     </TooltipTrigger>
+                     <TooltipContent>
+                       <p>{t('dashboard.quick_action_tooltip', 'Quick Action {action} (e.g., Add Client)').replace('{action}', `${index + 1}`)}</p>
+                     </TooltipContent>
+                   </Tooltip>
+                 ))}
+               </TooltipProvider>
+              </div>
+            </div> {/* End Quick Actions Container */}
 
          </div>
 
@@ -264,17 +269,6 @@ export default function DashboardPage() {
              </p>
            </div>
          )}
-
-         {/* Optional: Add back DeviceList/ThreatDetector or other components here */}
-         {/* <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-6"> */}
-           {/* <div className="lg:col-span-2 space-y-6"> */}
-             {/* <DeviceList ... /> */}
-           {/* </div> */}
-           {/* <div className="space-y-6"> */}
-             {/* <ManualDeviceEntry ... /> */}
-             {/* <ThreatDetector ... /> */}
-           {/* </div> */}
-         {/* </div> */}
       </main>
     </div>
   );
