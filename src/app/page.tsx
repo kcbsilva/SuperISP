@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { BarChart, DollarSign, Network, Users, MessageSquareWarning, Activity, ArrowUpRight, ChevronDown } from 'lucide-react';
+import { BarChart, DollarSign, Network, Users, MessageSquareWarning, Activity, ArrowUpRight, ChevronDown, Plus } from 'lucide-react'; // Added Plus icon
 import {
   Card,
   CardContent,
@@ -29,7 +29,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"; // Import Tooltip
 import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale
+import { useToast } from '@/hooks/use-toast'; // Import useToast
 
 
 // Placeholder data - replace with actual data fetching
@@ -54,6 +56,7 @@ type DashboardView = "General" | "Financial" | "Network" | "Technician";
 
 export default function DashboardPage() {
   const { t, locale } = useLocale(); // Get translation function and current locale
+  const { toast } = useToast(); // Get toast function
   const [currentView, setCurrentView] = React.useState<DashboardView>("General");
   const [formattedSubscribers, setFormattedSubscribers] = React.useState<string | null>(null);
   const [formattedMrr, setFormattedMrr] = React.useState<string | null>(null);
@@ -71,11 +74,22 @@ export default function DashboardPage() {
     // Later: Add logic here to load/display different components based on the selected view
   };
 
+  const handleQuickActionClick = (actionIndex: number) => {
+     // Placeholder action
+     console.log(`Quick action ${actionIndex + 1} clicked`);
+     toast({
+       title: `Quick Action ${actionIndex + 1}`,
+       description: 'This quick action is not yet implemented.',
+     });
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <main className="flex flex-1 flex-col gap-4 p-2 md:gap-6 md:p-4"> {/* Reduced padding */}
-        {/* Dashboard Selector Dropdown */}
-        <div className="flex justify-start mb-2"> {/* Reduced margin-bottom */}
+
+         {/* Header Row with Dropdown and Quick Actions */}
+        <div className="flex items-center gap-2 mb-2"> {/* Wrapper for Dropdown and Buttons */}
+          {/* Dashboard Selector Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
@@ -100,7 +114,31 @@ export default function DashboardPage() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+
+           {/* Quick Action Buttons */}
+           <TooltipProvider>
+             {Array.from({ length: 5 }).map((_, index) => (
+               <Tooltip key={index}>
+                 <TooltipTrigger asChild>
+                   <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-9 w-9" // Slightly smaller square button
+                      onClick={() => handleQuickActionClick(index)}
+                   >
+                     <Plus className="h-4 w-4" />
+                     <span className="sr-only">{t('dashboard.quick_action_sr', 'Add {action}').replace('{action}', `${index + 1}`)}</span>
+                   </Button>
+                 </TooltipTrigger>
+                 <TooltipContent>
+                   <p>{t('dashboard.quick_action_tooltip', 'Quick Action {action} (e.g., Add Client)').replace('{action}', `${index + 1}`)}</p>
+                 </TooltipContent>
+               </Tooltip>
+             ))}
+           </TooltipProvider>
+
+         </div>
+
 
         {/* Content based on currentView - For now, showing general content */}
         {currentView === "General" && (
