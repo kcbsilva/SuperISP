@@ -315,6 +315,9 @@ const en = {
      fullscreen_tooltip: 'Toggle Fullscreen',
      add_element_button: 'Add Element',
      add_element_tooltip: 'Add a new network element to the map',
+     api_key_missing_error: 'Google Maps API key is missing. Please add it to your .env file.',
+     api_key_error_title: 'Map Error',
+     example_marker_info: 'Example Network Element',
    },
 };
 

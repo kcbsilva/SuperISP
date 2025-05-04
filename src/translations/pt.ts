@@ -315,6 +315,9 @@ const pt = {
      fullscreen_tooltip: 'Alternar Tela Cheia',
      add_element_button: 'Adicionar Elemento',
      add_element_tooltip: 'Adicionar um novo elemento de rede ao mapa',
+     api_key_missing_error: 'Chave da API do Google Maps ausente. Adicione-a ao seu arquivo .env.',
+     api_key_error_title: 'Erro no Mapa',
+     example_marker_info: 'Elemento de Rede Exemplo',
    },
 };
 

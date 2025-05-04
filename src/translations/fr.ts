@@ -315,6 +315,9 @@ const fr = {
      fullscreen_tooltip: 'Basculer en plein écran',
      add_element_button: 'Ajouter un élément',
      add_element_tooltip: 'Ajouter un nouvel élément réseau à la carte',
+     api_key_missing_error: 'La clé API Google Maps est manquante. Veuillez l\'ajouter à votre fichier .env.',
+     api_key_error_title: 'Erreur de carte',
+     example_marker_info: 'Élément de réseau exemple',
    },
 };
 

@@ -7,13 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useLocale } from '@/contexts/LocaleContext';
-
-// Note: This is a placeholder page. Integrating a real map library (like Leaflet,
-// Mapbox GL JS, Google Maps API) requires additional setup, potentially client-side
-// specific logic, and possibly API keys.
+import { MapComponent } from '@/components/map-component'; // Import the new MapComponent
 
 export default function MapPage() {
   const { t } = useLocale();
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   return (
     <TooltipProvider>
@@ -23,7 +21,6 @@ export default function MapPage() {
             <MapPin className="h-6 w-6" />
             {t('maps_page.title', 'Network Map')}
           </h1>
-          {/* Placeholder for potential map-wide actions */}
           <div className="flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -46,21 +43,15 @@ export default function MapPage() {
             <CardDescription>{t('maps_page.map_view_desc', 'Visualize and manage network elements.')}</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 p-0 relative"> {/* Remove padding, make relative for controls */}
-            {/* Placeholder for the actual map container */}
-            <div
-              className="absolute inset-0 bg-muted/50 flex items-center justify-center border rounded-b-lg"
-              aria-label={t('maps_page.map_placeholder_label', 'Map Placeholder')}
-              data-ai-hint="map background"
-            >
-              <p className="text-muted-foreground text-lg">
-                {t('maps_page.map_integration_placeholder', '[Map Component Integration Area]')}
-              </p>
-            </div>
 
-             {/* Placeholder Map Controls Overlay */}
+            {/* Integrate the actual MapComponent */}
+            <MapComponent apiKey={googleMapsApiKey} />
+
+             {/* Map Controls Overlay */}
              <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
                <Tooltip>
                  <TooltipTrigger asChild>
+                   {/* Placeholder button, real map controls would be part of MapComponent or library */}
                    <Button variant="outline" size="icon" className="bg-background">
                      <Plus className="h-4 w-4" />
                       <span className="sr-only">{t('maps_page.zoom_in_tooltip', 'Zoom In')}</span>
@@ -72,6 +63,7 @@ export default function MapPage() {
                </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
+                    {/* Placeholder button */}
                     <Button variant="outline" size="icon" className="bg-background">
                       <Minus className="h-4 w-4" />
                       <span className="sr-only">{t('maps_page.zoom_out_tooltip', 'Zoom Out')}</span>
@@ -83,6 +75,7 @@ export default function MapPage() {
                 </Tooltip>
                  <Tooltip>
                    <TooltipTrigger asChild>
+                     {/* Placeholder button */}
                      <Button variant="outline" size="icon" className="bg-background">
                        <Maximize className="h-4 w-4" />
                        <span className="sr-only">{t('maps_page.fullscreen_tooltip', 'Toggle Fullscreen')}</span>
@@ -94,7 +87,7 @@ export default function MapPage() {
                  </Tooltip>
              </div>
 
-             {/* Placeholder for Adding Elements */}
+             {/* Add Element Button Overlay */}
               <div className="absolute bottom-4 left-4 z-10">
                  <Tooltip>
                    <TooltipTrigger asChild>
