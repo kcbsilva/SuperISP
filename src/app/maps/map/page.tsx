@@ -2,28 +2,18 @@
 'use client';
 
 import * as React from 'react';
-import { Layers, Plus, Minus, Maximize, Cable, Warehouse, Box, Power, TowerControl, Building, Search } from 'lucide-react'; // Added Power, TowerControl, Building, Search icons
+import { Layers, Plus, Minus, Maximize, Cable, Warehouse, Box, Power, TowerControl, Building } from 'lucide-react'; // Removed Search icon
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; // Import Input component
+// import { Input } from '@/components/ui/input'; // Removed Input import
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useLocale } from '@/contexts/LocaleContext';
-import { MapComponent } from '@/components/map-component';
+import { MapComponent } from '@/components/map-component'; // Assuming MapComponent handles search now
 
 export default function MapPage() {
   const { t } = useLocale();
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  const [searchTerm, setSearchTerm] = React.useState('');
-
-  // Placeholder function for handling address search
-  const handleSearch = (event: React.FormEvent) => {
-    event.preventDefault(); // Prevent page reload
-    console.log('Searching for address:', searchTerm);
-    // In a real app, you would integrate with Google Maps Geocoding API here
-    // to find coordinates for the searched address and pan/zoom the map.
-    // Example: const coordinates = await geocodeAddress(searchTerm);
-    // mapRef.current?.panTo(coordinates);
-  };
+  // Removed searchTerm state and handleSearch function
 
   return (
     <TooltipProvider>
@@ -36,7 +26,7 @@ export default function MapPage() {
           {/* Ensure content area fills remaining space and remove padding */}
           <CardContent className="flex-1 p-0 relative"> {/* Removed p-0 */}
 
-            {/* Integrate the actual MapComponent */}
+            {/* Integrate the actual MapComponent - It now handles search */}
             <MapComponent apiKey={googleMapsApiKey} />
 
              {/* Map Controls Overlay (Right Side) */}
@@ -165,21 +155,22 @@ export default function MapPage() {
                   {/* Add more buttons for PEDs, Accessories etc. if needed */}
               </div>
 
-             {/* Address Search Bar Overlay (Top Center) */}
-             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-md px-4"> {/* Center using left-1/2 and translate, add padding */}
+             {/* Address Search Bar Overlay - Removed from here, handled by MapComponent */}
+             {/*
+             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-md px-4">
                  <form onSubmit={handleSearch} className="relative">
                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                      <Input
                          type="search"
                          placeholder={t('maps_page.search_address_placeholder', 'Search address...')}
-                         className="pl-8 w-full bg-background shadow-md" // Added shadow for better visibility
+                         className="pl-8 w-full bg-background shadow-md"
                          value={searchTerm}
                          onChange={(e) => setSearchTerm(e.target.value)}
                      />
-                      {/* Hidden submit button to allow form submission on enter */}
                      <button type="submit" className="hidden" aria-hidden="true">Search</button>
                  </form>
              </div>
+             */}
 
           </CardContent>
         </Card>

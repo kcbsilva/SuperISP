@@ -325,6 +325,8 @@ const pt = {
      api_key_missing_error: 'Chave da API do Google Maps ausente. Adicione-a ao seu arquivo .env.',
      api_key_error_title: 'Erro no Mapa',
      example_marker_info: 'Elemento de Rede Exemplo',
+     geocode_error_title: 'Erro de Geocodificação', // Added
+     geocode_error_desc: 'Não foi possível encontrar as coordenadas do local.', // Added
    },
 };
 

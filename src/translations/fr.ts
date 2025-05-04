@@ -325,6 +325,8 @@ const fr = {
      api_key_missing_error: 'La clé API Google Maps est manquante. Veuillez l\'ajouter à votre fichier .env.',
      api_key_error_title: 'Erreur de carte',
      example_marker_info: 'Élément de réseau exemple',
+     geocode_error_title: 'Erreur de géocodage', // Added
+     geocode_error_desc: 'Impossible de trouver les coordonnées de l\'emplacement.', // Added
    },
 };
 

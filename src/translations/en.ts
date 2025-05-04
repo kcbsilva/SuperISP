@@ -325,6 +325,8 @@ const en = {
      api_key_missing_error: 'Google Maps API key is missing. Please add it to your .env file.',
      api_key_error_title: 'Map Error',
      example_marker_info: 'Example Network Element',
+     geocode_error_title: 'Geocode Error', // Added
+     geocode_error_desc: 'Could not find location coordinates.', // Added
    },
 };
 
