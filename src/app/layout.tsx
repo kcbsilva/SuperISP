@@ -481,14 +481,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarFooter>
         </Sidebar>
 
-       <SidebarInset noMargin={isMapPage}> {/* Pass noMargin prop */}
+        <SidebarInset noMargin={isMapPage}> {/* Pass noMargin prop */}
           <div className="fixed top-0 left-0 w-full z-50 h-1">
             {isLoading && <Progress value={progress} className="w-full h-1 rounded-none bg-transparent [&>*]:bg-green-600" indicatorClassName="bg-green-600" />}
           </div>
           {/* Conditionally render the AppHeader */}
           {!isMapPage && <AppHeader />}
-          {/* Apply conditional padding to the content area */}
-          <div className={isMapPage ? 'p-0' : 'p-4'}> {/* Adjusted padding to p-4 */}
+          {/* Adjust padding for main content area */}
+          <div className={isMapPage ? 'p-0' : 'p-4 md:p-6 md:pl-5'}> {/* Reduced left padding for medium screens */}
               {children}
            </div>
            <Toaster />
