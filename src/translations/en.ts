@@ -39,6 +39,15 @@ const en = {
     expand_sidebar: 'Expand sidebar',
     collapse_sidebar: 'Collapse sidebar',
   },
+  // Search Bar
+  search: {
+    placeholder: 'Search clients, equipment, elements...',
+    clients_label: 'Clients',
+    equipment_label: 'Equipment',
+    serial_prefix: 'S/N',
+    elements_label: 'Elements',
+    no_results_found: 'No results found for "{term}"',
+  },
   // Global Settings Page
   global_settings: {
     title: 'Global Settings',
