@@ -52,7 +52,7 @@ import { QueryClient, QueryClientProvider, useQuery, useMutation, QueryKey } fro
 import { getPops, addPop, deletePop, updatePop } from '@/services/mysql/pops';
 import type { Pop, PopData } from '@/types/pops'; // Import types
 import { Skeleton } from '@/components/ui/skeleton';
-
+import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale
 
 // Validation Schema for the PoP form
 const popSchema = z.object({
@@ -82,6 +82,7 @@ export default function PoPsPageWrapper() {
 function PoPsPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
   const { toast } = useToast();
+  const { t } = useLocale(); // Get translation function
 
   // --- React Query Setup ---
   const { data: pops = [], isLoading: isLoadingPops, error: popsError, refetch: refetchPops } = useQuery<Pop[], Error>({
@@ -94,16 +95,16 @@ function PoPsPage() {
     onSuccess: (newPopId, variables) => {
       queryClient.invalidateQueries({ queryKey: popsQueryKey }); // Refetch pops list
       toast({
-        title: 'PoP Added',
-        description: `${variables.name} has been added successfully.`,
+        title: t('pops.add_success_toast_title'),
+        description: t('pops.add_success_toast_description', '{name} has been added successfully.').replace('{name}', variables.name),
       });
       form.reset();
       setIsAddDialogOpen(false);
     },
     onError: (error) => {
       toast({
-        title: 'Error Adding PoP',
-        description: error.message || 'Could not add the PoP.',
+        title: t('pops.add_error_toast_title'),
+        description: error.message || t('pops.add_error_toast_description'),
         variant: 'destructive',
       });
     },
@@ -114,15 +115,15 @@ function PoPsPage() {
     onSuccess: (_, popId) => {
       queryClient.invalidateQueries({ queryKey: popsQueryKey }); // Refetch pops list
       toast({
-        title: 'PoP Removed',
-        description: `PoP has been removed.`,
+        title: t('pops.delete_success_toast_title'),
+        description: t('pops.delete_success_toast_description'),
         variant: 'destructive' // Use destructive variant for removal confirmation
       });
     },
     onError: (error) => {
       toast({
-        title: 'Error Removing PoP',
-        description: error.message || 'Could not remove the PoP.',
+        title: t('pops.delete_error_toast_title'),
+        description: error.message || t('pops.delete_error_toast_description'),
         variant: 'destructive',
       });
     },
@@ -134,16 +135,16 @@ function PoPsPage() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: popsQueryKey });
       toast({
-        title: 'PoP Updated',
-        description: `PoP has been updated successfully.`,
+        title: t('pops.update_success_toast_title'),
+        description: t('pops.update_success_toast_description'),
       });
       // Close edit dialog if open
       // setIsEditDialogOpen(false);
     },
     onError: (error) => {
       toast({
-        title: 'Error Updating PoP',
-        description: error.message || 'Could not update the PoP.',
+        title: t('pops.update_error_toast_title'),
+        description: error.message || t('pops.update_error_toast_description'),
         variant: 'destructive',
       });
     },
@@ -182,8 +183,8 @@ function PoPsPage() {
      // updatePopMutation.mutate({ id: pop.id, data: { name: pop.name + ' Updated' } });
 
      toast({
-       title: 'Edit PoP (Not Implemented)',
-       description: `Editing for "${pop.name}" is not yet implemented.`,
+       title: t('pops.edit_toast_title'),
+       description: t('pops.edit_toast_description', 'Editing for "{name}" is not yet implemented.').replace('{name}', pop.name),
      });
    };
 
@@ -191,8 +192,8 @@ function PoPsPage() {
     const handleRefresh = () => {
       refetchPops();
       toast({
-        title: 'Refreshing PoPs...',
-        description: 'Fetching the latest list of PoPs.',
+        title: t('pops.refreshing_toast_title'),
+        description: t('pops.refreshing_toast_description'),
       });
     };
 
@@ -200,7 +201,7 @@ function PoPsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Points of Presence (PoPs)</h1>
+        <h1 className="text-2xl font-semibold">{t('pops.title')}</h1>
 
         <div className="flex items-center gap-2"> {/* Wrapper for buttons */}
           {/* Refresh Button */}
@@ -211,21 +212,21 @@ function PoPsPage() {
               className="bg-primary hover:bg-primary/90" // Explicitly use primary theme colors
           >
               <RefreshCw className={`mr-2 h-4 w-4 ${isLoadingPops ? 'animate-spin' : ''}`} />
-              Refresh
+              {t('pops.refresh_button')}
           </Button>
 
           {/* Add PoP Dialog */}
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-green-600 hover:bg-green-700 text-white">
-                <PlusCircle className="mr-2 h-4 w-4" /> Add PoP
+                <PlusCircle className="mr-2 h-4 w-4" /> {t('pops.add_button')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Add New Point of Presence</DialogTitle>
+                <DialogTitle>{t('pops.add_dialog_title')}</DialogTitle>
                 <DialogDescription>
-                  Enter the details for the new PoP. Click save when you're done.
+                  {t('pops.add_dialog_description')}
                 </DialogDescription>
               </DialogHeader>
               <Form {...form}>
@@ -235,9 +236,9 @@ function PoPsPage() {
                     name="name"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right">Name</FormLabel>
+                        <FormLabel className="text-right">{t('pops.form_name_label')}</FormLabel>
                         <FormControl className="col-span-3">
-                          <Input placeholder="e.g., Central Hub" {...field} disabled={addPopMutation.isPending}/>
+                          <Input placeholder={t('pops.form_name_placeholder')} {...field} disabled={addPopMutation.isPending}/>
                         </FormControl>
                         <FormMessage className="col-span-4 text-right" />
                       </FormItem>
@@ -248,9 +249,9 @@ function PoPsPage() {
                     name="location"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right">Location</FormLabel>
+                        <FormLabel className="text-right">{t('pops.form_location_label')}</FormLabel>
                         <FormControl className="col-span-3">
-                          <Input placeholder="e.g., 123 Fiber Lane" {...field} disabled={addPopMutation.isPending}/>
+                          <Input placeholder={t('pops.form_location_placeholder')} {...field} disabled={addPopMutation.isPending}/>
                         </FormControl>
                          <FormMessage className="col-span-4 text-right" />
                       </FormItem>
@@ -262,17 +263,17 @@ function PoPsPage() {
                     name="status"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right">Status</FormLabel>
+                        <FormLabel className="text-right">{t('pops.form_status_label')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} disabled={addPopMutation.isPending}>
                           <FormControl className="col-span-3">
                             <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
+                              <SelectValue placeholder={t('pops.form_status_placeholder')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Active">Active</SelectItem>
-                            <SelectItem value="Inactive">Inactive</SelectItem>
-                            <SelectItem value="Planned">Planned</SelectItem>
+                            <SelectItem value="Active">{t('pops.form_status_active')}</SelectItem>
+                            <SelectItem value="Inactive">{t('pops.form_status_inactive')}</SelectItem>
+                            <SelectItem value="Planned">{t('pops.form_status_planned')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage className="col-span-4 text-right" />
@@ -281,11 +282,11 @@ function PoPsPage() {
                   />
                    <DialogFooter>
                       <DialogClose asChild>
-                        <Button type="button" variant="outline" disabled={addPopMutation.isPending}>Cancel</Button>
+                        <Button type="button" variant="outline" disabled={addPopMutation.isPending}>{t('pops.form_cancel_button')}</Button>
                       </DialogClose>
                       <Button type="submit" disabled={addPopMutation.isPending}>
                           {addPopMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          Save PoP
+                          {t('pops.form_save_button')}
                       </Button>
                    </DialogFooter>
                 </form>
@@ -298,8 +299,8 @@ function PoPsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Existing PoPs</CardTitle>
-          <CardDescription>Manage your network's points of presence.</CardDescription>
+          <CardTitle>{t('pops.table_title')}</CardTitle>
+          <CardDescription>{t('pops.table_description')}</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoadingPops ? (
@@ -309,29 +310,29 @@ function PoPsPage() {
                 <Skeleton className="h-8 w-full" />
              </div>
           ) : popsError ? (
-             <p className="text-center text-destructive py-4">Error loading PoPs: {popsError.message}</p>
+             <p className="text-center text-destructive py-4">{t('pops.loading_error', 'Error loading PoPs: {message}').replace('{message}', popsError.message)}</p>
           ) : pops.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-border">
                 <thead className="bg-muted/50">
                   <tr>
                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-16"> {/* Added ID column */}
-                       ID
+                       {t('pops.table_header_id')}
                      </th>
                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                       Name
+                       {t('pops.table_header_name')}
                      </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Location
+                      {t('pops.table_header_location')}
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Status
+                      {t('pops.table_header_status')}
                     </th>
                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-24"> {/* Added Created At */}
-                       Created
+                       {t('pops.table_header_created')}
                      </th>
                     <th scope="col" className="relative px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider w-28">
-                      Actions
+                      {t('pops.table_header_actions')}
                     </th>
                   </tr>
                 </thead>
@@ -357,7 +358,7 @@ function PoPsPage() {
                                 : "bg-red-100 text-red-800" // Default to inactive/red
                           }`}
                         >
-                          {pop.status || 'Unknown'} {/* Display status or Unknown */}
+                          {pop.status ? t(`pops.form_status_${pop.status.toLowerCase()}`, pop.status) : t('pops.status_unknown')} {/* Display localized status or Unknown */}
                         </span>
                       </td>
                        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground"> {/* Created At Data */}
@@ -379,18 +380,20 @@ function PoPsPage() {
                            </AlertDialogTrigger>
                            <AlertDialogContent>
                              <AlertDialogHeader>
-                               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                               <AlertDialogTitle>{t('pops.delete_alert_title')}</AlertDialogTitle>
                                <AlertDialogDescription>
-                                 This action cannot be undone. This will permanently delete the PoP named "{pop.name}" (ID: {pop.id}).
+                                 {t('pops.delete_alert_description', 'This action cannot be undone. This will permanently delete the PoP named "{name}" (ID: {id}).')
+                                    .replace('{name}', pop.name)
+                                    .replace('{id}', pop.id.toString())}
                                </AlertDialogDescription>
                              </AlertDialogHeader>
                              <AlertDialogFooter>
-                               <AlertDialogCancel>Cancel</AlertDialogCancel>
+                               <AlertDialogCancel>{t('pops.delete_alert_cancel')}</AlertDialogCancel>
                                <AlertDialogAction
                                  className={buttonVariants({ variant: "destructive" })} // Style action as destructive
                                  onClick={() => handleRemovePopConfirm(pop.id)}
                                >
-                                 Delete
+                                 {t('pops.delete_alert_delete')}
                                </AlertDialogAction>
                              </AlertDialogFooter>
                            </AlertDialogContent>
@@ -402,7 +405,7 @@ function PoPsPage() {
               </table>
             </div>
           ) : (
-            <p className="text-center text-muted-foreground py-4">No PoPs found. Click "Add PoP" to create one.</p>
+            <p className="text-center text-muted-foreground py-4">{t('pops.no_pops_found')}</p>
           )}
         </CardContent>
       </Card>

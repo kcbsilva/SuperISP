@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"; // Import Select components
+import { useLocale, type Locale } from '@/contexts/LocaleContext'; // Import useLocale and Locale type
 
 // Example schema for global settings
 const globalSettingsSchema = z.object({
@@ -64,6 +65,8 @@ const saveGlobalSettings = async (data: GlobalSettingsFormData): Promise<void> =
 
 export default function GlobalSettingsPage() {
   const { toast } = useToast();
+  const { t, setLocale, locale } = useLocale(); // Get translation function and locale state
+
   const form = useForm<GlobalSettingsFormData>({
     resolver: zodResolver(globalSettingsSchema),
     defaultValues: async () => {
@@ -73,8 +76,8 @@ export default function GlobalSettingsPage() {
         return settings;
       } catch (error) {
         toast({
-          title: 'Error Loading Settings',
-          description: 'Could not load existing global settings.',
+          title: t('global_settings.load_error_title'),
+          description: t('global_settings.load_error_description'),
           variant: 'destructive',
         });
         // Return defaults if loading fails
@@ -89,17 +92,26 @@ export default function GlobalSettingsPage() {
     },
   });
 
+   // Watch language changes in the form to update context immediately
+  const watchedLanguage = form.watch('language');
+  React.useEffect(() => {
+    if (watchedLanguage) {
+      setLocale(watchedLanguage as Locale);
+    }
+  }, [watchedLanguage, setLocale]);
+
   const onSubmit = async (data: GlobalSettingsFormData) => {
     try {
       await saveGlobalSettings(data);
+      setLocale(data.language as Locale); // Update locale context on save
       toast({
-        title: 'Settings Saved',
-        description: 'Global settings have been updated successfully.',
+        title: t('global_settings.save_success_title'),
+        description: t('global_settings.save_success_description'),
       });
     } catch (error) {
       toast({
-        title: 'Error Saving Settings',
-        description: 'Could not save global settings.',
+        title: t('global_settings.save_error_title'),
+        description: t('global_settings.save_error_description'),
         variant: 'destructive',
       });
     }
@@ -107,11 +119,11 @@ export default function GlobalSettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Global Settings</h1>
+      <h1 className="text-2xl font-semibold">{t('global_settings.title')}</h1>
       <Card>
         <CardHeader>
-          <CardTitle>Company & Regional Settings</CardTitle>
-          <CardDescription>Configure the global settings for your NetHub instance.</CardDescription>
+          <CardTitle>{t('global_settings.card_title')}</CardTitle>
+          <CardDescription>{t('global_settings.card_description')}</CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -122,9 +134,9 @@ export default function GlobalSettingsPage() {
                 name="companyName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Name *</FormLabel>
+                    <FormLabel>{t('global_settings.company_name_label')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your ISP Name" {...field} />
+                      <Input placeholder={t('global_settings.company_name_placeholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -137,9 +149,9 @@ export default function GlobalSettingsPage() {
                 name="companyLogoUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Logo URL (Optional)</FormLabel>
+                    <FormLabel>{t('global_settings.company_logo_label')}</FormLabel>
                     <FormControl>
-                      <Input type="url" placeholder="https://example.com/logo.png" {...field} />
+                      <Input type="url" placeholder={t('global_settings.company_logo_placeholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -152,9 +164,9 @@ export default function GlobalSettingsPage() {
                 name="defaultCurrency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Default Currency *</FormLabel>
+                    <FormLabel>{t('global_settings.currency_label')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., USD, EUR" maxLength={3} {...field} />
+                      <Input placeholder={t('global_settings.currency_placeholder')} maxLength={3} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -167,10 +179,10 @@ export default function GlobalSettingsPage() {
                 name="timezone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Timezone *</FormLabel>
+                    <FormLabel>{t('global_settings.timezone_label')}</FormLabel>
                     <FormControl>
                       {/* In a real app, this might be a Select dropdown populated with timezones */}
-                      <Input placeholder="e.g., America/New_York, Europe/London" {...field} />
+                      <Input placeholder={t('global_settings.timezone_placeholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -183,17 +195,17 @@ export default function GlobalSettingsPage() {
                  name="language"
                  render={({ field }) => (
                    <FormItem>
-                     <FormLabel>Default Language *</FormLabel>
+                     <FormLabel>{t('global_settings.language_label')}</FormLabel>
                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                        <FormControl>
                          <SelectTrigger>
-                           <SelectValue placeholder="Select default language" />
+                           <SelectValue placeholder={t('global_settings.language_placeholder')} />
                          </SelectTrigger>
                        </FormControl>
                        <SelectContent>
-                         <SelectItem value="en">English</SelectItem>
-                         <SelectItem value="fr">Français (French)</SelectItem>
-                         <SelectItem value="pt">Português (Portuguese)</SelectItem>
+                         <SelectItem value="en">{t('global_settings.language_english')}</SelectItem>
+                         <SelectItem value="fr">{t('global_settings.language_french')}</SelectItem>
+                         <SelectItem value="pt">{t('global_settings.language_portuguese')}</SelectItem>
                        </SelectContent>
                      </Select>
                      <FormMessage />
@@ -203,7 +215,7 @@ export default function GlobalSettingsPage() {
             </CardContent>
             <CardFooter className="border-t px-6 py-4">
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Saving...' : <><Save className="mr-2 h-4 w-4" /> Save Settings</>}
+                {form.formState.isSubmitting ? t('global_settings.saving_button') : <><Save className="mr-2 h-4 w-4" /> {t('global_settings.save_button')}</>}
               </Button>
             </CardFooter>
           </form>

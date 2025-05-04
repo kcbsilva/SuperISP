@@ -1,4 +1,3 @@
-
 // src/app/subscribers/profile/[id]/page.tsx
 'use client';
 
@@ -41,6 +40,7 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 import { getPops } from '@/services/mysql/pops'; // Import PoP service
 import type { Pop } from '@/types/pops'; // Import PoP type
 import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
+import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale
 
 // Validation Schema for the Add Service form
 const addServiceSchema = z.object({
@@ -119,6 +119,7 @@ function SubscriberProfilePage() {
   const params = useParams();
   const subscriberId = params.id; // Get the ID from the route parameters
   const { toast } = useToast();
+  const { t } = useLocale(); // Get translation function
   const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = React.useState(false);
 
   // --- React Query for PoPs ---
@@ -146,13 +147,20 @@ function SubscriberProfilePage() {
   const handleEdit = () => {
     // Placeholder for edit action
     console.log("Edit subscriber:", subscriberId);
-    toast({ title: "Edit Subscriber (Not Implemented)", description: `Editing for ${subscriber.name} is not yet functional.` });
+    toast({
+      title: t('subscriber_profile.edit_toast_title'),
+      description: t('subscriber_profile.edit_toast_description', 'Editing for {name} is not yet functional.').replace('{name}', subscriber.name)
+    });
   };
 
   const handleDelete = () => {
     // Placeholder for delete action - Add confirmation dialog in real app
     console.log("Delete subscriber:", subscriberId);
-    toast({ title: "Delete Subscriber (Not Implemented)", description: `Deletion for ${subscriber.name} is not yet functional.`, variant: "destructive" });
+    toast({
+      title: t('subscriber_profile.delete_toast_title'),
+      description: t('subscriber_profile.delete_toast_description', 'Deletion for {name} is not yet functional.').replace('{name}', subscriber.name),
+      variant: "destructive"
+    });
   };
 
   // Handle adding a new service
@@ -162,8 +170,10 @@ function SubscriberProfilePage() {
     addServiceForm.reset();
     setIsAddServiceDialogOpen(false);
     toast({
-      title: "Service Added (Simulated)",
-      description: `${data.serviceType} service added for ${subscriber.name}.`,
+      title: t('subscriber_profile.add_service_success_toast_title'),
+      description: t('subscriber_profile.add_service_success_toast_description', '{serviceType} service added for {name}.')
+        .replace('{serviceType}', data.serviceType)
+        .replace('{name}', subscriber.name),
     });
     // Consider refetching subscriber data or updating local state if necessary
   };
@@ -176,6 +186,8 @@ function SubscriberProfilePage() {
              <Skeleton className="h-24 w-full" />
              <Skeleton className="h-10 w-full" />
              <Skeleton className="h-64 w-full" />
+             {/* Add localized loading message if needed */}
+             <p>{t('subscriber_profile.loading_skeleton', 'Loading...')}</p>
         </div>
     );
   }
@@ -193,7 +205,7 @@ function SubscriberProfilePage() {
             <div>
               <CardTitle>{subscriber.name}</CardTitle>
               <CardDescription>
-                {subscriber.type} Subscriber - ID: {subscriber.id} - Status: <span className="font-medium text-green-600">{subscriber.status}</span>
+                {t(`add_subscriber.type_${subscriber.type.toLowerCase()}` as any, subscriber.type)} {t('subscriber_profile.status_label')}: <span className="font-medium text-green-600">{t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)}</span> - ID: {subscriber.id}
               </CardDescription>
             </div>
           </div>
@@ -204,13 +216,13 @@ function SubscriberProfilePage() {
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
           <TabsTrigger value="overview">
-            <User className="mr-2 h-4 w-4" /> Overview
+            <User className="mr-2 h-4 w-4" /> {t('subscriber_profile.overview_tab')}
           </TabsTrigger>
           <TabsTrigger value="services">
-             <ServerIcon className="mr-2 h-4 w-4" /> Services
+             <ServerIcon className="mr-2 h-4 w-4" /> {t('subscriber_profile.services_tab')}
           </TabsTrigger>
           <TabsTrigger value="billing">
-             <DollarSign className="mr-2 h-4 w-4" /> Billing
+             <DollarSign className="mr-2 h-4 w-4" /> {t('subscriber_profile.billing_tab')}
               {hasOutstandingBalance && (
                   <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs font-bold">
                       ! {/* Simple indicator */}
@@ -218,10 +230,10 @@ function SubscriberProfilePage() {
               )}
           </TabsTrigger>
           <TabsTrigger value="service-calls">
-             <Wrench className="mr-2 h-4 w-4" /> Service Calls
+             <Wrench className="mr-2 h-4 w-4" /> {t('subscriber_profile.service_calls_tab')}
           </TabsTrigger>
           <TabsTrigger value="inventory">
-             <Package className="mr-2 h-4 w-4" /> Inventory
+             <Package className="mr-2 h-4 w-4" /> {t('subscriber_profile.inventory_tab')}
           </TabsTrigger>
         </TabsList>
 
@@ -229,25 +241,25 @@ function SubscriberProfilePage() {
         <TabsContent value="overview">
           <Card>
             <CardHeader>
-              <CardTitle>Overview</CardTitle>
-              <CardDescription>General information about the subscriber.</CardDescription>
+              <CardTitle>{t('subscriber_profile.overview_card_title')}</CardTitle>
+              <CardDescription>{t('subscriber_profile.overview_card_description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p><strong>Name:</strong> {subscriber.name}</p>
-              <p><strong>Type:</strong> {subscriber.type}</p>
-              <p><strong>Status:</strong> {subscriber.status}</p>
-              <p><strong>Address:</strong> {subscriber.address}</p>
-              <p><strong>Email:</strong> {subscriber.email}</p>
-              <p><strong>Phone:</strong> {subscriber.phone}</p>
+              <p><strong>{t('subscriber_profile.overview_name')}:</strong> {subscriber.name}</p>
+              <p><strong>{t('subscriber_profile.overview_type')}:</strong> {t(`add_subscriber.type_${subscriber.type.toLowerCase()}` as any, subscriber.type)}</p>
+              <p><strong>{t('subscriber_profile.overview_status')}:</strong> {t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)}</p>
+              <p><strong>{t('subscriber_profile.overview_address')}:</strong> {subscriber.address}</p>
+              <p><strong>{t('subscriber_profile.overview_email')}:</strong> {subscriber.email}</p>
+              <p><strong>{t('subscriber_profile.overview_phone')}:</strong> {subscriber.phone}</p>
               {/* Add more details if available, e.g., mobile number, tax ID based on type */}
             </CardContent>
             <CardFooter className="border-t pt-6 flex justify-end gap-2"> {/* Added footer with buttons */}
                 <Button variant="outline" onClick={handleEdit}>
-                   <Edit className="mr-2 h-4 w-4" /> Edit Client
+                   <Edit className="mr-2 h-4 w-4" /> {t('subscriber_profile.edit_button')}
                 </Button>
                  {/* Consider adding an AlertDialog for delete confirmation */}
                  <Button variant="destructive" onClick={handleDelete}>
-                     <Trash2 className="mr-2 h-4 w-4" /> Delete Client
+                     <Trash2 className="mr-2 h-4 w-4" /> {t('subscriber_profile.delete_button')}
                  </Button>
             </CardFooter>
           </Card>
@@ -258,21 +270,21 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                  <CardTitle>Services</CardTitle>
-                  <CardDescription>Services currently subscribed to by the customer.</CardDescription>
+                  <CardTitle>{t('subscriber_profile.services_card_title')}</CardTitle>
+                  <CardDescription>{t('subscriber_profile.services_card_description')}</CardDescription>
               </div>
                {/* Add Service Dialog Trigger */}
                <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
                  <DialogTrigger asChild>
                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                     <PlusCircle className="mr-2 h-4 w-4" /> Add Service
+                     <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.add_service_button')}
                    </Button>
                  </DialogTrigger>
                  <DialogContent className="sm:max-w-[425px]">
                    <DialogHeader>
-                     <DialogTitle>Add New Service</DialogTitle>
+                     <DialogTitle>{t('subscriber_profile.add_service_dialog_title')}</DialogTitle>
                      <DialogDescription>
-                       Select the service type and the Point of Presence (PoP) for this service.
+                       {t('subscriber_profile.add_service_dialog_description')}
                      </DialogDescription>
                    </DialogHeader>
                    <Form {...addServiceForm}>
@@ -282,18 +294,18 @@ function SubscriberProfilePage() {
                          name="serviceType"
                          render={({ field }) => (
                            <FormItem>
-                             <FormLabel>Service Type</FormLabel>
+                             <FormLabel>{t('subscriber_profile.add_service_type_label')}</FormLabel>
                              <Select onValueChange={field.onChange} defaultValue={field.value}>
                                <FormControl>
                                  <SelectTrigger>
-                                   <SelectValue placeholder="Select service type" />
+                                   <SelectValue placeholder={t('subscriber_profile.add_service_type_placeholder')} />
                                  </SelectTrigger>
                                </FormControl>
                                <SelectContent>
-                                 <SelectItem value="Internet">Internet</SelectItem>
-                                 <SelectItem value="TV">TV</SelectItem>
-                                 <SelectItem value="Phone">Phone</SelectItem>
-                                 <SelectItem value="Other">Other</SelectItem>
+                                 <SelectItem value="Internet">{t('subscriber_profile.add_service_type_internet')}</SelectItem>
+                                 <SelectItem value="TV">{t('subscriber_profile.add_service_type_tv')}</SelectItem>
+                                 <SelectItem value="Phone">{t('subscriber_profile.add_service_type_phone')}</SelectItem>
+                                 <SelectItem value="Other">{t('subscriber_profile.add_service_type_other')}</SelectItem>
                                </SelectContent>
                              </Select>
                              <FormMessage />
@@ -305,11 +317,11 @@ function SubscriberProfilePage() {
                          name="popId"
                          render={({ field }) => (
                            <FormItem>
-                             <FormLabel>Point of Presence (PoP)</FormLabel>
+                             <FormLabel>{t('subscriber_profile.add_service_pop_label')}</FormLabel>
                              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingPops || !!popsError}>
                                <FormControl>
                                  <SelectTrigger>
-                                   <SelectValue placeholder={isLoadingPops ? "Loading PoPs..." : popsError ? "Error loading PoPs" : "Select PoP"} />
+                                   <SelectValue placeholder={isLoadingPops ? t('subscriber_profile.add_service_pop_loading') : popsError ? t('subscriber_profile.add_service_pop_error') : t('subscriber_profile.add_service_pop_placeholder')} />
                                  </SelectTrigger>
                                </FormControl>
                                <SelectContent>
@@ -319,9 +331,9 @@ function SubscriberProfilePage() {
                                    </SelectItem>
                                  ))}
                                   {/* Add message if loading or error */}
-                                  {isLoadingPops && <div className="p-2 text-center text-muted-foreground">Loading...</div>}
-                                  {popsError && <div className="p-2 text-center text-destructive">Error loading PoPs</div>}
-                                  {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground">No PoPs found</div>}
+                                  {isLoadingPops && <div className="p-2 text-center text-muted-foreground">{t('subscriber_profile.add_service_pop_loading')}</div>}
+                                  {popsError && <div className="p-2 text-center text-destructive">{t('subscriber_profile.add_service_pop_error')}</div>}
+                                  {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground">{t('subscriber_profile.add_service_pop_none')}</div>}
                                </SelectContent>
                              </Select>
                              <FormMessage />
@@ -330,11 +342,11 @@ function SubscriberProfilePage() {
                        />
                        <DialogFooter>
                          <DialogClose asChild>
-                           <Button type="button" variant="outline" disabled={addServiceForm.formState.isSubmitting}>Cancel</Button>
+                           <Button type="button" variant="outline" disabled={addServiceForm.formState.isSubmitting}>{t('subscriber_profile.add_service_cancel_button')}</Button>
                          </DialogClose>
                          <Button type="submit" disabled={addServiceForm.formState.isSubmitting}>
                            {addServiceForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                           Add Service
+                           {addServiceForm.formState.isSubmitting ? t('subscriber_profile.add_service_saving_button') : t('subscriber_profile.add_service_save_button')}
                          </Button>
                        </DialogFooter>
                      </form>
@@ -351,13 +363,13 @@ function SubscriberProfilePage() {
                                 <span className="font-medium">{service.type}</span> - <span className="text-sm text-muted-foreground">{service.plan}</span>
                             </div>
                              {/* Optionally display PoP name if needed by looking up service.popId in the pops array */}
-                            <span className="text-xs text-muted-foreground">PoP: {pops.find(p => p.id.toString() === service.popId)?.name || service.popId}</span>
+                            <span className="text-xs text-muted-foreground">{t('subscriber_profile.services_pop_label')}: {pops.find(p => p.id.toString() === service.popId)?.name || service.popId}</span>
                             {/* Add edit/delete buttons per service if needed */}
                         </li>
                     ))}
                  </ul>
              ) : (
-                 <p className="text-muted-foreground text-center py-4">No active services found for this subscriber.</p>
+                 <p className="text-muted-foreground text-center py-4">{t('subscriber_profile.services_none')}</p>
              )}
             </CardContent>
           </Card>
@@ -367,19 +379,19 @@ function SubscriberProfilePage() {
         <TabsContent value="billing">
           <Card>
             <CardHeader>
-              <CardTitle>Billing</CardTitle>
-              <CardDescription>Invoices, payments, and billing history.</CardDescription>
+              <CardTitle>{t('subscriber_profile.billing_card_title')}</CardTitle>
+              <CardDescription>{t('subscriber_profile.billing_card_description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-               <p><strong>Current Balance:</strong> ${subscriber.billing?.balance.toFixed(2) || '0.00'}</p>
-               <p><strong>Next Bill Date:</strong> {subscriber.billing?.nextBillDate || 'N/A'}</p>
-               <p className="text-muted-foreground pt-4">Detailed invoice history will be displayed here. (Not Implemented)</p>
+               <p><strong>{t('subscriber_profile.billing_balance')}:</strong> ${subscriber.billing?.balance.toFixed(2) || '0.00'}</p>
+               <p><strong>{t('subscriber_profile.billing_next_date')}:</strong> {subscriber.billing?.nextBillDate || t('subscriber_profile.billing_not_available')}</p>
+               <p className="text-muted-foreground pt-4">{t('subscriber_profile.billing_no_history')}</p>
               {/* Placeholder for invoices table, payment methods, etc. */}
             </CardContent>
              {/* Add Footer for actions like "Make Payment", "View Invoices" */}
             <CardFooter className="border-t pt-6 flex justify-end gap-2">
-                <Button variant="outline">View Invoices</Button>
-                <Button>Make Payment</Button>
+                <Button variant="outline">{t('subscriber_profile.billing_view_invoices_button')}</Button>
+                <Button>{t('subscriber_profile.billing_make_payment_button')}</Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -389,11 +401,11 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                  <div>
-                     <CardTitle>Service Calls</CardTitle>
-                     <CardDescription>History of support tickets and service visits.</CardDescription>
+                     <CardTitle>{t('subscriber_profile.service_calls_card_title')}</CardTitle>
+                     <CardDescription>{t('subscriber_profile.service_calls_card_description')}</CardDescription>
                  </div>
                   <Button size="sm">
-                      <PlusCircle className="mr-2 h-4 w-4" /> New Service Call
+                      <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.service_calls_new_button')}
                   </Button>
             </CardHeader>
             <CardContent>
@@ -410,7 +422,7 @@ function SubscriberProfilePage() {
                      ))}
                   </ul>
              ) : (
-                 <p className="text-muted-foreground text-center py-4">No service call history found.</p>
+                 <p className="text-muted-foreground text-center py-4">{t('subscriber_profile.service_calls_none')}</p>
              )}
             </CardContent>
           </Card>
@@ -421,11 +433,11 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                <div>
-                   <CardTitle>Inventory</CardTitle>
-                   <CardDescription>Equipment assigned to the subscriber.</CardDescription>
+                   <CardTitle>{t('subscriber_profile.inventory_card_title')}</CardTitle>
+                   <CardDescription>{t('subscriber_profile.inventory_card_description')}</CardDescription>
                </div>
                 <Button size="sm">
-                    <PlusCircle className="mr-2 h-4 w-4" /> Assign Equipment
+                    <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.inventory_assign_button')}
                 </Button>
             </CardHeader>
             <CardContent>
@@ -436,13 +448,13 @@ function SubscriberProfilePage() {
                              <div>
                                  <span className="font-medium">{item.type}</span> - <span className="text-sm text-muted-foreground">{item.model}</span>
                              </div>
-                             <span className="text-xs text-muted-foreground">S/N: {item.serial}</span>
+                             <span className="text-xs text-muted-foreground">{t('subscriber_profile.inventory_serial_label')}: {item.serial}</span>
                              {/* Add buttons for actions like "Replace", "Remove" */}
                          </li>
                      ))}
                   </ul>
               ) : (
-                  <p className="text-muted-foreground text-center py-4">No equipment assigned to this subscriber.</p>
+                  <p className="text-muted-foreground text-center py-4">{t('subscriber_profile.inventory_none')}</p>
               )}
             </CardContent>
           </Card>

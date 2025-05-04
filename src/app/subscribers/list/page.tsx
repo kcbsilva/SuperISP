@@ -24,6 +24,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale
+import { useToast } from '@/hooks/use-toast'; // Import useToast
 
 // Placeholder data - replace with actual data fetching and state management
 const placeholderSubscribers = [
@@ -43,6 +45,8 @@ type FilterState = {
 
 
 export default function ListSubscribersPage() {
+    const { t } = useLocale(); // Get translation function
+    const { toast } = useToast(); // Get toast function
     const [searchTerm, setSearchTerm] = React.useState('');
     const [filters, setFilters] = React.useState<FilterState>({
         type: [],
@@ -78,11 +82,13 @@ export default function ListSubscribersPage() {
     // Handle Refresh (Simulated)
     const handleRefresh = () => {
         setIsLoading(true);
+        toast({ title: t('list_subscribers.refresh_start_toast') }); // Show toast on start
         console.log('Refreshing subscriber list...');
         // Simulate data fetching
         setTimeout(() => {
-        setIsLoading(false);
-        console.log('Subscriber list refreshed.');
+          setIsLoading(false);
+          console.log('Subscriber list refreshed.');
+          toast({ title: t('list_subscribers.refresh_end_toast') }); // Show toast on end
         // In a real app, you'd call refetch() from react-query or similar
         }, 1000);
     };
@@ -91,7 +97,7 @@ export default function ListSubscribersPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Subscribers List</h1>
+        <h1 className="text-2xl font-semibold">{t('list_subscribers.title')}</h1>
         {/* Add New and Refresh Buttons */}
         <div className="flex items-center gap-2">
             <Button
@@ -101,11 +107,11 @@ export default function ListSubscribersPage() {
                 className="bg-primary hover:bg-primary/90"
             >
                 <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                Refresh
+                {t('list_subscribers.refresh_button')}
             </Button>
             <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
               <Link href="/subscribers/add">
-                <PlusCircle className="mr-2 h-4 w-4" /> Add New
+                <PlusCircle className="mr-2 h-4 w-4" /> {t('list_subscribers.add_button')}
               </Link>
             </Button>
         </div>
@@ -117,7 +123,7 @@ export default function ListSubscribersPage() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search by name, email, address, phone..."
+            placeholder={t('list_subscribers.search_placeholder')}
             className="pl-8 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -126,26 +132,26 @@ export default function ListSubscribersPage() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="shrink-0">
-              <Filter className="mr-2 h-4 w-4" /> Filter
+              <Filter className="mr-2 h-4 w-4" /> {t('list_subscribers.filter_button')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
-             <DropdownMenuLabel>Filter by Type</DropdownMenuLabel>
+             <DropdownMenuLabel>{t('list_subscribers.filter_type_label')}</DropdownMenuLabel>
              <DropdownMenuSeparator />
              <DropdownMenuCheckboxItem
                 checked={filters.type.includes('Residential')}
                 onCheckedChange={(checked) => handleFilterChange('type', 'Residential', !!checked)}
              >
-                Residential
+                {t('list_subscribers.filter_type_residential')}
              </DropdownMenuCheckboxItem>
              <DropdownMenuCheckboxItem
                  checked={filters.type.includes('Commercial')}
                  onCheckedChange={(checked) => handleFilterChange('type', 'Commercial', !!checked)}
              >
-                 Commercial
+                 {t('list_subscribers.filter_type_commercial')}
              </DropdownMenuCheckboxItem>
 
-             <DropdownMenuLabel className="mt-2">Filter by Status</DropdownMenuLabel>
+             <DropdownMenuLabel className="mt-2">{t('list_subscribers.filter_status_label')}</DropdownMenuLabel>
              <DropdownMenuSeparator />
              {(['Active', 'Inactive', 'Suspended', 'Planned'] as SubscriberStatus[]).map(status => (
                  <DropdownMenuCheckboxItem
@@ -153,7 +159,7 @@ export default function ListSubscribersPage() {
                     checked={filters.status.includes(status)}
                     onCheckedChange={(checked) => handleFilterChange('status', status, !!checked)}
                  >
-                    {status}
+                    {t(`list_subscribers.filter_status_${status.toLowerCase()}` as any, status)} {/* Localize status */}
                  </DropdownMenuCheckboxItem>
              ))}
           </DropdownMenuContent>
@@ -163,22 +169,21 @@ export default function ListSubscribersPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>All Subscribers</CardTitle>
-          <CardDescription>View and manage all registered subscribers.</CardDescription>
+          <CardTitle>{t('list_subscribers.table_title')}</CardTitle>
+          <CardDescription>{t('list_subscribers.table_description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-12">Type</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Address</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
+                  <TableHead className="w-12">{t('list_subscribers.table_header_type')}</TableHead>
+                  <TableHead>{t('list_subscribers.table_header_name')}</TableHead>
+                  <TableHead>{t('list_subscribers.table_header_status')}</TableHead>
+                  <TableHead>{t('list_subscribers.table_header_address')}</TableHead>
+                  <TableHead>{t('list_subscribers.table_header_email')}</TableHead>
+                  <TableHead>{t('list_subscribers.table_header_phone')}</TableHead>
                   {/* Removed Actions Header */}
-                  {/* <TableHead className="w-24 text-right">Actions</TableHead> */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -212,31 +217,19 @@ export default function ListSubscribersPage() {
                                 '' // Default secondary or outline if needed
                              }
                         >
-                          {subscriber.status}
+                          {t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)} {/* Localize status */}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm">{subscriber.address}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">{subscriber.email}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">{subscriber.phone}</TableCell>
                       {/* Removed Actions Cell */}
-                      {/*
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Edit className="h-4 w-4" />
-                          <span className="sr-only">Edit</span>
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Delete</span>
-                        </Button>
-                      </TableCell>
-                      */}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-muted-foreground py-8"> {/* Adjusted colSpan */}
-                      No subscribers found matching your criteria.
+                      {t('list_subscribers.no_results')}
                     </TableCell>
                   </TableRow>
                 )}

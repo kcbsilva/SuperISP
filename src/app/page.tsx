@@ -29,6 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale
 
 
 // Placeholder data - replace with actual data fetching
@@ -52,15 +53,18 @@ const dashboardData = {
 type DashboardView = "General" | "Financial" | "Network" | "Technician";
 
 export default function DashboardPage() {
+  const { t, locale } = useLocale(); // Get translation function and current locale
   const [currentView, setCurrentView] = React.useState<DashboardView>("General");
   const [formattedSubscribers, setFormattedSubscribers] = React.useState<string | null>(null);
   const [formattedMrr, setFormattedMrr] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    // Format numbers on the client side after hydration
-    setFormattedSubscribers(dashboardData.totalSubscribers.toLocaleString());
-    setFormattedMrr(dashboardData.mrr.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-  }, []); // Empty dependency array ensures this runs once on mount
+    // Format numbers on the client side after hydration, using current locale
+    setFormattedSubscribers(dashboardData.totalSubscribers.toLocaleString(locale));
+    // Determine locale for currency formatting (basic example)
+    const currencyLocale = locale === 'pt' ? 'pt-BR' : locale === 'fr' ? 'fr-FR' : 'en-US';
+    setFormattedMrr(dashboardData.mrr.toLocaleString(currencyLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  }, [locale]); // Rerun effect when locale changes
 
   const handleViewChange = (view: DashboardView) => {
     setCurrentView(view);
@@ -75,24 +79,24 @@ export default function DashboardPage() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                {currentView} Dashboard
+                 {t(`dashboard.${currentView.toLowerCase()}_view`)} Dashboard
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuLabel>Select Dashboard View</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('dashboard.select_view')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleViewChange("General")} disabled={currentView === "General"}>
-                General Overview
+                {t('dashboard.general_view')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleViewChange("Financial")} disabled={currentView === "Financial"}>
-                Financial Dashboard
+                {t('dashboard.financial_view')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleViewChange("Network")} disabled={currentView === "Network"}>
-                Network Dashboard
+                {t('dashboard.network_view')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleViewChange("Technician")} disabled={currentView === "Technician"}>
-                Technician Dashboard
+                {t('dashboard.technician_view')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -106,54 +110,58 @@ export default function DashboardPage() {
               <Card x-chunk="dashboard-01-chunk-0">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Total Subscribers
+                    {t('dashboard.total_subscribers_title')}
                   </CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                    {/* Use state variable for formatted number */}
-                  <div className="text-2xl font-bold">{formattedSubscribers ?? '...'}</div>
+                  <div className="text-2xl font-bold">{formattedSubscribers ?? t('dashboard.loading_ellipsis')}</div>
                   <p className="text-xs text-muted-foreground">
-                    +{dashboardData.subscriberChange}% from last month
+                     {t('dashboard.total_subscribers_change', '+{change}% from last month').replace('{change}', dashboardData.subscriberChange.toString())}
                   </p>
                 </CardContent>
               </Card>
               <Card x-chunk="dashboard-01-chunk-1">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Monthly Recurring Revenue
+                    {t('dashboard.mrr_title')}
                   </CardTitle>
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                    {/* Use state variable for formatted number */}
-                  <div className="text-2xl font-bold">${formattedMrr ?? '...'}</div>
+                  <div className="text-2xl font-bold">${formattedMrr ?? t('dashboard.loading_ellipsis')}</div>
                   <p className="text-xs text-muted-foreground">
-                    +{dashboardData.mrrChange}% from last month
+                     {t('dashboard.mrr_change', '+{change}% from last month').replace('{change}', dashboardData.mrrChange.toString())}
                   </p>
                 </CardContent>
               </Card>
               <Card x-chunk="dashboard-01-chunk-2">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Network Uptime</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t('dashboard.network_uptime_title')}</CardTitle>
                   <Network className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{dashboardData.networkUptime}%</div>
                   <p className="text-xs text-muted-foreground">
-                    {dashboardData.uptimeChange >= 0 ? '+' : ''}{dashboardData.uptimeChange}% from last month
+                     {t('dashboard.network_uptime_change', '{prefix}{change}% from last month')
+                       .replace('{prefix}', dashboardData.uptimeChange >= 0 ? '+' : '')
+                       .replace('{change}', dashboardData.uptimeChange.toString())}
                   </p>
                 </CardContent>
               </Card>
               <Card x-chunk="dashboard-01-chunk-3">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Open Support Tickets</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t('dashboard.open_tickets_title')}</CardTitle>
                   <MessageSquareWarning className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{dashboardData.openTickets}</div>
                   <p className="text-xs text-muted-foreground">
-                    {dashboardData.ticketChange > 0 ? '+' : ''}{dashboardData.ticketChange} from last hour
+                     {t('dashboard.open_tickets_change', '{prefix}{change} from last hour')
+                       .replace('{prefix}', dashboardData.ticketChange > 0 ? '+' : '')
+                       .replace('{change}', dashboardData.ticketChange.toString())}
                   </p>
                 </CardContent>
               </Card>
@@ -164,9 +172,9 @@ export default function DashboardPage() {
               <Card className="xl:col-span-2" x-chunk="dashboard-01-chunk-4">
                 <CardHeader className="flex flex-row items-center">
                   <div className="grid gap-2">
-                    <CardTitle>Subscriber Growth</CardTitle>
+                    <CardTitle>{t('dashboard.subscriber_growth_title')}</CardTitle>
                     <CardDescription>
-                      Monthly new subscribers over the last 6 months.
+                      {t('dashboard.subscriber_growth_desc')}
                     </CardDescription>
                   </div>
                   {/* Optional: Add controls like date range picker here */}
@@ -178,7 +186,7 @@ export default function DashboardPage() {
               </Card>
               <Card x-chunk="dashboard-01-chunk-5">
                 <CardHeader>
-                  <CardTitle>Recent Activity</CardTitle>
+                  <CardTitle>{t('dashboard.recent_activity_title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                   {dashboardData.recentActivity.length > 0 ? (
@@ -188,20 +196,21 @@ export default function DashboardPage() {
                         <div className="grid gap-1">
                           {/* Changed p to div to fix hydration error */}
                           <div className="text-sm font-medium leading-none">
-                            {activity.type}
+                             {/* Translate activity type */}
+                             {t(`dashboard.activity_type_${activity.type.toLowerCase().replace(/\s+/g, '_')}` as any, activity.type)}
                             {activity.level && (
                               <Badge variant={activity.level === 'warning' ? 'destructive' : 'secondary'} className="ml-2">
-                                {activity.level}
+                                {t(`dashboard.badge_${activity.level}` as any, activity.level)}
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">{activity.description}</p>
+                          <p className="text-sm text-muted-foreground">{activity.description}</p> {/* Keep description as is for now */}
                         </div>
-                        <div className="ml-auto text-sm text-muted-foreground">{activity.time}</div>
+                        <div className="ml-auto text-sm text-muted-foreground">{activity.time}</div> {/* Keep time as is */}
                       </div>
                     ))
                   ) : (
-                    <p className="text-sm text-muted-foreground text-center">No recent activity.</p>
+                    <p className="text-sm text-muted-foreground text-center">{t('dashboard.recent_activity_none')}</p>
                   )}
                 </CardContent>
               </Card>
@@ -212,7 +221,9 @@ export default function DashboardPage() {
          {/* Placeholder for other dashboard views */}
          {currentView !== "General" && (
            <div className="flex items-center justify-center h-64 border rounded-lg bg-card text-card-foreground">
-             <p className="text-muted-foreground">Displaying {currentView} Dashboard Content (Not Implemented)</p>
+             <p className="text-muted-foreground">
+               {t('dashboard.other_view_placeholder', 'Displaying {view} Dashboard Content (Not Implemented)').replace('{view}', currentView)}
+             </p>
            </div>
          )}
 
@@ -230,4 +241,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
