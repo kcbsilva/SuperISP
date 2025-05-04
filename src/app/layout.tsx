@@ -99,8 +99,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const isMapPage = pathname === '/maps/map';
 
   return (
+    // TooltipProvider needs to wrap the entire layout content where tooltips are used
     <TooltipProvider>
-      {/* Set collapsible to 'none' to disable collapsing */}
       <SidebarProvider side="left" collapsible='none'>
         <Sidebar>
           <SidebarHeader>
@@ -481,37 +481,39 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset>
+       <SidebarInset noMargin={isMapPage}> {/* Pass noMargin prop */}
           <div className="fixed top-0 left-0 w-full z-50 h-1">
             {isLoading && <Progress value={progress} className="w-full h-1 rounded-none bg-transparent [&>*]:bg-green-600" indicatorClassName="bg-green-600" />}
           </div>
           {/* Conditionally render the AppHeader */}
           {!isMapPage && <AppHeader />}
           {/* Apply conditional padding to the content area */}
-          <div className={isMapPage ? 'p-0' : 'p-5'}>
-             {children}
-          </div>
-          <Toaster />
-        </SidebarInset>
+          <div className={isMapPage ? 'p-0' : 'p-2'}> {/* Apply padding 2 for non map pages */}
+              {children}
+           </div>
+           <Toaster />
+       </SidebarInset>
       </SidebarProvider>
     </TooltipProvider>
   );
 }
 
+
+// Root layout that sets up providers
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
       <body
         className={`antialiased`}
-        suppressHydrationWarning
+        suppressHydrationWarning /* Add suppressHydrationWarning */
       >
         <QueryClientProvider client={queryClient}>
           <LocaleProvider> {/* Wrap with LocaleProvider */}
-             <AppLayout>{children}</AppLayout> {/* Use inner layout component */}
+              <AppLayout>{children}</AppLayout> {/* Use inner layout component */}
           </LocaleProvider>
         </QueryClientProvider>
       </body>

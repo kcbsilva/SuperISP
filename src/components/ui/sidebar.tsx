@@ -5,7 +5,7 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import type { VariantProps} from "class-variance-authority";
 import { cva } from "class-variance-authority"
-import { PanelLeft, ChevronDown, PanelRight, ChevronLeft } from "lucide-react"; // Changed ChevronRight to ChevronDown
+import { PanelLeft, ChevronDown, ChevronLeft } from "lucide-react"; // Changed ChevronRight to ChevronDown
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible" // Import Collapsible
 
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -180,7 +180,7 @@ const Sidebar = React.forwardRef<
         data-collapsible={false} // Always false
         className={cn(
             "group/sidebar peer relative hidden md:block text-sidebar-foreground",
-            "w-[var(--sidebar-width)]", // Always use full width
+             "w-[var(--sidebar-width)]", // Always use full width
              (variant === "floating" || variant === "inset") && "p-2",
              side === 'left' ? 'left-0' : 'right-0',
              variant === 'sidebar' ? (side === 'left' ? 'border-r' : 'border-l') : '',
@@ -237,42 +237,43 @@ const SidebarTrigger = React.forwardRef<
 SidebarTrigger.displayName = "SidebarTrigger"
 
 // SidebarCollapseButton is removed as the sidebar is no longer collapsible
-// const SidebarCollapseButton = ...;
 
 const SidebarInset = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"main">
->(({ className, ...props }, ref) => {
-   const { variant, side } = useSidebar(); // Removed collapsible, collapsed
+  React.ComponentProps<"main"> & { noMargin?: boolean } // Add noMargin prop
+>(({ className, noMargin, ...props }, ref) => {
+   const { variant, side } = useSidebar();
 
-   // Calculate margin based on side - Use fixed 20px (p-5 -> ml-5/mr-5)
+   // Calculate margin based on side and noMargin prop
    const marginClass = React.useMemo(() => {
-      if (side === 'left') {
-          return 'md:ml-5'; // Use Tailwind spacing for 20px
-      } else { // side === 'right'
-          return 'md:mr-5'; // Use Tailwind spacing for 20px
+      if (noMargin) return ''; // No margin if noMargin is true
+      if (variant === 'inset') {
+         // Specific margin for inset variant (if needed, otherwise remove this block)
+         if (side === 'left') {
+            return 'md:ml-[calc(var(--sidebar-width)_+_theme(spacing.2))]';
+         } else {
+            return 'md:mr-[calc(var(--sidebar-width)_+_theme(spacing.2))]';
+         }
+      } else {
+         // Default margin for other variants
+         if (side === 'left') {
+            return 'md:ml-[var(--sidebar-width)]'; // Use sidebar width variable
+         } else {
+            return 'md:mr-[var(--sidebar-width)]'; // Use sidebar width variable
+         }
       }
-   }, [side]);
-
-
-   const insetMarginClass = React.useMemo(() => {
-    if (variant !== 'inset') return '';
-      if (side === 'left') {
-           // Adjust for inset variant if needed, e.g., ml-5 + p-2 = ml-7 ?
-           return 'md:ml-[calc(theme(spacing.5)_+_theme(spacing.2)_+2px)]'; // Example calculation for inset
-      } else { // side === 'right'
-           return 'md:mr-[calc(theme(spacing.5)_+_theme(spacing.2)_+2px)]'; // Example calculation for inset
-      }
-   }, [side, variant]);
+   }, [side, variant, noMargin]);
 
 
   return (
     <main
       ref={ref}
       className={cn(
-        "relative flex min-h-svh flex-1 flex-col bg-background", // Removed transition
-        variant === "inset" ? "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow" : "",
-         variant === 'inset' ? insetMarginClass : marginClass, // Apply calculated margin
+        "relative flex min-h-svh flex-1 flex-col bg-background",
+        // Apply margin class conditionally based on screen size and noMargin prop
+        !noMargin && marginClass,
+        // Styles specific to inset variant
+        variant === "inset" && "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
         className
       )}
       {...props}
