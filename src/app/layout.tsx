@@ -23,6 +23,7 @@ import {
   SlidersHorizontal, // Added for Financial Config
   Briefcase, // Added for Business
   Building, // Added for PoPs
+  Cog, // Icon for Global Settings
 } from 'lucide-react';
 
 import './globals.css';
@@ -374,6 +375,16 @@ export default function RootLayout({
                           <TooltipContent side="right" align="center">Settings</TooltipContent>
                         </Tooltip>
                         <SidebarMenuSubContent>
+                           {/* Global Settings */}
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive('/settings/global')} size="sm">
+                                  <Link href="/settings/global" className="flex items-center gap-2"> {/* Updated href */}
+                                    <Cog className="h-4 w-4 text-muted-foreground"/>
+                                    <span>Global Settings</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+
                            {/* Business Submenu */}
                            <SidebarMenuItem>
                              <SidebarMenuSub>
