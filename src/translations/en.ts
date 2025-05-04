@@ -252,20 +252,20 @@ const en = {
      network_view: 'Network Dashboard',
      technician_view: 'Technician Dashboard',
      total_subscribers_title: 'Total Subscribers',
-     total_subscribers_change: '+{change}% from last month',
+     total_subscribers_change: '+{change}% from last month', // Placeholder {change}
      mrr_title: 'Monthly Recurring Revenue',
-     mrr_change: '+{change}% from last month',
+     mrr_change: '+{change}% from last month', // Placeholder {change}
      network_uptime_title: 'Network Uptime',
-     network_uptime_change: '{prefix}{change}% from last month',
+     network_uptime_change: '{prefix}{change}% from last month', // Placeholders {prefix}, {change}
      open_tickets_title: 'Open Support Tickets',
-     open_tickets_change: '{prefix}{change} from last hour',
+     open_tickets_change: '{prefix}{change} from last hour', // Placeholders {prefix}, {change}
      subscriber_growth_title: 'Subscriber Growth',
      subscriber_growth_desc: 'Monthly new subscribers over the last 6 months.',
      recent_activity_title: 'Recent Activity',
      recent_activity_none: 'No recent activity.',
-     other_view_placeholder: 'Displaying {view} Dashboard Content (Not Implemented)',
+     other_view_placeholder: 'Displaying {view} Dashboard Content (Not Implemented)', // Placeholder {view}
      loading_ellipsis: '...',
-     badge_warning: 'warning',
+     badge_warning: 'Warning', // Added badge translation
      activity_type_new_subscriber: 'New Subscriber',
      activity_type_ticket_resolved: 'Ticket Resolved',
      activity_type_network_alert: 'Network Alert',

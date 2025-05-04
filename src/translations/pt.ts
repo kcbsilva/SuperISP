@@ -265,7 +265,7 @@ const pt = {
     recent_activity_none: 'Nenhuma atividade recente.',
     other_view_placeholder: 'Exibindo Conteúdo do Painel {view} (Não Implementado)',
     loading_ellipsis: '...',
-    badge_warning: 'aviso',
+    badge_warning: 'Aviso',
     activity_type_new_subscriber: 'Novo Assinante',
     activity_type_ticket_resolved: 'Ticket Resolvido',
     activity_type_network_alert: 'Alerta de Rede',

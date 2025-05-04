@@ -265,7 +265,7 @@ const fr = {
      recent_activity_none: 'Aucune activité récente.',
      other_view_placeholder: 'Affichage du contenu du tableau de bord {view} (Non implémenté)',
      loading_ellipsis: '...',
-     badge_warning: 'avertissement',
+     badge_warning: 'Avertissement',
      activity_type_new_subscriber: 'Nouvel abonné',
      activity_type_ticket_resolved: 'Ticket résolu',
      activity_type_network_alert: 'Alerte réseau',
