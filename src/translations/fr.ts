@@ -218,6 +218,9 @@ const fr = {
      billing_tab: 'Facturation',
      service_calls_tab: 'Appels de service',
      inventory_tab: 'Inventaire',
+     documents_tab: 'Documents', // New
+     notes_tab: 'Notes', // New
+     history_tab: 'Historique', // New
      status_label: 'Statut',
      overview_card_title: 'Aperçu',
      overview_card_description: 'Informations générales sur l\'abonné.',
@@ -273,6 +276,20 @@ const fr = {
      inventory_assign_button: 'Attribuer un équipement',
      inventory_serial_label: 'N/S',
      inventory_none: 'Aucun équipement attribué à cet abonné.',
+     documents_card_title: 'Documents', // New
+     documents_card_description: 'Gérer les documents liés à l\'abonné.', // New
+     documents_upload_button: 'Télécharger un document', // New
+     documents_uploaded_label: 'Téléchargé le', // New
+     documents_none: 'Aucun document trouvé pour cet abonné.', // New
+     notes_card_title: 'Notes', // New
+     notes_card_description: 'Notes internes concernant l\'abonné.', // New
+     notes_add_button: 'Ajouter une note', // New
+     notes_author_label: 'Auteur', // New
+     notes_none: 'Aucune note trouvée pour cet abonné.', // New
+     history_card_title: 'Historique', // New
+     history_card_description: 'Journal des modifications et événements liés à l\'abonné.', // New
+     history_user_label: 'Utilisateur', // New
+     history_none: 'Aucune entrée d\'historique trouvée.', // New
      loading_skeleton: 'Chargement...',
    },
     // Dashboard Page

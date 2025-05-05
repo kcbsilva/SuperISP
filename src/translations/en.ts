@@ -218,6 +218,9 @@ const en = {
      billing_tab: 'Billing',
      service_calls_tab: 'Service Calls',
      inventory_tab: 'Inventory',
+     documents_tab: 'Documents', // New
+     notes_tab: 'Notes', // New
+     history_tab: 'History', // New
      status_label: 'Status',
      overview_card_title: 'Overview',
      overview_card_description: 'General information about the subscriber.',
@@ -273,6 +276,20 @@ const en = {
      inventory_assign_button: 'Assign Equipment',
      inventory_serial_label: 'S/N',
      inventory_none: 'No equipment assigned to this subscriber.',
+     documents_card_title: 'Documents', // New
+     documents_card_description: 'Manage documents related to the subscriber.', // New
+     documents_upload_button: 'Upload Document', // New
+     documents_uploaded_label: 'Uploaded', // New
+     documents_none: 'No documents found for this subscriber.', // New
+     notes_card_title: 'Notes', // New
+     notes_card_description: 'Internal notes about the subscriber.', // New
+     notes_add_button: 'Add Note', // New
+     notes_author_label: 'Author', // New
+     notes_none: 'No notes found for this subscriber.', // New
+     history_card_title: 'History', // New
+     history_card_description: 'Log of changes and events related to the subscriber.', // New
+     history_user_label: 'User', // New
+     history_none: 'No history entries found.', // New
      loading_skeleton: 'Loading...', // For skeleton placeholder text if needed
    },
     // Dashboard Page

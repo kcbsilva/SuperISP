@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"; // Added CardFooter
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2 } from 'lucide-react'; // Rename Server to avoid conflict, Added Edit, Trash2, PlusCircle, Loader2
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon } from 'lucide-react'; // Rename Server to avoid conflict, Added Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, HistoryIcon
 import { useParams } from 'next/navigation'; // Import useParams to get the ID
 import { Button } from '@/components/ui/button'; // Import Button
 import { useToast } from '@/hooks/use-toast'; // Import useToast for feedback
@@ -77,6 +77,17 @@ const getSubscriberData = (id: string | string[]) => {
         inventory: [
             { id: 'inv-1', type: 'Router', model: 'Netgear R7000', serial: 'XYZ123' },
             { id: 'inv-2', type: 'Modem', model: 'Arris SB8200', serial: 'ABC789' },
+        ],
+        // Placeholder for new tabs
+        documents: [
+             { id: 'doc-1', name: 'Contract Agreement.pdf', uploaded: '2024-01-15' },
+        ],
+        notes: [
+             { id: 'note-1', text: 'Called regarding billing query on 2024-07-20.', author: 'Support Agent', date: '2024-07-20' },
+        ],
+        history: [
+            { id: 'hist-1', event: 'Subscriber Created', user: 'Admin', timestamp: '2024-01-10 10:00:00' },
+            { id: 'hist-2', event: 'Service Added: Internet', user: 'System', timestamp: '2024-01-10 10:05:00' },
         ],
     };
 
@@ -214,7 +225,7 @@ function SubscriberProfilePage() {
       </Card>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-4 md:grid-cols-8"> {/* Adjusted grid columns */}
           <TabsTrigger value="overview">
             <User className="mr-2 h-4 w-4" /> {t('subscriber_profile.overview_tab')}
           </TabsTrigger>
@@ -234,6 +245,16 @@ function SubscriberProfilePage() {
           </TabsTrigger>
           <TabsTrigger value="inventory">
              <Package className="mr-2 h-4 w-4" /> {t('subscriber_profile.inventory_tab')}
+          </TabsTrigger>
+          {/* New Tabs */}
+          <TabsTrigger value="documents">
+             <FileText className="mr-2 h-4 w-4" /> {t('subscriber_profile.documents_tab')}
+          </TabsTrigger>
+          <TabsTrigger value="notes">
+             <ClipboardList className="mr-2 h-4 w-4" /> {t('subscriber_profile.notes_tab')}
+          </TabsTrigger>
+          <TabsTrigger value="history">
+             <HistoryIcon className="mr-2 h-4 w-4" /> {t('subscriber_profile.history_tab')}
           </TabsTrigger>
         </TabsList>
 
@@ -282,10 +303,10 @@ function SubscriberProfilePage() {
                  </DialogTrigger>
                  <DialogContent className="sm:max-w-[425px]">
                    <DialogHeader>
-                     <DialogTitle>{t('subscriber_profile.add_service_dialog_title')}</DialogTitle>
-                     <DialogDescription>
+                     <CardTitle>{t('subscriber_profile.add_service_dialog_title')}</CardTitle>
+                     <CardDescription>
                        {t('subscriber_profile.add_service_dialog_description')}
-                     </DialogDescription>
+                     </CardDescription>
                    </DialogHeader>
                    <Form {...addServiceForm}>
                      <form onSubmit={addServiceForm.handleSubmit(handleAddServiceSubmit)} className="grid gap-4 py-4">
@@ -459,6 +480,95 @@ function SubscriberProfilePage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+         {/* Documents Tab Content */}
+        <TabsContent value="documents">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>{t('subscriber_profile.documents_card_title')}</CardTitle>
+                <CardDescription>{t('subscriber_profile.documents_card_description')}</CardDescription>
+              </div>
+              <Button size="sm">
+                 <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.documents_upload_button')}
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {subscriber.documents && subscriber.documents.length > 0 ? (
+                <ul className="space-y-3">
+                  {subscriber.documents.map(doc => (
+                    <li key={doc.id} className="flex justify-between items-center p-3 border rounded-md">
+                      <div>
+                        <span className="font-medium">{doc.name}</span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">{t('subscriber_profile.documents_uploaded_label')}: {doc.uploaded}</span>
+                       {/* Add download/delete buttons */}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-muted-foreground text-center py-4">{t('subscriber_profile.documents_none')}</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Notes Tab Content */}
+        <TabsContent value="notes">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+               <div>
+                 <CardTitle>{t('subscriber_profile.notes_card_title')}</CardTitle>
+                 <CardDescription>{t('subscriber_profile.notes_card_description')}</CardDescription>
+               </div>
+                <Button size="sm">
+                    <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.notes_add_button')}
+                </Button>
+            </CardHeader>
+            <CardContent>
+              {subscriber.notes && subscriber.notes.length > 0 ? (
+                  <ul className="space-y-3">
+                     {subscriber.notes.map(note => (
+                         <li key={note.id} className="p-3 border rounded-md">
+                             <p className="text-sm mb-1">{note.text}</p>
+                             <p className="text-xs text-muted-foreground">{t('subscriber_profile.notes_author_label')}: {note.author} - {note.date}</p>
+                              {/* Add edit/delete buttons */}
+                         </li>
+                     ))}
+                  </ul>
+              ) : (
+                  <p className="text-muted-foreground text-center py-4">{t('subscriber_profile.notes_none')}</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* History Tab Content */}
+        <TabsContent value="history">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('subscriber_profile.history_card_title')}</CardTitle>
+              <CardDescription>{t('subscriber_profile.history_card_description')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {subscriber.history && subscriber.history.length > 0 ? (
+                  <ul className="space-y-3">
+                     {subscriber.history.map(entry => (
+                         <li key={entry.id} className="flex justify-between items-center p-3 border rounded-md">
+                             <div>
+                                 <span className="font-medium">{entry.event}</span>
+                             </div>
+                             <span className="text-xs text-muted-foreground">{t('subscriber_profile.history_user_label')}: {entry.user} - {entry.timestamp}</span>
+                         </li>
+                     ))}
+                  </ul>
+              ) : (
+                  <p className="text-muted-foreground text-center py-4">{t('subscriber_profile.history_none')}</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
       </Tabs>
     </div>
   );

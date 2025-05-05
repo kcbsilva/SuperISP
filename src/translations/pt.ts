@@ -218,6 +218,9 @@ const pt = {
     billing_tab: 'Faturamento',
     service_calls_tab: 'Chamados',
     inventory_tab: 'Inventário',
+    documents_tab: 'Documentos', // New
+    notes_tab: 'Notas', // New
+    history_tab: 'Histórico', // New
     status_label: 'Status',
     overview_card_title: 'Visão Geral',
     overview_card_description: 'Informações gerais sobre o assinante.',
@@ -273,6 +276,20 @@ const pt = {
     inventory_assign_button: 'Atribuir Equipamento',
     inventory_serial_label: 'N/S',
     inventory_none: 'Nenhum equipamento atribuído a este assinante.',
+    documents_card_title: 'Documentos', // New
+    documents_card_description: 'Gerenciar documentos relacionados ao assinante.', // New
+    documents_upload_button: 'Carregar Documento', // New
+    documents_uploaded_label: 'Carregado em', // New
+    documents_none: 'Nenhum documento encontrado para este assinante.', // New
+    notes_card_title: 'Notas', // New
+    notes_card_description: 'Notas internas sobre o assinante.', // New
+    notes_add_button: 'Adicionar Nota', // New
+    notes_author_label: 'Autor', // New
+    notes_none: 'Nenhuma nota encontrada para este assinante.', // New
+    history_card_title: 'Histórico', // New
+    history_card_description: 'Registro de alterações e eventos relacionados ao assinante.', // New
+    history_user_label: 'Usuário', // New
+    history_none: 'Nenhuma entrada de histórico encontrada.', // New
     loading_skeleton: 'Carregando...',
   },
    // Dashboard Page
