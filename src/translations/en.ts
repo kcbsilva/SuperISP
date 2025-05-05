@@ -4,9 +4,9 @@ const en = {
   sidebar: {
     dashboard: 'Dashboard',
     subscribers: 'Subscribers',
-    subscribers_list: 'List', // Kept for direct link tooltip
-    subscribers_new: 'New', // Kept for potential use elsewhere
-    network: 'Network', // Now under settings
+    subscribers_list: 'List',
+    subscribers_new: 'New',
+    network: 'Network',
     network_ip: 'IPv4/6',
     network_devices: 'Devices',
     network_cgnat: 'CGNAT',
@@ -25,7 +25,7 @@ const en = {
     zones: 'Zones',
     finances: 'Finances',
     finances_cash_book: 'Cash Book',
-    finances_config: 'Financial Configurations', // Now under settings
+    finances_config: 'Financial Configurations',
     reports: 'Reports',
     security: 'Security',
     settings: 'Settings',
@@ -54,7 +54,7 @@ const en = {
   // Header Icons & Dropdowns
   header: {
     changelog: 'Changelog',
-    changelog_label: 'Version 0.1.0', // Example Version
+    changelog_label: 'Version 0.1.0',
     changelog_new: 'New',
     changelog_new_desc: 'Initial release features.',
     changelog_fixes: 'Fixes',
@@ -118,7 +118,7 @@ const en = {
     form_cancel_button: 'Cancel',
     form_save_button: 'Save PoP',
     add_success_toast_title: 'PoP Added',
-    add_success_toast_description: '{name} has been added successfully.', // Use {name} as placeholder
+    add_success_toast_description: '{name} has been added successfully.',
     add_error_toast_title: 'Error Adding PoP',
     add_error_toast_description: 'Could not add the PoP.',
     delete_success_toast_title: 'PoP Removed',
@@ -177,8 +177,8 @@ const en = {
      mobile_placeholder: '(555) 987-6543',
      save_button: 'Save Subscriber',
      add_success_toast_title: 'Subscriber Added (Simulated)',
-     add_success_toast_description: 'Details for {name} saved.', // Use {name}
-     required_field: '{field} is required.', // Generic required message
+     add_success_toast_description: 'Details for {name} saved.',
+     required_field: '{field} is required.',
    },
    // List Subscribers Page
    list_subscribers: {
@@ -218,9 +218,9 @@ const en = {
      billing_tab: 'Billing',
      service_calls_tab: 'Service Calls',
      inventory_tab: 'Inventory',
-     documents_tab: 'Documents', // New
-     notes_tab: 'Notes', // New
-     history_tab: 'History', // New
+     documents_tab: 'Documents',
+     notes_tab: 'Notes',
+     history_tab: 'History',
      status_label: 'Status',
      overview_card_title: 'Overview',
      overview_card_description: 'General information about the subscriber.',
@@ -245,7 +245,8 @@ const en = {
      add_service_type_placeholder: 'Select service type',
      add_service_type_internet: 'Internet',
      add_service_type_tv: 'TV',
-     add_service_type_phone: 'Phone',
+     add_service_type_landline: 'Landline', // Changed
+     add_service_type_mobile: 'Mobile', // Added
      add_service_type_other: 'Other',
      add_service_pop_label: 'Point of Presence (PoP)',
      add_service_pop_placeholder: 'Select PoP',
@@ -259,38 +260,64 @@ const en = {
      add_service_success_toast_description: '{serviceType} service added for {name}.',
      services_pop_label: 'PoP',
      services_none: 'No active services found for this subscriber.',
+     services_none_filtered: 'No services found matching the current filter.', // Added
+     services_filter_label: 'Filter by Type', // Added
+     services_filter_all: 'All', // Added
+     services_filter_internet: 'Internet', // Added
+     services_filter_tv: 'TV', // Added
+     services_filter_landline: 'Landline', // Added
+     services_filter_mobile: 'Mobile', // Added
+     services_type_internet: 'Internet', // Added for list display
+     services_type_tv: 'TV', // Added for list display
+     services_type_landline: 'Landline', // Added for list display
+     services_type_mobile: 'Mobile', // Added for list display
+     services_type_other: 'Other', // Added for list display
      billing_card_title: 'Billing',
      billing_card_description: 'Invoices, payments, and billing history.',
      billing_balance: 'Current Balance',
      billing_next_date: 'Next Bill Date',
      billing_not_available: 'N/A',
-     billing_no_history: 'Detailed invoice history will be displayed here. (Not Implemented)',
      billing_view_invoices_button: 'View Invoices',
      billing_make_payment_button: 'Make Payment',
+     billing_pending_invoices: 'Pending Invoices', // Added
+     billing_past_invoices: 'Past Invoices', // Added
+     billing_canceled_invoices: 'Canceled Invoices', // Added
+     billing_no_pending_invoices: 'No pending invoices.', // Added
+     billing_no_past_invoices: 'No past invoice history found.', // Added
+     billing_no_canceled_invoices: 'No canceled invoices found.', // Added
      service_calls_card_title: 'Service Calls',
      service_calls_card_description: 'History of support tickets and service visits.',
      service_calls_new_button: 'New Service Call',
      service_calls_none: 'No service call history found.',
+     service_call_status_resolved: 'Resolved', // Added
+     service_call_status_pending: 'Pending', // Example, add others as needed
      inventory_card_title: 'Inventory',
      inventory_card_description: 'Equipment assigned to the subscriber.',
      inventory_assign_button: 'Assign Equipment',
      inventory_serial_label: 'S/N',
      inventory_none: 'No equipment assigned to this subscriber.',
-     documents_card_title: 'Documents', // New
-     documents_card_description: 'Manage documents related to the subscriber.', // New
-     documents_upload_button: 'Upload Document', // New
-     documents_uploaded_label: 'Uploaded', // New
-     documents_none: 'No documents found for this subscriber.', // New
-     notes_card_title: 'Notes', // New
-     notes_card_description: 'Internal notes about the subscriber.', // New
-     notes_add_button: 'Add Note', // New
-     notes_author_label: 'Author', // New
-     notes_none: 'No notes found for this subscriber.', // New
-     history_card_title: 'History', // New
-     history_card_description: 'Log of changes and events related to the subscriber.', // New
-     history_user_label: 'User', // New
-     history_none: 'No history entries found.', // New
-     loading_skeleton: 'Loading...', // For skeleton placeholder text if needed
+     inventory_none_filtered: 'No equipment found matching the current filter.', // Added
+     inventory_filter_label: 'Filter by Status', // Added
+     inventory_filter_all: 'All', // Added
+     inventory_filter_lent: 'Lent Equipment', // Added
+     inventory_filter_sold: 'Sold Equipment', // Added
+     inventory_status_lent: 'Lent', // Added for list display
+     inventory_status_sold: 'Sold', // Added for list display
+     documents_card_title: 'Documents',
+     documents_card_description: 'Manage documents related to the subscriber.',
+     documents_upload_button: 'Upload Document',
+     documents_uploaded_label: 'Uploaded',
+     documents_none: 'No documents found for this subscriber.',
+     notes_card_title: 'Notes',
+     notes_card_description: 'Internal notes about the subscriber.',
+     notes_add_button: 'Add Note',
+     notes_author_label: 'Author',
+     notes_none: 'No notes found for this subscriber.',
+     history_card_title: 'History',
+     history_card_description: 'Log of changes and events related to the subscriber.',
+     history_user_label: 'User',
+     history_none: 'No history entries found.',
+     loading_skeleton: 'Loading...',
    },
     // Dashboard Page
    dashboard: {
@@ -300,27 +327,27 @@ const en = {
      network_view: 'Network Dashboard',
      technician_view: 'Technician Dashboard',
      total_subscribers_title: 'Total Subscribers',
-     total_subscribers_change: '+{change}% from last month', // Placeholder {change}
+     total_subscribers_change: '+{change}% from last month',
      mrr_title: 'Monthly Recurring Revenue',
-     mrr_change: '+{change}% from last month', // Placeholder {change}
+     mrr_change: '+{change}% from last month',
      network_uptime_title: 'Network Uptime',
-     network_uptime_change: '{prefix}{change}% from last month', // Placeholders {prefix}, {change}
+     network_uptime_change: '{prefix}{change}% from last month',
      open_tickets_title: 'Open Support Tickets',
-     open_tickets_change: '{prefix}{change} from last hour', // Placeholders {prefix}, {change}
+     open_tickets_change: '{prefix}{change} from last hour',
      subscriber_growth_title: 'Subscriber Growth',
      subscriber_growth_desc: 'Monthly new subscribers over the last 6 months.',
      recent_activity_title: 'Recent Activity',
      recent_activity_none: 'No recent activity.',
-     other_view_placeholder: 'Displaying {view} Dashboard Content (Not Implemented)', // Placeholder {view}
+     other_view_placeholder: 'Displaying {view} Dashboard Content (Not Implemented)',
      loading_ellipsis: '...',
-     badge_warning: 'Warning', // Added badge translation
+     badge_warning: 'Warning',
      activity_type_new_subscriber: 'New Subscriber',
      activity_type_ticket_resolved: 'Ticket Resolved',
      activity_type_network_alert: 'Network Alert',
      activity_type_payment_received: 'Payment Received',
-     quick_actions_label: 'Quick Actions', // Added
-     quick_action_tooltip: 'Quick Action {action} (e.g., Add Client)', // Added
-     quick_action_sr: 'Add {action}', // Added (Screen reader text)
+     quick_actions_label: 'Quick Actions',
+     quick_action_tooltip: 'Quick Action {action} (e.g., Add Client)',
+     quick_action_sr: 'Add {action}',
      // Financial Dashboard Specific
      financial: {
         revenue_by_plan_title: 'Revenue by Plan',
@@ -345,15 +372,15 @@ const en = {
      add_cable_tooltip: 'Add Cable',
      add_fosc_tooltip: 'Add FOSC',
      add_fdh_tooltip: 'Add FDH',
-     add_poll_tooltip: 'Add Hydro Poll', // Added
-     add_tower_tooltip: 'Add Tower', // Added
-     add_pop_tooltip: 'Add PoP', // Added
-     search_address_placeholder: 'Search address...', // Added
+     add_poll_tooltip: 'Add Hydro Poll',
+     add_tower_tooltip: 'Add Tower',
+     add_pop_tooltip: 'Add PoP',
+     search_address_placeholder: 'Search address...',
      api_key_missing_error: 'Google Maps API key is missing. Please add it to your .env file.',
      api_key_error_title: 'Map Error',
      example_marker_info: 'Example Network Element',
-     geocode_error_title: 'Geocode Error', // Added
-     geocode_error_desc: 'Could not find location coordinates.', // Added
+     geocode_error_title: 'Geocode Error',
+     geocode_error_desc: 'Could not find location coordinates.',
    },
 };
 

@@ -4,9 +4,9 @@ const pt = {
   sidebar: {
     dashboard: 'Painel',
     subscribers: 'Assinantes',
-    subscribers_list: 'Lista', // Mantido para tooltip de link direto
-    subscribers_new: 'Novo', // Mantido para uso potencial em outro lugar
-    network: 'Rede', // Agora em Configurações
+    subscribers_list: 'Lista',
+    subscribers_new: 'Novo',
+    network: 'Rede',
     network_ip: 'IPv4/6',
     network_devices: 'Dispositivos',
     network_cgnat: 'CGNAT',
@@ -25,7 +25,7 @@ const pt = {
     zones: 'Zonas',
     finances: 'Finanças',
     finances_cash_book: 'Livro Caixa',
-    finances_config: 'Configurações Financeiras', // Agora em Configurações
+    finances_config: 'Configurações Financeiras',
     reports: 'Relatórios',
     security: 'Segurança',
     settings: 'Configurações',
@@ -54,7 +54,7 @@ const pt = {
   // Header Icons & Dropdowns
   header: {
     changelog: 'Registro de alterações',
-    changelog_label: 'Versão 0.1.0', // Example Version
+    changelog_label: 'Versão 0.1.0',
     changelog_new: 'Novo',
     changelog_new_desc: 'Recursos da versão inicial.',
     changelog_fixes: 'Correções',
@@ -218,9 +218,9 @@ const pt = {
     billing_tab: 'Faturamento',
     service_calls_tab: 'Chamados',
     inventory_tab: 'Inventário',
-    documents_tab: 'Documentos', // New
-    notes_tab: 'Notas', // New
-    history_tab: 'Histórico', // New
+    documents_tab: 'Documentos',
+    notes_tab: 'Notas',
+    history_tab: 'Histórico',
     status_label: 'Status',
     overview_card_title: 'Visão Geral',
     overview_card_description: 'Informações gerais sobre o assinante.',
@@ -245,7 +245,8 @@ const pt = {
     add_service_type_placeholder: 'Selecione o tipo de serviço',
     add_service_type_internet: 'Internet',
     add_service_type_tv: 'TV',
-    add_service_type_phone: 'Telefone',
+    add_service_type_landline: 'Telefone Fixo', // Changed
+    add_service_type_mobile: 'Celular', // Added
     add_service_type_other: 'Outro',
     add_service_pop_label: 'Ponto de Presença (PoP)',
     add_service_pop_placeholder: 'Selecione o PoP',
@@ -259,37 +260,63 @@ const pt = {
     add_service_success_toast_description: 'Serviço {serviceType} adicionado para {name}.',
     services_pop_label: 'PoP',
     services_none: 'Nenhum serviço ativo encontrado para este assinante.',
+    services_none_filtered: 'Nenhum serviço encontrado correspondente ao filtro atual.', // Added
+    services_filter_label: 'Filtrar por Tipo', // Added
+    services_filter_all: 'Todos', // Added
+    services_filter_internet: 'Internet', // Added
+    services_filter_tv: 'TV', // Added
+    services_filter_landline: 'Fixo', // Added
+    services_filter_mobile: 'Celular', // Added
+    services_type_internet: 'Internet', // Added for list display
+    services_type_tv: 'TV', // Added for list display
+    services_type_landline: 'Fixo', // Added for list display
+    services_type_mobile: 'Celular', // Added for list display
+    services_type_other: 'Outro', // Added for list display
     billing_card_title: 'Faturamento',
     billing_card_description: 'Faturas, pagamentos e histórico de faturamento.',
     billing_balance: 'Saldo Atual',
     billing_next_date: 'Próxima Data de Fatura',
     billing_not_available: 'N/D',
-    billing_no_history: 'O histórico detalhado de faturas será exibido aqui. (Não implementado)',
     billing_view_invoices_button: 'Ver Faturas',
     billing_make_payment_button: 'Realizar Pagamento',
+    billing_pending_invoices: 'Faturas Pendentes', // Added
+    billing_past_invoices: 'Faturas Anteriores', // Added
+    billing_canceled_invoices: 'Faturas Canceladas', // Added
+    billing_no_pending_invoices: 'Nenhuma fatura pendente.', // Added
+    billing_no_past_invoices: 'Nenhum histórico de faturas anteriores encontrado.', // Added
+    billing_no_canceled_invoices: 'Nenhuma fatura cancelada encontrada.', // Added
     service_calls_card_title: 'Chamados de Serviço',
     service_calls_card_description: 'Histórico de tickets de suporte e visitas de serviço.',
     service_calls_new_button: 'Novo Chamado',
     service_calls_none: 'Nenhum histórico de chamados encontrado.',
+    service_call_status_resolved: 'Resolvido', // Added
+    service_call_status_pending: 'Pendente', // Example, add others as needed
     inventory_card_title: 'Inventário',
     inventory_card_description: 'Equipamentos atribuídos ao assinante.',
     inventory_assign_button: 'Atribuir Equipamento',
     inventory_serial_label: 'N/S',
     inventory_none: 'Nenhum equipamento atribuído a este assinante.',
-    documents_card_title: 'Documentos', // New
-    documents_card_description: 'Gerenciar documentos relacionados ao assinante.', // New
-    documents_upload_button: 'Carregar Documento', // New
-    documents_uploaded_label: 'Carregado em', // New
-    documents_none: 'Nenhum documento encontrado para este assinante.', // New
-    notes_card_title: 'Notas', // New
-    notes_card_description: 'Notas internas sobre o assinante.', // New
-    notes_add_button: 'Adicionar Nota', // New
-    notes_author_label: 'Autor', // New
-    notes_none: 'Nenhuma nota encontrada para este assinante.', // New
-    history_card_title: 'Histórico', // New
-    history_card_description: 'Registro de alterações e eventos relacionados ao assinante.', // New
-    history_user_label: 'Usuário', // New
-    history_none: 'Nenhuma entrada de histórico encontrada.', // New
+    inventory_none_filtered: 'Nenhum equipamento encontrado correspondente ao filtro atual.', // Added
+    inventory_filter_label: 'Filtrar por Status', // Added
+    inventory_filter_all: 'Todos', // Added
+    inventory_filter_lent: 'Equipamento Emprestado', // Added
+    inventory_filter_sold: 'Equipamento Vendido', // Added
+    inventory_status_lent: 'Emprestado', // Added for list display
+    inventory_status_sold: 'Vendido', // Added for list display
+    documents_card_title: 'Documentos',
+    documents_card_description: 'Gerenciar documentos relacionados ao assinante.',
+    documents_upload_button: 'Carregar Documento',
+    documents_uploaded_label: 'Carregado em',
+    documents_none: 'Nenhum documento encontrado para este assinante.',
+    notes_card_title: 'Notas',
+    notes_card_description: 'Notas internas sobre o assinante.',
+    notes_add_button: 'Adicionar Nota',
+    notes_author_label: 'Autor',
+    notes_none: 'Nenhuma nota encontrada para este assinante.',
+    history_card_title: 'Histórico',
+    history_card_description: 'Registro de alterações e eventos relacionados ao assinante.',
+    history_user_label: 'Usuário',
+    history_none: 'Nenhuma entrada de histórico encontrada.',
     loading_skeleton: 'Carregando...',
   },
    // Dashboard Page
@@ -318,9 +345,9 @@ const pt = {
     activity_type_ticket_resolved: 'Ticket Resolvido',
     activity_type_network_alert: 'Alerta de Rede',
     activity_type_payment_received: 'Pagamento Recebido',
-    quick_actions_label: 'Ações Rápidas', // Added
-    quick_action_tooltip: 'Ação Rápida {action} (ex: Adicionar Cliente)', // Adicionado
-    quick_action_sr: 'Adicionar {action}', // Adicionado (Texto para leitor de tela)
+    quick_actions_label: 'Ações Rápidas',
+    quick_action_tooltip: 'Ação Rápida {action} (ex: Adicionar Cliente)',
+    quick_action_sr: 'Adicionar {action}',
     // Financial Dashboard Specific
     financial: {
         revenue_by_plan_title: 'Receita por Plano',
@@ -345,15 +372,15 @@ const pt = {
      add_cable_tooltip: 'Adicionar Cabo',
      add_fosc_tooltip: 'Adicionar FOSC',
      add_fdh_tooltip: 'Adicionar FDH',
-     add_poll_tooltip: 'Adicionar Poste Hidro', // Added
-     add_tower_tooltip: 'Adicionar Torre', // Added
-     add_pop_tooltip: 'Adicionar PoP', // Added
-     search_address_placeholder: 'Buscar endereço...', // Added
+     add_poll_tooltip: 'Adicionar Poste Hidro',
+     add_tower_tooltip: 'Adicionar Torre',
+     add_pop_tooltip: 'Adicionar PoP',
+     search_address_placeholder: 'Buscar endereço...',
      api_key_missing_error: 'Chave da API do Google Maps ausente. Adicione-a ao seu arquivo .env.',
      api_key_error_title: 'Erro no Mapa',
      example_marker_info: 'Elemento de Rede Exemplo',
-     geocode_error_title: 'Erro de Geocodificação', // Added
-     geocode_error_desc: 'Não foi possível encontrar as coordenadas do local.', // Added
+     geocode_error_title: 'Erro de Geocodificação',
+     geocode_error_desc: 'Não foi possível encontrar as coordenadas do local.',
    },
 };
 

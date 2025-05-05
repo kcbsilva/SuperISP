@@ -4,9 +4,9 @@ const fr = {
   sidebar: {
     dashboard: 'Tableau de bord',
     subscribers: 'Abonnés',
-    subscribers_list: 'Liste', // Maintenu pour l'infobulle du lien direct
-    subscribers_new: 'Nouveau', // Maintenu pour une utilisation potentielle ailleurs
-    network: 'Réseau', // Maintenant sous Paramètres
+    subscribers_list: 'Liste',
+    subscribers_new: 'Nouveau',
+    network: 'Réseau',
     network_ip: 'IPv4/6',
     network_devices: 'Appareils',
     network_cgnat: 'CGNAT',
@@ -25,7 +25,7 @@ const fr = {
     zones: 'Zones',
     finances: 'Finances',
     finances_cash_book: 'Livre de caisse',
-    finances_config: 'Configurations financières', // Maintenant sous Paramètres
+    finances_config: 'Configurations financières',
     reports: 'Rapports',
     security: 'Sécurité',
     settings: 'Paramètres',
@@ -54,7 +54,7 @@ const fr = {
   // Header Icons & Dropdowns
   header: {
     changelog: 'Journal des modifications',
-    changelog_label: 'Version 0.1.0', // Example Version
+    changelog_label: 'Version 0.1.0',
     changelog_new: 'Nouveau',
     changelog_new_desc: 'Fonctionnalités de la version initiale.',
     changelog_fixes: 'Corrections',
@@ -218,9 +218,9 @@ const fr = {
      billing_tab: 'Facturation',
      service_calls_tab: 'Appels de service',
      inventory_tab: 'Inventaire',
-     documents_tab: 'Documents', // New
-     notes_tab: 'Notes', // New
-     history_tab: 'Historique', // New
+     documents_tab: 'Documents',
+     notes_tab: 'Notes',
+     history_tab: 'Historique',
      status_label: 'Statut',
      overview_card_title: 'Aperçu',
      overview_card_description: 'Informations générales sur l\'abonné.',
@@ -245,7 +245,8 @@ const fr = {
      add_service_type_placeholder: 'Sélectionnez le type de service',
      add_service_type_internet: 'Internet',
      add_service_type_tv: 'TV',
-     add_service_type_phone: 'Téléphone',
+     add_service_type_landline: 'Fixe', // Changed
+     add_service_type_mobile: 'Mobile', // Added
      add_service_type_other: 'Autre',
      add_service_pop_label: 'Point de Présence (PoP)',
      add_service_pop_placeholder: 'Sélectionnez un PoP',
@@ -259,37 +260,63 @@ const fr = {
      add_service_success_toast_description: 'Service {serviceType} ajouté pour {name}.',
      services_pop_label: 'PoP',
      services_none: 'Aucun service actif trouvé pour cet abonné.',
+     services_none_filtered: 'Aucun service trouvé correspondant au filtre actuel.', // Added
+     services_filter_label: 'Filtrer par Type', // Added
+     services_filter_all: 'Tous', // Added
+     services_filter_internet: 'Internet', // Added
+     services_filter_tv: 'TV', // Added
+     services_filter_landline: 'Fixe', // Added
+     services_filter_mobile: 'Mobile', // Added
+     services_type_internet: 'Internet', // Added for list display
+     services_type_tv: 'TV', // Added for list display
+     services_type_landline: 'Fixe', // Added for list display
+     services_type_mobile: 'Mobile', // Added for list display
+     services_type_other: 'Autre', // Added for list display
      billing_card_title: 'Facturation',
      billing_card_description: 'Factures, paiements et historique de facturation.',
      billing_balance: 'Solde actuel',
      billing_next_date: 'Prochaine date de facturation',
      billing_not_available: 'N/A',
-     billing_no_history: 'L\'historique détaillé des factures sera affiché ici. (Non implémenté)',
      billing_view_invoices_button: 'Voir les factures',
      billing_make_payment_button: 'Effectuer un paiement',
+     billing_pending_invoices: 'Factures en attente', // Added
+     billing_past_invoices: 'Factures passées', // Added
+     billing_canceled_invoices: 'Factures annulées', // Added
+     billing_no_pending_invoices: 'Aucune facture en attente.', // Added
+     billing_no_past_invoices: 'Aucun historique de factures passées trouvé.', // Added
+     billing_no_canceled_invoices: 'Aucune facture annulée trouvée.', // Added
      service_calls_card_title: 'Appels de service',
      service_calls_card_description: 'Historique des tickets de support et des visites de service.',
      service_calls_new_button: 'Nouvel appel de service',
      service_calls_none: 'Aucun historique d\'appel de service trouvé.',
+     service_call_status_resolved: 'Résolu', // Added
+     service_call_status_pending: 'En attente', // Example, add others as needed
      inventory_card_title: 'Inventaire',
      inventory_card_description: 'Équipement attribué à l\'abonné.',
      inventory_assign_button: 'Attribuer un équipement',
      inventory_serial_label: 'N/S',
      inventory_none: 'Aucun équipement attribué à cet abonné.',
-     documents_card_title: 'Documents', // New
-     documents_card_description: 'Gérer les documents liés à l\'abonné.', // New
-     documents_upload_button: 'Télécharger un document', // New
-     documents_uploaded_label: 'Téléchargé le', // New
-     documents_none: 'Aucun document trouvé pour cet abonné.', // New
-     notes_card_title: 'Notes', // New
-     notes_card_description: 'Notes internes concernant l\'abonné.', // New
-     notes_add_button: 'Ajouter une note', // New
-     notes_author_label: 'Auteur', // New
-     notes_none: 'Aucune note trouvée pour cet abonné.', // New
-     history_card_title: 'Historique', // New
-     history_card_description: 'Journal des modifications et événements liés à l\'abonné.', // New
-     history_user_label: 'Utilisateur', // New
-     history_none: 'Aucune entrée d\'historique trouvée.', // New
+     inventory_none_filtered: 'Aucun équipement trouvé correspondant au filtre actuel.', // Added
+     inventory_filter_label: 'Filtrer par Statut', // Added
+     inventory_filter_all: 'Tous', // Added
+     inventory_filter_lent: 'Équipement prêté', // Added
+     inventory_filter_sold: 'Équipement vendu', // Added
+     inventory_status_lent: 'Prêté', // Added for list display
+     inventory_status_sold: 'Vendu', // Added for list display
+     documents_card_title: 'Documents',
+     documents_card_description: 'Gérer les documents liés à l\'abonné.',
+     documents_upload_button: 'Télécharger un document',
+     documents_uploaded_label: 'Téléchargé le',
+     documents_none: 'Aucun document trouvé pour cet abonné.',
+     notes_card_title: 'Notes',
+     notes_card_description: 'Notes internes concernant l\'abonné.',
+     notes_add_button: 'Ajouter une note',
+     notes_author_label: 'Auteur',
+     notes_none: 'Aucune note trouvée pour cet abonné.',
+     history_card_title: 'Historique',
+     history_card_description: 'Journal des modifications et événements liés à l\'abonné.',
+     history_user_label: 'Utilisateur',
+     history_none: 'Aucune entrée d\'historique trouvée.',
      loading_skeleton: 'Chargement...',
    },
     // Dashboard Page
@@ -318,9 +345,9 @@ const fr = {
      activity_type_ticket_resolved: 'Ticket résolu',
      activity_type_network_alert: 'Alerte réseau',
      activity_type_payment_received: 'Paiement reçu',
-     quick_actions_label: 'Actions Rapides', // Added
-     quick_action_tooltip: 'Action rapide {action} (ex: Ajouter Client)', // Ajouté
-     quick_action_sr: 'Ajouter {action}', // Ajouté (Texte pour lecteur d'écran)
+     quick_actions_label: 'Actions Rapides',
+     quick_action_tooltip: 'Action rapide {action} (ex: Ajouter Client)',
+     quick_action_sr: 'Ajouter {action}',
       // Financial Dashboard Specific
       financial: {
         revenue_by_plan_title: 'Revenu par Plan',
@@ -345,15 +372,15 @@ const fr = {
      add_cable_tooltip: 'Ajouter un câble',
      add_fosc_tooltip: 'Ajouter un FOSC',
      add_fdh_tooltip: 'Ajouter un FDH',
-     add_poll_tooltip: 'Ajouter un poteau Hydro', // Added
-     add_tower_tooltip: 'Ajouter une tour', // Added
-     add_pop_tooltip: 'Ajouter un PoP', // Added
-     search_address_placeholder: 'Rechercher une adresse...', // Added
+     add_poll_tooltip: 'Ajouter un poteau Hydro',
+     add_tower_tooltip: 'Ajouter une tour',
+     add_pop_tooltip: 'Ajouter un PoP',
+     search_address_placeholder: 'Rechercher une adresse...',
      api_key_missing_error: 'La clé API Google Maps est manquante. Veuillez l\'ajouter à votre fichier .env.',
      api_key_error_title: 'Erreur de carte',
      example_marker_info: 'Élément de réseau exemple',
-     geocode_error_title: 'Erreur de géocodage', // Added
-     geocode_error_desc: 'Impossible de trouver les coordonnées de l\'emplacement.', // Added
+     geocode_error_title: 'Erreur de géocodage',
+     geocode_error_desc: 'Impossible de trouver les coordonnées de l\'emplacement.',
    },
 };
 
