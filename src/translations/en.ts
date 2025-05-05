@@ -36,6 +36,8 @@ const en = {
     settings_integrations_telegram: 'Telegram',
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
+    pilotview: 'PilotView', // Added
+    transitos: 'TransitOS', // Added
     expand_sidebar: 'Expand sidebar',
     collapse_sidebar: 'Collapse sidebar',
   },

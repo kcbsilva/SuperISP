@@ -24,6 +24,8 @@ import {
   Briefcase, // Added for Business
   Building, // Added for PoPs
   Cog, // Icon for Global Settings
+  Plane, // Icon for PilotView
+  Bus, // Icon for TransitOS
 } from 'lucide-react';
 
 import './globals.css';
@@ -472,6 +474,29 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
+              </SidebarMenuItem>
+
+              {/* Separator */}
+              <SidebarSeparator className="my-2" />
+
+              {/* PilotView Menu Item */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/pilotview')} tooltip={t('sidebar.pilotview', 'PilotView')}>
+                  <Link href="#" className="flex items-center gap-2">
+                    <Plane />
+                    <span>{t('sidebar.pilotview', 'PilotView')}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* TransitOS Menu Item */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/transitos')} tooltip={t('sidebar.transitos', 'TransitOS')}>
+                  <Link href="#" className="flex items-center gap-2">
+                    <Bus />
+                    <span>{t('sidebar.transitos', 'TransitOS')}</span>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
 
             </SidebarMenu>
