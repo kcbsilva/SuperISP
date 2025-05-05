@@ -4,9 +4,9 @@ const pt = {
   sidebar: {
     dashboard: 'Painel',
     subscribers: 'Assinantes',
-    subscribers_list: 'Lista',
-    subscribers_new: 'Novo',
-    network: 'Rede',
+    subscribers_list: 'Lista', // Mantido para tooltip de link direto
+    subscribers_new: 'Novo', // Mantido para uso potencial em outro lugar
+    network: 'Rede', // Agora em Configurações
     network_ip: 'IPv4/6',
     network_devices: 'Dispositivos',
     network_cgnat: 'CGNAT',
@@ -22,10 +22,10 @@ const pt = {
     maps_elements_towers: 'Torres',
     maps_elements_cables: 'Cabos',
     maps_map: 'Mapa',
-    zones: 'Zonas', // Added Zones translation
+    zones: 'Zonas',
     finances: 'Finanças',
     finances_cash_book: 'Livro Caixa',
-    finances_config: 'Configurações Financeiras',
+    finances_config: 'Configurações Financeiras', // Agora em Configurações
     reports: 'Relatórios',
     security: 'Segurança',
     settings: 'Configurações',
@@ -37,8 +37,8 @@ const pt = {
     settings_integrations_telegram: 'Telegram',
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
-    pilotview: 'PilotView', // Added
-    transitos: 'TransitOS', // Added
+    pilotview: 'PilotView',
+    transitos: 'TransitOS',
     expand_sidebar: 'Expandir barra lateral',
     collapse_sidebar: 'Recolher barra lateral',
   },
@@ -317,10 +317,7 @@ const pt = {
    },
    // Map Page
    maps_page: {
-     // Removed title and description
      layers_tooltip: 'Gerenciar Camadas',
-     // map_view_title: 'Visualização do Mapa', // Removed
-     // map_view_desc: 'Visualize e gerencie elementos da rede.', // Removed
      map_placeholder_label: 'Espaço reservado para o mapa',
      map_integration_placeholder: '[Área de Integração do Componente de Mapa]',
      zoom_in_tooltip: 'Aproximar',

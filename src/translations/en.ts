@@ -4,9 +4,9 @@ const en = {
   sidebar: {
     dashboard: 'Dashboard',
     subscribers: 'Subscribers',
-    subscribers_list: 'List',
-    subscribers_new: 'New',
-    network: 'Network',
+    subscribers_list: 'List', // Kept for direct link tooltip
+    subscribers_new: 'New', // Kept for potential use elsewhere
+    network: 'Network', // Now under settings
     network_ip: 'IPv4/6',
     network_devices: 'Devices',
     network_cgnat: 'CGNAT',
@@ -22,10 +22,10 @@ const en = {
     maps_elements_towers: 'Towers',
     maps_elements_cables: 'Cables',
     maps_map: 'Map',
-    zones: 'Zones', // Added Zones translation
+    zones: 'Zones',
     finances: 'Finances',
     finances_cash_book: 'Cash Book',
-    finances_config: 'Financial Configurations',
+    finances_config: 'Financial Configurations', // Now under settings
     reports: 'Reports',
     security: 'Security',
     settings: 'Settings',
@@ -37,8 +37,8 @@ const en = {
     settings_integrations_telegram: 'Telegram',
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
-    pilotview: 'PilotView', // Added
-    transitos: 'TransitOS', // Added
+    pilotview: 'PilotView',
+    transitos: 'TransitOS',
     expand_sidebar: 'Expand sidebar',
     collapse_sidebar: 'Collapse sidebar',
   },
@@ -317,17 +317,14 @@ const en = {
    },
    // Map Page
    maps_page: {
-     // Removed title and description translations
      layers_tooltip: 'Manage Layers',
-     // map_view_title: 'Map View', // Removed
-     // map_view_desc: 'Visualize and manage network elements.', // Removed
      map_placeholder_label: 'Map Placeholder',
      map_integration_placeholder: '[Map Component Integration Area]',
      zoom_in_tooltip: 'Zoom In',
      zoom_out_tooltip: 'Zoom Out',
      fullscreen_tooltip: 'Toggle Fullscreen',
-     add_element_button: 'Add Element', // Kept for reference, button removed
-     add_element_tooltip: 'Add a new network element to the map', // Kept for reference
+     add_element_button: 'Add Element',
+     add_element_tooltip: 'Add a new network element to the map',
      add_cable_tooltip: 'Add Cable',
      add_fosc_tooltip: 'Add FOSC',
      add_fdh_tooltip: 'Add FDH',

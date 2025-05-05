@@ -141,66 +141,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              {/* Network Menu */}
-              <SidebarMenuItem>
-                <SidebarMenuSub>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SidebarMenuSubTrigger tooltip={t('sidebar.network')}>
-                        <div className="flex items-center gap-2 cursor-pointer">
-                          <Network />
-                          <span className="truncate">{t('sidebar.network')}</span>
-                          <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                        </div>
-                      </SidebarMenuSubTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" align="center">{t('sidebar.network')}</TooltipContent>
-                  </Tooltip>
-                  <SidebarMenuSubContent>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/network/ip')} size="sm">
-                        <Link href="#" className="flex items-center gap-2">
-                          <Code className="h-4 w-4 text-muted-foreground" />
-                          <span>{t('sidebar.network_ip')}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/network/devices')} size="sm">
-                        <Link href="#" className="flex items-center gap-2">
-                          <Router className="h-4 w-4 text-muted-foreground" />
-                          <span>{t('sidebar.network_devices')}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/network/cgnat')} size="sm">
-                        <Link href="#" className="flex items-center gap-2">
-                          <Share2 className="h-4 w-4 text-muted-foreground" />
-                          <span>{t('sidebar.network_cgnat')}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/network/radius')} size="sm">
-                        <Link href="#" className="flex items-center gap-2">
-                          <Server className="h-4 w-4 text-muted-foreground" />
-                          <span>{t('sidebar.network_radius')}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/network/vlan')} size="sm">
-                        <Link href="#" className="flex items-center gap-2">
-                          <Split className="h-4 w-4 text-muted-foreground" />
-                          <span>{t('sidebar.network_vlan')}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </SidebarMenuSubContent>
-                </SidebarMenuSub>
-              </SidebarMenuItem>
-
               {/* Maps Menu */}
               <SidebarMenuItem>
                 <SidebarMenuSub>
@@ -307,16 +247,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuSub>
               </SidebarMenuItem>
 
-               {/* Zones (DNS) Menu */}
-               <SidebarMenuItem>
-                 <SidebarMenuButton asChild isActive={isActive('/zones')} tooltip={t('sidebar.zones', 'Zones')}>
-                   <Link href="#" className="flex items-center gap-2">
-                     <Dna /> {/* Using Dna icon for DNS */}
-                     <span>{t('sidebar.zones', 'Zones')}</span>
-                   </Link>
-                 </SidebarMenuButton>
-               </SidebarMenuItem>
-
               {/* Finances Menu */}
               <SidebarMenuItem>
                 <SidebarMenuSub>
@@ -341,14 +271,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/finances/configurations')} size="sm" tooltip={t('sidebar.finances_config')}>
-                        <Link href="#" className="flex items-center gap-2">
-                          <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                          <span>{t('sidebar.finances_config')}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
+                    {/* Financial Configurations moved to Settings */}
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
               </SidebarMenuItem>
@@ -429,6 +352,81 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       </SidebarMenuSub>
                     </SidebarMenuItem>
 
+                    {/* Network Menu moved here */}
+                    <SidebarMenuItem>
+                      <SidebarMenuSub>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <SidebarMenuSubTrigger
+                              size="sm"
+                              className="pl-3 pr-2 py-1.5"
+                              tooltip={t('sidebar.network')}
+                            >
+                              <div className="flex items-center gap-2 cursor-pointer w-full">
+                                <Network className="h-4 w-4 text-muted-foreground" />
+                                <span className="truncate">{t('sidebar.network')}</span>
+                                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                              </div>
+                            </SidebarMenuSubTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent side="right" align="center">{t('sidebar.network')}</TooltipContent>
+                        </Tooltip>
+                        <SidebarMenuSubContent>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/settings/network/ip')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Code className="h-4 w-4 text-muted-foreground" />
+                                <span>{t('sidebar.network_ip')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/settings/network/devices')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Router className="h-4 w-4 text-muted-foreground" />
+                                <span>{t('sidebar.network_devices')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/settings/network/cgnat')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Share2 className="h-4 w-4 text-muted-foreground" />
+                                <span>{t('sidebar.network_cgnat')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/settings/network/radius')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Server className="h-4 w-4 text-muted-foreground" />
+                                <span>{t('sidebar.network_radius')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/settings/network/vlan')} size="sm">
+                              <Link href="#" className="flex items-center gap-2">
+                                <Split className="h-4 w-4 text-muted-foreground" />
+                                <span>{t('sidebar.network_vlan')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        </SidebarMenuSubContent>
+                      </SidebarMenuSub>
+                    </SidebarMenuItem>
+
+                    {/* Financial Configurations moved here */}
+                    <SidebarMenuItem>
+                       <SidebarMenuButton asChild isActive={isActive('/settings/finances/configurations')} size="sm" tooltip={t('sidebar.finances_config')}>
+                         <Link href="#" className="flex items-center gap-2">
+                           <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                           <span>{t('sidebar.finances_config')}</span>
+                         </Link>
+                       </SidebarMenuButton>
+                    </SidebarMenuItem>
+
+
                     <SidebarMenuItem>
                       <SidebarMenuSub>
                         <Tooltip>
@@ -506,6 +504,16 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link href="#" className="flex items-center gap-2">
                     <Bus />
                     <span>{t('sidebar.transitos', 'TransitOS')}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Zones (DNS) Menu */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/zones')} tooltip={t('sidebar.zones', 'Zones')}>
+                  <Link href="#" className="flex items-center gap-2">
+                    <Dna /> {/* Using Dna icon for DNS */}
+                    <span>{t('sidebar.zones', 'Zones')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

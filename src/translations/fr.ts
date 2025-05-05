@@ -4,9 +4,9 @@ const fr = {
   sidebar: {
     dashboard: 'Tableau de bord',
     subscribers: 'Abonnés',
-    subscribers_list: 'Liste',
-    subscribers_new: 'Nouveau',
-    network: 'Réseau',
+    subscribers_list: 'Liste', // Maintenu pour l'infobulle du lien direct
+    subscribers_new: 'Nouveau', // Maintenu pour une utilisation potentielle ailleurs
+    network: 'Réseau', // Maintenant sous Paramètres
     network_ip: 'IPv4/6',
     network_devices: 'Appareils',
     network_cgnat: 'CGNAT',
@@ -22,10 +22,10 @@ const fr = {
     maps_elements_towers: 'Tours',
     maps_elements_cables: 'Câbles',
     maps_map: 'Carte',
-    zones: 'Zones', // Added Zones translation
+    zones: 'Zones',
     finances: 'Finances',
     finances_cash_book: 'Livre de caisse',
-    finances_config: 'Configurations financières',
+    finances_config: 'Configurations financières', // Maintenant sous Paramètres
     reports: 'Rapports',
     security: 'Sécurité',
     settings: 'Paramètres',
@@ -37,8 +37,8 @@ const fr = {
     settings_integrations_telegram: 'Telegram',
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
-    pilotview: 'PilotView', // Added
-    transitos: 'TransitOS', // Added
+    pilotview: 'PilotView',
+    transitos: 'TransitOS',
     expand_sidebar: 'Agrandir la barre latérale',
     collapse_sidebar: 'Réduire la barre latérale',
   },
@@ -317,10 +317,7 @@ const fr = {
    },
    // Map Page
    maps_page: {
-     // Removed title and description
      layers_tooltip: 'Gérer les couches',
-     // map_view_title: 'Vue Carte', // Removed
-     // map_view_desc: 'Visualisez et gérez les éléments du réseau.', // Removed
      map_placeholder_label: 'Espace réservé pour la carte',
      map_integration_placeholder: '[Zone d\'intégration du composant Carte]',
      zoom_in_tooltip: 'Zoom avant',
