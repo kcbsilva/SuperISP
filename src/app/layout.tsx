@@ -46,6 +46,9 @@ import {
   SidebarMenuSubContent,
   SidebarSeparator, // Import Separator
 } from '@/components/ui/sidebar';
+import { SiNextdns } from "react-icons/si";
+import { TbDeviceImacStar } from "react-icons/tb";
+import { SiReactrouter } from "react-icons/si";
 import { AppHeader } from '@/components/app-header';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'; // Import Tooltip components
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
@@ -57,7 +60,7 @@ const queryClient = new QueryClient();
 
 // Metadata can remain static or be dynamically generated if needed elsewhere
 // export const metadata: Metadata = {
-//   title: 'NetHub Manager',
+//   title: 'SuperISP',
 //   description: 'ISP Management Software',
 // };
 
@@ -286,7 +289,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              {/* Security Menu */}
+              {/* Security Menu (Removed as top-level item) */}
+              {/*
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/security')} tooltip={t('sidebar.security')}>
                   <Link href="#" className="flex items-center gap-2">
@@ -295,6 +299,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              */}
 
               {/* Settings Menu */}
               <SidebarMenuItem>
@@ -426,6 +431,15 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                        </SidebarMenuButton>
                     </SidebarMenuItem>
 
+                    {/* Security Menu Item moved here */}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/settings/security')} size="sm" tooltip={t('sidebar.security')}>
+                        <Link href="#" className="flex items-center gap-2">
+                          <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                          <span>{t('sidebar.security')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
 
                     <SidebarMenuItem>
                       <SidebarMenuSub>
@@ -492,7 +506,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/pilotview')} tooltip={t('sidebar.pilotview', 'PilotView')}>
                   <Link href="#" className="flex items-center gap-2">
-                    <Plane />
+                    <TbDeviceImacStar />
                     <span>{t('sidebar.pilotview', 'PilotView')}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -502,7 +516,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/transitos')} tooltip={t('sidebar.transitos', 'TransitOS')}>
                   <Link href="#" className="flex items-center gap-2">
-                    <Bus />
+                    <SiReactrouter />
                     <span>{t('sidebar.transitos', 'TransitOS')}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -512,7 +526,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/zones')} tooltip={t('sidebar.zones', 'Zones')}>
                   <Link href="#" className="flex items-center gap-2">
-                    <Dna /> {/* Using Dna icon for DNS */}
+                    <SiNextdns /> {/* Using Dna icon for DNS */}
                     <span>{t('sidebar.zones', 'Zones')}</span>
                   </Link>
                 </SidebarMenuButton>
