@@ -22,6 +22,7 @@ const pt = {
     maps_elements_towers: 'Torres',
     maps_elements_cables: 'Cabos',
     maps_map: 'Mapa',
+    zones: 'Zonas', // Added Zones translation
     finances: 'Finanças',
     finances_cash_book: 'Livro Caixa',
     finances_config: 'Configurações Financeiras',

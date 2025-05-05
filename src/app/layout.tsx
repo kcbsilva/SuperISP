@@ -26,6 +26,7 @@ import {
   Cog, // Icon for Global Settings
   Plane, // Icon for PilotView
   Bus, // Icon for TransitOS
+  Dna, // Icon for Zones (DNS)
 } from 'lucide-react';
 
 import './globals.css';
@@ -305,6 +306,16 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
               </SidebarMenuItem>
+
+               {/* Zones (DNS) Menu */}
+               <SidebarMenuItem>
+                 <SidebarMenuButton asChild isActive={isActive('/zones')} tooltip={t('sidebar.zones', 'Zones')}>
+                   <Link href="#" className="flex items-center gap-2">
+                     <Dna /> {/* Using Dna icon for DNS */}
+                     <span>{t('sidebar.zones', 'Zones')}</span>
+                   </Link>
+                 </SidebarMenuButton>
+               </SidebarMenuItem>
 
               {/* Finances Menu */}
               <SidebarMenuItem>
