@@ -240,12 +240,23 @@ const en = {
      overview_address: 'Address',
      overview_email: 'Email',
      overview_phone: 'Phone',
+     overview_landline: 'Landline',
+     overview_birthday: 'Birthday',
+     overview_tax_id: 'Tax ID',
+     overview_id_number: 'ID Number',
+     overview_signup_date: 'Signup Date',
+     overview_established_date: 'Established Date',
+     overview_business_number: 'Business Number',
+     personal_info_section: 'Personal Information',
+     address_section: 'Address',
+     contact_info_section: 'Contact Information',
+     not_available: 'N/A',
      edit_button: 'Edit Client',
      delete_button: 'Delete Client',
      edit_toast_title: 'Edit Subscriber (Not Implemented)',
      edit_toast_description: 'Editing for {name} is not yet functional.',
      delete_toast_title: 'Delete Subscriber (Not Implemented)',
-     edit_toast_description: 'Deletion for {name} is not yet functional.',
+     delete_toast_description: 'Deletion for {name} is not yet functional.',
      services_card_title: 'Services',
      services_card_description: 'Services currently subscribed to by the customer.',
      add_service_button: 'Add Service',
@@ -298,9 +309,9 @@ const en = {
      billing_no_pending_invoices: 'No pending invoices.',
      billing_no_past_invoices: 'No past invoice history found.',
      billing_no_canceled_invoices: 'No canceled invoices found.',
-     billing_filter_pending: 'Pending', // Added
-     billing_filter_past: 'Past', // Added
-     billing_filter_canceled: 'Canceled', // Added
+     billing_filter_pending: 'Pending',
+     billing_filter_past: 'Past',
+     billing_filter_canceled: 'Canceled',
      service_calls_card_title: 'Service Calls',
      service_calls_card_description: 'History of support tickets and service visits.',
      service_calls_new_button: 'New Service Call',
@@ -490,5 +501,6 @@ const en = {
 };
 
 export default en;
+
 
 

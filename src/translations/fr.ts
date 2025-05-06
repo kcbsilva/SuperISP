@@ -240,12 +240,23 @@ const fr = {
      overview_address: 'Adresse',
      overview_email: 'Email',
      overview_phone: 'Téléphone',
+     overview_landline: 'Téléphone Fixe',
+     overview_birthday: 'Date de Naissance',
+     overview_tax_id: 'N° Fiscal',
+     overview_id_number: 'Numéro d\'Identité',
+     overview_signup_date: 'Date d\'Inscription',
+     overview_established_date: 'Date de Création',
+     overview_business_number: 'Numéro d\'Entreprise',
+     personal_info_section: 'Informations Personnelles',
+     address_section: 'Adresse',
+     contact_info_section: 'Coordonnées',
+     not_available: 'N/A',
      edit_button: 'Modifier le client',
      delete_button: 'Supprimer le client',
      edit_toast_title: 'Modifier l\'abonné (Non implémenté)',
      edit_toast_description: 'La modification pour {name} n\'est pas encore fonctionnelle.',
      delete_toast_title: 'Supprimer l\'abonné (Non implémenté)',
-     edit_toast_description: 'La suppression pour {name} n\'est pas encore fonctionnelle.',
+     delete_toast_description: 'La suppression pour {name} n\'est pas encore fonctionnelle.',
      services_card_title: 'Services',
      services_card_description: 'Services auxquels le client est actuellement abonné.',
      add_service_button: 'Ajouter un service',
@@ -298,9 +309,9 @@ const fr = {
      billing_no_pending_invoices: 'Aucune facture en attente.',
      billing_no_past_invoices: 'Aucun historique de factures passées trouvé.',
      billing_no_canceled_invoices: 'Aucune facture annulée trouvée.',
-     billing_filter_pending: 'En attente', // Added
-     billing_filter_past: 'Passées', // Added
-     billing_filter_canceled: 'Annulées', // Added
+     billing_filter_pending: 'En attente',
+     billing_filter_past: 'Passées',
+     billing_filter_canceled: 'Annulées',
      service_calls_card_title: 'Appels de service',
      service_calls_card_description: 'Historique des tickets de support et des visites de service.',
      service_calls_new_button: 'Nouvel appel de service',
@@ -490,5 +501,6 @@ const fr = {
 };
 
 export default fr;
+
 
 

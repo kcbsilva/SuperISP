@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine } from 'lucide-react'; // Rename Server to avoid conflict, Added icons
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon } from 'lucide-react'; // Rename Server to avoid conflict, Added icons
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -42,6 +42,7 @@ import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
 import { Separator } from '@/components/ui/separator'; // Import Separator
+import { format } from 'date-fns'; // For date formatting
 
 // Validation Schema for the Add Service form
 const addServiceSchema = z.object({
@@ -71,20 +72,27 @@ const getSubscriberData = (id: string | string[]) => {
         name: `Subscriber ${id}`,
         type: 'Residential',
         status: 'Active',
-        address: '123 Placeholder St',
+        address: '123 Placeholder St, Anytown, USA 12345',
         email: `subscriber${id}@example.com`,
-        phone: `555-0${id}`,
-        services: [ // Add sample services with different types
+        phone: `555-0${id}`, // Primary phone (could be mobile)
+        landline: `555-1${id}`, // Added landline
+        birthday: new Date(1990, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1), // Random birthday for demo
+        taxId: `XXX.XXX.XXX-${Math.floor(Math.random() * 90) + 10}`, // Placeholder Tax ID
+        idNumber: `ID-${Math.floor(Math.random() * 100000)}`, // Placeholder ID Number
+        signupDate: new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1), // Random signup date
+        companyName: '', // Empty for residential
+        establishedDate: null, // Null for residential
+        businessNumber: '', // Empty for residential
+        services: [
             { id: 'svc-1', type: 'Internet', plan: 'Fiber 100', popId: 'sim-1', status: 'Active' },
             { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: 'sim-1', status: 'Active' },
-            { id: 'svc-4', type: 'Landline', plan: 'Unlimited Local', popId: 'sim-1', status: 'Active' }, // Added Landline
-            { id: 'svc-5', type: 'Mobile', plan: '5GB Data Plan', popId: 'sim-1', status: 'Inactive' }, // Added Mobile
-            { id: 'svc-6', type: 'Combo', plan: 'Internet + TV Basic', popId: 'sim-1', status: 'Active' }, // Added Combo
+            { id: 'svc-4', type: 'Landline', plan: 'Unlimited Local', popId: 'sim-1', status: 'Active' },
+            { id: 'svc-5', type: 'Mobile', plan: '5GB Data Plan', popId: 'sim-1', status: 'Inactive' },
+            { id: 'svc-6', type: 'Combo', plan: 'Internet + TV Basic', popId: 'sim-1', status: 'Active' },
         ],
         billing: {
             balance: 50.00,
             nextBillDate: '2024-08-15',
-            // Placeholder invoice data
             pastInvoices: [
                 { id: 'inv-001', date: '2024-07-15', amount: 50.00, status: 'Paid' },
                 { id: 'inv-002', date: '2024-06-15', amount: 50.00, status: 'Paid' },
@@ -99,10 +107,10 @@ const getSubscriberData = (id: string | string[]) => {
         serviceCalls: [
             { id: 'sc-1', date: '2024-07-10', issue: 'Slow internet', status: 'Resolved' },
         ],
-        inventory: [ // Added lent/sold status
+        inventory: [
             { id: 'inv-1', type: 'Router', model: 'Netgear R7000', serial: 'XYZ123', status: 'Lent' },
             { id: 'inv-2', type: 'Modem', model: 'Arris SB8200', serial: 'ABC789', status: 'Lent' },
-            { id: 'inv-3', type: 'Remote', model: 'Basic', serial: 'DEF456', status: 'Sold' }, // Example sold item
+            { id: 'inv-3', type: 'Remote', model: 'Basic', serial: 'DEF456', status: 'Sold' },
         ],
         documents: [
              { id: 'doc-1', name: 'Contract Agreement.pdf', uploaded: '2024-01-15' },
@@ -116,24 +124,36 @@ const getSubscriberData = (id: string | string[]) => {
         ],
     };
 
-    // Customize based on specific IDs if needed for demo
-    if (id === 'sub-1') {
+    if (id === 'sub-1') { // Alice Wonderland - Residential
         baseData.name = 'Alice Wonderland';
-        baseData.address = '123 Fantasy Lane';
+        baseData.address = '123 Fantasy Lane, Wonderland, WND 12345';
         baseData.email = 'alice@example.com';
         baseData.phone = '555-1111';
-        baseData.billing.balance = 0.00; // No outstanding balance for Alice
-        baseData.billing.pendingInvoices = []; // Clear pending for Alice
-    } else if (id === 'sub-2') {
+        baseData.landline = '555-1010';
+        baseData.birthday = new Date(1985, 3, 15); // April 15, 1985
+        baseData.taxId = '123.456.789-00';
+        baseData.idNumber = 'ID-ALICE-001';
+        baseData.signupDate = new Date(2022, 0, 10); // Jan 10, 2022
+        baseData.billing.balance = 0.00;
+        baseData.billing.pendingInvoices = [];
+    } else if (id === 'sub-2') { // Bob The Builder Inc. - Commercial
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
-        baseData.address = '456 Construction Ave';
+        baseData.companyName = 'Bob The Builder Inc.';
+        baseData.address = '456 Construction Ave, Builderville, BLD 67890';
         baseData.email = 'bob@example.com';
         baseData.phone = '555-2222';
+        baseData.landline = '555-2020';
+        baseData.establishedDate = new Date(2005, 7, 20); // Aug 20, 2005
+        baseData.businessNumber = '98.765.432/0001-00';
+        baseData.idNumber = 'ID-BOBINC-002';
+        baseData.signupDate = new Date(2021, 5, 1); // June 1, 2021
+        baseData.birthday = null; // No birthday for commercial
+        baseData.taxId = ''; // No personal tax ID for commercial
         baseData.services = [
              { id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: 'sim-2', status: 'Active' }
         ];
-        baseData.billing.balance = 150.75; // Bob has an outstanding balance
+        baseData.billing.balance = 150.75;
         baseData.billing.pendingInvoices = [
              { id: 'inv-p02', date: '2024-08-15', amount: 150.75, status: 'Due' }
         ]
@@ -159,12 +179,11 @@ function SubscriberProfilePage() {
   const params = useParams();
   const subscriberId = params.id;
   const { toast } = useToast();
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = React.useState(false);
-  // State for active sub-tabs
   const [activeServiceTab, setActiveServiceTab] = React.useState<ServiceTypeFilter>('All');
   const [activeInventoryTab, setActiveInventoryTab] = React.useState<InventoryFilter>('All');
-  const [activeBillingTab, setActiveBillingTab] = React.useState<BillingFilter>('Pending'); // Default to Pending
+  const [activeBillingTab, setActiveBillingTab] = React.useState<BillingFilter>('Pending');
 
   const { data: pops = [], isLoading: isLoadingPops, error: popsError } = useQuery<Pop[], Error>({
     queryKey: ['pops'],
@@ -204,7 +223,6 @@ function SubscriberProfilePage() {
 
   const handleAddServiceSubmit = (data: AddServiceFormData) => {
     console.log('Add Service Data:', data, 'for subscriber:', subscriberId);
-    // TODO: Implement actual API call to add service
     addServiceForm.reset();
     setIsAddServiceDialogOpen(false);
     toast({
@@ -215,21 +233,18 @@ function SubscriberProfilePage() {
     });
   };
 
-   // Filtered services based on activeServiceTab state
   const filteredServices = React.useMemo(() => {
     if (!subscriber?.services) return [];
     if (activeServiceTab === 'All') return subscriber.services;
     return subscriber.services.filter(service => service.type === activeServiceTab);
   }, [subscriber?.services, activeServiceTab]);
 
-  // Filtered inventory based on activeInventoryTab state
   const filteredInventory = React.useMemo(() => {
     if (!subscriber?.inventory) return [];
     if (activeInventoryTab === 'All') return subscriber.inventory;
     return subscriber.inventory.filter(item => item.status === activeInventoryTab);
   }, [subscriber?.inventory, activeInventoryTab]);
 
-  // Get relevant invoices based on activeBillingTab state
   const filteredInvoices = React.useMemo(() => {
     if (!subscriber?.billing) return [];
     switch (activeBillingTab) {
@@ -255,10 +270,21 @@ function SubscriberProfilePage() {
         </div>
     );
   }
+  
+  const OverviewDetailItem: React.FC<{icon: React.ElementType, label: string, value?: string | null | Date}> = ({icon: Icon, label, value}) => (
+    <div className="flex items-start gap-3">
+        <Icon className="h-5 w-5 text-muted-foreground mt-1" />
+        <div>
+            <p className="text-sm text-muted-foreground">{label}</p>
+            <p className="font-medium">
+                {value instanceof Date ? format(value, 'PP', { locale: locale === 'pt' ? require('date-fns/locale/pt-BR').default : locale === 'fr' ? require('date-fns/locale/fr').default : require('date-fns/locale/en-US').default }) : value || t('subscriber_profile.not_available')}
+            </p>
+        </div>
+    </div>
+  );
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Subscriber Header Card */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-4">
@@ -268,7 +294,7 @@ function SubscriberProfilePage() {
               <Building className="h-8 w-8 text-muted-foreground" />
             )}
             <div>
-              <CardTitle>{subscriber.name}</CardTitle>
+              <CardTitle>{subscriber.type === 'Residential' ? subscriber.name : subscriber.companyName}</CardTitle>
               <CardDescription>
                 {t(`add_subscriber.type_${subscriber.type.toLowerCase()}` as any, subscriber.type)} {t('subscriber_profile.status_label')}: <span className="font-medium text-green-600">{t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)}</span> - ID: {subscriber.id}
               </CardDescription>
@@ -277,7 +303,6 @@ function SubscriberProfilePage() {
         </CardHeader>
       </Card>
 
-      {/* Main Profile Tabs */}
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="grid w-full grid-cols-4 md:grid-cols-8">
           <TabsTrigger value="overview">
@@ -311,20 +336,58 @@ function SubscriberProfilePage() {
           </TabsTrigger>
         </TabsList>
 
-        {/* Overview Tab Content */}
         <TabsContent value="overview">
           <Card>
             <CardHeader>
               <CardTitle>{t('subscriber_profile.overview_card_title')}</CardTitle>
               <CardDescription>{t('subscriber_profile.overview_card_description')}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <p><strong>{t('subscriber_profile.overview_name')}:</strong> {subscriber.name}</p>
-              <p><strong>{t('subscriber_profile.overview_type')}:</strong> {t(`add_subscriber.type_${subscriber.type.toLowerCase()}` as any, subscriber.type)}</p>
-              <p><strong>{t('subscriber_profile.overview_status')}:</strong> {t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)}</p>
-              <p><strong>{t('subscriber_profile.overview_address')}:</strong> {subscriber.address}</p>
-              <p><strong>{t('subscriber_profile.overview_email')}:</strong> {subscriber.email}</p>
-              <p><strong>{t('subscriber_profile.overview_phone')}:</strong> {subscriber.phone}</p>
+            <CardContent className="space-y-6">
+              {/* Personal Information Section */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  {subscriber.type === 'Residential' ? <User className="h-5 w-5 text-primary" /> : <Briefcase className="h-5 w-5 text-primary" />}
+                  {t('subscriber_profile.personal_info_section')}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                  <OverviewDetailItem icon={User} label={t('subscriber_profile.overview_name')} value={subscriber.name} />
+                  {subscriber.type === 'Residential' && subscriber.birthday && (
+                    <OverviewDetailItem icon={CalendarDays} label={t('subscriber_profile.overview_birthday')} value={subscriber.birthday} />
+                  )}
+                  {subscriber.type === 'Commercial' && subscriber.establishedDate && (
+                     <OverviewDetailItem icon={CalendarDays} label={t('subscriber_profile.overview_established_date')} value={subscriber.establishedDate} />
+                  )}
+                  <OverviewDetailItem icon={Fingerprint} label={t(subscriber.type === 'Residential' ? 'subscriber_profile.overview_tax_id' : 'subscriber_profile.overview_business_number')} value={subscriber.type === 'Residential' ? subscriber.taxId : subscriber.businessNumber} />
+                  <OverviewDetailItem icon={Fingerprint} label={t('subscriber_profile.overview_id_number')} value={subscriber.idNumber} />
+                  <OverviewDetailItem icon={CalendarDays} label={t('subscriber_profile.overview_signup_date')} value={subscriber.signupDate} />
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Address Section */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                   <MapPinIcon className="h-5 w-5 text-primary" />
+                   {t('subscriber_profile.address_section')}
+                </h3>
+                <OverviewDetailItem icon={Home} label={t('subscriber_profile.overview_address')} value={subscriber.address} />
+              </div>
+
+              <Separator />
+
+              {/* Contact Information Section */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <Phone className="h-5 w-5 text-primary" />
+                  {t('subscriber_profile.contact_info_section')}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                  <OverviewDetailItem icon={Phone} label={t('subscriber_profile.overview_phone')} value={subscriber.phone} />
+                  {subscriber.landline && <OverviewDetailItem icon={Phone} label={t('subscriber_profile.overview_landline')} value={subscriber.landline} />}
+                  <OverviewDetailItem icon={Mail} label={t('subscriber_profile.overview_email')} value={subscriber.email} />
+                </div>
+              </div>
             </CardContent>
             <CardFooter className="border-t pt-6 flex justify-end gap-2">
                 <Button variant="outline" onClick={handleEdit}>
@@ -337,7 +400,6 @@ function SubscriberProfilePage() {
           </Card>
         </TabsContent>
 
-        {/* Services Tab Content - Now with Nested Tabs */}
         <TabsContent value="services">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -345,14 +407,12 @@ function SubscriberProfilePage() {
                   <CardTitle>{t('subscriber_profile.services_card_title')}</CardTitle>
                   <CardDescription>{t('subscriber_profile.services_card_description')}</CardDescription>
               </div>
-              {/* Add Service Dialog Trigger remains */}
               <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                     <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.add_service_button')}
                   </Button>
                 </DialogTrigger>
-                {/* Add Service Dialog Content */}
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
                     <DialogTitle>{t('subscriber_profile.add_service_dialog_title')}</DialogTitle>
@@ -429,9 +489,8 @@ function SubscriberProfilePage() {
               </Dialog>
             </CardHeader>
             <CardContent>
-              {/* Nested Tabs for Services */}
               <Tabs defaultValue="All" value={activeServiceTab} onValueChange={(value) => setActiveServiceTab(value as ServiceTypeFilter)}>
-                 <TabsList className="mb-4 grid w-full grid-cols-6 h-auto"> {/* Make list horizontal and adjust grid */}
+                 <TabsList className="mb-4 grid w-full grid-cols-6 h-auto">
                    <TabsTrigger value="All">{t('subscriber_profile.services_filter_all')}</TabsTrigger>
                    <TabsTrigger value="Internet">{t('subscriber_profile.services_filter_internet')}</TabsTrigger>
                    <TabsTrigger value="TV">{t('subscriber_profile.services_filter_tv')}</TabsTrigger>
@@ -439,7 +498,7 @@ function SubscriberProfilePage() {
                    <TabsTrigger value="Mobile">{t('subscriber_profile.services_filter_mobile')}</TabsTrigger>
                    <TabsTrigger value="Combo">{t('subscriber_profile.services_filter_combo')}</TabsTrigger>
                  </TabsList>
-                 <TabsContent value={activeServiceTab} className="mt-0"> {/* Remove default top margin */}
+                 <TabsContent value={activeServiceTab} className="mt-0">
                     {filteredServices.length > 0 ? (
                         <ul className="space-y-3">
                            {filteredServices.map(service => (
@@ -465,7 +524,6 @@ function SubscriberProfilePage() {
           </Card>
         </TabsContent>
 
-        {/* Billing Tab Content - Now with Nested Tabs */}
         <TabsContent value="billing">
            <Card>
              <CardHeader className="flex flex-row items-center justify-between">
@@ -479,14 +537,12 @@ function SubscriberProfilePage() {
                  </div>
              </CardHeader>
              <CardContent className="space-y-6">
-                 {/* Current Balance */}
                  <div className="flex justify-between items-center border-b pb-2">
                    <span className="font-medium">{t('subscriber_profile.billing_balance')}:</span>
                    <span className={`font-bold ${hasOutstandingBalance ? 'text-destructive' : ''}`}>
                       ${subscriber.billing?.balance.toFixed(2) || '0.00'}
                    </span>
                  </div>
-                 {/* Next Bill Date */}
                  <div className="flex justify-between items-center border-b pb-2">
                      <span className="font-medium">{t('subscriber_profile.billing_next_date')}:</span>
                      <span className="text-muted-foreground">
@@ -494,7 +550,6 @@ function SubscriberProfilePage() {
                      </span>
                  </div>
 
-                 {/* Nested Tabs for Billing */}
                  <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)}>
                     <TabsList className="mb-4 grid w-full grid-cols-3 h-auto">
                        <TabsTrigger value="Pending">{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
@@ -502,7 +557,6 @@ function SubscriberProfilePage() {
                        <TabsTrigger value="Canceled">{t('subscriber_profile.billing_filter_canceled')}</TabsTrigger>
                     </TabsList>
 
-                    {/* Pending Invoices Content */}
                     <TabsContent value="Pending" className="mt-0 space-y-2">
                          <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
                              <Clock className="h-4 w-4 text-destructive" /> {t('subscriber_profile.billing_pending_invoices')} ({subscriber.billing?.pendingInvoices?.length ?? 0})
@@ -521,7 +575,6 @@ function SubscriberProfilePage() {
                          )}
                     </TabsContent>
 
-                    {/* Past Invoices Content */}
                     <TabsContent value="Past" className="mt-0 space-y-2">
                          <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
                              <CheckCircle className="h-4 w-4 text-green-600" /> {t('subscriber_profile.billing_past_invoices')} ({subscriber.billing?.pastInvoices?.length ?? 0})
@@ -540,7 +593,6 @@ function SubscriberProfilePage() {
                          )}
                     </TabsContent>
 
-                    {/* Canceled Invoices Content */}
                     <TabsContent value="Canceled" className="mt-0 space-y-2">
                         <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
                             <XCircle className="h-4 w-4 text-muted-foreground" /> {t('subscriber_profile.billing_canceled_invoices')} ({subscriber.billing?.canceledInvoices?.length ?? 0})
@@ -564,7 +616,6 @@ function SubscriberProfilePage() {
          </TabsContent>
 
 
-        {/* Service Calls Tab Content */}
         <TabsContent value="service-calls">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -595,7 +646,6 @@ function SubscriberProfilePage() {
           </Card>
         </TabsContent>
 
-        {/* Inventory Tab Content - Now with Nested Tabs */}
         <TabsContent value="inventory">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -608,7 +658,6 @@ function SubscriberProfilePage() {
                </Button>
             </CardHeader>
             <CardContent>
-               {/* Nested Tabs for Inventory */}
                <Tabs defaultValue="All" value={activeInventoryTab} onValueChange={(value) => setActiveInventoryTab(value as InventoryFilter)}>
                   <TabsList className="mb-4 grid w-full grid-cols-3 h-auto">
                      <TabsTrigger value="All">{t('subscriber_profile.inventory_filter_all')}</TabsTrigger>
@@ -641,7 +690,6 @@ function SubscriberProfilePage() {
           </Card>
         </TabsContent>
 
-         {/* Documents Tab Content */}
         <TabsContent value="documents">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -672,7 +720,6 @@ function SubscriberProfilePage() {
           </Card>
         </TabsContent>
 
-        {/* Notes Tab Content */}
         <TabsContent value="notes">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -701,7 +748,6 @@ function SubscriberProfilePage() {
           </Card>
         </TabsContent>
 
-        {/* History Tab Content */}
         <TabsContent value="history">
           <Card>
             <CardHeader>
@@ -731,3 +777,4 @@ function SubscriberProfilePage() {
     </div>
   );
 }
+

@@ -240,6 +240,17 @@ const pt = {
     overview_address: 'Endereço',
     overview_email: 'Email',
     overview_phone: 'Telefone',
+    overview_landline: 'Telefone Fixo',
+    overview_birthday: 'Data de Nascimento',
+    overview_tax_id: 'CPF',
+    overview_id_number: 'Número de ID',
+    overview_signup_date: 'Data de Cadastro',
+    overview_established_date: 'Data de Fundação',
+    overview_business_number: 'CNPJ',
+    personal_info_section: 'Informações Pessoais',
+    address_section: 'Endereço',
+    contact_info_section: 'Informações de Contato',
+    not_available: 'N/D',
     edit_button: 'Editar Cliente',
     delete_button: 'Excluir Cliente',
     edit_toast_title: 'Editar Assinante (Não implementado)',
@@ -298,9 +309,9 @@ const pt = {
     billing_no_pending_invoices: 'Nenhuma fatura pendente.',
     billing_no_past_invoices: 'Nenhum histórico de faturas anteriores encontrado.',
     billing_no_canceled_invoices: 'Nenhuma fatura cancelada encontrada.',
-    billing_filter_pending: 'Pendentes', // Added
-    billing_filter_past: 'Anteriores', // Added
-    billing_filter_canceled: 'Canceladas', // Added
+    billing_filter_pending: 'Pendentes',
+    billing_filter_past: 'Anteriores',
+    billing_filter_canceled: 'Canceladas',
     service_calls_card_title: 'Chamados de Serviço',
     service_calls_card_description: 'Histórico de tickets de suporte e visitas de serviço.',
     service_calls_new_button: 'Novo Chamado',
@@ -490,5 +501,6 @@ const pt = {
 };
 
 export default pt;
+
 
 
