@@ -30,6 +30,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator, // Import Separator
 } from "@/components/ui/dropdown-menu"
 import {
   Form,
@@ -47,7 +48,6 @@ import { getPops } from '@/services/mysql/pops';
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
-// import { Separator } from '@/components/ui/separator'; // Separator no longer needed
 import { format } from 'date-fns';
 import { fr as frLocale, ptBR as ptBRLocale, enUS as enUSLocale } from 'date-fns/locale';
 
@@ -270,10 +270,10 @@ function SubscriberProfilePage() {
     });
   };
 
-  const handleServiceAction = (action: 'sign' | 'cancel', serviceId: string) => {
-    console.log(`${action} contract for service ${serviceId}`);
+  const handleServiceAction = (action: 'sign' | 'cancel' | 'print_service_contract' | 'print_responsibility_term' | 'print_cancelation_term' | 'transfer_contract', serviceId: string) => {
+    console.log(`${action} for service ${serviceId}`);
     toast({
-      title: `${action === 'sign' ? 'Sign' : 'Cancel'} Contract (Simulated)`,
+      title: `${t(`subscriber_profile.service_action_${action}` as any, action.replace(/_/g, ' '))} (Simulated)`,
       description: `Action for service ${serviceId} is not yet implemented.`,
     });
   };
@@ -544,6 +544,20 @@ function SubscriberProfilePage() {
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem onClick={() => handleServiceAction('cancel', service.id)} className="text-destructive">
                                                     {t('subscriber_profile.service_action_cancel', 'Cancel Contract')}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => handleServiceAction('print_service_contract', service.id)}>
+                                                    {t('subscriber_profile.service_action_print_service_contract', 'Print Service Contract')}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleServiceAction('print_responsibility_term', service.id)}>
+                                                    {t('subscriber_profile.service_action_print_responsibility_term', 'Print Term of Responsibility')}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleServiceAction('print_cancelation_term', service.id)}>
+                                                    {t('subscriber_profile.service_action_print_cancelation_term', 'Print Term of Cancelation')}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service.id)}>
+                                                    {t('subscriber_profile.service_action_transfer_contract', 'Transfer Contract')}
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
