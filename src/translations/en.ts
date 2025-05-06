@@ -391,6 +391,45 @@ const en = {
      geocode_error_title: 'Geocode Error',
      geocode_error_desc: 'Could not find location coordinates.',
    },
+   // Settings - Plans
+   settings_plans: {
+    internet_page_title: 'Internet Plans',
+    add_plan_button: 'Add Internet Plan',
+    existing_plans_title: 'Existing Plans', // Generic title, can be reused
+    existing_plans_description_internet: 'Manage your internet service plans.',
+    no_plans_found_internet: 'No internet plans configured yet. Click "Add Internet Plan" to create one.',
+    tv_page_title: 'TV Plans',
+    add_plan_button_tv: 'Add TV Plan',
+    existing_plans_description_tv: 'Manage your TV service plans.',
+    no_plans_found_tv: 'No TV plans configured yet. Click "Add TV Plan" to create one.',
+    mobile_page_title: 'Mobile Plans',
+    add_plan_button_mobile: 'Add Mobile Plan',
+    existing_plans_description_mobile: 'Manage your mobile service plans.',
+    no_plans_found_mobile: 'No mobile plans configured yet. Click "Add Mobile Plan" to create one.',
+    landline_page_title: 'Landline Plans',
+    add_plan_button_landline: 'Add Landline Plan',
+    existing_plans_description_landline: 'Manage your landline service plans.',
+    no_plans_found_landline: 'No landline plans configured yet. Click "Add Landline Plan" to create one.',
+    combos_page_title: 'Combo Plans',
+    add_plan_button_combos: 'Add Combo Plan',
+    existing_plans_description_combos: 'Manage your combo service plans.',
+    no_plans_found_combos: 'No combo plans configured yet. Click "Add Combo Plan" to create one.',
+    // Table headers for Internet Plans
+    table_header_name: 'Name',
+    table_header_upload: 'Upload',
+    table_header_download: 'Download',
+    table_header_price: 'Price',
+    table_header_connection_type: 'Connection Type',
+    table_header_client_count: 'Client Count',
+    table_header_actions: 'Actions',
+    edit_action: 'Edit',
+    remove_action: 'Remove',
+    // Connection Types
+    connection_type_fiber: 'Fiber',
+    connection_type_radio: 'Radio',
+    connection_type_satellite: 'Satellite',
+    connection_type_utp: 'UTP',
+  },
 };
 
 export default en;
