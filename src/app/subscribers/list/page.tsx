@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, Building, Search, Filter, RefreshCw, PlusCircle } from "lucide-react"; // Removed Edit, Trash2
+import { User, Building, Search, Filter, RefreshCw, PlusCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
@@ -24,8 +24,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale
-import { useToast } from '@/hooks/use-toast'; // Import useToast
+import { useLocale } from '@/contexts/LocaleContext';
+import { useToast } from '@/hooks/use-toast';
 
 // Placeholder data - replace with actual data fetching and state management
 const placeholderSubscribers = [
@@ -45,14 +45,14 @@ type FilterState = {
 
 
 export default function ListSubscribersPage() {
-    const { t } = useLocale(); // Get translation function
-    const { toast } = useToast(); // Get toast function
+    const { t } = useLocale();
+    const { toast } = useToast();
     const [searchTerm, setSearchTerm] = React.useState('');
     const [filters, setFilters] = React.useState<FilterState>({
         type: [],
         status: [],
     });
-    const [isLoading, setIsLoading] = React.useState(false); // Add loading state for refresh
+    const [isLoading, setIsLoading] = React.useState(false);
 
      // Filter logic
     const filteredSubscribers = React.useMemo(() => {
@@ -79,17 +79,14 @@ export default function ListSubscribersPage() {
         });
     };
 
-    // Handle Refresh (Simulated)
     const handleRefresh = () => {
         setIsLoading(true);
-        toast({ title: t('list_subscribers.refresh_start_toast') }); // Show toast on start
+        toast({ title: t('list_subscribers.refresh_start_toast') });
         console.log('Refreshing subscriber list...');
-        // Simulate data fetching
         setTimeout(() => {
           setIsLoading(false);
           console.log('Subscriber list refreshed.');
-          toast({ title: t('list_subscribers.refresh_end_toast') }); // Show toast on end
-        // In a real app, you'd call refetch() from react-query or similar
+          toast({ title: t('list_subscribers.refresh_end_toast') });
         }, 1000);
     };
 
@@ -97,8 +94,7 @@ export default function ListSubscribersPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">{t('list_subscribers.title')}</h1>
-        {/* Add New and Refresh Buttons */}
+        <h1 className="text-2xl font-semibold">{t('sidebar.subscribers')}</h1> {/* Changed heading */}
         <div className="flex items-center gap-2">
             <Button
                 variant="default"
@@ -159,7 +155,7 @@ export default function ListSubscribersPage() {
                     checked={filters.status.includes(status)}
                     onCheckedChange={(checked) => handleFilterChange('status', status, !!checked)}
                  >
-                    {t(`list_subscribers.filter_status_${status.toLowerCase()}` as any, status)} {/* Localize status */}
+                    {t(`list_subscribers.filter_status_${status.toLowerCase()}` as any, status)}
                  </DropdownMenuCheckboxItem>
              ))}
           </DropdownMenuContent>
@@ -168,11 +164,8 @@ export default function ListSubscribersPage() {
 
 
       <Card>
-        <CardHeader>
-          <CardTitle>{t('list_subscribers.table_title')}</CardTitle>
-          <CardDescription>{t('list_subscribers.table_description')}</CardDescription>
-        </CardHeader>
-        <CardContent>
+        {/* CardHeader removed */}
+        <CardContent className="pt-6"> {/* Added padding-top to CardContent as CardHeader was removed */}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -183,7 +176,6 @@ export default function ListSubscribersPage() {
                   <TableHead>{t('list_subscribers.table_header_address')}</TableHead>
                   <TableHead>{t('list_subscribers.table_header_email')}</TableHead>
                   <TableHead>{t('list_subscribers.table_header_phone')}</TableHead>
-                  {/* Removed Actions Header */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -198,7 +190,6 @@ export default function ListSubscribersPage() {
                         )}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {/* Wrap name in Link */}
                         <Link href={`/subscribers/profile/${subscriber.id}`} className="hover:underline text-primary">
                           {subscriber.name}
                         </Link>
@@ -214,21 +205,20 @@ export default function ListSubscribersPage() {
                                 subscriber.status === 'Active' ? 'bg-green-100 text-green-800 border-transparent' :
                                 subscriber.status === 'Suspended' ? 'bg-red-100 text-red-800 border-transparent' :
                                 subscriber.status === 'Inactive' ? 'bg-yellow-100 text-yellow-800 border-transparent' :
-                                '' // Default secondary or outline if needed
+                                ''
                              }
                         >
-                          {t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)} {/* Localize status */}
+                          {t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm">{subscriber.address}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">{subscriber.email}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">{subscriber.phone}</TableCell>
-                      {/* Removed Actions Cell */}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8"> {/* Adjusted colSpan */}
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                       {t('list_subscribers.no_results')}
                     </TableCell>
                   </TableRow>
@@ -237,8 +227,8 @@ export default function ListSubscribersPage() {
             </Table>
           </div>
         </CardContent>
-        {/* Optional: Add Pagination controls here */}
       </Card>
     </div>
   );
 }
+
