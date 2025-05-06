@@ -205,6 +205,7 @@ const fr = {
      filter_status_planned: 'Prévu',
      table_title: 'Tous les abonnés',
      table_description: 'Voir et gérer tous les abonnés enregistrés.',
+     table_header_id: 'ID',
      table_header_type: 'Type',
      table_header_name: 'Nom',
      table_header_status: 'Statut',
@@ -488,3 +489,4 @@ const fr = {
 };
 
 export default fr;
+

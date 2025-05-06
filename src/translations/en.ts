@@ -205,6 +205,7 @@ const en = {
      filter_status_planned: 'Planned',
      table_title: 'All Subscribers',
      table_description: 'View and manage all registered subscribers.',
+     table_header_id: 'ID',
      table_header_type: 'Type',
      table_header_name: 'Name',
      table_header_status: 'Status',
@@ -488,3 +489,4 @@ const en = {
 };
 
 export default en;
+

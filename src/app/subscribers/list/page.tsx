@@ -61,11 +61,12 @@ export default function ListSubscribersPage() {
         const emailMatch = sub.email.toLowerCase().includes(searchTerm.toLowerCase());
         const addressMatch = sub.address.toLowerCase().includes(searchTerm.toLowerCase());
         const phoneMatch = sub.phone.includes(searchTerm);
+        const idMatch = sub.id.toLowerCase().includes(searchTerm.toLowerCase());
 
         const typeMatch = filters.type.length === 0 || filters.type.includes(sub.type as 'Residential' | 'Commercial');
         const statusMatch = filters.status.length === 0 || filters.status.includes(sub.status as SubscriberStatus);
 
-        return (nameMatch || emailMatch || addressMatch || phoneMatch) && typeMatch && statusMatch;
+        return (idMatch || nameMatch || emailMatch || addressMatch || phoneMatch) && typeMatch && statusMatch;
         });
     }, [searchTerm, filters]);
 
@@ -170,6 +171,7 @@ export default function ListSubscribersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-24">{t('list_subscribers.table_header_id')}</TableHead> {/* Added ID Header */}
                   <TableHead className="w-12">{t('list_subscribers.table_header_type')}</TableHead>
                   <TableHead>{t('list_subscribers.table_header_name')}</TableHead>
                   <TableHead>{t('list_subscribers.table_header_status')}</TableHead>
@@ -182,6 +184,7 @@ export default function ListSubscribersPage() {
                 {filteredSubscribers.length > 0 ? (
                   filteredSubscribers.map((subscriber) => (
                     <TableRow key={subscriber.id}>
+                      <TableCell className="font-mono text-muted-foreground">{subscriber.id}</TableCell> {/* Added ID Cell */}
                       <TableCell>
                         {subscriber.type === 'Residential' ? (
                           <User className="h-5 w-5 text-muted-foreground" title="Residential" />
@@ -218,7 +221,7 @@ export default function ListSubscribersPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8"> {/* Updated colSpan */}
                       {t('list_subscribers.no_results')}
                     </TableCell>
                   </TableRow>

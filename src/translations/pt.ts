@@ -205,6 +205,7 @@ const pt = {
     filter_status_planned: 'Planejado',
     table_title: 'Todos os Assinantes',
     table_description: 'Veja e gerencie todos os assinantes registrados.',
+    table_header_id: 'ID',
     table_header_type: 'Tipo',
     table_header_name: 'Nome',
     table_header_status: 'Status',
@@ -488,3 +489,4 @@ const pt = {
 };
 
 export default pt;
+
