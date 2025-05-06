@@ -133,6 +133,9 @@ export default function InternetPlansPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-24"> {/* Added ID column header */}
+                      {t('settings_plans.table_header_id', 'ID')}
+                    </TableHead>
                     <TableHead>
                       {t('settings_plans.table_header_name', 'Name')}
                     </TableHead>
@@ -165,6 +168,7 @@ export default function InternetPlansPage() {
                 <TableBody>
                   {placeholderPlans.map((plan) => (
                     <TableRow key={plan.id}>
+                      <TableCell className="font-mono text-muted-foreground">{plan.id}</TableCell> {/* Added ID cell */}
                       <TableCell className="font-medium">{plan.name}</TableCell>
                       <TableCell>{plan.uploadSpeed}</TableCell>
                       <TableCell>{plan.downloadSpeed}</TableCell>

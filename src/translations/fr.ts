@@ -415,6 +415,7 @@ const fr = {
     existing_plans_description_combos: 'Gérez vos forfaits de services combinés.',
     no_plans_found_combos: 'Aucun forfait combiné configuré pour le moment. Cliquez sur "Ajouter un forfait Combiné" pour en créer un.',
     // Table headers for Internet Plans
+    table_header_id: 'ID', // Added ID translation
     table_header_name: 'Nom',
     table_header_upload: 'Téléversement',
     table_header_download: 'Téléchargement',

@@ -415,6 +415,7 @@ const en = {
     existing_plans_description_combos: 'Manage your combo service plans.',
     no_plans_found_combos: 'No combo plans configured yet. Click "Add Combo Plan" to create one.',
     // Table headers for Internet Plans
+    table_header_id: 'ID', // Added ID translation
     table_header_name: 'Name',
     table_header_upload: 'Upload',
     table_header_download: 'Download',

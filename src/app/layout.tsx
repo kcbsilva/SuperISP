@@ -105,7 +105,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   }, [pathname]); // Trigger effect when pathname changes
 
   // Determine if a link is active
-  const isActive = (href: string) => pathname.startsWith(href);
+  const isActive = (href: string) => pathname === href || (href !== '/' && pathname.startsWith(href));
+
 
   // Check if the current route is the map page
   const isMapPage = pathname === '/maps/map';
@@ -131,7 +132,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/') && pathname === '/'} tooltip={t('sidebar.dashboard')}>
+                <SidebarMenuButton asChild isActive={isActive('/')} tooltip={t('sidebar.dashboard')}>
                   <Link href="/" className="flex items-center gap-2">
                     <LayoutDashboard />
                     <span>{t('sidebar.dashboard')}</span>
@@ -372,8 +373,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </Tooltip>
                         <SidebarMenuSubContent>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/internet')} size="sm" tooltip={t('sidebar.settings_plans_internet', 'Internet')}>
-                              <Link href="#" className="flex items-center gap-2">
+                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/internet')} size="sm" tooltip={t('sidebar.settings_plans_internet', 'Internet Plans')}>
+                              <Link href="/settings/plans/internet" className="flex items-center gap-2">
                                 <Wifi className="h-4 w-4 text-muted-foreground" />
                                 <span>{t('sidebar.settings_plans_internet', 'Internet')}</span>
                               </Link>
@@ -381,7 +382,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </SidebarMenuItem>
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/plans/tv')} size="sm" tooltip={t('sidebar.settings_plans_tv', 'TV')}>
-                              <Link href="#" className="flex items-center gap-2">
+                              <Link href="/settings/plans/tv" className="flex items-center gap-2">
                                 <Tv className="h-4 w-4 text-muted-foreground" />
                                 <span>{t('sidebar.settings_plans_tv', 'TV')}</span>
                               </Link>
@@ -389,7 +390,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </SidebarMenuItem>
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/plans/mobile')} size="sm" tooltip={t('sidebar.settings_plans_mobile', 'Mobile')}>
-                              <Link href="#" className="flex items-center gap-2">
+                              <Link href="/settings/plans/mobile" className="flex items-center gap-2">
                                 <Smartphone className="h-4 w-4 text-muted-foreground" />
                                 <span>{t('sidebar.settings_plans_mobile', 'Mobile')}</span>
                               </Link>
@@ -397,7 +398,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </SidebarMenuItem>
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/plans/landline')} size="sm" tooltip={t('sidebar.settings_plans_landline', 'Landline')}>
-                              <Link href="#" className="flex items-center gap-2">
+                              <Link href="/settings/plans/landline" className="flex items-center gap-2">
                                 <Phone className="h-4 w-4 text-muted-foreground" />
                                 <span>{t('sidebar.settings_plans_landline', 'Landline')}</span>
                               </Link>
@@ -405,7 +406,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </SidebarMenuItem>
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/plans/combos')} size="sm" tooltip={t('sidebar.settings_plans_combos', 'Combos')}>
-                              <Link href="#" className="flex items-center gap-2">
+                              <Link href="/settings/plans/combos" className="flex items-center gap-2">
                                 <Combine className="h-4 w-4 text-muted-foreground" />
                                 <span>{t('sidebar.settings_plans_combos', 'Combos')}</span>
                               </Link>
