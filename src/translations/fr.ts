@@ -260,18 +260,18 @@ const fr = {
      add_service_success_toast_description: 'Service {serviceType} ajouté pour {name}.',
      services_pop_label: 'PoP',
      services_none: 'Aucun service actif trouvé pour cet abonné.',
-     services_none_filtered: 'Aucun service trouvé correspondant au filtre actuel.', // Added
-     services_filter_label: 'Filtrer par Type', // Added
-     services_filter_all: 'Tous', // Added
-     services_filter_internet: 'Internet', // Added
-     services_filter_tv: 'TV', // Added
-     services_filter_landline: 'Fixe', // Added
-     services_filter_mobile: 'Mobile', // Added
-     services_type_internet: 'Internet', // Added for list display
-     services_type_tv: 'TV', // Added for list display
-     services_type_landline: 'Fixe', // Added for list display
-     services_type_mobile: 'Mobile', // Added for list display
-     services_type_other: 'Autre', // Added for list display
+     services_none_filtered: 'Aucun service trouvé correspondant au filtre actuel.',
+     services_filter_label: 'Filtrer par Type',
+     services_filter_all: 'Tous',
+     services_filter_internet: 'Internet',
+     services_filter_tv: 'TV',
+     services_filter_landline: 'Fixe',
+     services_filter_mobile: 'Mobile',
+     services_type_internet: 'Internet',
+     services_type_tv: 'TV',
+     services_type_landline: 'Fixe',
+     services_type_mobile: 'Mobile',
+     services_type_other: 'Autre',
      billing_card_title: 'Facturation',
      billing_card_description: 'Factures, paiements et historique de facturation.',
      billing_balance: 'Solde actuel',
@@ -279,30 +279,33 @@ const fr = {
      billing_not_available: 'N/A',
      billing_view_invoices_button: 'Voir les factures',
      billing_make_payment_button: 'Effectuer un paiement',
-     billing_pending_invoices: 'Factures en attente', // Added
-     billing_past_invoices: 'Factures passées', // Added
-     billing_canceled_invoices: 'Factures annulées', // Added
-     billing_no_pending_invoices: 'Aucune facture en attente.', // Added
-     billing_no_past_invoices: 'Aucun historique de factures passées trouvé.', // Added
-     billing_no_canceled_invoices: 'Aucune facture annulée trouvée.', // Added
+     billing_pending_invoices: 'Factures en attente',
+     billing_past_invoices: 'Factures passées',
+     billing_canceled_invoices: 'Factures annulées',
+     billing_no_pending_invoices: 'Aucune facture en attente.',
+     billing_no_past_invoices: 'Aucun historique de factures passées trouvé.',
+     billing_no_canceled_invoices: 'Aucune facture annulée trouvée.',
+     billing_filter_pending: 'En attente', // Added
+     billing_filter_past: 'Passées', // Added
+     billing_filter_canceled: 'Annulées', // Added
      service_calls_card_title: 'Appels de service',
      service_calls_card_description: 'Historique des tickets de support et des visites de service.',
      service_calls_new_button: 'Nouvel appel de service',
      service_calls_none: 'Aucun historique d\'appel de service trouvé.',
-     service_call_status_resolved: 'Résolu', // Added
-     service_call_status_pending: 'En attente', // Example, add others as needed
+     service_call_status_resolved: 'Résolu',
+     service_call_status_pending: 'En attente',
      inventory_card_title: 'Inventaire',
      inventory_card_description: 'Équipement attribué à l\'abonné.',
      inventory_assign_button: 'Attribuer un équipement',
      inventory_serial_label: 'N/S',
      inventory_none: 'Aucun équipement attribué à cet abonné.',
-     inventory_none_filtered: 'Aucun équipement trouvé correspondant au filtre actuel.', // Added
-     inventory_filter_label: 'Filtrer par Statut', // Added
-     inventory_filter_all: 'Tous', // Added
-     inventory_filter_lent: 'Équipement prêté', // Added
-     inventory_filter_sold: 'Équipement vendu', // Added
-     inventory_status_lent: 'Prêté', // Added for list display
-     inventory_status_sold: 'Vendu', // Added for list display
+     inventory_none_filtered: 'Aucun équipement trouvé correspondant au filtre actuel.',
+     inventory_filter_label: 'Filtrer par Statut',
+     inventory_filter_all: 'Tous',
+     inventory_filter_lent: 'Équipement prêté',
+     inventory_filter_sold: 'Équipement vendu',
+     inventory_status_lent: 'Prêté',
+     inventory_status_sold: 'Vendu',
      documents_card_title: 'Documents',
      documents_card_description: 'Gérer les documents liés à l\'abonné.',
      documents_upload_button: 'Télécharger un document',

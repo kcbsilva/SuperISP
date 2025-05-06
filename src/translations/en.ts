@@ -260,18 +260,18 @@ const en = {
      add_service_success_toast_description: '{serviceType} service added for {name}.',
      services_pop_label: 'PoP',
      services_none: 'No active services found for this subscriber.',
-     services_none_filtered: 'No services found matching the current filter.', // Added
-     services_filter_label: 'Filter by Type', // Added
-     services_filter_all: 'All', // Added
-     services_filter_internet: 'Internet', // Added
-     services_filter_tv: 'TV', // Added
-     services_filter_landline: 'Landline', // Added
-     services_filter_mobile: 'Mobile', // Added
-     services_type_internet: 'Internet', // Added for list display
-     services_type_tv: 'TV', // Added for list display
-     services_type_landline: 'Landline', // Added for list display
-     services_type_mobile: 'Mobile', // Added for list display
-     services_type_other: 'Other', // Added for list display
+     services_none_filtered: 'No services found matching the current filter.',
+     services_filter_label: 'Filter by Type',
+     services_filter_all: 'All',
+     services_filter_internet: 'Internet',
+     services_filter_tv: 'TV',
+     services_filter_landline: 'Landline',
+     services_filter_mobile: 'Mobile',
+     services_type_internet: 'Internet',
+     services_type_tv: 'TV',
+     services_type_landline: 'Landline',
+     services_type_mobile: 'Mobile',
+     services_type_other: 'Other',
      billing_card_title: 'Billing',
      billing_card_description: 'Invoices, payments, and billing history.',
      billing_balance: 'Current Balance',
@@ -279,30 +279,33 @@ const en = {
      billing_not_available: 'N/A',
      billing_view_invoices_button: 'View Invoices',
      billing_make_payment_button: 'Make Payment',
-     billing_pending_invoices: 'Pending Invoices', // Added
-     billing_past_invoices: 'Past Invoices', // Added
-     billing_canceled_invoices: 'Canceled Invoices', // Added
-     billing_no_pending_invoices: 'No pending invoices.', // Added
-     billing_no_past_invoices: 'No past invoice history found.', // Added
-     billing_no_canceled_invoices: 'No canceled invoices found.', // Added
+     billing_pending_invoices: 'Pending Invoices',
+     billing_past_invoices: 'Past Invoices',
+     billing_canceled_invoices: 'Canceled Invoices',
+     billing_no_pending_invoices: 'No pending invoices.',
+     billing_no_past_invoices: 'No past invoice history found.',
+     billing_no_canceled_invoices: 'No canceled invoices found.',
+     billing_filter_pending: 'Pending', // Added
+     billing_filter_past: 'Past', // Added
+     billing_filter_canceled: 'Canceled', // Added
      service_calls_card_title: 'Service Calls',
      service_calls_card_description: 'History of support tickets and service visits.',
      service_calls_new_button: 'New Service Call',
      service_calls_none: 'No service call history found.',
-     service_call_status_resolved: 'Resolved', // Added
-     service_call_status_pending: 'Pending', // Example, add others as needed
+     service_call_status_resolved: 'Resolved',
+     service_call_status_pending: 'Pending',
      inventory_card_title: 'Inventory',
      inventory_card_description: 'Equipment assigned to the subscriber.',
      inventory_assign_button: 'Assign Equipment',
      inventory_serial_label: 'S/N',
      inventory_none: 'No equipment assigned to this subscriber.',
-     inventory_none_filtered: 'No equipment found matching the current filter.', // Added
-     inventory_filter_label: 'Filter by Status', // Added
-     inventory_filter_all: 'All', // Added
-     inventory_filter_lent: 'Lent Equipment', // Added
-     inventory_filter_sold: 'Sold Equipment', // Added
-     inventory_status_lent: 'Lent', // Added for list display
-     inventory_status_sold: 'Sold', // Added for list display
+     inventory_none_filtered: 'No equipment found matching the current filter.',
+     inventory_filter_label: 'Filter by Status',
+     inventory_filter_all: 'All',
+     inventory_filter_lent: 'Lent Equipment',
+     inventory_filter_sold: 'Sold Equipment',
+     inventory_status_lent: 'Lent',
+     inventory_status_sold: 'Sold',
      documents_card_title: 'Documents',
      documents_card_description: 'Manage documents related to the subscriber.',
      documents_upload_button: 'Upload Document',

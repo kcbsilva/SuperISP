@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter } from 'lucide-react'; // Rename Server to avoid conflict, Added icons
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock } from 'lucide-react'; // Rename Server to avoid conflict, Added icons
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -42,14 +42,6 @@ import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
 import { Separator } from '@/components/ui/separator'; // Import Separator
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; // Import Dropdown for filtering
 
 // Validation Schema for the Add Service form
 const addServiceSchema = z.object({
@@ -61,9 +53,13 @@ const addServiceSchema = z.object({
 
 type AddServiceFormData = z.infer<typeof addServiceSchema>;
 
-// Types for filtering
-type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile'; // Changed Phone to Landline
+// Types for service filtering (using tabs now)
+type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile';
+// Types for inventory filtering (using tabs now)
 type InventoryFilter = 'All' | 'Lent' | 'Sold';
+// Types for billing filtering (using tabs now)
+type BillingFilter = 'Pending' | 'Past' | 'Canceled';
+
 
 // Placeholder data - replace with actual data fetching based on ID
 const getSubscriberData = (id: string | string[]) => {
@@ -96,7 +92,7 @@ const getSubscriberData = (id: string | string[]) => {
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change' },
             ],
             pendingInvoices: [
-                 // None pending for this example, but could add { id: 'inv-p01', date: '2024-08-15', amount: 50.00, status: 'Due' }
+                 { id: 'inv-p01', date: '2024-08-15', amount: 50.00, status: 'Due' }
             ],
         },
         serviceCalls: [
@@ -126,6 +122,7 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.email = 'alice@example.com';
         baseData.phone = '555-1111';
         baseData.billing.balance = 0.00; // No outstanding balance for Alice
+        baseData.billing.pendingInvoices = []; // Clear pending for Alice
     } else if (id === 'sub-2') {
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
@@ -163,8 +160,10 @@ function SubscriberProfilePage() {
   const { toast } = useToast();
   const { t } = useLocale();
   const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = React.useState(false);
-  const [serviceFilter, setServiceFilter] = React.useState<ServiceTypeFilter>('All');
-  const [inventoryFilter, setInventoryFilter] = React.useState<InventoryFilter>('All');
+  // State for active sub-tabs
+  const [activeServiceTab, setActiveServiceTab] = React.useState<ServiceTypeFilter>('All');
+  const [activeInventoryTab, setActiveInventoryTab] = React.useState<InventoryFilter>('All');
+  const [activeBillingTab, setActiveBillingTab] = React.useState<BillingFilter>('Pending'); // Default to Pending
 
   const { data: pops = [], isLoading: isLoadingPops, error: popsError } = useQuery<Pop[], Error>({
     queryKey: ['pops'],
@@ -204,6 +203,7 @@ function SubscriberProfilePage() {
 
   const handleAddServiceSubmit = (data: AddServiceFormData) => {
     console.log('Add Service Data:', data, 'for subscriber:', subscriberId);
+    // TODO: Implement actual API call to add service
     addServiceForm.reset();
     setIsAddServiceDialogOpen(false);
     toast({
@@ -214,19 +214,34 @@ function SubscriberProfilePage() {
     });
   };
 
-  // Filtered services based on state
+   // Filtered services based on activeServiceTab state
   const filteredServices = React.useMemo(() => {
     if (!subscriber?.services) return [];
-    if (serviceFilter === 'All') return subscriber.services;
-    return subscriber.services.filter(service => service.type === serviceFilter);
-  }, [subscriber?.services, serviceFilter]);
+    if (activeServiceTab === 'All') return subscriber.services;
+    return subscriber.services.filter(service => service.type === activeServiceTab);
+  }, [subscriber?.services, activeServiceTab]);
 
-  // Filtered inventory based on state
+  // Filtered inventory based on activeInventoryTab state
   const filteredInventory = React.useMemo(() => {
     if (!subscriber?.inventory) return [];
-    if (inventoryFilter === 'All') return subscriber.inventory;
-    return subscriber.inventory.filter(item => item.status === inventoryFilter);
-  }, [subscriber?.inventory, inventoryFilter]);
+    if (activeInventoryTab === 'All') return subscriber.inventory;
+    return subscriber.inventory.filter(item => item.status === activeInventoryTab);
+  }, [subscriber?.inventory, activeInventoryTab]);
+
+  // Get relevant invoices based on activeBillingTab state
+  const filteredInvoices = React.useMemo(() => {
+    if (!subscriber?.billing) return [];
+    switch (activeBillingTab) {
+      case 'Pending':
+        return subscriber.billing.pendingInvoices;
+      case 'Past':
+        return subscriber.billing.pastInvoices;
+      case 'Canceled':
+        return subscriber.billing.canceledInvoices;
+      default:
+        return [];
+    }
+  }, [subscriber?.billing, activeBillingTab]);
 
 
   if (!subscriber) {
@@ -242,6 +257,7 @@ function SubscriberProfilePage() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Subscriber Header Card */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-4">
@@ -260,6 +276,7 @@ function SubscriberProfilePage() {
         </CardHeader>
       </Card>
 
+      {/* Main Profile Tabs */}
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="grid w-full grid-cols-4 md:grid-cols-8">
           <TabsTrigger value="overview">
@@ -319,7 +336,7 @@ function SubscriberProfilePage() {
           </Card>
         </TabsContent>
 
-        {/* Services Tab Content */}
+        {/* Services Tab Content - Now with Nested Tabs */}
         <TabsContent value="services">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -327,136 +344,125 @@ function SubscriberProfilePage() {
                   <CardTitle>{t('subscriber_profile.services_card_title')}</CardTitle>
                   <CardDescription>{t('subscriber_profile.services_card_description')}</CardDescription>
               </div>
-              <div className="flex items-center gap-2">
-                  {/* Filter Dropdown */}
-                   <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Filter className="mr-2 h-4 w-4" /> {t(`subscriber_profile.services_filter_${serviceFilter.toLowerCase()}` as any, serviceFilter)}
+              {/* Add Service Dialog Trigger remains */}
+              <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                    <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.add_service_button')}
+                  </Button>
+                </DialogTrigger>
+                {/* Add Service Dialog Content */}
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>{t('subscriber_profile.add_service_dialog_title')}</DialogTitle>
+                    <DialogDescription>
+                      {t('subscriber_profile.add_service_dialog_description')}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Form {...addServiceForm}>
+                    <form onSubmit={addServiceForm.handleSubmit(handleAddServiceSubmit)} className="grid gap-4 py-4">
+                      <FormField
+                        control={addServiceForm.control}
+                        name="serviceType"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t('subscriber_profile.add_service_type_label')}</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={t('subscriber_profile.add_service_type_placeholder')} />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="Internet">{t('subscriber_profile.add_service_type_internet')}</SelectItem>
+                                <SelectItem value="TV">{t('subscriber_profile.add_service_type_tv')}</SelectItem>
+                                <SelectItem value="Phone">{t('subscriber_profile.add_service_type_landline')}</SelectItem>
+                                <SelectItem value="Mobile">{t('subscriber_profile.add_service_type_mobile')}</SelectItem>
+                                <SelectItem value="Other">{t('subscriber_profile.add_service_type_other')}</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={addServiceForm.control}
+                        name="popId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t('subscriber_profile.add_service_pop_label')}</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingPops || !!popsError}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={isLoadingPops ? t('subscriber_profile.add_service_pop_loading') : popsError ? t('subscriber_profile.add_service_pop_error') : t('subscriber_profile.add_service_pop_placeholder')} />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {!isLoadingPops && !popsError && pops.map((pop) => (
+                                  <SelectItem key={pop.id.toString()} value={pop.id.toString()}>
+                                    {pop.name} ({pop.location})
+                                  </SelectItem>
+                                ))}
+                                 {isLoadingPops && <div className="p-2 text-center text-muted-foreground">{t('subscriber_profile.add_service_pop_loading')}</div>}
+                                 {popsError && <div className="p-2 text-center text-destructive">{t('subscriber_profile.add_service_pop_error')}</div>}
+                                 {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground">{t('subscriber_profile.add_service_pop_none')}</div>}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button type="button" variant="outline" disabled={addServiceForm.formState.isSubmitting}>{t('subscriber_profile.add_service_cancel_button')}</Button>
+                        </DialogClose>
+                        <Button type="submit" disabled={addServiceForm.formState.isSubmitting}>
+                          {addServiceForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          {addServiceForm.formState.isSubmitting ? t('subscriber_profile.add_service_saving_button') : t('subscriber_profile.add_service_save_button')}
                         </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>{t('subscriber_profile.services_filter_label')}</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        {(['All', 'Internet', 'TV', 'Landline', 'Mobile'] as ServiceTypeFilter[]).map(type => (
-                            <DropdownMenuCheckboxItem
-                                key={type}
-                                checked={serviceFilter === type}
-                                onCheckedChange={() => setServiceFilter(type)}
-                            >
-                                {t(`subscriber_profile.services_filter_${type.toLowerCase()}` as any, type)}
-                            </DropdownMenuCheckboxItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-
-                   {/* Add Service Dialog Trigger */}
-                   <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
-                     <DialogTrigger asChild>
-                       <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                         <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.add_service_button')}
-                       </Button>
-                     </DialogTrigger>
-                     <DialogContent className="sm:max-w-[425px]">
-                       <DialogHeader>
-                         <DialogTitle>{t('subscriber_profile.add_service_dialog_title')}</DialogTitle> {/* Corrected typo */}
-                         <DialogDescription>
-                           {t('subscriber_profile.add_service_dialog_description')}
-                         </DialogDescription>
-                       </DialogHeader>
-                       <Form {...addServiceForm}>
-                         <form onSubmit={addServiceForm.handleSubmit(handleAddServiceSubmit)} className="grid gap-4 py-4">
-                           <FormField
-                             control={addServiceForm.control}
-                             name="serviceType"
-                             render={({ field }) => (
-                               <FormItem>
-                                 <FormLabel>{t('subscriber_profile.add_service_type_label')}</FormLabel>
-                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                   <FormControl>
-                                     <SelectTrigger>
-                                       <SelectValue placeholder={t('subscriber_profile.add_service_type_placeholder')} />
-                                     </SelectTrigger>
-                                   </FormControl>
-                                   <SelectContent>
-                                     <SelectItem value="Internet">{t('subscriber_profile.add_service_type_internet')}</SelectItem>
-                                     <SelectItem value="TV">{t('subscriber_profile.add_service_type_tv')}</SelectItem>
-                                     <SelectItem value="Phone">{t('subscriber_profile.add_service_type_landline')}</SelectItem> {/* Changed from phone */}
-                                     <SelectItem value="Mobile">{t('subscriber_profile.add_service_type_mobile')}</SelectItem> {/* Added Mobile */}
-                                     <SelectItem value="Other">{t('subscriber_profile.add_service_type_other')}</SelectItem>
-                                   </SelectContent>
-                                 </Select>
-                                 <FormMessage />
-                               </FormItem>
-                             )}
-                           />
-                           <FormField
-                             control={addServiceForm.control}
-                             name="popId"
-                             render={({ field }) => (
-                               <FormItem>
-                                 <FormLabel>{t('subscriber_profile.add_service_pop_label')}</FormLabel>
-                                 <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingPops || !!popsError}>
-                                   <FormControl>
-                                     <SelectTrigger>
-                                       <SelectValue placeholder={isLoadingPops ? t('subscriber_profile.add_service_pop_loading') : popsError ? t('subscriber_profile.add_service_pop_error') : t('subscriber_profile.add_service_pop_placeholder')} />
-                                     </SelectTrigger>
-                                   </FormControl>
-                                   <SelectContent>
-                                     {!isLoadingPops && !popsError && pops.map((pop) => (
-                                       <SelectItem key={pop.id.toString()} value={pop.id.toString()}>
-                                         {pop.name} ({pop.location})
-                                       </SelectItem>
-                                     ))}
-                                      {isLoadingPops && <div className="p-2 text-center text-muted-foreground">{t('subscriber_profile.add_service_pop_loading')}</div>}
-                                      {popsError && <div className="p-2 text-center text-destructive">{t('subscriber_profile.add_service_pop_error')}</div>}
-                                      {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground">{t('subscriber_profile.add_service_pop_none')}</div>}
-                                   </SelectContent>
-                                 </Select>
-                                 <FormMessage />
-                               </FormItem>
-                             )}
-                           />
-                           <DialogFooter>
-                             <DialogClose asChild>
-                               <Button type="button" variant="outline" disabled={addServiceForm.formState.isSubmitting}>{t('subscriber_profile.add_service_cancel_button')}</Button>
-                             </DialogClose>
-                             <Button type="submit" disabled={addServiceForm.formState.isSubmitting}>
-                               {addServiceForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                               {addServiceForm.formState.isSubmitting ? t('subscriber_profile.add_service_saving_button') : t('subscriber_profile.add_service_save_button')}
-                             </Button>
-                           </DialogFooter>
-                         </form>
-                       </Form>
-                     </DialogContent>
-                   </Dialog>
-                </div>
+                      </DialogFooter>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
             </CardHeader>
             <CardContent>
-             {filteredServices.length > 0 ? (
-                 <ul className="space-y-3">
-                    {filteredServices.map(service => (
-                        <li key={service.id} className="flex justify-between items-center p-3 border rounded-md">
-                            <div>
-                                <span className="font-medium">{t(`subscriber_profile.services_type_${service.type.toLowerCase()}` as any, service.type)}</span> - <span className="text-sm text-muted-foreground">{service.plan}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs text-muted-foreground">{t('subscriber_profile.services_pop_label')}: {pops.find(p => p.id.toString() === service.popId)?.name || service.popId}</span>
-                                <span className={`text-xs px-2 py-0.5 rounded-full ${service.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                                  {t(`list_subscribers.status_${service.status.toLowerCase()}` as any, service.status)}
-                                </span>
-                            </div>
-                        </li>
-                    ))}
-                 </ul>
-             ) : (
-                 <p className="text-muted-foreground text-center py-4">{t('subscriber_profile.services_none_filtered')}</p>
-             )}
+              {/* Nested Tabs for Services */}
+              <Tabs defaultValue="All" value={activeServiceTab} onValueChange={(value) => setActiveServiceTab(value as ServiceTypeFilter)}>
+                 <TabsList className="mb-4 grid w-full grid-cols-5 h-auto"> {/* Make list horizontal and adjust grid */}
+                   <TabsTrigger value="All">{t('subscriber_profile.services_filter_all')}</TabsTrigger>
+                   <TabsTrigger value="Internet">{t('subscriber_profile.services_filter_internet')}</TabsTrigger>
+                   <TabsTrigger value="TV">{t('subscriber_profile.services_filter_tv')}</TabsTrigger>
+                   <TabsTrigger value="Landline">{t('subscriber_profile.services_filter_landline')}</TabsTrigger>
+                   <TabsTrigger value="Mobile">{t('subscriber_profile.services_filter_mobile')}</TabsTrigger>
+                 </TabsList>
+                 <TabsContent value={activeServiceTab} className="mt-0"> {/* Remove default top margin */}
+                    {filteredServices.length > 0 ? (
+                        <ul className="space-y-3">
+                           {filteredServices.map(service => (
+                               <li key={service.id} className="flex justify-between items-center p-3 border rounded-md">
+                                   <div>
+                                       <span className="font-medium">{t(`subscriber_profile.services_type_${service.type.toLowerCase()}` as any, service.type)}</span> - <span className="text-sm text-muted-foreground">{service.plan}</span>
+                                   </div>
+                                   <div className="flex items-center gap-2">
+                                       <span className="text-xs text-muted-foreground">{t('subscriber_profile.services_pop_label')}: {pops.find(p => p.id.toString() === service.popId)?.name || service.popId}</span>
+                                       <span className={`text-xs px-2 py-0.5 rounded-full ${service.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                         {t(`list_subscribers.status_${service.status.toLowerCase()}` as any, service.status)}
+                                       </span>
+                                   </div>
+                               </li>
+                           ))}
+                        </ul>
+                    ) : (
+                        <p className="text-muted-foreground text-center py-4">{t('subscriber_profile.services_none_filtered')}</p>
+                    )}
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Billing Tab Content */}
+        {/* Billing Tab Content - Now with Nested Tabs */}
         <TabsContent value="billing">
            <Card>
              <CardHeader className="flex flex-row items-center justify-between">
@@ -485,65 +491,71 @@ function SubscriberProfilePage() {
                      </span>
                  </div>
 
-                 {/* Invoice Sections */}
-                 <div className="space-y-4">
-                   {/* Pending Invoices */}
-                   <div>
-                       <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
-                           <FileText className="h-4 w-4 text-destructive" /> {t('subscriber_profile.billing_pending_invoices')} ({subscriber.billing?.pendingInvoices?.length ?? 0})
-                       </h4>
-                       {subscriber.billing?.pendingInvoices?.length > 0 ? (
-                           <ul className="space-y-2 text-sm">
-                               {subscriber.billing.pendingInvoices.map(inv => (
-                                   <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md bg-destructive/5">
-                                       <span>{inv.id} - {inv.date}</span>
-                                       <span className="font-medium">${inv.amount.toFixed(2)}</span>
-                                   </li>
-                               ))}
-                           </ul>
-                       ) : (
-                           <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_pending_invoices')}</p>
-                       )}
-                   </div>
-                   <Separator />
-                   {/* Past Invoices */}
-                   <div>
-                       <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
-                           <HistoryIcon className="h-4 w-4 text-muted-foreground" /> {t('subscriber_profile.billing_past_invoices')} ({subscriber.billing?.pastInvoices?.length ?? 0})
-                       </h4>
-                       {subscriber.billing?.pastInvoices?.length > 0 ? (
-                           <ul className="space-y-2 text-sm">
-                               {subscriber.billing.pastInvoices.map(inv => (
-                                   <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md">
-                                       <span>{inv.id} - {inv.date}</span>
-                                       <span className="text-green-600">${inv.amount.toFixed(2)} ({inv.status})</span>
-                                   </li>
-                               ))}
-                           </ul>
-                       ) : (
-                           <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_past_invoices')}</p>
-                       )}
-                   </div>
-                    <Separator />
-                   {/* Canceled Invoices */}
-                   <div>
-                       <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
-                           <Trash2 className="h-4 w-4 text-muted-foreground" /> {t('subscriber_profile.billing_canceled_invoices')} ({subscriber.billing?.canceledInvoices?.length ?? 0})
-                       </h4>
-                       {subscriber.billing?.canceledInvoices?.length > 0 ? (
-                           <ul className="space-y-2 text-sm">
-                               {subscriber.billing.canceledInvoices.map(inv => (
-                                   <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md">
-                                       <span>{inv.id} - {inv.date}</span>
-                                       <span className="text-muted-foreground">${inv.amount.toFixed(2)} ({inv.reason})</span>
-                                   </li>
-                               ))}
-                           </ul>
-                       ) : (
-                           <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_canceled_invoices')}</p>
-                       )}
-                   </div>
-                 </div>
+                 {/* Nested Tabs for Billing */}
+                 <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)}>
+                    <TabsList className="mb-4 grid w-full grid-cols-3 h-auto">
+                       <TabsTrigger value="Pending">{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
+                       <TabsTrigger value="Past">{t('subscriber_profile.billing_filter_past')}</TabsTrigger>
+                       <TabsTrigger value="Canceled">{t('subscriber_profile.billing_filter_canceled')}</TabsTrigger>
+                    </TabsList>
+
+                    {/* Pending Invoices Content */}
+                    <TabsContent value="Pending" className="mt-0 space-y-2">
+                         <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
+                             <Clock className="h-4 w-4 text-destructive" /> {t('subscriber_profile.billing_pending_invoices')} ({subscriber.billing?.pendingInvoices?.length ?? 0})
+                         </h4>
+                         {subscriber.billing?.pendingInvoices?.length > 0 ? (
+                             <ul className="space-y-2 text-sm">
+                                 {subscriber.billing.pendingInvoices.map(inv => (
+                                     <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md bg-destructive/5">
+                                         <span>{inv.id} - {inv.date}</span>
+                                         <span className="font-medium">${inv.amount.toFixed(2)} ({inv.status})</span>
+                                     </li>
+                                 ))}
+                             </ul>
+                         ) : (
+                             <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_pending_invoices')}</p>
+                         )}
+                    </TabsContent>
+
+                    {/* Past Invoices Content */}
+                    <TabsContent value="Past" className="mt-0 space-y-2">
+                         <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
+                             <CheckCircle className="h-4 w-4 text-green-600" /> {t('subscriber_profile.billing_past_invoices')} ({subscriber.billing?.pastInvoices?.length ?? 0})
+                         </h4>
+                         {subscriber.billing?.pastInvoices?.length > 0 ? (
+                             <ul className="space-y-2 text-sm">
+                                 {subscriber.billing.pastInvoices.map(inv => (
+                                     <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md">
+                                         <span>{inv.id} - {inv.date}</span>
+                                         <span className="text-green-600">${inv.amount.toFixed(2)} ({inv.status})</span>
+                                     </li>
+                                 ))}
+                             </ul>
+                         ) : (
+                             <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_past_invoices')}</p>
+                         )}
+                    </TabsContent>
+
+                    {/* Canceled Invoices Content */}
+                    <TabsContent value="Canceled" className="mt-0 space-y-2">
+                        <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
+                            <XCircle className="h-4 w-4 text-muted-foreground" /> {t('subscriber_profile.billing_canceled_invoices')} ({subscriber.billing?.canceledInvoices?.length ?? 0})
+                        </h4>
+                        {subscriber.billing?.canceledInvoices?.length > 0 ? (
+                            <ul className="space-y-2 text-sm">
+                                {subscriber.billing.canceledInvoices.map(inv => (
+                                    <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md">
+                                        <span>{inv.id} - {inv.date}</span>
+                                        <span className="text-muted-foreground">${inv.amount.toFixed(2)} ({inv.reason})</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_canceled_invoices')}</p>
+                        )}
+                    </TabsContent>
+                 </Tabs>
              </CardContent>
            </Card>
          </TabsContent>
@@ -580,7 +592,7 @@ function SubscriberProfilePage() {
           </Card>
         </TabsContent>
 
-        {/* Inventory Tab Content */}
+        {/* Inventory Tab Content - Now with Nested Tabs */}
         <TabsContent value="inventory">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -588,53 +600,40 @@ function SubscriberProfilePage() {
                    <CardTitle>{t('subscriber_profile.inventory_card_title')}</CardTitle>
                    <CardDescription>{t('subscriber_profile.inventory_card_description')}</CardDescription>
                </div>
-               <div className="flex items-center gap-2">
-                   {/* Filter Dropdown */}
-                   <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Filter className="mr-2 h-4 w-4" /> {t(`subscriber_profile.inventory_filter_${inventoryFilter.toLowerCase()}` as any, inventoryFilter)}
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>{t('subscriber_profile.inventory_filter_label')}</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        {(['All', 'Lent', 'Sold'] as InventoryFilter[]).map(type => (
-                            <DropdownMenuCheckboxItem
-                                key={type}
-                                checked={inventoryFilter === type}
-                                onCheckedChange={() => setInventoryFilter(type)}
-                            >
-                                {t(`subscriber_profile.inventory_filter_${type.toLowerCase()}` as any, type)}
-                            </DropdownMenuCheckboxItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Button size="sm">
-                        <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.inventory_assign_button')}
-                    </Button>
-                </div>
+               <Button size="sm">
+                    <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.inventory_assign_button')}
+               </Button>
             </CardHeader>
             <CardContent>
-              {filteredInventory.length > 0 ? (
-                  <ul className="space-y-3">
-                     {filteredInventory.map(item => (
-                         <li key={item.id} className="flex justify-between items-center p-3 border rounded-md">
-                             <div>
-                                 <span className="font-medium">{item.type}</span> - <span className="text-sm text-muted-foreground">{item.model}</span>
-                             </div>
-                             <div className="flex items-center gap-2">
-                                 <span className="text-xs text-muted-foreground">{t('subscriber_profile.inventory_serial_label')}: {item.serial}</span>
-                                 <span className={`text-xs px-2 py-0.5 rounded-full ${item.status === 'Lent' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-                                     {t(`subscriber_profile.inventory_status_${item.status.toLowerCase()}` as any, item.status)}
-                                 </span>
-                              </div>
-                         </li>
-                     ))}
-                  </ul>
-              ) : (
-                  <p className="text-muted-foreground text-center py-4">{t('subscriber_profile.inventory_none_filtered')}</p>
-              )}
+               {/* Nested Tabs for Inventory */}
+               <Tabs defaultValue="All" value={activeInventoryTab} onValueChange={(value) => setActiveInventoryTab(value as InventoryFilter)}>
+                  <TabsList className="mb-4 grid w-full grid-cols-3 h-auto">
+                     <TabsTrigger value="All">{t('subscriber_profile.inventory_filter_all')}</TabsTrigger>
+                     <TabsTrigger value="Lent">{t('subscriber_profile.inventory_filter_lent')}</TabsTrigger>
+                     <TabsTrigger value="Sold">{t('subscriber_profile.inventory_filter_sold')}</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value={activeInventoryTab} className="mt-0">
+                     {filteredInventory.length > 0 ? (
+                         <ul className="space-y-3">
+                            {filteredInventory.map(item => (
+                                <li key={item.id} className="flex justify-between items-center p-3 border rounded-md">
+                                    <div>
+                                        <span className="font-medium">{item.type}</span> - <span className="text-sm text-muted-foreground">{item.model}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs text-muted-foreground">{t('subscriber_profile.inventory_serial_label')}: {item.serial}</span>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full ${item.status === 'Lent' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
+                                            {t(`subscriber_profile.inventory_status_${item.status.toLowerCase()}` as any, item.status)}
+                                        </span>
+                                     </div>
+                                </li>
+                            ))}
+                         </ul>
+                     ) : (
+                         <p className="text-muted-foreground text-center py-4">{t('subscriber_profile.inventory_none_filtered')}</p>
+                     )}
+                  </TabsContent>
+               </Tabs>
             </CardContent>
           </Card>
         </TabsContent>
@@ -729,3 +728,4 @@ function SubscriberProfilePage() {
     </div>
   );
 }
+
