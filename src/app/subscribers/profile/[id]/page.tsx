@@ -41,7 +41,7 @@ import { getPops } from '@/services/mysql/pops';
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
-import { Separator } from '@/components/ui/separator';
+// import { Separator } from '@/components/ui/separator'; // Separator no longer needed
 import { format } from 'date-fns';
 import { fr as frLocale, ptBR as ptBRLocale, enUS as enUSLocale } from 'date-fns/locale';
 
@@ -191,6 +191,18 @@ const OverviewDetailItem: React.FC<{icon: React.ElementType, label: string, valu
         </div>
     </div>
   );
+};
+
+const OverviewSection: React.FC<{title: string, icon: React.ElementType, children: React.ReactNode}> = ({title, icon: Icon, children}) => {
+    return (
+        <fieldset className="border border-border rounded-md p-4 pt-2 space-y-4">
+            <legend className="text-lg font-semibold px-2 flex items-center gap-2">
+                <Icon className="h-5 w-5 text-primary" />
+                {title}
+            </legend>
+            {children}
+        </fieldset>
+    );
 };
 
 
@@ -347,11 +359,10 @@ function SubscriberProfilePage() {
               <CardTitle>{t('subscriber_profile.overview_card_title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div>
-                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                  {subscriber.type === 'Residential' ? <User className="h-5 w-5 text-primary" /> : <Briefcase className="h-5 w-5 text-primary" />}
-                  {t('subscriber_profile.personal_info_section')}
-                </h3>
+              <OverviewSection 
+                title={t('subscriber_profile.personal_info_section')}
+                icon={subscriber.type === 'Residential' ? User : Briefcase}
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <OverviewDetailItem icon={User} label={t('subscriber_profile.overview_name')} value={subscriber.name} />
                   {subscriber.type === 'Residential' && subscriber.birthday && (
@@ -364,31 +375,25 @@ function SubscriberProfilePage() {
                   <OverviewDetailItem icon={Fingerprint} label={t('subscriber_profile.overview_id_number')} value={subscriber.idNumber} />
                   <OverviewDetailItem icon={CalendarDays} label={t('subscriber_profile.overview_signup_date')} value={subscriber.signupDate} />
                 </div>
-              </div>
+              </OverviewSection>
 
-              <Separator />
-
-              <div>
-                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                   <MapPinIcon className="h-5 w-5 text-primary" />
-                   {t('subscriber_profile.address_section')}
-                </h3>
+              <OverviewSection 
+                title={t('subscriber_profile.address_section')}
+                icon={MapPinIcon}
+              >
                 <OverviewDetailItem icon={Home} label={t('subscriber_profile.overview_address')} value={subscriber.address} />
-              </div>
+              </OverviewSection>
 
-              <Separator />
-
-              <div>
-                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                  <Phone className="h-5 w-5 text-primary" />
-                  {t('subscriber_profile.contact_info_section')}
-                </h3>
+              <OverviewSection 
+                title={t('subscriber_profile.contact_info_section')}
+                icon={Phone}
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <OverviewDetailItem icon={Phone} label={t('subscriber_profile.overview_phone')} value={subscriber.phone} />
                   {subscriber.landline && <OverviewDetailItem icon={Phone} label={t('subscriber_profile.overview_landline')} value={subscriber.landline} />}
                   <OverviewDetailItem icon={Mail} label={t('subscriber_profile.overview_email')} value={subscriber.email} />
                 </div>
-              </div>
+              </OverviewSection>
             </CardContent>
             <CardFooter className="border-t pt-6 flex justify-end gap-2">
                 <Button variant="outline" onClick={handleEdit}>
@@ -778,3 +783,4 @@ function SubscriberProfilePage() {
     </div>
   );
 }
+
