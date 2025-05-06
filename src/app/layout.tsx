@@ -635,7 +635,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
+    <html lang="en" suppressHydrationWarning>{/* Add suppressHydrationWarning */}
       <body
         className={`antialiased`}
         suppressHydrationWarning /* Add suppressHydrationWarning */
@@ -656,4 +656,3 @@ export default function RootLayout({
     </html>
   );
 }
-
