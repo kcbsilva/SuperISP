@@ -95,7 +95,7 @@ export default function DashboardPage() {
              <div className="text-xs font-medium text-muted-foreground px-1">{t('dashboard.dashboard_view_label', 'Dashboard View')}</div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline">
+                  <Button variant="outline" size="sm"> {/* Added size="sm" for h-9 height */}
                     {t(`dashboard.${currentView.toLowerCase()}_view`)} Dashboard
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
@@ -330,3 +330,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
