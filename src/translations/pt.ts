@@ -208,6 +208,7 @@ const pt = {
     table_header_id: 'ID',
     table_header_type: 'Tipo',
     table_header_name: 'Nome',
+    table_header_tax_id: 'CPF/CNPJ',
     table_header_status: 'Status',
     table_header_address: 'Endereço',
     table_header_email: 'Email',
@@ -489,4 +490,5 @@ const pt = {
 };
 
 export default pt;
+
 

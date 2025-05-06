@@ -208,6 +208,7 @@ const en = {
      table_header_id: 'ID',
      table_header_type: 'Type',
      table_header_name: 'Name',
+     table_header_tax_id: 'Tax ID',
      table_header_status: 'Status',
      table_header_address: 'Address',
      table_header_email: 'Email',
@@ -244,7 +245,7 @@ const en = {
      edit_toast_title: 'Edit Subscriber (Not Implemented)',
      edit_toast_description: 'Editing for {name} is not yet functional.',
      delete_toast_title: 'Delete Subscriber (Not Implemented)',
-     delete_toast_description: 'Deletion for {name} is not yet functional.',
+     edit_toast_description: 'Deletion for {name} is not yet functional.',
      services_card_title: 'Services',
      services_card_description: 'Services currently subscribed to by the customer.',
      add_service_button: 'Add Service',
@@ -489,4 +490,5 @@ const en = {
 };
 
 export default en;
+
 

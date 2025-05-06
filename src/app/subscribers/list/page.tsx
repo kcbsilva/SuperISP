@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import Link from 'next/link'; // Import Link for navigation
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card"; // CardDescription, CardHeader, CardTitle removed
 import {
   Table,
   TableBody,
@@ -29,11 +29,11 @@ import { useToast } from '@/hooks/use-toast';
 
 // Placeholder data - replace with actual data fetching and state management
 const placeholderSubscribers = [
-  { id: 'sub-1', name: 'Alice Wonderland', type: 'Residential', status: 'Active', address: '123 Fantasy Lane', email: 'alice@example.com', phone: '555-1111' },
-  { id: 'sub-2', name: 'Bob The Builder Inc.', type: 'Commercial', status: 'Active', address: '456 Construction Ave', email: 'bob@example.com', phone: '555-2222' },
-  { id: 'sub-3', name: 'Charlie Chaplin', type: 'Residential', status: 'Inactive', address: '789 Silent Film St', email: 'charlie@example.com', phone: '555-3333' },
-  { id: 'sub-4', name: 'Diana Prince', type: 'Residential', status: 'Active', address: '1 Paradise Island', email: 'diana@example.com', phone: '555-4444' },
-  { id: 'sub-5', name: 'Evil Corp', type: 'Commercial', status: 'Suspended', address: '666 Dark Tower Rd', email: 'evil@example.com', phone: '555-6666' },
+  { id: 'sub-1', name: 'Alice Wonderland', type: 'Residential', status: 'Active', taxId: '123.456.789-00', phone: '555-1111' },
+  { id: 'sub-2', name: 'Bob The Builder Inc.', type: 'Commercial', status: 'Active', taxId: '12.345.678/0001-99', phone: '555-2222' },
+  { id: 'sub-3', name: 'Charlie Chaplin', type: 'Residential', status: 'Inactive', taxId: '987.654.321-00', phone: '555-3333' },
+  { id: 'sub-4', name: 'Diana Prince', type: 'Residential', status: 'Active', taxId: '001.002.003-44', phone: '555-4444' },
+  { id: 'sub-5', name: 'Evil Corp', type: 'Commercial', status: 'Suspended', taxId: '99.888.777/0002-11', phone: '555-6666' },
 ];
 
 type SubscriberStatus = "Active" | "Inactive" | "Suspended" | "Planned"; // Example statuses
@@ -41,6 +41,23 @@ type SubscriberStatus = "Active" | "Inactive" | "Suspended" | "Planned"; // Exam
 type FilterState = {
     type: ('Residential' | 'Commercial')[];
     status: SubscriberStatus[];
+};
+
+// Helper function to format Tax ID
+const formatTaxId = (taxId: string | undefined | null): string => {
+  if (!taxId) return '-';
+  if (taxId.length <= 5) { // If too short to apply the 3-mask-2 rule meaningfully
+    // Mask most of it but show first and last if possible
+    if (taxId.length === 1) return '*';
+    if (taxId.length === 2) return taxId[0] + '*';
+    return taxId.substring(0, 1) + '***' + taxId.substring(taxId.length - 1);
+  }
+  const prefix = taxId.substring(0, 3);
+  const suffix = taxId.substring(taxId.length - 2);
+  const middle = taxId.substring(3, taxId.length - 2);
+  // Replace only digits in the middle part with asterisks
+  const maskedMiddle = middle.replace(/\d/g, '*');
+  return `${prefix}${maskedMiddle}${suffix}`;
 };
 
 
@@ -58,15 +75,14 @@ export default function ListSubscribersPage() {
     const filteredSubscribers = React.useMemo(() => {
         return placeholderSubscribers.filter(sub => {
         const nameMatch = sub.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const emailMatch = sub.email.toLowerCase().includes(searchTerm.toLowerCase());
-        const addressMatch = sub.address.toLowerCase().includes(searchTerm.toLowerCase());
+        const taxIdMatch = sub.taxId?.toLowerCase().includes(searchTerm.toLowerCase()); // Optional chaining for taxId
         const phoneMatch = sub.phone.includes(searchTerm);
         const idMatch = sub.id.toLowerCase().includes(searchTerm.toLowerCase());
 
         const typeMatch = filters.type.length === 0 || filters.type.includes(sub.type as 'Residential' | 'Commercial');
         const statusMatch = filters.status.length === 0 || filters.status.includes(sub.status as SubscriberStatus);
 
-        return (idMatch || nameMatch || emailMatch || addressMatch || phoneMatch) && typeMatch && statusMatch;
+        return (idMatch || nameMatch || taxIdMatch || phoneMatch) && typeMatch && statusMatch;
         });
     }, [searchTerm, filters]);
 
@@ -174,9 +190,8 @@ export default function ListSubscribersPage() {
                   <TableHead className="w-24">{t('list_subscribers.table_header_id')}</TableHead> {/* Added ID Header */}
                   <TableHead className="w-12">{t('list_subscribers.table_header_type')}</TableHead>
                   <TableHead>{t('list_subscribers.table_header_name')}</TableHead>
+                  <TableHead>{t('list_subscribers.table_header_tax_id', 'Tax ID')}</TableHead>
                   <TableHead>{t('list_subscribers.table_header_status')}</TableHead>
-                  <TableHead>{t('list_subscribers.table_header_address')}</TableHead>
-                  <TableHead>{t('list_subscribers.table_header_email')}</TableHead>
                   <TableHead>{t('list_subscribers.table_header_phone')}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -187,9 +202,9 @@ export default function ListSubscribersPage() {
                       <TableCell className="font-mono text-muted-foreground">{subscriber.id}</TableCell> {/* Added ID Cell */}
                       <TableCell>
                         {subscriber.type === 'Residential' ? (
-                          <User className="h-5 w-5 text-muted-foreground" title="Residential" />
+                          <User className="h-5 w-5 text-muted-foreground" title={t('add_subscriber.type_residential')} />
                         ) : (
-                          <Building className="h-5 w-5 text-muted-foreground" title="Commercial" />
+                          <Building className="h-5 w-5 text-muted-foreground" title={t('add_subscriber.type_commercial')} />
                         )}
                       </TableCell>
                       <TableCell className="font-medium">
@@ -197,6 +212,7 @@ export default function ListSubscribersPage() {
                           {subscriber.name}
                         </Link>
                       </TableCell>
+                      <TableCell className="text-muted-foreground text-sm">{formatTaxId(subscriber.taxId)}</TableCell>
                       <TableCell>
                         <Badge
                             variant={
@@ -208,20 +224,18 @@ export default function ListSubscribersPage() {
                                 subscriber.status === 'Active' ? 'bg-green-100 text-green-800 border-transparent' :
                                 subscriber.status === 'Suspended' ? 'bg-red-100 text-red-800 border-transparent' :
                                 subscriber.status === 'Inactive' ? 'bg-yellow-100 text-yellow-800 border-transparent' :
-                                ''
+                                '' // For 'Planned' or other statuses, default badge style will be used
                              }
                         >
                           {t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-muted-foreground text-sm">{subscriber.address}</TableCell>
-                      <TableCell className="text-muted-foreground text-sm">{subscriber.email}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">{subscriber.phone}</TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8"> {/* Updated colSpan */}
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8"> {/* Updated colSpan */}
                       {t('list_subscribers.no_results')}
                     </TableCell>
                   </TableRow>

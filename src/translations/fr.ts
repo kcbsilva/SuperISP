@@ -208,6 +208,7 @@ const fr = {
      table_header_id: 'ID',
      table_header_type: 'Type',
      table_header_name: 'Nom',
+     table_header_tax_id: 'N° Fiscal',
      table_header_status: 'Statut',
      table_header_address: 'Adresse',
      table_header_email: 'Email',
@@ -244,7 +245,7 @@ const fr = {
      edit_toast_title: 'Modifier l\'abonné (Non implémenté)',
      edit_toast_description: 'La modification pour {name} n\'est pas encore fonctionnelle.',
      delete_toast_title: 'Supprimer l\'abonné (Non implémenté)',
-     delete_toast_description: 'La suppression pour {name} n\'est pas encore fonctionnelle.',
+     edit_toast_description: 'La suppression pour {name} n\'est pas encore fonctionnelle.',
      services_card_title: 'Services',
      services_card_description: 'Services auxquels le client est actuellement abonné.',
      add_service_button: 'Ajouter un service',
@@ -489,4 +490,5 @@ const fr = {
 };
 
 export default fr;
+
 
