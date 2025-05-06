@@ -296,6 +296,9 @@ const fr = {
      services_type_mobile: 'Mobile',
      services_type_combo: 'Combo',
      services_type_other: 'Autre',
+     service_actions_sr: 'Actions de service',
+     service_action_sign: 'Signer le contrat',
+     service_action_cancel: 'Annuler le contrat',
      billing_card_title: 'Facturation',
      billing_card_description: 'Factures, paiements et historique de facturation.',
      billing_balance: 'Solde actuel',
@@ -501,6 +504,3 @@ const fr = {
 };
 
 export default fr;
-
-
-

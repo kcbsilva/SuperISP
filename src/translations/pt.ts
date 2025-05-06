@@ -296,6 +296,9 @@ const pt = {
     services_type_mobile: 'Celular',
     services_type_combo: 'Combo',
     services_type_other: 'Outro',
+    service_actions_sr: 'Ações do Serviço',
+    service_action_sign: 'Assinar Contrato',
+    service_action_cancel: 'Cancelar Contrato',
     billing_card_title: 'Faturamento',
     billing_card_description: 'Faturas, pagamentos e histórico de faturamento.',
     billing_balance: 'Saldo Atual',
@@ -501,6 +504,3 @@ const pt = {
 };
 
 export default pt;
-
-
-

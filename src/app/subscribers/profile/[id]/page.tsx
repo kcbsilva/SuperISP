@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon } from 'lucide-react';
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -25,6 +25,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Form,
   FormControl,
@@ -264,6 +270,14 @@ function SubscriberProfilePage() {
     });
   };
 
+  const handleServiceAction = (action: 'sign' | 'cancel', serviceId: string) => {
+    console.log(`${action} contract for service ${serviceId}`);
+    toast({
+      title: `${action === 'sign' ? 'Sign' : 'Cancel'} Contract (Simulated)`,
+      description: `Action for service ${serviceId} is not yet implemented.`,
+    });
+  };
+
   const filteredServices = React.useMemo(() => {
     if (!subscriber?.services) return [];
     if (activeServiceTab === 'All') return subscriber.services;
@@ -411,7 +425,7 @@ function SubscriberProfilePage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                   <CardTitle>{t('subscriber_profile.services_card_title')}</CardTitle>
-                  <CardDescription>{t('subscriber_profile.services_card_description')}</CardDescription>
+                  {/* Removed CardDescription from here */}
               </div>
               <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
                 <DialogTrigger asChild>
@@ -517,6 +531,22 @@ function SubscriberProfilePage() {
                                        <span className={`text-xs px-2 py-0.5 rounded-full ${service.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                                          {t(`list_subscribers.status_${service.status.toLowerCase()}` as any, service.status)}
                                        </span>
+                                       <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                    <MoreVertical className="h-4 w-4" />
+                                                    <span className="sr-only">{t('subscriber_profile.service_actions_sr', 'Service Actions')}</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem onClick={() => handleServiceAction('sign', service.id)}>
+                                                    {t('subscriber_profile.service_action_sign', 'Sign Contract')}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleServiceAction('cancel', service.id)} className="text-destructive">
+                                                    {t('subscriber_profile.service_action_cancel', 'Cancel Contract')}
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                    </div>
                                </li>
                            ))}
@@ -783,4 +813,3 @@ function SubscriberProfilePage() {
     </div>
   );
 }
-
