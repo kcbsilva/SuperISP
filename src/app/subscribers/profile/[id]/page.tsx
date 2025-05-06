@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake } from 'lucide-react';
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter, Ticket } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -321,7 +321,7 @@ function SubscriberProfilePage() {
         </div>
     );
   }
-  
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -357,7 +357,7 @@ function SubscriberProfilePage() {
               )}
           </TabsTrigger>
           <TabsTrigger value="service-calls">
-             <Wrench className="mr-2 h-4 w-4" /> {t('subscriber_profile.service_calls_tab')}
+             <Ticket className="mr-2 h-4 w-4" /> {t('subscriber_profile.service_calls_tab')}
           </TabsTrigger>
           <TabsTrigger value="inventory">
              <Package className="mr-2 h-4 w-4" /> {t('subscriber_profile.inventory_tab')}
@@ -379,7 +379,7 @@ function SubscriberProfilePage() {
               <CardTitle>{t('subscriber_profile.overview_card_title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <OverviewSection 
+              <OverviewSection
                 title={t('subscriber_profile.personal_info_section')}
                 icon={subscriber.type === 'Residential' ? User : Briefcase}
               >
@@ -397,20 +397,20 @@ function SubscriberProfilePage() {
                 </div>
               </OverviewSection>
 
-              <OverviewSection 
+              <OverviewSection
                 title={t('subscriber_profile.address_section')}
                 icon={MapPinIcon}
               >
                 <OverviewDetailItem icon={Home} label={t('subscriber_profile.overview_address')} value={subscriber.address} />
               </OverviewSection>
 
-              <OverviewSection 
+              <OverviewSection
                 title={t('subscriber_profile.contact_info_section')}
                 icon={Phone}
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <OverviewDetailItem icon={Phone} label={t('subscriber_profile.overview_phone')} value={subscriber.phone} />
-                  {subscriber.landline && <OverviewDetailItem icon={Phone} label={t('subscriber_profile.overview_landline')} value={subscriber.landline} />}
+                  {subscriber.landline && <OverviewDetailItem icon={PhoneCall} label={t('subscriber_profile.overview_landline')} value={subscriber.landline} />}
                   <OverviewDetailItem icon={Mail} label={t('subscriber_profile.overview_email')} value={subscriber.email} />
                 </div>
               </OverviewSection>
@@ -518,12 +518,12 @@ function SubscriberProfilePage() {
             <CardContent>
               <Tabs defaultValue="All" value={activeServiceTab} onValueChange={(value) => setActiveServiceTab(value as ServiceTypeFilter)}>
                  <TabsList className="mb-4 grid w-full grid-cols-6 h-auto">
-                   <TabsTrigger value="All">{t('subscriber_profile.services_filter_all')}</TabsTrigger>
-                   <TabsTrigger value="Internet">{t('subscriber_profile.services_filter_internet')}</TabsTrigger>
-                   <TabsTrigger value="TV">{t('subscriber_profile.services_filter_tv')}</TabsTrigger>
-                   <TabsTrigger value="Landline">{t('subscriber_profile.services_filter_landline')}</TabsTrigger>
-                   <TabsTrigger value="Mobile">{t('subscriber_profile.services_filter_mobile')}</TabsTrigger>
-                   <TabsTrigger value="Combo">{t('subscriber_profile.services_filter_combo')}</TabsTrigger>
+                   <TabsTrigger value="All"><ListFilter className="mr-1.5 h-4 w-4" />{t('subscriber_profile.services_filter_all')}</TabsTrigger>
+                   <TabsTrigger value="Internet"><Wifi className="mr-1.5 h-4 w-4" />{t('subscriber_profile.services_filter_internet')}</TabsTrigger>
+                   <TabsTrigger value="TV"><Tv className="mr-1.5 h-4 w-4" />{t('subscriber_profile.services_filter_tv')}</TabsTrigger>
+                   <TabsTrigger value="Landline"><PhoneCall className="mr-1.5 h-4 w-4" />{t('subscriber_profile.services_filter_landline')}</TabsTrigger>
+                   <TabsTrigger value="Mobile"><Smartphone className="mr-1.5 h-4 w-4" />{t('subscriber_profile.services_filter_mobile')}</TabsTrigger>
+                   <TabsTrigger value="Combo"><Combine className="mr-1.5 h-4 w-4" />{t('subscriber_profile.services_filter_combo')}</TabsTrigger>
                  </TabsList>
                  <TabsContent value={activeServiceTab} className="mt-0">
                     {filteredServices.length > 0 ? (
@@ -594,11 +594,11 @@ function SubscriberProfilePage() {
                  {/* Removed Balance and Next Bill Date */}
                  <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)}>
                     <TabsList className="mb-4 grid w-full grid-cols-5 h-auto"> {/* Updated grid-cols */}
-                       <TabsTrigger value="Pending">{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
-                       <TabsTrigger value="Past">{t('subscriber_profile.billing_filter_past')}</TabsTrigger>
-                       <TabsTrigger value="Canceled">{t('subscriber_profile.billing_filter_canceled')}</TabsTrigger>
-                       <TabsTrigger value="PaymentPlan">{t('subscriber_profile.billing_filter_payment_plan')}</TabsTrigger>
-                       <TabsTrigger value="PromiseToPay">{t('subscriber_profile.billing_filter_promise_to_pay')}</TabsTrigger>
+                       <TabsTrigger value="Pending"><Clock className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
+                       <TabsTrigger value="Past"><CheckCircle className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_past')}</TabsTrigger>
+                       <TabsTrigger value="Canceled"><XCircle className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_canceled')}</TabsTrigger>
+                       <TabsTrigger value="PaymentPlan"><CalendarClock className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_payment_plan')}</TabsTrigger>
+                       <TabsTrigger value="PromiseToPay"><Handshake className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_promise_to_pay')}</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="Pending" className="mt-0 space-y-2">
@@ -738,9 +738,9 @@ function SubscriberProfilePage() {
             <CardContent>
                <Tabs defaultValue="All" value={activeInventoryTab} onValueChange={(value) => setActiveInventoryTab(value as InventoryFilter)}>
                   <TabsList className="mb-4 grid w-full grid-cols-3 h-auto">
-                     <TabsTrigger value="All">{t('subscriber_profile.inventory_filter_all')}</TabsTrigger>
-                     <TabsTrigger value="Lent">{t('subscriber_profile.inventory_filter_lent')}</TabsTrigger>
-                     <TabsTrigger value="Sold">{t('subscriber_profile.inventory_filter_sold')}</TabsTrigger>
+                     <TabsTrigger value="All"><ListFilter className="mr-1.5 h-4 w-4" />{t('subscriber_profile.inventory_filter_all')}</TabsTrigger>
+                     <TabsTrigger value="Lent"><Package className="mr-1.5 h-4 w-4" />{t('subscriber_profile.inventory_filter_lent')}</TabsTrigger>
+                     <TabsTrigger value="Sold"><DollarSign className="mr-1.5 h-4 w-4" />{t('subscriber_profile.inventory_filter_sold')}</TabsTrigger>
                   </TabsList>
                   <TabsContent value={activeInventoryTab} className="mt-0">
                      {filteredInventory.length > 0 ? (
