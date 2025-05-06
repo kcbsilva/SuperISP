@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock } from 'lucide-react'; // Rename Server to avoid conflict, Added icons
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine } from 'lucide-react'; // Rename Server to avoid conflict, Added icons
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -45,7 +45,7 @@ import { Separator } from '@/components/ui/separator'; // Import Separator
 
 // Validation Schema for the Add Service form
 const addServiceSchema = z.object({
-  serviceType: z.enum(['Internet', 'TV', 'Phone', 'Mobile', 'Other'], { // Added Mobile
+  serviceType: z.enum(['Internet', 'TV', 'Phone', 'Mobile', 'Combo', 'Other'], { // Added Mobile, Combo
     required_error: 'Service type is required',
   }),
   popId: z.string().min(1, 'PoP selection is required'),
@@ -54,7 +54,7 @@ const addServiceSchema = z.object({
 type AddServiceFormData = z.infer<typeof addServiceSchema>;
 
 // Types for service filtering (using tabs now)
-type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile';
+type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile' | 'Combo'; // Added Combo
 // Types for inventory filtering (using tabs now)
 type InventoryFilter = 'All' | 'Lent' | 'Sold';
 // Types for billing filtering (using tabs now)
@@ -79,6 +79,7 @@ const getSubscriberData = (id: string | string[]) => {
             { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: 'sim-1', status: 'Active' },
             { id: 'svc-4', type: 'Landline', plan: 'Unlimited Local', popId: 'sim-1', status: 'Active' }, // Added Landline
             { id: 'svc-5', type: 'Mobile', plan: '5GB Data Plan', popId: 'sim-1', status: 'Inactive' }, // Added Mobile
+            { id: 'svc-6', type: 'Combo', plan: 'Internet + TV Basic', popId: 'sim-1', status: 'Active' }, // Added Combo
         ],
         billing: {
             balance: 50.00,
@@ -378,6 +379,7 @@ function SubscriberProfilePage() {
                                 <SelectItem value="TV">{t('subscriber_profile.add_service_type_tv')}</SelectItem>
                                 <SelectItem value="Phone">{t('subscriber_profile.add_service_type_landline')}</SelectItem>
                                 <SelectItem value="Mobile">{t('subscriber_profile.add_service_type_mobile')}</SelectItem>
+                                <SelectItem value="Combo">{t('subscriber_profile.add_service_type_combo')}</SelectItem>
                                 <SelectItem value="Other">{t('subscriber_profile.add_service_type_other')}</SelectItem>
                               </SelectContent>
                             </Select>
@@ -429,12 +431,13 @@ function SubscriberProfilePage() {
             <CardContent>
               {/* Nested Tabs for Services */}
               <Tabs defaultValue="All" value={activeServiceTab} onValueChange={(value) => setActiveServiceTab(value as ServiceTypeFilter)}>
-                 <TabsList className="mb-4 grid w-full grid-cols-5 h-auto"> {/* Make list horizontal and adjust grid */}
+                 <TabsList className="mb-4 grid w-full grid-cols-6 h-auto"> {/* Make list horizontal and adjust grid */}
                    <TabsTrigger value="All">{t('subscriber_profile.services_filter_all')}</TabsTrigger>
                    <TabsTrigger value="Internet">{t('subscriber_profile.services_filter_internet')}</TabsTrigger>
                    <TabsTrigger value="TV">{t('subscriber_profile.services_filter_tv')}</TabsTrigger>
                    <TabsTrigger value="Landline">{t('subscriber_profile.services_filter_landline')}</TabsTrigger>
                    <TabsTrigger value="Mobile">{t('subscriber_profile.services_filter_mobile')}</TabsTrigger>
+                   <TabsTrigger value="Combo">{t('subscriber_profile.services_filter_combo')}</TabsTrigger>
                  </TabsList>
                  <TabsContent value={activeServiceTab} className="mt-0"> {/* Remove default top margin */}
                     {filteredServices.length > 0 ? (
@@ -728,4 +731,3 @@ function SubscriberProfilePage() {
     </div>
   );
 }
-
