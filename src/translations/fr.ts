@@ -75,6 +75,7 @@ const fr = {
     profile_action_desc: 'Naviguer vers la page de profil (Non implémenté)',
     logout_action_title: 'Déconnexion',
     logout_action_desc: 'Processus de déconnexion initié (Non implémenté)',
+    toggle_theme: 'Changer de thème',
   },
   // Global Settings Page
   global_settings: {

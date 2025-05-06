@@ -5,7 +5,7 @@ import * as React from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from '@/components/ui/popover'; // Import Popover components
-import { Search, User, Box, Cable, Info, LogOut, UserCircle } from 'lucide-react'; // Import icons, added Info, LogOut, UserCircle icons
+import { Search, User, Box, Cable, Info, LogOut, UserCircle, Sun, Moon } from 'lucide-react'; // Import icons, added Info, LogOut, UserCircle, Sun, Moon icons
 import { Button } from '@/components/ui/button'; // Import Button
 import Link from 'next/link'; // Import Link
 import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale
@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"; // Import DropdownMenu components
 import { useToast } from '@/hooks/use-toast'; // Import useToast
+import { useTheme } from 'next-themes'; // Import useTheme
 
 // Placeholder data for search results
 const searchResultsPlaceholder = {
@@ -40,6 +41,7 @@ export function AppHeader() {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { t } = useLocale(); // Get translation function
   const { toast } = useToast(); // Get toast function
+  const { theme, setTheme } = useTheme(); // Get theme state and setter
 
   // Simulate search logic
   React.useEffect(() => {
@@ -90,6 +92,10 @@ export function AppHeader() {
         title: t('header.logout_action_title', 'Logout'),
         description: t('header.logout_action_desc', 'Logout process initiated (Not Implemented)'),
      });
+   };
+
+   const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
    };
 
 
@@ -209,6 +215,12 @@ export function AppHeader() {
 
       {/* Right-side icons - Now Dropdowns */}
        <div className="flex items-center gap-2">
+         {/* Theme Toggle Button */}
+          <Button variant="ghost" size="icon" onClick={toggleTheme}>
+            {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+            <span className="sr-only">{t('header.toggle_theme', 'Toggle theme')}</span>
+          </Button>
+
          {/* Changelog Dropdown */}
          <DropdownMenu>
             <DropdownMenuTrigger asChild>

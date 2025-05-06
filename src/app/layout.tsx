@@ -60,6 +60,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
 import { Progress } from '@/components/ui/progress'; // Import Progress component
 import { LocaleProvider, useLocale } from '@/contexts/LocaleContext'; // Import LocaleProvider and useLocale
+import { ThemeProvider } from 'next-themes'; // Import ThemeProvider
 
 // Create a client
 const queryClient = new QueryClient();
@@ -629,13 +630,19 @@ export default function RootLayout({
         className={`antialiased`}
         suppressHydrationWarning /* Add suppressHydrationWarning */
       >
-        <QueryClientProvider client={queryClient}>
-          <LocaleProvider> {/* Wrap with LocaleProvider */}
-              <AppLayout>{children}</AppLayout> {/* Use inner layout component */}
-          </LocaleProvider>
-        </QueryClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryClientProvider client={queryClient}>
+            <LocaleProvider> {/* Wrap with LocaleProvider */}
+                <AppLayout>{children}</AppLayout> {/* Use inner layout component */}
+            </LocaleProvider>
+          </QueryClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
 }
-

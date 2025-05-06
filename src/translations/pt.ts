@@ -75,6 +75,7 @@ const pt = {
     profile_action_desc: 'Navegar para a página de perfil (Não Implementado)',
     logout_action_title: 'Sair',
     logout_action_desc: 'Processo de logout iniciado (Não Implementado)',
+    toggle_theme: 'Alternar tema',
   },
   // Global Settings Page
   global_settings: {

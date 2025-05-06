@@ -75,6 +75,7 @@ const en = {
     profile_action_desc: 'Navigate to profile page (Not Implemented)',
     logout_action_title: 'Logout',
     logout_action_desc: 'Logout process initiated (Not Implemented)',
+    toggle_theme: 'Toggle theme',
   },
   // Global Settings Page
   global_settings: {
