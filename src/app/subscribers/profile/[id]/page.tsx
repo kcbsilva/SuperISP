@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon } from 'lucide-react'; // Rename Server to avoid conflict, Added icons
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -41,12 +41,14 @@ import { getPops } from '@/services/mysql/pops';
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
-import { Separator } from '@/components/ui/separator'; // Import Separator
-import { format } from 'date-fns'; // For date formatting
+import { Separator } from '@/components/ui/separator';
+import { format } from 'date-fns';
+import { fr as frLocale, ptBR as ptBRLocale, enUS as enUSLocale } from 'date-fns/locale';
+
 
 // Validation Schema for the Add Service form
 const addServiceSchema = z.object({
-  serviceType: z.enum(['Internet', 'TV', 'Phone', 'Mobile', 'Combo', 'Other'], { // Added Mobile, Combo
+  serviceType: z.enum(['Internet', 'TV', 'Phone', 'Mobile', 'Combo', 'Other'], {
     required_error: 'Service type is required',
   }),
   popId: z.string().min(1, 'PoP selection is required'),
@@ -54,19 +56,17 @@ const addServiceSchema = z.object({
 
 type AddServiceFormData = z.infer<typeof addServiceSchema>;
 
-// Types for service filtering (using tabs now)
-type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile' | 'Combo'; // Added Combo
-// Types for inventory filtering (using tabs now)
+// Types for service filtering
+type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile' | 'Combo';
+// Types for inventory filtering
 type InventoryFilter = 'All' | 'Lent' | 'Sold';
-// Types for billing filtering (using tabs now)
+// Types for billing filtering
 type BillingFilter = 'Pending' | 'Past' | 'Canceled';
 
 
 // Placeholder data - replace with actual data fetching based on ID
 const getSubscriberData = (id: string | string[]) => {
-    // Simulate fetching data for the given ID
     console.log("Fetching data for subscriber ID:", id);
-    // In a real app, you would fetch this from your backend/database
     const baseData = {
         id: id.toString(),
         name: `Subscriber ${id}`,
@@ -74,15 +74,15 @@ const getSubscriberData = (id: string | string[]) => {
         status: 'Active',
         address: '123 Placeholder St, Anytown, USA 12345',
         email: `subscriber${id}@example.com`,
-        phone: `555-0${id}`, // Primary phone (could be mobile)
-        landline: `555-1${id}`, // Added landline
-        birthday: new Date(1990, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1), // Random birthday for demo
-        taxId: `XXX.XXX.XXX-${Math.floor(Math.random() * 90) + 10}`, // Placeholder Tax ID
-        idNumber: `ID-${Math.floor(Math.random() * 100000)}`, // Placeholder ID Number
-        signupDate: new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1), // Random signup date
-        companyName: '', // Empty for residential
-        establishedDate: null, // Null for residential
-        businessNumber: '', // Empty for residential
+        phone: `555-0${id}`,
+        landline: `555-1${id}`,
+        birthday: new Date(1990, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
+        taxId: `XXX.XXX.XXX-${Math.floor(Math.random() * 90) + 10}`,
+        idNumber: `ID-${Math.floor(Math.random() * 100000)}`,
+        signupDate: new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
+        companyName: '',
+        establishedDate: null,
+        businessNumber: '',
         services: [
             { id: 'svc-1', type: 'Internet', plan: 'Fiber 100', popId: 'sim-1', status: 'Active' },
             { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: 'sim-1', status: 'Active' },
@@ -124,19 +124,19 @@ const getSubscriberData = (id: string | string[]) => {
         ],
     };
 
-    if (id === 'sub-1') { // Alice Wonderland - Residential
+    if (id === 'sub-1') {
         baseData.name = 'Alice Wonderland';
         baseData.address = '123 Fantasy Lane, Wonderland, WND 12345';
         baseData.email = 'alice@example.com';
         baseData.phone = '555-1111';
         baseData.landline = '555-1010';
-        baseData.birthday = new Date(1985, 3, 15); // April 15, 1985
+        baseData.birthday = new Date(1985, 3, 15);
         baseData.taxId = '123.456.789-00';
         baseData.idNumber = 'ID-ALICE-001';
-        baseData.signupDate = new Date(2022, 0, 10); // Jan 10, 2022
+        baseData.signupDate = new Date(2022, 0, 10);
         baseData.billing.balance = 0.00;
         baseData.billing.pendingInvoices = [];
-    } else if (id === 'sub-2') { // Bob The Builder Inc. - Commercial
+    } else if (id === 'sub-2') {
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
         baseData.companyName = 'Bob The Builder Inc.';
@@ -144,12 +144,12 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.email = 'bob@example.com';
         baseData.phone = '555-2222';
         baseData.landline = '555-2020';
-        baseData.establishedDate = new Date(2005, 7, 20); // Aug 20, 2005
+        baseData.establishedDate = new Date(2005, 7, 20);
         baseData.businessNumber = '98.765.432/0001-00';
         baseData.idNumber = 'ID-BOBINC-002';
-        baseData.signupDate = new Date(2021, 5, 1); // June 1, 2021
-        baseData.birthday = null; // No birthday for commercial
-        baseData.taxId = ''; // No personal tax ID for commercial
+        baseData.signupDate = new Date(2021, 5, 1);
+        baseData.birthday = null;
+        baseData.taxId = '';
         baseData.services = [
              { id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: 'sim-2', status: 'Active' }
         ];
@@ -162,10 +162,8 @@ const getSubscriberData = (id: string | string[]) => {
     return baseData;
 };
 
-// Create a client
 const queryClient = new QueryClient();
 
-// Main component wrapped with QueryClientProvider
 export default function SubscriberProfilePageWrapper() {
     return (
         <QueryClientProvider client={queryClient}>
@@ -173,6 +171,27 @@ export default function SubscriberProfilePageWrapper() {
         </QueryClientProvider>
     );
 }
+
+const dateLocales: Record<string, Locale> = {
+  en: enUSLocale,
+  fr: frLocale,
+  pt: ptBRLocale,
+};
+
+const OverviewDetailItem: React.FC<{icon: React.ElementType, label: string, value?: string | null | Date}> = ({icon: Icon, label, value}) => {
+  const { t, locale } = useLocale();
+  return (
+    <div className="flex items-start gap-3">
+        <Icon className="h-5 w-5 text-muted-foreground mt-1" />
+        <div>
+            <p className="text-sm text-muted-foreground">{label}</p>
+            <p className="font-medium">
+                {value instanceof Date ? format(value, 'PP', { locale: dateLocales[locale] || enUSLocale }) : value || t('subscriber_profile.not_available')}
+            </p>
+        </div>
+    </div>
+  );
+};
 
 
 function SubscriberProfilePage() {
@@ -271,17 +290,6 @@ function SubscriberProfilePage() {
     );
   }
   
-  const OverviewDetailItem: React.FC<{icon: React.ElementType, label: string, value?: string | null | Date}> = ({icon: Icon, label, value}) => (
-    <div className="flex items-start gap-3">
-        <Icon className="h-5 w-5 text-muted-foreground mt-1" />
-        <div>
-            <p className="text-sm text-muted-foreground">{label}</p>
-            <p className="font-medium">
-                {value instanceof Date ? format(value, 'PP', { locale: locale === 'pt' ? require('date-fns/locale/pt-BR').default : locale === 'fr' ? require('date-fns/locale/fr').default : require('date-fns/locale/en-US').default }) : value || t('subscriber_profile.not_available')}
-            </p>
-        </div>
-    </div>
-  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -294,10 +302,7 @@ function SubscriberProfilePage() {
               <Building className="h-8 w-8 text-muted-foreground" />
             )}
             <div>
-              <CardTitle>{subscriber.type === 'Residential' ? subscriber.name : subscriber.companyName}</CardTitle>
-              <CardDescription>
-                {t(`add_subscriber.type_${subscriber.type.toLowerCase()}` as any, subscriber.type)} {t('subscriber_profile.status_label')}: <span className="font-medium text-green-600">{t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)}</span> - ID: {subscriber.id}
-              </CardDescription>
+              <CardTitle>{subscriber.type === 'Residential' ? subscriber.name : subscriber.companyName}  (ID: {subscriber.id})</CardTitle>
             </div>
           </div>
         </CardHeader>
@@ -340,10 +345,8 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle>{t('subscriber_profile.overview_card_title')}</CardTitle>
-              <CardDescription>{t('subscriber_profile.overview_card_description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Personal Information Section */}
               <div>
                 <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   {subscriber.type === 'Residential' ? <User className="h-5 w-5 text-primary" /> : <Briefcase className="h-5 w-5 text-primary" />}
@@ -365,7 +368,6 @@ function SubscriberProfilePage() {
 
               <Separator />
 
-              {/* Address Section */}
               <div>
                 <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                    <MapPinIcon className="h-5 w-5 text-primary" />
@@ -376,7 +378,6 @@ function SubscriberProfilePage() {
 
               <Separator />
 
-              {/* Contact Information Section */}
               <div>
                 <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   <Phone className="h-5 w-5 text-primary" />
@@ -777,4 +778,3 @@ function SubscriberProfilePage() {
     </div>
   );
 }
-
