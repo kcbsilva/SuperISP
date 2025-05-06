@@ -2,6 +2,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link'; // Import Link
 import {
   Card,
   CardContent,
@@ -18,7 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Pencil, Trash2 } from 'lucide-react';
+import { PlusCircle } from 'lucide-react'; // Removed Pencil, Trash2
 import { useLocale } from '@/contexts/LocaleContext';
 import { Badge } from '@/components/ui/badge'; // For connection type if needed
 
@@ -72,15 +73,7 @@ export default function InternetPlansPage() {
     console.log('Add new internet plan clicked');
   };
 
-  const handleEditPlan = (planId: string) => {
-    // TODO: Implement editing logic
-    console.log('Edit plan:', planId);
-  };
-
-  const handleRemovePlan = (planId: string) => {
-    // TODO: Implement removal logic with confirmation
-    console.log('Remove plan:', planId);
-  };
+  // Removed handleEditPlan and handleRemovePlan as actions are moved to profile page
 
   const getConnectionTypeBadgeVariant = (type: InternetPlan['connectionType']) => {
     switch (type) {
@@ -133,7 +126,7 @@ export default function InternetPlansPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-24"> {/* Added ID column header */}
+                    <TableHead className="w-24">
                       {t('settings_plans.table_header_id', 'ID')}
                     </TableHead>
                     <TableHead>
@@ -160,16 +153,19 @@ export default function InternetPlansPage() {
                         'Client Count'
                       )}
                     </TableHead>
-                    <TableHead className="text-right">
-                      {t('settings_plans.table_header_actions', 'Actions')}
-                    </TableHead>
+                    {/* Removed Actions Header */}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {placeholderPlans.map((plan) => (
                     <TableRow key={plan.id}>
-                      <TableCell className="font-mono text-muted-foreground">{plan.id}</TableCell> {/* Added ID cell */}
-                      <TableCell className="font-medium">{plan.name}</TableCell>
+                      <TableCell className="font-mono text-muted-foreground">{plan.id}</TableCell>
+                      <TableCell className="font-medium">
+                        {/* Make plan name a link */}
+                        <Link href={`/settings/plans/internet/${plan.id}`} className="hover:underline text-primary">
+                          {plan.name}
+                        </Link>
+                      </TableCell>
                       <TableCell>{plan.uploadSpeed}</TableCell>
                       <TableCell>{plan.downloadSpeed}</TableCell>
                       <TableCell>{plan.price}</TableCell>
@@ -181,26 +177,7 @@ export default function InternetPlansPage() {
                       <TableCell className="text-right">
                         {plan.clientCount}
                       </TableCell>
-                      <TableCell className="text-right space-x-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => handleEditPlan(plan.id)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                          <span className="sr-only">{t('settings_plans.edit_action', 'Edit')}</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => handleRemovePlan(plan.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">{t('settings_plans.remove_action', 'Remove')}</span>
-                        </Button>
-                      </TableCell>
+                      {/* Removed Actions Cell */}
                     </TableRow>
                   ))}
                 </TableBody>
