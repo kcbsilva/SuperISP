@@ -190,10 +190,10 @@ const en = {
    },
    // List Subscribers Page
    list_subscribers: {
-     title: 'Subscribers List',
+     title: 'Subscribers',
      add_button: 'Add New',
      refresh_button: 'Refresh',
-     search_placeholder: 'Search by name, email, address, phone...',
+     search_placeholder: 'Search by ID, name, Tax ID, phone...',
      filter_button: 'Filter',
      filter_type_label: 'Filter by Type',
      filter_type_residential: 'Residential',
@@ -310,14 +310,17 @@ const en = {
      billing_not_available: 'N/A',
      billing_view_invoices_button: 'View Invoices',
      billing_make_payment_button: 'Make Payment',
+     billing_all_invoices: 'All Invoices',
      billing_pending_invoices: 'Pending Invoices',
-     billing_past_invoices: 'Past Invoices',
+     billing_paid_invoices: 'Paid Invoices', // Changed from Past to Paid
      billing_canceled_invoices: 'Canceled Invoices',
+     billing_no_invoices: 'No invoices found.',
      billing_no_pending_invoices: 'No pending invoices.',
-     billing_no_past_invoices: 'No past invoice history found.',
+     billing_no_paid_invoices: 'No paid invoice history found.', // Changed from Past to Paid
      billing_no_canceled_invoices: 'No canceled invoices found.',
+     billing_filter_all: 'All',
      billing_filter_pending: 'Pending',
-     billing_filter_past: 'Past',
+     billing_filter_paid: 'Paid', // Changed from Past to Paid
      billing_filter_canceled: 'Canceled',
      billing_filter_payment_plan: 'Payment Plan',
      billing_filter_promise_to_pay: 'Promise to Pay',
@@ -327,6 +330,9 @@ const en = {
      billing_promises_to_pay: 'Promises to Pay',
      billing_no_promises_to_pay: 'No pending promises to pay.',
      billing_promise_date: 'Promise Date',
+     invoice_status_paid: 'Paid',
+     invoice_status_due: 'Due',
+     invoice_status_canceled: 'Canceled',
      service_calls_card_title: 'Service Calls',
      service_calls_card_description: 'History of support tickets and service visits.',
      service_calls_new_button: 'New Service Call',
@@ -516,3 +522,4 @@ const en = {
 };
 
 export default en;
+

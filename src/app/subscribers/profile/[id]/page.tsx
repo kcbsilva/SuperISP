@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter, Ticket } from 'lucide-react';
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning } from 'lucide-react'; // Added ListFilterIcon
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -50,6 +50,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
 import { format } from 'date-fns';
 import { fr as frLocale, ptBR as ptBRLocale, enUS as enUSLocale } from 'date-fns/locale';
+import { Badge } from '@/components/ui/badge';
 
 
 // Validation Schema for the Add Service form
@@ -66,8 +67,8 @@ type AddServiceFormData = z.infer<typeof addServiceSchema>;
 type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile' | 'Combo';
 // Types for inventory filtering
 type InventoryFilter = 'All' | 'Lent' | 'Sold';
-// Types for billing filtering
-type BillingFilter = 'Pending' | 'Past' | 'Canceled' | 'PaymentPlan' | 'PromiseToPay';
+// Types for billing filtering - Added 'All', Renamed 'Past' to 'Paid'
+type BillingFilter = 'All' | 'Pending' | 'Paid' | 'Canceled' | 'PaymentPlan' | 'PromiseToPay';
 
 
 // Placeholder data - replace with actual data fetching based on ID
@@ -99,12 +100,12 @@ const getSubscriberData = (id: string | string[]) => {
         billing: {
             balance: 50.00,
             nextBillDate: '2024-08-15',
-            pastInvoices: [
+            pastInvoices: [ // These are now considered "Paid" invoices
                 { id: 'inv-001', date: '2024-07-15', amount: 50.00, status: 'Paid' },
                 { id: 'inv-002', date: '2024-06-15', amount: 50.00, status: 'Paid' },
             ],
             canceledInvoices: [
-                { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change' },
+                { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
             pendingInvoices: [
                  { id: 'inv-p01', date: '2024-08-15', amount: 50.00, status: 'Due' }
@@ -226,7 +227,7 @@ function SubscriberProfilePage() {
   const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = React.useState(false);
   const [activeServiceTab, setActiveServiceTab] = React.useState<ServiceTypeFilter>('All');
   const [activeInventoryTab, setActiveInventoryTab] = React.useState<InventoryFilter>('All');
-  const [activeBillingTab, setActiveBillingTab] = React.useState<BillingFilter>('Pending');
+  const [activeBillingTab, setActiveBillingTab] = React.useState<BillingFilter>('Pending'); // Default to pending
 
   const { data: pops = [], isLoading: isLoadingPops, error: popsError } = useQuery<Pop[], Error>({
     queryKey: ['pops'],
@@ -296,19 +297,49 @@ function SubscriberProfilePage() {
     return subscriber.inventory.filter(item => item.status === activeInventoryTab);
   }, [subscriber?.inventory, activeInventoryTab]);
 
-  const filteredInvoices = React.useMemo(() => {
+  // Combine all invoices for the "All" tab
+  const allInvoices = React.useMemo(() => {
+    if (!subscriber?.billing) return [];
+    return [
+      ...(subscriber.billing.pendingInvoices || []),
+      ...(subscriber.billing.pastInvoices || []), // These are "Paid" invoices
+      ...(subscriber.billing.canceledInvoices || []),
+    ];
+  }, [subscriber?.billing]);
+
+  const filteredBillingItems = React.useMemo(() => {
     if (!subscriber?.billing) return [];
     switch (activeBillingTab) {
+      case 'All':
+        return allInvoices;
       case 'Pending':
-        return subscriber.billing.pendingInvoices;
-      case 'Past':
-        return subscriber.billing.pastInvoices;
+        return subscriber.billing.pendingInvoices || [];
+      case 'Paid':
+        return subscriber.billing.pastInvoices || []; // "Past" is now "Paid"
       case 'Canceled':
-        return subscriber.billing.canceledInvoices;
+        return subscriber.billing.canceledInvoices || [];
+      case 'PaymentPlan':
+        return subscriber.billing.paymentPlans || [];
+      case 'PromiseToPay':
+        return subscriber.billing.promisesToPay || [];
       default:
         return [];
     }
-  }, [subscriber?.billing, activeBillingTab]);
+  }, [subscriber?.billing, activeBillingTab, allInvoices]);
+
+  const getInvoiceStatusBadge = (status?: string) => {
+    if (!status) return null;
+    switch (status.toLowerCase()) {
+      case 'paid':
+        return <Badge variant="default" className="bg-green-100 text-green-800">{t('subscriber_profile.invoice_status_paid', 'Paid')}</Badge>;
+      case 'due':
+        return <Badge variant="destructive">{t('subscriber_profile.invoice_status_due', 'Due')}</Badge>;
+      case 'canceled':
+        return <Badge variant="secondary">{t('subscriber_profile.invoice_status_canceled', 'Canceled')}</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
 
 
   if (!subscriber) {
@@ -357,7 +388,7 @@ function SubscriberProfilePage() {
               )}
           </TabsTrigger>
           <TabsTrigger value="service-calls">
-             <Ticket className="mr-2 h-4 w-4" /> {t('subscriber_profile.service_calls_tab')}
+             <Wrench className="mr-2 h-4 w-4" /> {t('subscriber_profile.service_calls_tab')}
           </TabsTrigger>
           <TabsTrigger value="inventory">
              <Package className="mr-2 h-4 w-4" /> {t('subscriber_profile.inventory_tab')}
@@ -518,7 +549,7 @@ function SubscriberProfilePage() {
             <CardContent>
               <Tabs defaultValue="All" value={activeServiceTab} onValueChange={(value) => setActiveServiceTab(value as ServiceTypeFilter)}>
                  <TabsList className="mb-4 grid w-full grid-cols-6 h-auto">
-                   <TabsTrigger value="All"><ListFilter className="mr-1.5 h-4 w-4" />{t('subscriber_profile.services_filter_all')}</TabsTrigger>
+                   <TabsTrigger value="All"><ListFilterIcon className="mr-1.5 h-4 w-4" />{t('subscriber_profile.services_filter_all')}</TabsTrigger>
                    <TabsTrigger value="Internet"><Wifi className="mr-1.5 h-4 w-4" />{t('subscriber_profile.services_filter_internet')}</TabsTrigger>
                    <TabsTrigger value="TV"><Tv className="mr-1.5 h-4 w-4" />{t('subscriber_profile.services_filter_tv')}</TabsTrigger>
                    <TabsTrigger value="Landline"><PhoneCall className="mr-1.5 h-4 w-4" />{t('subscriber_profile.services_filter_landline')}</TabsTrigger>
@@ -593,13 +624,35 @@ function SubscriberProfilePage() {
              <CardContent className="space-y-6">
                  {/* Removed Balance and Next Bill Date */}
                  <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)}>
-                    <TabsList className="mb-4 grid w-full grid-cols-5 h-auto"> {/* Updated grid-cols */}
+                    <TabsList className="mb-4 grid w-full grid-cols-6 h-auto"> {/* Updated grid-cols for "All" */}
+                       <TabsTrigger value="All"><ListFilterIcon className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_all')}</TabsTrigger>
                        <TabsTrigger value="Pending"><Clock className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
-                       <TabsTrigger value="Past"><CheckCircle className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_past')}</TabsTrigger>
+                       <TabsTrigger value="Paid"><CheckCircle className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_paid')}</TabsTrigger> {/* Changed from Past to Paid */}
                        <TabsTrigger value="Canceled"><XCircle className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_canceled')}</TabsTrigger>
                        <TabsTrigger value="PaymentPlan"><CalendarClock className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_payment_plan')}</TabsTrigger>
                        <TabsTrigger value="PromiseToPay"><Handshake className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_promise_to_pay')}</TabsTrigger>
                     </TabsList>
+
+                    <TabsContent value="All" className="mt-0 space-y-2">
+                         <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
+                             <ListFilterIcon className="h-4 w-4 text-primary" /> {t('subscriber_profile.billing_all_invoices')} ({allInvoices.length})
+                         </h4>
+                         {allInvoices.length > 0 ? (
+                             <ul className="space-y-2 text-sm">
+                                 {allInvoices.map(inv => (
+                                     <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md">
+                                        <div>
+                                          <span>{inv.id} - {inv.date}</span>
+                                          <span className="ml-2 text-muted-foreground">(${inv.amount.toFixed(2)})</span>
+                                        </div>
+                                        {getInvoiceStatusBadge(inv.status)}
+                                     </li>
+                                 ))}
+                             </ul>
+                         ) : (
+                             <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_invoices')}</p>
+                         )}
+                    </TabsContent>
 
                     <TabsContent value="Pending" className="mt-0 space-y-2">
                          <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
@@ -610,7 +663,7 @@ function SubscriberProfilePage() {
                                  {subscriber.billing.pendingInvoices.map(inv => (
                                      <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md bg-destructive/5">
                                          <span>{inv.id} - {inv.date}</span>
-                                         <span className="font-medium">${inv.amount.toFixed(2)} ({inv.status})</span>
+                                         <span className="font-medium">${inv.amount.toFixed(2)} ({t('subscriber_profile.invoice_status_due', 'Due')})</span>
                                      </li>
                                  ))}
                              </ul>
@@ -619,21 +672,21 @@ function SubscriberProfilePage() {
                          )}
                     </TabsContent>
 
-                    <TabsContent value="Past" className="mt-0 space-y-2">
+                    <TabsContent value="Paid" className="mt-0 space-y-2"> {/* Changed from Past to Paid */}
                          <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
-                             <CheckCircle className="h-4 w-4 text-green-600" /> {t('subscriber_profile.billing_past_invoices')} ({subscriber.billing?.pastInvoices?.length ?? 0})
+                             <CheckCircle className="h-4 w-4 text-green-600" /> {t('subscriber_profile.billing_paid_invoices')} ({subscriber.billing?.pastInvoices?.length ?? 0})
                          </h4>
                          {subscriber.billing?.pastInvoices?.length > 0 ? (
                              <ul className="space-y-2 text-sm">
                                  {subscriber.billing.pastInvoices.map(inv => (
                                      <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md">
                                          <span>{inv.id} - {inv.date}</span>
-                                         <span className="text-green-600">${inv.amount.toFixed(2)} ({inv.status})</span>
+                                         <span className="text-green-600">${inv.amount.toFixed(2)} ({t('subscriber_profile.invoice_status_paid', 'Paid')})</span>
                                      </li>
                                  ))}
                              </ul>
                          ) : (
-                             <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_past_invoices')}</p>
+                             <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_paid_invoices')}</p>
                          )}
                     </TabsContent>
 
@@ -738,7 +791,7 @@ function SubscriberProfilePage() {
             <CardContent>
                <Tabs defaultValue="All" value={activeInventoryTab} onValueChange={(value) => setActiveInventoryTab(value as InventoryFilter)}>
                   <TabsList className="mb-4 grid w-full grid-cols-3 h-auto">
-                     <TabsTrigger value="All"><ListFilter className="mr-1.5 h-4 w-4" />{t('subscriber_profile.inventory_filter_all')}</TabsTrigger>
+                     <TabsTrigger value="All"><ListFilterIcon className="mr-1.5 h-4 w-4" />{t('subscriber_profile.inventory_filter_all')}</TabsTrigger>
                      <TabsTrigger value="Lent"><Package className="mr-1.5 h-4 w-4" />{t('subscriber_profile.inventory_filter_lent')}</TabsTrigger>
                      <TabsTrigger value="Sold"><DollarSign className="mr-1.5 h-4 w-4" />{t('subscriber_profile.inventory_filter_sold')}</TabsTrigger>
                   </TabsList>
@@ -855,3 +908,4 @@ function SubscriberProfilePage() {
     </div>
   );
 }
+

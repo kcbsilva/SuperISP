@@ -190,10 +190,10 @@ const fr = {
    },
    // List Subscribers Page
    list_subscribers: {
-     title: 'Liste des abonnés',
+     title: 'Abonnés',
      add_button: 'Ajouter',
      refresh_button: 'Actualiser',
-     search_placeholder: 'Rechercher par nom, email, adresse, téléphone...',
+     search_placeholder: 'Rechercher par ID, nom, N° Fiscal, téléphone...',
      filter_button: 'Filtrer',
      filter_type_label: 'Filtrer par Type',
      filter_type_residential: 'Résidentiel',
@@ -310,14 +310,17 @@ const fr = {
      billing_not_available: 'N/A',
      billing_view_invoices_button: 'Voir les factures',
      billing_make_payment_button: 'Effectuer un paiement',
+     billing_all_invoices: 'Toutes les Factures',
      billing_pending_invoices: 'Factures en attente',
-     billing_past_invoices: 'Factures passées',
+     billing_paid_invoices: 'Factures Payées', // Changed from Passées to Payées
      billing_canceled_invoices: 'Factures annulées',
+     billing_no_invoices: 'Aucune facture trouvée.',
      billing_no_pending_invoices: 'Aucune facture en attente.',
-     billing_no_past_invoices: 'Aucun historique de factures passées trouvé.',
+     billing_no_paid_invoices: 'Aucun historique de factures payées trouvé.', // Changed from Passées to Payées
      billing_no_canceled_invoices: 'Aucune facture annulée trouvée.',
+     billing_filter_all: 'Toutes',
      billing_filter_pending: 'En attente',
-     billing_filter_past: 'Passées',
+     billing_filter_paid: 'Payées', // Changed from Passées to Payées
      billing_filter_canceled: 'Annulées',
      billing_filter_payment_plan: 'Plan de Paiement',
      billing_filter_promise_to_pay: 'Promesse de Paiement',
@@ -327,6 +330,9 @@ const fr = {
      billing_promises_to_pay: 'Promesses de Paiement',
      billing_no_promises_to_pay: 'Aucune promesse de paiement en attente.',
      billing_promise_date: 'Date de Promesse',
+     invoice_status_paid: 'Payée',
+     invoice_status_due: 'Due',
+     invoice_status_canceled: 'Annulée',
      service_calls_card_title: 'Appels de service',
      service_calls_card_description: 'Historique des tickets de support et des visites de service.',
      service_calls_new_button: 'Nouvel appel de service',
@@ -516,3 +522,4 @@ const fr = {
 };
 
 export default fr;
+

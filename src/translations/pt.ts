@@ -190,10 +190,10 @@ const pt = {
   },
    // List Subscribers Page
   list_subscribers: {
-    title: 'Lista de Assinantes',
+    title: 'Assinantes',
     add_button: 'Adicionar Novo',
     refresh_button: 'Atualizar',
-    search_placeholder: 'Buscar por nome, email, endereço, telefone...',
+    search_placeholder: 'Buscar por ID, nome, CPF/CNPJ, telefone...',
     filter_button: 'Filtrar',
     filter_type_label: 'Filtrar por Tipo',
     filter_type_residential: 'Residencial',
@@ -310,14 +310,17 @@ const pt = {
     billing_not_available: 'N/D',
     billing_view_invoices_button: 'Ver Faturas',
     billing_make_payment_button: 'Realizar Pagamento',
+    billing_all_invoices: 'Todas as Faturas',
     billing_pending_invoices: 'Faturas Pendentes',
-    billing_past_invoices: 'Faturas Anteriores',
+    billing_paid_invoices: 'Faturas Pagas', // Changed from Anteriores to Pagas
     billing_canceled_invoices: 'Faturas Canceladas',
+    billing_no_invoices: 'Nenhuma fatura encontrada.',
     billing_no_pending_invoices: 'Nenhuma fatura pendente.',
-    billing_no_past_invoices: 'Nenhum histórico de faturas anteriores encontrado.',
+    billing_no_paid_invoices: 'Nenhum histórico de faturas pagas encontrado.', // Changed from Anteriores to Pagas
     billing_no_canceled_invoices: 'Nenhuma fatura cancelada encontrada.',
+    billing_filter_all: 'Todas',
     billing_filter_pending: 'Pendentes',
-    billing_filter_past: 'Anteriores',
+    billing_filter_paid: 'Pagas', // Changed from Anteriores to Pagas
     billing_filter_canceled: 'Canceladas',
     billing_filter_payment_plan: 'Plano de Pagamento',
     billing_filter_promise_to_pay: 'Promessa de Pagamento',
@@ -327,6 +330,9 @@ const pt = {
     billing_promises_to_pay: 'Promessas de Pagamento',
     billing_no_promises_to_pay: 'Nenhuma promessa de pagamento pendente.',
     billing_promise_date: 'Data da Promessa',
+    invoice_status_paid: 'Paga',
+    invoice_status_due: 'Devida',
+    invoice_status_canceled: 'Cancelada',
     service_calls_card_title: 'Chamados de Serviço',
     service_calls_card_description: 'Histórico de tickets de suporte e visitas de serviço.',
     service_calls_new_button: 'Novo Chamado',
@@ -516,3 +522,4 @@ const pt = {
 };
 
 export default pt;
+
