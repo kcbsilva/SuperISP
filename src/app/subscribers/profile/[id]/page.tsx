@@ -407,7 +407,7 @@ function SubscriberProfilePage() {
         <TabsContent value="overview">
           <Card>
             <CardHeader>
-              <CardTitle>{t('subscriber_profile.overview_card_title')}</CardTitle>
+              {/* CardTitle removed as it's redundant with the tab name */}
             </CardHeader>
             <CardContent className="space-y-6">
               <OverviewSection
@@ -461,8 +461,7 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                  <CardTitle>{t('subscriber_profile.services_card_title')}</CardTitle>
-                  {/* Removed CardDescription from here */}
+                  {/* CardTitle removed as it's redundant with the tab name */}
               </div>
               {/* Add Service Dialog Trigger */}
               <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
@@ -616,13 +615,10 @@ function SubscriberProfilePage() {
            <Card>
              <CardHeader className="flex flex-row items-center justify-between">
                  <div>
-                   <CardTitle>{t('subscriber_profile.billing_card_title')}</CardTitle>
-                   {/* Removed CardDescription */}
+                   {/* CardTitle removed as it's redundant with the tab name */}
                  </div>
-                 {/* Removed Buttons */}
              </CardHeader>
              <CardContent className="space-y-6">
-                 {/* Removed Balance and Next Bill Date */}
                  <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)}>
                     <TabsList className="mb-4 grid w-full grid-cols-6 h-auto"> {/* Updated grid-cols for "All" */}
                        <TabsTrigger value="All"><ListFilterIcon className="mr-1.5 h-4 w-4"/>{t('subscriber_profile.billing_filter_all')}</TabsTrigger>
@@ -751,7 +747,7 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                  <div>
-                     <CardTitle>{t('subscriber_profile.service_calls_card_title')}</CardTitle>
+                     {/* CardTitle removed as it's redundant with the tab name */}
                      <CardDescription>{t('subscriber_profile.service_calls_card_description')}</CardDescription>
                  </div>
                   <Button size="sm">
@@ -781,7 +777,7 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                <div>
-                   <CardTitle>{t('subscriber_profile.inventory_card_title')}</CardTitle>
+                   {/* CardTitle removed as it's redundant with the tab name */}
                    <CardDescription>{t('subscriber_profile.inventory_card_description')}</CardDescription>
                </div>
                <Button size="sm">
@@ -825,7 +821,7 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>{t('subscriber_profile.documents_card_title')}</CardTitle>
+                {/* CardTitle removed as it's redundant with the tab name */}
                 <CardDescription>{t('subscriber_profile.documents_card_description')}</CardDescription>
               </div>
               <Button size="sm">
@@ -855,7 +851,7 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                <div>
-                 <CardTitle>{t('subscriber_profile.notes_card_title')}</CardTitle>
+                 {/* CardTitle removed as it's redundant with the tab name */}
                  <CardDescription>{t('subscriber_profile.notes_card_description')}</CardDescription>
                </div>
                 <Button size="sm">
@@ -882,7 +878,7 @@ function SubscriberProfilePage() {
         <TabsContent value="history">
           <Card>
             <CardHeader>
-              <CardTitle>{t('subscriber_profile.history_card_title')}</CardTitle>
+              {/* CardTitle removed as it's redundant with the tab name */}
               <CardDescription>{t('subscriber_profile.history_card_description')}</CardDescription>
             </CardHeader>
             <CardContent>
