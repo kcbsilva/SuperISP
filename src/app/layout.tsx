@@ -278,7 +278,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/finances/cash-book')} size="sm" tooltip={t('sidebar.finances_cash_book')}>
-                        <Link href="#" className="flex items-center gap-2">
+                        <Link href="/finances/cash-book" className="flex items-center gap-2">
                           <BookOpen className="h-4 w-4 text-muted-foreground" />
                           <span>{t('sidebar.finances_cash_book')}</span>
                         </Link>
@@ -656,3 +656,4 @@ export default function RootLayout({
     </html>
   );
 }
+
