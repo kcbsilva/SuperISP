@@ -54,12 +54,13 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { PlusCircle, Filter, RefreshCw, ArrowUpDown, DollarSign, Edit, Trash2, Loader2, CalendarIcon } from 'lucide-react';
-import { useLocale } from '@/contexts/LocaleContext';
+import { useLocale, type Locale as AppLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format, parseISO } from 'date-fns';
+import { enUS, fr, ptBR } from 'date-fns/locale'; // Import locales statically
 import { cn } from "@/lib/utils";
 
 
@@ -89,6 +90,12 @@ const placeholderEntries: CashBookEntry[] = [
   { id: 'entry-5', date: parseISO('2024-07-21'), description: 'Consulting Fee', category: 'Service Revenue', type: 'Income', amount: 500.00 },
 ];
 
+// Map app locales to date-fns locales
+const dateLocales: Record<AppLocale, typeof enUS> = {
+    en: enUS,
+    fr: fr,
+    pt: ptBR,
+};
 
 export default function CashBookPage() {
   const { t, locale } = useLocale();
@@ -213,7 +220,7 @@ export default function CashBookPage() {
                                                             !field.value && "text-muted-foreground"
                                                         )}
                                                     >
-                                                        {field.value ? format(field.value, "PPP") : <span>{t('cash_book.form_date_placeholder', 'Pick a date')}</span>}
+                                                        {field.value ? format(field.value, "PPP", { locale: dateLocales[locale] || enUS }) : <span>{t('cash_book.form_date_placeholder', 'Pick a date')}</span>}
                                                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                                     </Button>
                                                 </FormControl>
@@ -385,7 +392,7 @@ export default function CashBookPage() {
                 {filteredAndSortedEntries.length > 0 ? (
                   filteredAndSortedEntries.map((entry) => (
                     <TableRow key={entry.id}>
-                      <TableCell>{format(entry.date, 'PP', { locale: locale === 'pt' ? require('date-fns/locale/pt-BR') : locale === 'fr' ? require('date-fns/locale/fr') : require('date-fns/locale/en-US')})}</TableCell>
+                      <TableCell>{format(entry.date, 'PP', { locale: dateLocales[locale] || enUS })}</TableCell>
                       <TableCell className="font-medium">{entry.description}</TableCell>
                       <TableCell className="text-muted-foreground">{entry.category}</TableCell>
                       <TableCell>
