@@ -169,6 +169,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </Tooltip>
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/maps/map')} size="sm" tooltip={t('sidebar.maps_map')}>
+                        <Link href="/maps/map" className="flex items-center gap-2"> {/* Updated href */}
+                          <Globe className="h-4 w-4 text-muted-foreground" />
+                          <span>{t('sidebar.maps_map')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
                       <SidebarMenuSub>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -245,14 +253,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </SidebarMenuItem>
                         </SidebarMenuSubContent>
                       </SidebarMenuSub>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/maps/map')} size="sm" tooltip={t('sidebar.maps_map')}>
-                        <Link href="/maps/map" className="flex items-center gap-2"> {/* Updated href */}
-                          <Globe className="h-4 w-4 text-muted-foreground" />
-                          <span>{t('sidebar.maps_map')}</span>
-                        </Link>
-                      </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
