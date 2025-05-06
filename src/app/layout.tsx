@@ -33,6 +33,7 @@ import {
   Smartphone, // Icon for Mobile Plan
   Phone, // Icon for Landline Plan
   Combine, // Icon for Combos Plan
+  ListFilter, // Icon for Entry Categories
 } from 'lucide-react';
 
 import './globals.css';
@@ -60,7 +61,8 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
 import { Progress } from '@/components/ui/progress'; // Import Progress component
 import { LocaleProvider, useLocale } from '@/contexts/LocaleContext'; // Import LocaleProvider and useLocale
-import { ThemeProvider } from 'next-themes'; // Import ThemeProvider
+import { ThemeProvider } from '@/components/theme-provider'; // Corrected import path
+
 
 // Create a client
 const queryClient = new QueryClient();
@@ -279,6 +281,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         <Link href="#" className="flex items-center gap-2">
                           <BookOpen className="h-4 w-4 text-muted-foreground" />
                           <span>{t('sidebar.finances_cash_book')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/finances/entry-categories')} size="sm" tooltip={t('sidebar.finances_entry_categories')}>
+                        <Link href="#" className="flex items-center gap-2">
+                          <ListFilter className="h-4 w-4 text-muted-foreground" />
+                          <span>{t('sidebar.finances_entry_categories')}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

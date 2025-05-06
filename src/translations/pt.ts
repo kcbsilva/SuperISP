@@ -25,6 +25,7 @@ const pt = {
     zones: 'Zonas',
     finances: 'Finanças',
     finances_cash_book: 'Livro Caixa',
+    finances_entry_categories: 'Categorias de Lançamento', // Added
     finances_config: 'Configurações Financeiras',
     reports: 'Relatórios',
     security: 'Segurança',

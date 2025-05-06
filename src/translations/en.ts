@@ -25,6 +25,7 @@ const en = {
     zones: 'Zones',
     finances: 'Finances',
     finances_cash_book: 'Cash Book',
+    finances_entry_categories: 'Entry Categories', // Added
     finances_config: 'Financial Configurations',
     reports: 'Reports',
     security: 'Security',
