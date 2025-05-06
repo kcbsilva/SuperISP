@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical } from 'lucide-react';
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -67,7 +67,7 @@ type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile' | 'Co
 // Types for inventory filtering
 type InventoryFilter = 'All' | 'Lent' | 'Sold';
 // Types for billing filtering
-type BillingFilter = 'Pending' | 'Past' | 'Canceled';
+type BillingFilter = 'Pending' | 'Past' | 'Canceled' | 'PaymentPlan' | 'PromiseToPay';
 
 
 // Placeholder data - replace with actual data fetching based on ID
@@ -109,6 +109,12 @@ const getSubscriberData = (id: string | string[]) => {
             pendingInvoices: [
                  { id: 'inv-p01', date: '2024-08-15', amount: 50.00, status: 'Due' }
             ],
+            paymentPlans: [
+                {id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active'},
+            ],
+            promisesToPay: [
+                {id: 'ptp-1', promiseDate: '2024-08-10', amount: 50.00, status: 'Pending'},
+            ]
         },
         serviceCalls: [
             { id: 'sc-1', date: '2024-07-10', issue: 'Slow internet', status: 'Resolved' },
@@ -427,6 +433,7 @@ function SubscriberProfilePage() {
                   <CardTitle>{t('subscriber_profile.services_card_title')}</CardTitle>
                   {/* Removed CardDescription from here */}
               </div>
+              {/* Add Service Dialog Trigger */}
               <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
@@ -579,32 +586,19 @@ function SubscriberProfilePage() {
              <CardHeader className="flex flex-row items-center justify-between">
                  <div>
                    <CardTitle>{t('subscriber_profile.billing_card_title')}</CardTitle>
-                   <CardDescription>{t('subscriber_profile.billing_card_description')}</CardDescription>
+                   {/* Removed CardDescription */}
                  </div>
-                 <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm">{t('subscriber_profile.billing_view_invoices_button')}</Button>
-                      <Button size="sm">{t('subscriber_profile.billing_make_payment_button')}</Button>
-                 </div>
+                 {/* Removed Buttons */}
              </CardHeader>
              <CardContent className="space-y-6">
-                 <div className="flex justify-between items-center border-b pb-2">
-                   <span className="font-medium">{t('subscriber_profile.billing_balance')}:</span>
-                   <span className={`font-bold ${hasOutstandingBalance ? 'text-destructive' : ''}`}>
-                      ${subscriber.billing?.balance.toFixed(2) || '0.00'}
-                   </span>
-                 </div>
-                 <div className="flex justify-between items-center border-b pb-2">
-                     <span className="font-medium">{t('subscriber_profile.billing_next_date')}:</span>
-                     <span className="text-muted-foreground">
-                        {subscriber.billing?.nextBillDate || t('subscriber_profile.billing_not_available')}
-                     </span>
-                 </div>
-
+                 {/* Removed Balance and Next Bill Date */}
                  <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)}>
-                    <TabsList className="mb-4 grid w-full grid-cols-3 h-auto">
+                    <TabsList className="mb-4 grid w-full grid-cols-5 h-auto"> {/* Updated grid-cols */}
                        <TabsTrigger value="Pending">{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
                        <TabsTrigger value="Past">{t('subscriber_profile.billing_filter_past')}</TabsTrigger>
                        <TabsTrigger value="Canceled">{t('subscriber_profile.billing_filter_canceled')}</TabsTrigger>
+                       <TabsTrigger value="PaymentPlan">{t('subscriber_profile.billing_filter_payment_plan')}</TabsTrigger>
+                       <TabsTrigger value="PromiseToPay">{t('subscriber_profile.billing_filter_promise_to_pay')}</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="Pending" className="mt-0 space-y-2">
@@ -658,6 +652,40 @@ function SubscriberProfilePage() {
                             </ul>
                         ) : (
                             <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_canceled_invoices')}</p>
+                        )}
+                    </TabsContent>
+                    <TabsContent value="PaymentPlan" className="mt-0 space-y-2">
+                        <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
+                            <CalendarClock className="h-4 w-4 text-blue-600" /> {t('subscriber_profile.billing_payment_plans')} ({subscriber.billing?.paymentPlans?.length ?? 0})
+                        </h4>
+                        {subscriber.billing?.paymentPlans?.length > 0 ? (
+                            <ul className="space-y-2 text-sm">
+                                {subscriber.billing.paymentPlans.map(plan => (
+                                    <li key={plan.id} className="flex justify-between items-center p-2 border rounded-md">
+                                        <span>{t('subscriber_profile.billing_payment_plan_start_date')}: {plan.startDate} - {plan.installments} x ${plan.installmentAmount.toFixed(2)}</span>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full ${plan.status === 'Active' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>{plan.status}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_payment_plans')}</p>
+                        )}
+                    </TabsContent>
+                     <TabsContent value="PromiseToPay" className="mt-0 space-y-2">
+                        <h4 className="text-md font-semibold mb-2 flex items-center gap-2">
+                            <Handshake className="h-4 w-4 text-purple-600" /> {t('subscriber_profile.billing_promises_to_pay')} ({subscriber.billing?.promisesToPay?.length ?? 0})
+                        </h4>
+                        {subscriber.billing?.promisesToPay?.length > 0 ? (
+                            <ul className="space-y-2 text-sm">
+                                {subscriber.billing.promisesToPay.map(promise => (
+                                    <li key={promise.id} className="flex justify-between items-center p-2 border rounded-md">
+                                        <span>{t('subscriber_profile.billing_promise_date')}: {promise.promiseDate} - ${promise.amount.toFixed(2)}</span>
+                                         <span className={`text-xs px-2 py-0.5 rounded-full ${promise.status === 'Pending' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}`}>{promise.status}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-sm text-muted-foreground">{t('subscriber_profile.billing_no_promises_to_pay')}</p>
                         )}
                     </TabsContent>
                  </Tabs>
