@@ -330,6 +330,7 @@ const en = {
    },
     // Dashboard Page
    dashboard: {
+     dashboard_view_label: 'Dashboard View', // Added label for dashboard selector
      select_view: 'Select Dashboard View',
      general_view: 'General Overview',
      financial_view: 'Financial Dashboard',

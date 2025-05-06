@@ -330,6 +330,7 @@ const fr = {
    },
     // Dashboard Page
    dashboard: {
+     dashboard_view_label: 'Vue du Tableau de Bord', // Added label for dashboard selector
      select_view: 'Sélectionner la vue du tableau de bord',
      general_view: 'Aperçu général',
      financial_view: 'Tableau de bord financier',

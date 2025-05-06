@@ -330,6 +330,7 @@ const pt = {
   },
    // Dashboard Page
   dashboard: {
+    dashboard_view_label: 'Visualização do Painel', // Added label for dashboard selector
     select_view: 'Selecionar Visualização do Painel',
     general_view: 'Visão Geral',
     financial_view: 'Painel Financeiro',

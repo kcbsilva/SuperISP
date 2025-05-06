@@ -90,31 +90,35 @@ export default function DashboardPage() {
 
          {/* Header Row with Dropdown and Quick Actions */}
         <div className="flex items-start gap-4 mb-2"> {/* Changed items-center to items-start for label alignment */}
-          {/* Dashboard Selector Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                 {t(`dashboard.${currentView.toLowerCase()}_view`)} Dashboard
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuLabel>{t('dashboard.select_view')}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleViewChange("General")} disabled={currentView === "General"}>
-                {t('dashboard.general_view')}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleViewChange("Financial")} disabled={currentView === "Financial"}>
-                {t('dashboard.financial_view')}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleViewChange("Network")} disabled={currentView === "Network"}>
-                {t('dashboard.network_view')}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleViewChange("Technician")} disabled={currentView === "Technician"}>
-                {t('dashboard.technician_view')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Dashboard Selector Dropdown with Label */}
+          <div className="flex flex-col items-start gap-1">
+             <div className="text-xs font-medium text-muted-foreground px-1">{t('dashboard.dashboard_view_label', 'Dashboard View')}</div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    {t(`dashboard.${currentView.toLowerCase()}_view`)} Dashboard
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuLabel>{t('dashboard.select_view')}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => handleViewChange("General")} disabled={currentView === "General"}>
+                    {t('dashboard.general_view')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleViewChange("Financial")} disabled={currentView === "Financial"}>
+                    {t('dashboard.financial_view')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleViewChange("Network")} disabled={currentView === "Network"}>
+                    {t('dashboard.network_view')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleViewChange("Technician")} disabled={currentView === "Technician"}>
+                    {t('dashboard.technician_view')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div> {/* End Dashboard Selector Container */}
+
 
            {/* Quick Actions Container */}
            <div className="flex flex-col items-start gap-1">
