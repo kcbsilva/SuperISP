@@ -32,6 +32,12 @@ const fr = {
     settings_global: 'Paramètres globaux',
     settings_business: 'Entreprise',
     settings_business_pops: 'PoPs (Point de présence)',
+    settings_plans: 'Forfaits', // Added
+    settings_plans_internet: 'Internet', // Added
+    settings_plans_tv: 'TV', // Added
+    settings_plans_mobile: 'Mobile', // Added
+    settings_plans_landline: 'Fixe', // Added
+    settings_plans_combos: 'Combos', // Added
     settings_integrations: 'Intégrations',
     settings_integrations_whatsapp: 'WhatsApp',
     settings_integrations_telegram: 'Telegram',

@@ -27,6 +27,12 @@ import {
   Plane, // Icon for PilotView
   Bus, // Icon for TransitOS
   Dna, // Icon for Zones (DNS)
+  ListChecks, // Icon for Plans
+  Wifi, // Icon for Internet Plan
+  Tv, // Icon for TV Plan
+  Smartphone, // Icon for Mobile Plan
+  Phone, // Icon for Landline Plan
+  Combine, // Icon for Combos Plan
 } from 'lucide-react';
 
 import './globals.css';
@@ -289,18 +295,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              {/* Security Menu (Removed as top-level item) */}
-              {/*
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/security')} tooltip={t('sidebar.security')}>
-                  <Link href="#" className="flex items-center gap-2">
-                    <ShieldCheck />
-                    <span>{t('sidebar.security')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              */}
-
               {/* Settings Menu */}
               <SidebarMenuItem>
                 <SidebarMenuSub>
@@ -356,6 +350,71 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </SidebarMenuSubContent>
                       </SidebarMenuSub>
                     </SidebarMenuItem>
+
+                     {/* Plans Menu Item - Moved under Settings */}
+                     <SidebarMenuItem>
+                      <SidebarMenuSub>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <SidebarMenuSubTrigger
+                              size="sm"
+                              className="pl-3 pr-2 py-1.5"
+                              tooltip={t('sidebar.settings_plans', 'Plans')}
+                            >
+                              <div className="flex items-center gap-2 cursor-pointer w-full">
+                                <ListChecks className="h-4 w-4 text-muted-foreground" />
+                                <span className="truncate">{t('sidebar.settings_plans', 'Plans')}</span>
+                                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                              </div>
+                            </SidebarMenuSubTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent side="right" align="center">{t('sidebar.settings_plans', 'Plans')}</TooltipContent>
+                        </Tooltip>
+                        <SidebarMenuSubContent>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/internet')} size="sm" tooltip={t('sidebar.settings_plans_internet', 'Internet')}>
+                              <Link href="#" className="flex items-center gap-2">
+                                <Wifi className="h-4 w-4 text-muted-foreground" />
+                                <span>{t('sidebar.settings_plans_internet', 'Internet')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/tv')} size="sm" tooltip={t('sidebar.settings_plans_tv', 'TV')}>
+                              <Link href="#" className="flex items-center gap-2">
+                                <Tv className="h-4 w-4 text-muted-foreground" />
+                                <span>{t('sidebar.settings_plans_tv', 'TV')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/mobile')} size="sm" tooltip={t('sidebar.settings_plans_mobile', 'Mobile')}>
+                              <Link href="#" className="flex items-center gap-2">
+                                <Smartphone className="h-4 w-4 text-muted-foreground" />
+                                <span>{t('sidebar.settings_plans_mobile', 'Mobile')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/landline')} size="sm" tooltip={t('sidebar.settings_plans_landline', 'Landline')}>
+                              <Link href="#" className="flex items-center gap-2">
+                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                <span>{t('sidebar.settings_plans_landline', 'Landline')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/combos')} size="sm" tooltip={t('sidebar.settings_plans_combos', 'Combos')}>
+                              <Link href="#" className="flex items-center gap-2">
+                                <Combine className="h-4 w-4 text-muted-foreground" />
+                                <span>{t('sidebar.settings_plans_combos', 'Combos')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        </SidebarMenuSubContent>
+                      </SidebarMenuSub>
+                    </SidebarMenuItem>
+
 
                     {/* Network Menu moved here */}
                     <SidebarMenuItem>
@@ -578,3 +637,4 @@ export default function RootLayout({
     </html>
   );
 }
+

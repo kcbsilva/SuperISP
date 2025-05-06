@@ -32,6 +32,12 @@ const en = {
     settings_global: 'Global Settings',
     settings_business: 'Business',
     settings_business_pops: 'PoPs (Place of Presence)',
+    settings_plans: 'Plans', // Added
+    settings_plans_internet: 'Internet', // Added
+    settings_plans_tv: 'TV', // Added
+    settings_plans_mobile: 'Mobile', // Added
+    settings_plans_landline: 'Landline', // Added
+    settings_plans_combos: 'Combos', // Added
     settings_integrations: 'Integrations',
     settings_integrations_whatsapp: 'WhatsApp',
     settings_integrations_telegram: 'Telegram',
