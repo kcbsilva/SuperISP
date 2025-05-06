@@ -748,7 +748,6 @@ function SubscriberProfilePage() {
             <CardHeader className="flex flex-row items-center justify-between">
                  <div>
                      {/* CardTitle removed as it's redundant with the tab name */}
-                     <CardDescription>{t('subscriber_profile.service_calls_card_description')}</CardDescription>
                  </div>
                   <Button size="sm">
                       <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.service_calls_new_button')}
@@ -778,7 +777,6 @@ function SubscriberProfilePage() {
             <CardHeader className="flex flex-row items-center justify-between">
                <div>
                    {/* CardTitle removed as it's redundant with the tab name */}
-                   <CardDescription>{t('subscriber_profile.inventory_card_description')}</CardDescription>
                </div>
                <Button size="sm">
                     <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.inventory_assign_button')}
@@ -822,7 +820,6 @@ function SubscriberProfilePage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 {/* CardTitle removed as it's redundant with the tab name */}
-                <CardDescription>{t('subscriber_profile.documents_card_description')}</CardDescription>
               </div>
               <Button size="sm">
                  <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.documents_upload_button')}
@@ -852,7 +849,6 @@ function SubscriberProfilePage() {
             <CardHeader className="flex flex-row items-center justify-between">
                <div>
                  {/* CardTitle removed as it's redundant with the tab name */}
-                 <CardDescription>{t('subscriber_profile.notes_card_description')}</CardDescription>
                </div>
                 <Button size="sm">
                     <PlusCircle className="mr-2 h-4 w-4" /> {t('subscriber_profile.notes_add_button')}
@@ -879,7 +875,6 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader>
               {/* CardTitle removed as it's redundant with the tab name */}
-              <CardDescription>{t('subscriber_profile.history_card_description')}</CardDescription>
             </CardHeader>
             <CardContent>
               {subscriber.history && subscriber.history.length > 0 ? (
