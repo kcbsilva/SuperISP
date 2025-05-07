@@ -305,7 +305,7 @@ export default function EntryCategoriesPage() {
              }}>
                 <DialogTrigger asChild>
                     <Button className="bg-green-600 hover:bg-green-700 text-white">
-                        <PlusCircle className="mr-2 h-4 w-4" /> {t('entry_categories.add_category_button', 'Add Category')}
+                        <PlusCircle className="mr-2 h-4 w-4" /> {t('entry_categories.add_category_button', 'Add Entry')}
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
@@ -388,8 +388,8 @@ export default function EntryCategoriesPage() {
                                             </FormControl>
                                             <SelectContent>
                                                 {/* Static root categories should always be options if the type matches */}
-                                                {form.getValues('type') === 'Income' && <SelectItem value={STATIC_INCOME_ID}>{getCategoryNumber(placeholderCategories.find(c=>c.id===STATIC_INCOME_ID)!, placeholderCategories)} - {placeholderCategories.find(c=>c.id===STATIC_INCOME_ID)!.name}</SelectItem>}
-                                                {form.getValues('type') === 'Expense' && <SelectItem value={STATIC_EXPENSE_ID}>{getCategoryNumber(placeholderCategories.find(c=>c.id===STATIC_EXPENSE_ID)!, placeholderCategories)} - {placeholderCategories.find(c=>c.id===STATIC_EXPENSE_ID)!.name}</SelectItem>}
+                                                {form.getValues('type') === 'Income' && placeholderCategories.find(c=>c.id===STATIC_INCOME_ID) && <SelectItem value={STATIC_INCOME_ID}>{getCategoryNumber(placeholderCategories.find(c=>c.id===STATIC_INCOME_ID)!, placeholderCategories)} - {placeholderCategories.find(c=>c.id===STATIC_INCOME_ID)!.name}</SelectItem>}
+                                                {form.getValues('type') === 'Expense' && placeholderCategories.find(c=>c.id===STATIC_EXPENSE_ID) && <SelectItem value={STATIC_EXPENSE_ID}>{getCategoryNumber(placeholderCategories.find(c=>c.id===STATIC_EXPENSE_ID)!, placeholderCategories)} - {placeholderCategories.find(c=>c.id===STATIC_EXPENSE_ID)!.name}</SelectItem>}
 
                                                 {availableParentCategories
                                                     .filter(cat => cat.id !== STATIC_INCOME_ID && cat.id !== STATIC_EXPENSE_ID) // Exclude static roots from dynamic list
@@ -426,10 +426,10 @@ export default function EntryCategoriesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-32">{t('entry_categories.table_header_category_number', 'Category No.')}</TableHead>
-                  <TableHead>{t('entry_categories.table_header_description', 'Description')}</TableHead>
-                  <TableHead>{t('entry_categories.table_header_type', 'Type')}</TableHead>
-                  <TableHead className="text-right w-28">{t('entry_categories.table_header_actions', 'Actions')}</TableHead>
+                  <TableHead className="w-32 py-2">{t('entry_categories.table_header_category_number', 'Category No.')}</TableHead>
+                  <TableHead className="py-2">{t('entry_categories.table_header_description', 'Description')}</TableHead>
+                  <TableHead className="py-2">{t('entry_categories.table_header_type', 'Type')}</TableHead>
+                  <TableHead className="text-right w-28 py-2">{t('entry_categories.table_header_actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -438,16 +438,16 @@ export default function EntryCategoriesPage() {
                     const isStatic = category.id === STATIC_INCOME_ID || category.id === STATIC_EXPENSE_ID;
                     return (
                     <TableRow key={category.id}>
-                      <TableCell className="font-medium">{getCategoryNumber(category, placeholderCategories)}</TableCell>
-                      <TableCell className="font-medium">{category.name}</TableCell>
-                      <TableCell>
+                      <TableCell className="font-medium py-2">{getCategoryNumber(category, placeholderCategories)}</TableCell>
+                      <TableCell className="font-medium py-2">{category.name}</TableCell>
+                      <TableCell className="py-2">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                           category.type === 'Income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                         }`}>
                           {t(`entry_categories.category_type_${category.type.toLowerCase()}` as any, category.type)}
                         </span>
                       </TableCell>
-                       <TableCell className="text-right">
+                       <TableCell className="text-right py-2">
                             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditCategory(category)} disabled={isStatic}>
                                 <Edit className="h-4 w-4" />
                                 <span className="sr-only">{t('entry_categories.action_edit', 'Edit')}</span>
