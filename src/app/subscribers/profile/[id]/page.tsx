@@ -41,14 +41,14 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { getPops } from '@/services/mysql/pops';
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
-import { format } from 'date-fns'; // Keep format import
+import { format, type Locale as DateFnsLocale } from 'date-fns'; // Keep format import, import Locale as DateFnsLocale
 import { fr as frLocale, ptBR as ptBRLocale, enUS as enUSLocale } from 'date-fns/locale'; // Corrected import path for locales
 import { Badge } from '@/components/ui/badge';
 
@@ -88,7 +88,7 @@ const getSubscriberData = (id: string | string[]) => {
         idNumber: `ID-${Math.floor(Math.random() * 100000)}`,
         signupDate: new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
         companyName: '',
-        establishedDate: null,
+        establishedDate: null as Date | null,
         businessNumber: '',
         services: [
             { id: 'svc-1', type: 'Internet', plan: 'Fiber 100', popId: 'sim-1', status: 'Active' },
@@ -161,7 +161,7 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.businessNumber = '98.765.432/0001-00';
         baseData.idNumber = 'ID-BOBINC-002';
         baseData.signupDate = new Date(2021, 5, 1);
-        baseData.birthday = null;
+        baseData.birthday = null as Date | null;
         baseData.taxId = '';
         baseData.services = [
              { id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: 'sim-2', status: 'Active' }
@@ -185,7 +185,7 @@ export default function SubscriberProfilePageWrapper() {
     );
 }
 
-const dateLocales: Record<string, Locale> = {
+const dateLocales: Record<string, DateFnsLocale> = {
   en: enUSLocale,
   fr: frLocale,
   pt: ptBRLocale,
@@ -198,7 +198,7 @@ const OverviewDetailItem: React.FC<{icon: React.ElementType, label: string, valu
     <div className="flex items-start gap-3">
         <Icon className={`${iconSize} text-muted-foreground mt-1`} />
         <div>
-            <p className="text-xs text-muted-foreground">{label}</p> 
+            <p className="text-xs text-muted-foreground">{label}</p>
             <p className="text-xs font-medium"> {/* Main value font size to text-xs */}
                 {value instanceof Date ? format(value, 'PP', { locale: dateLocales[locale] || enUSLocale }) : value || t('subscriber_profile.not_available')}
             </p>
@@ -358,7 +358,6 @@ function SubscriberProfilePage() {
     );
   }
 
-
   return (
     <div className="flex flex-col gap-6">
       <Card>
@@ -465,23 +464,25 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
+                {/* Removed CardTitle and CardDescription from here */}
               </div>
-              <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                    <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.add_service_button')}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>{t('subscriber_profile.add_service_dialog_title')}</DialogTitle>
-                    <DialogDescription>
-                      {t('subscriber_profile.add_service_dialog_description')}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Form {...addServiceForm}>
-                    <form onSubmit={addServiceForm.handleSubmit(handleAddServiceSubmit)} className="grid gap-4 py-4">
-                      <FormField
+                {/* Add Service Dialog Trigger */}
+               <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
+                 <DialogTrigger asChild>
+                   <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                     <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.add_service_button')}
+                   </Button>
+                 </DialogTrigger>
+                 <DialogContent className="sm:max-w-[425px]">
+                   <DialogHeader>
+                     <DialogTitle>{t('subscriber_profile.add_service_dialog_title')}</DialogTitle>
+                     <DialogDescription>
+                       {t('subscriber_profile.add_service_dialog_description')}
+                     </DialogDescription>
+                   </DialogHeader>
+                   <Form {...addServiceForm}>
+                     <form onSubmit={addServiceForm.handleSubmit(handleAddServiceSubmit)} className="grid gap-4 py-4">
+                       <FormField
                         control={addServiceForm.control}
                         name="serviceType"
                         render={({ field }) => (
@@ -617,6 +618,7 @@ function SubscriberProfilePage() {
            <Card>
              <CardHeader className="flex flex-row items-center justify-between">
                  <div>
+                  {/* Removed CardTitle and CardDescription */}
                  </div>
              </CardHeader>
              <CardContent className="space-y-6">
@@ -635,7 +637,7 @@ function SubscriberProfilePage() {
                              <ListFilterIcon className={`${tabIconSize} text-primary`} /> {t('subscriber_profile.billing_all_invoices')} ({allInvoices.length})
                          </h4>
                          {allInvoices.length > 0 ? (
-                             <ul className="space-y-2 text-xs"> 
+                             <ul className="space-y-2 text-xs">
                                  {allInvoices.map(inv => (
                                      <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md">
                                         <div>
@@ -748,6 +750,7 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                <div>
+                {/* Removed CardTitle and CardDescription */}
                </div>
                 <Button size="sm">
                     <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.service_calls_new_button')}
@@ -776,6 +779,7 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                <div>
+                {/* Removed CardTitle and CardDescription */}
                </div>
                <Button size="sm">
                     <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.inventory_assign_button')}
@@ -818,6 +822,7 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
+                {/* Removed CardTitle and CardDescription */}
               </div>
               <Button size="sm">
                  <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.documents_upload_button')}
@@ -846,6 +851,7 @@ function SubscriberProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                <div>
+                {/* Removed CardTitle and CardDescription */}
                </div>
                 <Button size="sm">
                     <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.notes_add_button')}
@@ -856,7 +862,7 @@ function SubscriberProfilePage() {
                   <ul className="space-y-3">
                      {subscriber.notes.map(note => (
                          <li key={note.id} className="p-3 border rounded-md">
-                             <p className="text-xs mb-1">{note.text}</p> 
+                             <p className="text-xs mb-1">{note.text}</p>
                              <p className="text-xs text-muted-foreground">{t('subscriber_profile.notes_author_label')}: {note.author} - {note.date}</p>
                          </li>
                      ))}
@@ -871,6 +877,7 @@ function SubscriberProfilePage() {
         <TabsContent value="history">
           <Card>
             <CardHeader>
+              {/* Removed CardTitle and CardDescription */}
             </CardHeader>
             <CardContent>
               {subscriber.history && subscriber.history.length > 0 ? (
