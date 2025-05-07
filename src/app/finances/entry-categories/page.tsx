@@ -142,12 +142,25 @@ export default function EntryCategoriesPage() {
 
     if (editingCategory) {
       console.log("Update Category Data:", data, "for ID:", editingCategory.id);
+      // Simulate update - replace with API call
+      const index = placeholderCategories.findIndex(cat => cat.id === editingCategory.id);
+      if (index !== -1) {
+        placeholderCategories[index] = { ...placeholderCategories[index], ...data };
+      }
       toast({
         title: t('entry_categories.update_success_title', 'Category Updated'),
         description: t('entry_categories.update_success_description', 'Category "{name}" has been updated.').replace('{name}', data.name),
       });
     } else {
       console.log("New Category Data:", data);
+      // Simulate add - replace with API call
+      const newCategory: EntryCategory = {
+        id: `cat-${Date.now()}`, // Simple unique ID
+        ...data,
+        parentCategoryId: data.parentCategoryId || (data.type === 'Income' ? STATIC_INCOME_ID : STATIC_EXPENSE_ID),
+        createdAt: new Date(),
+      };
+      placeholderCategories.push(newCategory);
       toast({
         title: t('entry_categories.add_success_title', 'Category Added'),
         description: t('entry_categories.add_success_description', 'Category "{name}" has been added.').replace('{name}', data.name),
@@ -177,6 +190,11 @@ export default function EntryCategoriesPage() {
       }
       // TODO: Implement actual API call to delete category
       console.log("Delete Category:", categoryToDelete.id);
+       // Simulate delete - replace with API call
+      const index = placeholderCategories.findIndex(cat => cat.id === categoryToDelete.id);
+      if (index !== -1) {
+        placeholderCategories.splice(index, 1);
+      }
       toast({
         title: t('entry_categories.delete_success_title', 'Category Deleted'),
         description: t('entry_categories.delete_success_description', 'Category "{name}" has been deleted.').replace('{name}', categoryToDelete.name),
@@ -188,53 +206,77 @@ export default function EntryCategoriesPage() {
     }
   };
 
-  const filteredCategories = React.useMemo(() => {
-    return placeholderCategories.filter(category =>
-      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-  }, [searchTerm]);
-
-  const availableParentCategories = React.useMemo(() => {
-    return placeholderCategories.filter(cat => {
-      // Exclude the category being edited from its own parent list
-      if (editingCategory && cat.id === editingCategory.id) return false;
-      // Exclude static expense from being parent of income and vice-versa for new categories or non-static edits
-      if (form.getValues('type') === 'Income' && cat.type === 'Expense' && cat.id === STATIC_EXPENSE_ID) return false;
-      if (form.getValues('type') === 'Expense' && cat.type === 'Income' && cat.id === STATIC_INCOME_ID) return false;
-      // If editing a sub-category, ensure its parent type matches or is a static root of the same type
-      if (editingCategory && editingCategory.type === 'Income' && cat.type === 'Expense') return false;
-      if (editingCategory && editingCategory.type === 'Expense' && cat.type === 'Income') return false;
-      return true;
-    });
-  }, [editingCategory, form.watch('type')]); // Watch type field
-
-  const getCategoryNumber = (category: EntryCategory, allCategories: EntryCategory[]): string => {
+  const getCategoryNumber = React.useCallback((category: EntryCategory, allCategories: EntryCategory[]): string => {
     if (category.id === STATIC_INCOME_ID) return "1";
     if (category.id === STATIC_EXPENSE_ID) return "2";
 
     const path: string[] = [];
     let current: EntryCategory | undefined = category;
-    while(current && current.parentCategoryId) {
+    const visited = new Set<string>(); // To detect cycles
+
+    while(current && current.parentCategoryId && current.parentCategoryId !== current.id && !visited.has(current.id)) {
+        visited.add(current.id);
         const parent = allCategories.find(c => c.id === current!.parentCategoryId);
         if (parent) {
-            // Find index among siblings
-            const siblings = allCategories.filter(s => s.parentCategoryId === parent.id && s.type === current!.type);
+            // Find index among siblings, sorted alphabetically for consistent numbering
+            const siblings = allCategories
+                .filter(s => s.parentCategoryId === parent.id && s.type === current!.type)
+                .sort((a,b) => a.name.localeCompare(b.name));
             const index = siblings.findIndex(s => s.id === current!.id) + 1;
             path.unshift(index.toString());
             current = parent;
         } else {
-            // Should not happen if data is consistent
+            // Orphaned category (parent not found) or top-level sub-category (parent is static root)
+             if (current.type === 'Income' && current.parentCategoryId === STATIC_INCOME_ID) {
+                const siblings = allCategories.filter(s => s.parentCategoryId === STATIC_INCOME_ID).sort((a,b)=> a.name.localeCompare(b.name));
+                const index = siblings.findIndex(s => s.id === current!.id) +1;
+                path.unshift(index.toString());
+             } else if (current.type === 'Expense' && current.parentCategoryId === STATIC_EXPENSE_ID) {
+                const siblings = allCategories.filter(s => s.parentCategoryId === STATIC_EXPENSE_ID).sort((a,b)=> a.name.localeCompare(b.name));
+                const index = siblings.findIndex(s => s.id === current!.id) +1;
+                path.unshift(index.toString());
+             }
             break;
         }
     }
-    if (current?.type === 'Income') {
+    if (current?.type === 'Income' && (current.id === STATIC_INCOME_ID || !current.parentCategoryId)) {
         path.unshift("1");
-    } else if (current?.type === 'Expense') {
+    } else if (current?.type === 'Expense' && (current.id === STATIC_EXPENSE_ID || !current.parentCategoryId)) {
         path.unshift("2");
     }
-    return path.join('.');
-  };
+    return path.filter(p => p).join('.'); // Filter out empty parts just in case
+  }, []);
+
+
+  const filteredAndSortedCategories = React.useMemo(() => {
+    return placeholderCategories
+      .filter(category =>
+        category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+      .sort((a, b) => {
+        const numA = getCategoryNumber(a, placeholderCategories);
+        const numB = getCategoryNumber(b, placeholderCategories);
+        return numA.localeCompare(numB, undefined, { numeric: true, sensitivity: 'base' });
+      });
+  }, [searchTerm, getCategoryNumber, placeholderCategories]);
+
+
+  const availableParentCategories = React.useMemo(() => {
+    const currentType = form.getValues('type');
+    if (!currentType) return []; // No parent if type is not selected
+
+    return placeholderCategories.filter(cat => {
+      // Exclude the category being edited from its own parent list
+      if (editingCategory && cat.id === editingCategory.id) return false;
+      // Parent must be of the same type, or the static root of that type
+      return cat.type === currentType;
+    }).sort((a, b) => {
+        const numA = getCategoryNumber(a, placeholderCategories);
+        const numB = getCategoryNumber(b, placeholderCategories);
+        return numA.localeCompare(numB, undefined, { numeric: true, sensitivity: 'base' });
+    });
+  }, [editingCategory, form.watch('type'), getCategoryNumber, placeholderCategories]);
 
 
   return (
@@ -295,16 +337,8 @@ export default function EntryCategoriesPage() {
                                         <Select
                                             onValueChange={(value) => {
                                                 field.onChange(value);
-                                                // If type changes, reset parentCategoryId to a valid one or null
-                                                const currentParent = form.getValues('parentCategoryId');
-                                                if (currentParent) {
-                                                    const parentCategory = placeholderCategories.find(c => c.id === currentParent);
-                                                    if (parentCategory && parentCategory.type !== value) {
-                                                        form.setValue('parentCategoryId', value === 'Income' ? STATIC_INCOME_ID : STATIC_EXPENSE_ID);
-                                                    }
-                                                } else {
-                                                     form.setValue('parentCategoryId', value === 'Income' ? STATIC_INCOME_ID : STATIC_EXPENSE_ID);
-                                                }
+                                                const newParentId = value === 'Income' ? STATIC_INCOME_ID : STATIC_EXPENSE_ID;
+                                                form.setValue('parentCategoryId', newParentId, { shouldValidate: true });
                                             }}
                                             defaultValue={field.value}
                                             disabled={editingCategory?.id === STATIC_INCOME_ID || editingCategory?.id === STATIC_EXPENSE_ID}
@@ -341,21 +375,24 @@ export default function EntryCategoriesPage() {
                                 name="parentCategoryId"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t('entry_categories.form_parent_category_label', 'Parent Category (Optional)')}</FormLabel>
+                                        <FormLabel>{t('entry_categories.form_parent_category_label', 'Parent Category')}</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
-                                            value={field.value || undefined} // Handle null for Select
+                                            value={field.value || (form.getValues('type') === 'Income' ? STATIC_INCOME_ID : form.getValues('type') === 'Expense' ? STATIC_EXPENSE_ID : "")}
                                             disabled={editingCategory?.id === STATIC_INCOME_ID || editingCategory?.id === STATIC_EXPENSE_ID || !form.getValues('type')}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder={!form.getValues('type') ? t('entry_categories.form_select_type_first', 'Select type first') : t('entry_categories.form_parent_category_placeholder', 'Select parent category or leave blank')} />
+                                                    <SelectValue placeholder={!form.getValues('type') ? t('entry_categories.form_select_type_first', 'Select type first') : t('entry_categories.form_parent_category_placeholder', 'Select parent category')} />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="">{t('entry_categories.form_parent_none', 'None (Top Level)')}</SelectItem>
+                                                {/* Static root categories should always be options if the type matches */}
+                                                {form.getValues('type') === 'Income' && <SelectItem value={STATIC_INCOME_ID}>{getCategoryNumber(placeholderCategories.find(c=>c.id===STATIC_INCOME_ID)!, placeholderCategories)} - {placeholderCategories.find(c=>c.id===STATIC_INCOME_ID)!.name}</SelectItem>}
+                                                {form.getValues('type') === 'Expense' && <SelectItem value={STATIC_EXPENSE_ID}>{getCategoryNumber(placeholderCategories.find(c=>c.id===STATIC_EXPENSE_ID)!, placeholderCategories)} - {placeholderCategories.find(c=>c.id===STATIC_EXPENSE_ID)!.name}</SelectItem>}
+
                                                 {availableParentCategories
-                                                    .filter(cat => cat.type === form.getValues('type')) // Filter parents by selected type
+                                                    .filter(cat => cat.id !== STATIC_INCOME_ID && cat.id !== STATIC_EXPENSE_ID) // Exclude static roots from dynamic list
                                                     .map(cat => (
                                                       <SelectItem key={cat.id} value={cat.id}>
                                                         {getCategoryNumber(cat, placeholderCategories)} - {cat.name}
@@ -396,8 +433,8 @@ export default function EntryCategoriesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCategories.length > 0 ? (
-                  filteredCategories.map((category) => {
+                {filteredAndSortedCategories.length > 0 ? (
+                  filteredAndSortedCategories.map((category) => {
                     const isStatic = category.id === STATIC_INCOME_ID || category.id === STATIC_EXPENSE_ID;
                     return (
                     <TableRow key={category.id}>
@@ -411,7 +448,7 @@ export default function EntryCategoriesPage() {
                         </span>
                       </TableCell>
                        <TableCell className="text-right">
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditCategory(category)} disabled={isStatic && (category.name === "Income" || category.name === "Expense")}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditCategory(category)} disabled={isStatic}>
                                 <Edit className="h-4 w-4" />
                                 <span className="sr-only">{t('entry_categories.action_edit', 'Edit')}</span>
                             </Button>
@@ -434,8 +471,8 @@ export default function EntryCategoriesPage() {
                                    <AlertDialogAction
                                      className={buttonVariants({ variant: "destructive" })}
                                      onClick={() => {
-                                       setCategoryToDelete(category);
-                                       confirmDeleteCategory();
+                                       setCategoryToDelete(category); // Set the category to delete first
+                                       confirmDeleteCategory();      // Then call confirm
                                      }}
                                    >
                                      {t('entry_categories.delete_confirm_delete', 'Delete')}
