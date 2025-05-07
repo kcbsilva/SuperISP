@@ -548,6 +548,8 @@ const fr = {
     form_description_placeholder: 'ex: Paiement mensuel du loyer du bureau',
     form_parent_category_label: 'Catégorie Parente (Facultatif)',
     form_parent_category_placeholder: 'Sélectionner la catégorie parente ou laisser vide',
+    form_parent_none: 'Aucune (Niveau Supérieur)',
+    form_select_type_first: 'Sélectionnez d\'abord le type',
     form_cancel_button: 'Annuler',
     form_save_button: 'Enregistrer la Catégorie',
     form_update_button: 'Mettre à Jour la Catégorie',
@@ -562,6 +564,10 @@ const fr = {
     delete_confirm_description: 'Cette action est irréversible. Cela supprimera définitivement la catégorie "{categoryName}".',
     delete_confirm_cancel: 'Annuler',
     delete_confirm_delete: 'Supprimer',
+    static_delete_error_title: 'Erreur de Suppression',
+    static_delete_error_description: 'Les catégories statiques "Revenu" et "Dépense" ne peuvent pas être supprimées.',
+    static_edit_error_title: 'Erreur de Modification',
+    static_edit_error_description: 'Le nom ou le type des catégories statiques "Revenu" et "Dépense" ne peut pas être modifié.',
   },
 };
 

@@ -69,7 +69,7 @@ const categorySchema = z.object({
   name: z.string().min(1, "Category name is required."), // This will be displayed under "Description" header
   type: z.enum(['Income', 'Expense'], { required_error: "Category type is required." }),
   description: z.string().optional(), // Optional description, not shown in table but searchable
-  parentCategoryId: z.string().optional(), //ID of parent category
+  parentCategoryId: z.string().optional().nullable(), //ID of parent category, can be null for top-level
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
@@ -79,13 +79,18 @@ interface EntryCategory extends CategoryFormData {
   createdAt: Date; // Still part of the data model, just not displayed
 }
 
+const STATIC_INCOME_ID = 'static-income-root';
+const STATIC_EXPENSE_ID = 'static-expense-root';
+
 // Placeholder data - replace with actual data fetching
 const placeholderCategories: EntryCategory[] = [
-  { id: 'cat-1', name: 'Subscription Revenue', type: 'Income', description: 'Monthly recurring revenue from subscriptions.', createdAt: new Date('2024-01-15') },
-  { id: 'cat-2', name: 'Office Supplies', type: 'Expense', description: 'Expenses related to office stationery and supplies.', createdAt: new Date('2024-01-20') },
-  { id: 'cat-3', name: 'Utilities', type: 'Expense', description: 'Electricity, water, internet bills.', createdAt: new Date('2024-02-01') },
-  { id: 'cat-4', name: 'Consulting Fees', type: 'Income', description: 'One-time or project-based consulting income.', createdAt: new Date('2024-02-10') },
-  { id: 'cat-5', name: 'Software Licenses', type: 'Expense', description: 'Recurring costs for software subscriptions.', createdAt: new Date('2024-03-05') },
+  { id: STATIC_INCOME_ID, name: 'Income', type: 'Income', description: 'Top-level income category. Cannot be edited or deleted.', createdAt: new Date('2023-01-01'), parentCategoryId: null },
+  { id: STATIC_EXPENSE_ID, name: 'Expense', type: 'Expense', description: 'Top-level expense category. Cannot be edited or deleted.', createdAt: new Date('2023-01-01'), parentCategoryId: null },
+  { id: 'cat-1', name: 'Subscription Revenue', type: 'Income', description: 'Monthly recurring revenue from subscriptions.', createdAt: new Date('2024-01-15'), parentCategoryId: STATIC_INCOME_ID },
+  { id: 'cat-2', name: 'Office Supplies', type: 'Expense', description: 'Expenses related to office stationery and supplies.', createdAt: new Date('2024-01-20'), parentCategoryId: STATIC_EXPENSE_ID },
+  { id: 'cat-3', name: 'Utilities', type: 'Expense', description: 'Electricity, water, internet bills.', createdAt: new Date('2024-02-01'), parentCategoryId: STATIC_EXPENSE_ID },
+  { id: 'cat-4', name: 'Consulting Fees', type: 'Income', description: 'One-time or project-based consulting income.', createdAt: new Date('2024-02-10'), parentCategoryId: STATIC_INCOME_ID },
+  { id: 'cat-5', name: 'Software Licenses', type: 'Expense', description: 'Recurring costs for software subscriptions.', createdAt: new Date('2024-03-05'), parentCategoryId: 'cat-2' }, // Example of sub-subcategory
 ];
 
 export default function EntryCategoriesPage() {
@@ -93,7 +98,7 @@ export default function EntryCategoriesPage() {
   const { toast } = useToast();
   const [isAddCategoryDialogOpen, setIsAddCategoryDialogOpen] = React.useState(false);
   const [editingCategory, setEditingCategory] = React.useState<EntryCategory | null>(null);
-  const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] = React.useState(false);
+  // const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] = React.useState(false); // No longer needed with individual triggers
   const [categoryToDelete, setCategoryToDelete] = React.useState<EntryCategory | null>(null);
   const [searchTerm, setSearchTerm] = React.useState('');
 
@@ -104,7 +109,7 @@ export default function EntryCategoriesPage() {
       name: '',
       type: undefined,
       description: '',
-      parentCategoryId: '',
+      parentCategoryId: null,
     },
   });
 
@@ -114,16 +119,27 @@ export default function EntryCategoriesPage() {
         name: editingCategory.name,
         type: editingCategory.type,
         description: editingCategory.description || '',
-        parentCategoryId: editingCategory.parentCategoryId || '',
+        parentCategoryId: editingCategory.parentCategoryId || null,
       });
       setIsAddCategoryDialogOpen(true);
     } else {
-      form.reset({ name: '', type: undefined, description: '', parentCategoryId: '' });
+      form.reset({ name: '', type: undefined, description: '', parentCategoryId: null });
     }
   }, [editingCategory, form]);
 
   const handleAddOrUpdateCategorySubmit = (data: CategoryFormData) => {
-    // TODO: Implement actual API call to add/update category
+    // Prevent editing static categories' core fields if somehow attempted
+    if (editingCategory && (editingCategory.id === STATIC_INCOME_ID || editingCategory.id === STATIC_EXPENSE_ID)) {
+        if (data.name !== editingCategory.name || data.type !== editingCategory.type) {
+            toast({
+                title: t('entry_categories.static_edit_error_title', 'Edit Error'),
+                description: t('entry_categories.static_edit_error_description', 'Static categories "Income" and "Expense" cannot have their name or type changed.'),
+                variant: 'destructive',
+            });
+            return;
+        }
+    }
+
     if (editingCategory) {
       console.log("Update Category Data:", data, "for ID:", editingCategory.id);
       toast({
@@ -147,13 +163,18 @@ export default function EntryCategoriesPage() {
     setEditingCategory(category);
   };
 
-  const handleDeleteCategory = (category: EntryCategory) => {
-    setCategoryToDelete(category);
-    setIsConfirmDeleteDialogOpen(true); // Open the AlertDialog
-  };
-
   const confirmDeleteCategory = () => {
     if (categoryToDelete) {
+      if (categoryToDelete.id === STATIC_INCOME_ID || categoryToDelete.id === STATIC_EXPENSE_ID) {
+        toast({
+          title: t('entry_categories.static_delete_error_title', 'Delete Error'),
+          description: t('entry_categories.static_delete_error_description', 'Static categories "Income" and "Expense" cannot be deleted.'),
+          variant: 'destructive',
+        });
+        setCategoryToDelete(null);
+        // setIsConfirmDeleteDialogOpen(false); // if controlled dialog was used
+        return;
+      }
       // TODO: Implement actual API call to delete category
       console.log("Delete Category:", categoryToDelete.id);
       toast({
@@ -162,24 +183,65 @@ export default function EntryCategoriesPage() {
         variant: 'destructive',
       });
       setCategoryToDelete(null);
-      setIsConfirmDeleteDialogOpen(false);
+      // setIsConfirmDeleteDialogOpen(false); // if controlled dialog was used
       // refetch categories after deleting
     }
   };
 
   const filteredCategories = React.useMemo(() => {
     return placeholderCategories.filter(category =>
-      category.name.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by name (displayed as Description)
-      (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase())) // Search by optional description
+      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [searchTerm]);
+
+  const availableParentCategories = React.useMemo(() => {
+    return placeholderCategories.filter(cat => {
+      // Exclude the category being edited from its own parent list
+      if (editingCategory && cat.id === editingCategory.id) return false;
+      // Exclude static expense from being parent of income and vice-versa for new categories or non-static edits
+      if (form.getValues('type') === 'Income' && cat.type === 'Expense' && cat.id === STATIC_EXPENSE_ID) return false;
+      if (form.getValues('type') === 'Expense' && cat.type === 'Income' && cat.id === STATIC_INCOME_ID) return false;
+      // If editing a sub-category, ensure its parent type matches or is a static root of the same type
+      if (editingCategory && editingCategory.type === 'Income' && cat.type === 'Expense') return false;
+      if (editingCategory && editingCategory.type === 'Expense' && cat.type === 'Income') return false;
+      return true;
+    });
+  }, [editingCategory, form.watch('type')]); // Watch type field
+
+  const getCategoryNumber = (category: EntryCategory, allCategories: EntryCategory[]): string => {
+    if (category.id === STATIC_INCOME_ID) return "1";
+    if (category.id === STATIC_EXPENSE_ID) return "2";
+
+    const path: string[] = [];
+    let current: EntryCategory | undefined = category;
+    while(current && current.parentCategoryId) {
+        const parent = allCategories.find(c => c.id === current!.parentCategoryId);
+        if (parent) {
+            // Find index among siblings
+            const siblings = allCategories.filter(s => s.parentCategoryId === parent.id && s.type === current!.type);
+            const index = siblings.findIndex(s => s.id === current!.id) + 1;
+            path.unshift(index.toString());
+            current = parent;
+        } else {
+            // Should not happen if data is consistent
+            break;
+        }
+    }
+    if (current?.type === 'Income') {
+        path.unshift("1");
+    } else if (current?.type === 'Expense') {
+        path.unshift("2");
+    }
+    return path.join('.');
+  };
+
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center gap-4">
         <h1 className="text-2xl font-semibold">{t('entry_categories.title', 'Entry Categories')}</h1>
         
-        {/* Search Bar moved here */}
         <div className="relative flex-1">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -197,7 +259,7 @@ export default function EntryCategoriesPage() {
             </Button>
              <Dialog open={isAddCategoryDialogOpen} onOpenChange={(isOpen) => {
                  setIsAddCategoryDialogOpen(isOpen);
-                 if (!isOpen) setEditingCategory(null); // Reset editing state when dialog closes
+                 if (!isOpen) setEditingCategory(null);
              }}>
                 <DialogTrigger asChild>
                     <Button className="bg-green-600 hover:bg-green-700 text-white">
@@ -213,12 +275,12 @@ export default function EntryCategoriesPage() {
                         <form onSubmit={form.handleSubmit(handleAddOrUpdateCategorySubmit)} className="grid gap-4 py-4">
                             <FormField
                                 control={form.control}
-                                name="name" // This is the primary identifier, shown as "Description" in table
+                                name="name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{t('entry_categories.form_name_label', 'Category Name')}</FormLabel>
                                         <FormControl>
-                                            <Input placeholder={t('entry_categories.form_name_placeholder', 'e.g., Office Rent')} {...field} />
+                                            <Input placeholder={t('entry_categories.form_name_placeholder', 'e.g., Office Rent')} {...field} disabled={editingCategory?.id === STATIC_INCOME_ID || editingCategory?.id === STATIC_EXPENSE_ID} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -230,7 +292,23 @@ export default function EntryCategoriesPage() {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{t('entry_categories.form_type_label', 'Type')}</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select
+                                            onValueChange={(value) => {
+                                                field.onChange(value);
+                                                // If type changes, reset parentCategoryId to a valid one or null
+                                                const currentParent = form.getValues('parentCategoryId');
+                                                if (currentParent) {
+                                                    const parentCategory = placeholderCategories.find(c => c.id === currentParent);
+                                                    if (parentCategory && parentCategory.type !== value) {
+                                                        form.setValue('parentCategoryId', value === 'Income' ? STATIC_INCOME_ID : STATIC_EXPENSE_ID);
+                                                    }
+                                                } else {
+                                                     form.setValue('parentCategoryId', value === 'Income' ? STATIC_INCOME_ID : STATIC_EXPENSE_ID);
+                                                }
+                                            }}
+                                            defaultValue={field.value}
+                                            disabled={editingCategory?.id === STATIC_INCOME_ID || editingCategory?.id === STATIC_EXPENSE_ID}
+                                        >
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder={t('entry_categories.form_type_placeholder', 'Select category type')} />
@@ -247,7 +325,7 @@ export default function EntryCategoriesPage() {
                             />
                              <FormField
                                 control={form.control}
-                                name="description" // Optional description, not in table
+                                name="description"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{t('entry_categories.form_description_label', 'Description (Optional)')}</FormLabel>
@@ -258,17 +336,33 @@ export default function EntryCategoriesPage() {
                                     </FormItem>
                                 )}
                             />
-                            {/* TODO: Add Parent Category Selector here, perhaps a Select populated with existing categories */}
                             <FormField
                                 control={form.control}
                                 name="parentCategoryId"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{t('entry_categories.form_parent_category_label', 'Parent Category (Optional)')}</FormLabel>
-                                        {/* Replace with a Select component that lists existing categories */}
-                                        <FormControl>
-                                            <Input placeholder={t('entry_categories.form_parent_category_placeholder', 'Select parent category or leave blank')} {...field} />
-                                        </FormControl>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value || undefined} // Handle null for Select
+                                            disabled={editingCategory?.id === STATIC_INCOME_ID || editingCategory?.id === STATIC_EXPENSE_ID || !form.getValues('type')}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder={!form.getValues('type') ? t('entry_categories.form_select_type_first', 'Select type first') : t('entry_categories.form_parent_category_placeholder', 'Select parent category or leave blank')} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="">{t('entry_categories.form_parent_none', 'None (Top Level)')}</SelectItem>
+                                                {availableParentCategories
+                                                    .filter(cat => cat.type === form.getValues('type')) // Filter parents by selected type
+                                                    .map(cat => (
+                                                      <SelectItem key={cat.id} value={cat.id}>
+                                                        {getCategoryNumber(cat, placeholderCategories)} - {cat.name}
+                                                      </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -289,28 +383,13 @@ export default function EntryCategoriesPage() {
         </div>
       </div>
 
-       {/* Search Bar - Removed from here */}
-      {/* 
-      <div className="relative">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder={t('entry_categories.search_placeholder', 'Search categories...')}
-          className="pl-8 w-full sm:w-1/3"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div> 
-      */}
-
       <Card>
-        {/* CardHeader removed */}
-        <CardContent className="pt-6"> {/* Added padding-top as CardHeader was removed */}
+        <CardContent className="pt-6">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-28">{t('entry_categories.table_header_category_number', 'Category No.')}</TableHead>
+                  <TableHead className="w-32">{t('entry_categories.table_header_category_number', 'Category No.')}</TableHead>
                   <TableHead>{t('entry_categories.table_header_description', 'Description')}</TableHead>
                   <TableHead>{t('entry_categories.table_header_type', 'Type')}</TableHead>
                   <TableHead className="text-right w-28">{t('entry_categories.table_header_actions', 'Actions')}</TableHead>
@@ -318,10 +397,12 @@ export default function EntryCategoriesPage() {
               </TableHeader>
               <TableBody>
                 {filteredCategories.length > 0 ? (
-                  filteredCategories.map((category) => (
+                  filteredCategories.map((category) => {
+                    const isStatic = category.id === STATIC_INCOME_ID || category.id === STATIC_EXPENSE_ID;
+                    return (
                     <TableRow key={category.id}>
-                      <TableCell className="font-medium">{category.type === 'Income' ? '1' : '2'}</TableCell>
-                      <TableCell className="font-medium">{category.name}</TableCell> {/* Display name as Description */}
+                      <TableCell className="font-medium">{getCategoryNumber(category, placeholderCategories)}</TableCell>
+                      <TableCell className="font-medium">{category.name}</TableCell>
                       <TableCell>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                           category.type === 'Income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -330,13 +411,13 @@ export default function EntryCategoriesPage() {
                         </span>
                       </TableCell>
                        <TableCell className="text-right">
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditCategory(category)}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditCategory(category)} disabled={isStatic && (category.name === "Income" || category.name === "Expense")}>
                                 <Edit className="h-4 w-4" />
                                 <span className="sr-only">{t('entry_categories.action_edit', 'Edit')}</span>
                             </Button>
                              <AlertDialog>
                                <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" disabled={isStatic}>
                                     <Trash2 className="h-4 w-4" />
                                     <span className="sr-only">{t('entry_categories.action_delete', 'Delete')}</span>
                                 </Button>
@@ -349,11 +430,11 @@ export default function EntryCategoriesPage() {
                                    </AlertDialogDescription>
                                  </AlertDialogHeader>
                                  <AlertDialogFooter>
-                                   <AlertDialogCancel onClick={() => { setCategoryToDelete(null); setIsConfirmDeleteDialogOpen(false); }}>{t('entry_categories.delete_confirm_cancel', 'Cancel')}</AlertDialogCancel>
+                                   <AlertDialogCancel onClick={() => { setCategoryToDelete(null); /* setIsConfirmDeleteDialogOpen(false); */ }}>{t('entry_categories.delete_confirm_cancel', 'Cancel')}</AlertDialogCancel>
                                    <AlertDialogAction
                                      className={buttonVariants({ variant: "destructive" })}
                                      onClick={() => {
-                                       setCategoryToDelete(category); // Set category to delete before confirming
+                                       setCategoryToDelete(category);
                                        confirmDeleteCategory();
                                      }}
                                    >
@@ -364,10 +445,10 @@ export default function EntryCategoriesPage() {
                              </AlertDialog>
                         </TableCell>
                     </TableRow>
-                  ))
+                  )})
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground py-8"> {/* Adjusted colSpan */}
+                    <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
                       {searchTerm ? t('entry_categories.no_categories_found_search', 'No categories found matching your search.') : t('entry_categories.no_categories_found', 'No categories configured yet.')}
                     </TableCell>
                   </TableRow>
@@ -376,31 +457,7 @@ export default function EntryCategoriesPage() {
             </Table>
           </div>
         </CardContent>
-        {/* Optional: Add Pagination controls here if needed */}
       </Card>
-
-      {/* Controlled AlertDialog for delete confirmation - This can be removed if individual triggers are used */}
-       {/* 
-      <AlertDialog open={isConfirmDeleteDialogOpen} onOpenChange={setIsConfirmDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('entry_categories.delete_confirm_title', 'Are you sure?')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('entry_categories.delete_confirm_description', 'This action cannot be undone. This will permanently delete the category "{categoryName}".').replace('{categoryName}', categoryToDelete?.name || '')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => { setCategoryToDelete(null); setIsConfirmDeleteDialogOpen(false); }}>{t('entry_categories.delete_confirm_cancel', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              className={buttonVariants({ variant: "destructive" })}
-              onClick={confirmDeleteCategory}
-            >
-              {t('entry_categories.delete_confirm_delete', 'Delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      */}
     </div>
   );
 }

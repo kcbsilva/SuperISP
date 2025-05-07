@@ -548,6 +548,8 @@ const en = {
     form_description_placeholder: 'e.g., Monthly rent payment for office space',
     form_parent_category_label: 'Parent Category (Optional)',
     form_parent_category_placeholder: 'Select parent category or leave blank',
+    form_parent_none: 'None (Top Level)',
+    form_select_type_first: 'Select type first',
     form_cancel_button: 'Cancel',
     form_save_button: 'Save Category',
     form_update_button: 'Update Category',
@@ -562,6 +564,10 @@ const en = {
     delete_confirm_description: 'This action cannot be undone. This will permanently delete the category "{categoryName}".',
     delete_confirm_cancel: 'Cancel',
     delete_confirm_delete: 'Delete',
+    static_delete_error_title: 'Delete Error',
+    static_delete_error_description: 'Static categories "Income" and "Expense" cannot be deleted.',
+    static_edit_error_title: 'Edit Error',
+    static_edit_error_description: 'Static categories "Income" and "Expense" cannot have their name or type changed.',
   },
 };
 

@@ -548,6 +548,8 @@ const pt = {
       form_description_placeholder: 'ex: Pagamento mensal do aluguel do escritório',
       form_parent_category_label: 'Categoria Pai (Opcional)',
       form_parent_category_placeholder: 'Selecione a categoria pai ou deixe em branco',
+      form_parent_none: 'Nenhuma (Nível Superior)',
+      form_select_type_first: 'Selecione o tipo primeiro',
       form_cancel_button: 'Cancelar',
       form_save_button: 'Salvar Categoria',
       form_update_button: 'Atualizar Categoria',
@@ -562,6 +564,10 @@ const pt = {
       delete_confirm_description: 'Esta ação não pode ser desfeita. Isso excluirá permanentemente a categoria "{categoryName}".',
       delete_confirm_cancel: 'Cancelar',
       delete_confirm_delete: 'Excluir',
+      static_delete_error_title: 'Erro ao Excluir',
+      static_delete_error_description: 'As categorias estáticas "Receita" e "Despesa" não podem ser excluídas.',
+      static_edit_error_title: 'Erro ao Editar',
+      static_edit_error_description: 'O nome ou tipo das categorias estáticas "Receita" e "Despesa" não pode ser alterado.',
     },
 };
 
