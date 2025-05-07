@@ -563,7 +563,7 @@ const en = {
   },
   // VLAN Page
   vlan_page: {
-    title: 'VLAN Management',
+    title: 'Virtual Local Area Network (VLAN)',
     add_button: 'Add VLAN',
     refresh_button: 'Refresh',
     add_dialog_title: 'Add New VLAN',

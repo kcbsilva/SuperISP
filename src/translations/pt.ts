@@ -563,7 +563,7 @@ const pt = {
     },
     // VLAN Page
     vlan_page: {
-        title: 'Gerenciamento de VLAN',
+        title: 'Rede Local Virtual (VLAN)',
         add_button: 'Adicionar VLAN',
         refresh_button: 'Atualizar',
         add_dialog_title: 'Adicionar Nova VLAN',

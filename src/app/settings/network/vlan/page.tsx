@@ -5,10 +5,8 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import {
   Table,
@@ -54,15 +52,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/ui/alert-dialog"; // Removed AlertDialogTrigger as it's not used directly here for delete
 import { PlusCircle, Edit, Trash2, Loader2, RefreshCw } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { QueryClient, QueryClientProvider, useQuery, useMutation, type QueryKey } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { getPops } from '@/services/mysql/pops'; // Assuming PoP service exists
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -162,7 +159,7 @@ function VlanManagementPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-base font-semibold">{t('vlan_page.title', 'VLAN Management')}</h1>
+        <h1 className="text-base font-semibold">{t('vlan_page.title', 'Virtual Local Area Network (VLAN)')}</h1>
         <div className="flex items-center gap-2">
             <Button variant="default" className="bg-primary hover:bg-primary/90">
                 <RefreshCw className={`mr-2 ${iconSize}`} /> {t('vlan_page.refresh_button', 'Refresh')}
@@ -277,8 +274,7 @@ function VlanManagementPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm">{t('vlan_page.table_title', 'Existing VLANs')}</CardTitle>
-          <CardDescription className="text-xs">{t('vlan_page.table_description', 'Manage your Virtual Local Area Networks.')}</CardDescription>
+          <CardTitle className="text-sm"></CardTitle>
         </CardHeader>
         <CardContent>
           {isLoadingPops ? (
@@ -295,7 +291,6 @@ function VlanManagementPage() {
                     <TableHead className="w-20 text-xs">{t('vlan_page.table_header_vlan_id', 'VLAN ID')}</TableHead>
                     <TableHead className="text-xs">{t('vlan_page.table_header_name', 'Name')}</TableHead>
                     <TableHead className="text-xs">{t('vlan_page.table_header_pop', 'PoP')}</TableHead>
-                    <TableHead className="text-xs">{t('vlan_page.table_header_subnet', 'Subnet')}</TableHead>
                     <TableHead className="text-xs">{t('vlan_page.table_header_description', 'Description')}</TableHead>
                     <TableHead className="text-right w-28 text-xs">{t('vlan_page.table_header_actions', 'Actions')}</TableHead>
                   </TableRow>
@@ -306,7 +301,6 @@ function VlanManagementPage() {
                       <TableCell className="font-mono text-muted-foreground text-xs">{vlan.vlanId}</TableCell>
                       <TableCell className="font-medium text-xs">{vlan.name}</TableCell>
                       <TableCell className="text-muted-foreground text-xs">{pops.find(p => p.id.toString() === vlan.popId)?.name || vlan.popId}</TableCell>
-                      <TableCell className="text-muted-foreground text-xs">{vlan.subnet}</TableCell>
                       <TableCell className="text-muted-foreground text-xs">{vlan.description || '-'}</TableCell>
                       <TableCell className="text-right">
                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditVlan(vlan)}>
