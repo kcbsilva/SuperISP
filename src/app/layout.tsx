@@ -472,8 +472,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/network/cgnat')} size="sm">
-                              <Link href="#" className="flex items-center gap-2">
+                            <SidebarMenuButton asChild isActive={isActive('/settings/network/cgnat')} size="sm" tooltip={t('sidebar.network_cgnat')}>
+                              <Link href="/settings/network/cgnat" className="flex items-center gap-2">
                                 <Share2 className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.network_cgnat')}</span>
                               </Link>
