@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif; /* Change default font to Arial/Helvetica */
-}
-
 @layer base {
   :root {
     /* Light Theme Colors - Based on User Request */
@@ -113,7 +109,8 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-sm; /* Applied text-sm for global font size reduction */
+    font-family: Arial, Helvetica, sans-serif; 
   }
 }
 
