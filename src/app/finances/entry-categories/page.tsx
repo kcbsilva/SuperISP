@@ -280,33 +280,22 @@ export default function EntryCategoriesPage() {
 
   const getIndentationLevel = React.useCallback((category: EntryCategory, allCategories: EntryCategory[]): number => {
     if (category.id === STATIC_INCOME_ID || category.id === STATIC_EXPENSE_ID) return 0;
-    
+
     let level = 0;
     let current: EntryCategory | undefined = category;
-    const visited = new Set<string>(); 
+    const visited = new Set<string>();
 
     while (current && current.parentCategoryId && !visited.has(current.id)) {
         visited.add(current.id);
         const parent = allCategories.find(c => c.id === current!.parentCategoryId);
         if (!parent) break; // Should not happen if data is consistent
 
-        // Crucially, only increment level if the parent is NOT a static root.
-        // Children of static roots are level 1.
-        if (parent.id !== STATIC_INCOME_ID && parent.id !== STATIC_EXPENSE_ID) {
-            level++;
-        } else {
-           // If the parent is a static root, this is the first level of indentation for user categories.
-           level = 1; 
-           break; // Stop further traversal up from static roots for indentation calculation.
-        }
-        current = parent;
-         if (current.id === STATIC_INCOME_ID || current.id === STATIC_EXPENSE_ID) break;
-    }
-     // If after the loop, current is a direct child of a static root, its level is 1.
-    if(current && current.parentCategoryId && (current.parentCategoryId === STATIC_INCOME_ID || current.parentCategoryId === STATIC_EXPENSE_ID) && level === 0) {
-        return 1;
-    }
+        level++; // Increment for each parent
 
+        current = parent;
+        // Stop if we reach a static root, as their children are considered level 1 effectively due to the static roots being level 0.
+        if (current.id === STATIC_INCOME_ID || current.id === STATIC_EXPENSE_ID) break;
+    }
     return level;
   }, []);
 
@@ -337,7 +326,7 @@ export default function EntryCategoriesPage() {
              }}>
                 <DialogTrigger asChild>
                     <Button className="bg-green-600 hover:bg-green-700 text-white">
-                        <PlusCircle className="mr-2 h-4 w-4" /> {t('entry_categories.add_category_button', 'Add Entry')}
+                        <PlusCircle className="mr-2 h-4 w-4" /> {t('entry_categories.add_category_button', 'Add Category')}
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
@@ -536,4 +525,5 @@ export default function EntryCategoriesPage() {
     </div>
   );
 }
+
 
