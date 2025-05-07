@@ -322,15 +322,15 @@ function VlanManagementPage() {
       </div>
 
       <Card>
-        <CardContent className="pt-0">
+        <CardContent className="pt-0"> {/* Removed top padding from CardContent */}
           {isLoadingPops ? (
-             <div className="space-y-3 pt-6">
+             <div className="space-y-3 pt-6"> {/* Keep pt-6 here if skeleton needs space */}
                 <Skeleton className="h-8 w-full" />
                 <Skeleton className="h-8 w-full" />
                 <Skeleton className="h-8 w-full" />
              </div>
           ) : vlans.length > 0 ? (
-            <div className="overflow-x-auto pt-6">
+            <div className="overflow-x-auto"> {/* Removed pt-6, table will be closer to card top */}
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -403,3 +403,4 @@ function VlanManagementPage() {
     </div>
   );
 }
+
