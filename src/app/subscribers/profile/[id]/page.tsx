@@ -467,10 +467,12 @@ function SubscriberProfilePage() {
                 {/* Removed CardTitle and CardDescription from here */}
               </div>
                 {/* Add Service Dialog Trigger */}
-               <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
+               <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}> {/* Dialog */}
                  <DialogTrigger asChild>
                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                     <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.add_service_button')}
+                     <React.Fragment>
+                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.add_service_button')}
+                     </React.Fragment>
                    </Button>
                  </DialogTrigger>
                  <DialogContent className="sm:max-w-[425px]">
@@ -753,7 +755,9 @@ function SubscriberProfilePage() {
                 {/* Removed CardTitle and CardDescription */}
                </div>
                 <Button size="sm">
-                    <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.service_calls_new_button')}
+                    <React.Fragment>
+                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.service_calls_new_button')}
+                    </React.Fragment>
                 </Button>
             </CardHeader>
             <CardContent>
@@ -782,7 +786,9 @@ function SubscriberProfilePage() {
                 {/* Removed CardTitle and CardDescription */}
                </div>
                <Button size="sm">
-                    <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.inventory_assign_button')}
+                    <React.Fragment>
+                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.inventory_assign_button')}
+                    </React.Fragment>
                </Button>
             </CardHeader>
             <CardContent>
@@ -825,7 +831,9 @@ function SubscriberProfilePage() {
                 {/* Removed CardTitle and CardDescription */}
               </div>
               <Button size="sm">
-                 <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.documents_upload_button')}
+                 <React.Fragment>
+                    <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.documents_upload_button')}
+                 </React.Fragment>
               </Button>
             </CardHeader>
             <CardContent>
@@ -854,7 +862,9 @@ function SubscriberProfilePage() {
                 {/* Removed CardTitle and CardDescription */}
                </div>
                 <Button size="sm">
-                    <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.notes_add_button')}
+                    <React.Fragment>
+                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.notes_add_button')}
+                    </React.Fragment>
                 </Button>
             </CardHeader>
             <CardContent>
