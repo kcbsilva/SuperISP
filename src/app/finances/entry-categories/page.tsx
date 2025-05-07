@@ -60,7 +60,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  // AlertDialogTrigger, // No longer needed here for individual row delete buttons
 } from "@/components/ui/alert-dialog";
 import { buttonVariants } from '@/components/ui/button';
 
@@ -146,7 +146,7 @@ export default function EntryCategoriesPage() {
 
   const handleDeleteCategory = (category: EntryCategory) => {
     setCategoryToDelete(category);
-    setIsConfirmDeleteDialogOpen(true);
+    setIsConfirmDeleteDialogOpen(true); // Open the AlertDialog
   };
 
   const confirmDeleteCategory = () => {
@@ -306,12 +306,11 @@ export default function EntryCategoriesPage() {
                                 <Edit className="h-4 w-4" />
                                 <span className="sr-only">{t('entry_categories.action_edit', 'Edit')}</span>
                             </Button>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteCategory(category)}>
-                                    <Trash2 className="h-4 w-4" />
-                                    <span className="sr-only">{t('entry_categories.action_delete', 'Delete')}</span>
-                                </Button>
-                            </AlertDialogTrigger>
+                            {/* Removed AlertDialogTrigger from here, using controlled dialog */}
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteCategory(category)}>
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">{t('entry_categories.action_delete', 'Delete')}</span>
+                            </Button>
                         </TableCell>
                     </TableRow>
                   ))
@@ -329,6 +328,7 @@ export default function EntryCategoriesPage() {
         {/* Optional: Add Pagination controls here if needed */}
       </Card>
 
+      {/* Controlled AlertDialog for delete confirmation */}
       <AlertDialog open={isConfirmDeleteDialogOpen} onOpenChange={setIsConfirmDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -338,7 +338,7 @@ export default function EntryCategoriesPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setCategoryToDelete(null)}>{t('entry_categories.delete_confirm_cancel', 'Cancel')}</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => { setCategoryToDelete(null); setIsConfirmDeleteDialogOpen(false); }}>{t('entry_categories.delete_confirm_cancel', 'Cancel')}</AlertDialogCancel>
             <AlertDialogAction
               className={buttonVariants({ variant: "destructive" })}
               onClick={confirmDeleteCategory}
@@ -352,3 +352,5 @@ export default function EntryCategoriesPage() {
   );
 }
 
+
+    
