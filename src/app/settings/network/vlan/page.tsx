@@ -1,3 +1,4 @@
+
 // src/app/settings/network/vlan/page.tsx
 'use client';
 
@@ -5,8 +6,8 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
+  // CardHeader, // Removed as per previous request
+  // CardTitle, // Removed as per previous request
 } from "@/components/ui/card";
 import {
   Table,
@@ -52,7 +53,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialogTrigger, // Ensure this is imported
 } from "@/components/ui/alert-dialog";
 import { PlusCircle, Edit, Trash2, Loader2, RefreshCw } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -70,9 +71,9 @@ import { Badge } from '@/components/ui/badge';
 // VLAN Schema
 const vlanSchema = z.object({
   vlanId: z.coerce.number().int().min(1, "VLAN ID must be between 1 and 4094.").max(4094, "VLAN ID must be between 1 and 4094."),
-  name: z.string().min(1, "VLAN name is required."), // Kept in schema for data integrity, removed from table
+  name: z.string().min(1, "VLAN name is required."),
   description: z.string().optional(),
-  popId: z.string().min(1, "PoP selection is required."), // Kept in schema for data integrity, removed from table
+  popId: z.string().min(1, "PoP selection is required."),
   subnet: z.string().regex(/^(\d{1,3}\.){3}\d{1,3}\/\d{1,2}$/, "Invalid subnet format (e.g., 192.168.1.0/24)."),
   isTagged: z.boolean().default(true),
   status: z.enum(['Active', 'Inactive']).default('Active'),
@@ -321,18 +322,15 @@ function VlanManagementPage() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm"></CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           {isLoadingPops ? (
-             <div className="space-y-3">
+             <div className="space-y-3 pt-6">
                 <Skeleton className="h-8 w-full" />
                 <Skeleton className="h-8 w-full" />
                 <Skeleton className="h-8 w-full" />
              </div>
           ) : vlans.length > 0 ? (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto pt-6">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -398,7 +396,7 @@ function VlanManagementPage() {
               </Table>
             </div>
           ) : (
-            <p className="text-center text-muted-foreground py-4 text-xs">{t('vlan_page.no_vlans_found', 'No VLANs configured yet. Click "Add VLAN" to create one.')}</p>
+            <p className="text-center text-muted-foreground py-4 text-xs pt-6">{t('vlan_page.no_vlans_found', 'No VLANs configured yet. Click "Add VLAN" to create one.')}</p>
           )}
         </CardContent>
       </Card>
