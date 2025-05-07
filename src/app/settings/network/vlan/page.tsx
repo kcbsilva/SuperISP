@@ -52,7 +52,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"; // Removed AlertDialogTrigger as it's not used directly here for delete
+  AlertDialogTrigger, // Added AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 import { PlusCircle, Edit, Trash2, Loader2, RefreshCw } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
