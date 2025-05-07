@@ -5,7 +5,7 @@ import * as React from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from '@/components/ui/popover'; // Import Popover components
-import { Search, User, Box, Cable, Info, LogOut, UserCircle, Sun, Moon } from 'lucide-react'; // Import icons, added Info, LogOut, UserCircle, Sun, Moon icons
+import { Search, User, Box, Cable, Info, LogOut, UserCircle, Sun, Moon, Settings } from 'lucide-react'; // Import icons, added Info, LogOut, UserCircle, Sun, Moon icons
 import { Button } from '@/components/ui/button'; // Import Button
 import Link from 'next/link'; // Import Link
 import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale
@@ -42,6 +42,11 @@ export function AppHeader() {
   const { t } = useLocale(); // Get translation function
   const { toast } = useToast(); // Get toast function
   const { theme, setTheme } = useTheme(); // Get theme state and setter
+  const [mounted, setMounted] = React.useState(false);
+
+  // Effect to set mounted state
+  React.useEffect(() => setMounted(true), []);
+
 
   // Simulate search logic
   React.useEffect(() => {
@@ -217,7 +222,7 @@ export function AppHeader() {
        <div className="flex items-center gap-2">
          {/* Theme Toggle Button */}
           <Button variant="ghost" size="icon" onClick={toggleTheme}>
-            {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+            {mounted ? (theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />) : <Settings className="h-5 w-5" /> } {/* Show generic icon until mounted */}
             <span className="sr-only">{t('header.toggle_theme', 'Toggle theme')}</span>
           </Button>
 
