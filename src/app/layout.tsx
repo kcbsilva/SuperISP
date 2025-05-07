@@ -35,7 +35,7 @@ import {
   Combine, // Icon for Combos Plan
   ListFilter, // Icon for Entry Categories
   UserPlus, // For "New" subscriber
-  UsersRound, // For "List" subscribers
+  UsersRound, // For "List" subscribers,
 } from 'lucide-react';
 
 import './globals.css';
@@ -488,8 +488,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/network/vlan')} size="sm">
-                              <Link href="#" className="flex items-center gap-2">
+                            <SidebarMenuButton asChild isActive={isActive('/settings/network/vlan')} size="sm" tooltip={t('sidebar.network_vlan')}>
+                              <Link href="/settings/network/vlan" className="flex items-center gap-2">
                                 <Split className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.network_vlan')}</span>
                               </Link>
@@ -663,3 +663,4 @@ export default function RootLayout({
     </html>
   );
 }
+
