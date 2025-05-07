@@ -60,6 +60,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger, // Added missing import
 } from "@/components/ui/alert-dialog";
 import { buttonVariants } from '@/components/ui/button';
 
@@ -333,7 +334,10 @@ export default function EntryCategoriesPage() {
                                    <AlertDialogCancel onClick={() => { setCategoryToDelete(null); setIsConfirmDeleteDialogOpen(false); }}>{t('entry_categories.delete_confirm_cancel', 'Cancel')}</AlertDialogCancel>
                                    <AlertDialogAction
                                      className={buttonVariants({ variant: "destructive" })}
-                                     onClick={() => confirmDeleteCategory()} // Pass category to confirmDelete
+                                     onClick={() => {
+                                       setCategoryToDelete(category); // Set category to delete before confirming
+                                       confirmDeleteCategory();
+                                     }}
                                    >
                                      {t('entry_categories.delete_confirm_delete', 'Delete')}
                                    </AlertDialogAction>
