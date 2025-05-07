@@ -209,6 +209,7 @@ const pt = {
     table_header_tax_id: 'CPF/CNPJ',
     table_header_status: 'Status',
     table_header_phone: 'Telefone',
+    table_header_address: 'Endereço',
     no_results: 'Nenhum assinante encontrado com seus critérios.',
     refresh_start_toast: 'Atualizando lista de assinantes...',
     refresh_end_toast: 'Lista de assinantes atualizada.',
@@ -668,4 +669,3 @@ const pt = {
 };
 
 export default pt;
-

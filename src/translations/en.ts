@@ -209,6 +209,7 @@ const en = {
      table_header_tax_id: 'Tax ID',
      table_header_status: 'Status',
      table_header_phone: 'Phone',
+     table_header_address: 'Address',
      no_results: 'No subscribers found matching your criteria.',
      refresh_start_toast: 'Refreshing subscriber list...',
      refresh_end_toast: 'Subscriber list refreshed.',
@@ -668,4 +669,3 @@ const en = {
 };
 
 export default en;
-

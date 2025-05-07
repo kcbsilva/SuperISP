@@ -209,6 +209,7 @@ const fr = {
      table_header_tax_id: 'N° Fiscal',
      table_header_status: 'Statut',
      table_header_phone: 'Téléphone',
+     table_header_address: 'Adresse',
      no_results: 'Aucun abonné trouvé correspondant à vos critères.',
      refresh_start_toast: 'Actualisation de la liste des abonnés...',
      refresh_end_toast: 'Liste des abonnés actualisée.',
@@ -667,4 +668,3 @@ const fr = {
 };
 
 export default fr;
-

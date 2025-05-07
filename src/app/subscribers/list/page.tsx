@@ -28,11 +28,11 @@ import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 
 const placeholderSubscribers = [
-  { id: 'sub-1', name: 'Alice Wonderland', type: 'Residential', status: 'Active', taxId: '123.456.789-00', phone: '555-1111' },
-  { id: 'sub-2', name: 'Bob The Builder Inc.', type: 'Commercial', status: 'Active', taxId: '12.345.678/0001-99', phone: '555-2222' },
-  { id: 'sub-3', name: 'Charlie Chaplin', type: 'Residential', status: 'Inactive', taxId: '987.654.321-00', phone: '555-3333' },
-  { id: 'sub-4', name: 'Diana Prince', type: 'Residential', status: 'Active', taxId: '001.002.003-44', phone: '555-4444' },
-  { id: 'sub-5', name: 'Evil Corp', type: 'Commercial', status: 'Suspended', taxId: '99.888.777/0002-11', phone: '555-6666' },
+  { id: 'sub-1', name: 'Alice Wonderland', type: 'Residential', status: 'Active', taxId: '123.456.789-00', phone: '555-1111', address: '123 Fantasy Lane, Wonderland' },
+  { id: 'sub-2', name: 'Bob The Builder Inc.', type: 'Commercial', status: 'Active', taxId: '12.345.678/0001-99', phone: '555-2222', address: '456 Construction Ave, Builderville' },
+  { id: 'sub-3', name: 'Charlie Chaplin', type: 'Residential', status: 'Inactive', taxId: '987.654.321-00', phone: '555-3333', address: '789 Comedy Rd, Movietown' },
+  { id: 'sub-4', name: 'Diana Prince', type: 'Residential', status: 'Active', taxId: '001.002.003-44', phone: '555-4444', address: '1 Wonder Way, Themyscira' },
+  { id: 'sub-5', name: 'Evil Corp', type: 'Commercial', status: 'Suspended', taxId: '99.888.777/0002-11', phone: '555-6666', address: '666 Dark Alley, Badburg' },
 ];
 
 type SubscriberStatus = "Active" | "Inactive" | "Suspended" | "Planned";
@@ -75,11 +75,12 @@ export default function ListSubscribersPage() {
         const taxIdMatch = sub.taxId?.toLowerCase().includes(searchTerm.toLowerCase());
         const phoneMatch = sub.phone.includes(searchTerm);
         const idMatch = sub.id.toLowerCase().includes(searchTerm.toLowerCase());
+        const addressMatch = sub.address.toLowerCase().includes(searchTerm.toLowerCase());
 
         const typeMatch = filters.type.length === 0 || filters.type.includes(sub.type as 'Residential' | 'Commercial');
-        const statusMatch = filters.status.length === 0 || filters.status.includes(sub.status as SubscriberStatus);
+        const statusMatch = filters.status.length === 0 || filters.status.includes(sub.status as SubscriberStatus); // Keep status filter logic for now
 
-        return (idMatch || nameMatch || taxIdMatch || phoneMatch) && typeMatch && statusMatch;
+        return (idMatch || nameMatch || taxIdMatch || phoneMatch || addressMatch) && typeMatch && statusMatch;
         });
     }, [searchTerm, filters]);
 
@@ -187,7 +188,7 @@ export default function ListSubscribersPage() {
                   <TableHead className="w-12 text-xs">{t('list_subscribers.table_header_type')}</TableHead> 
                   <TableHead className="text-xs">{t('list_subscribers.table_header_name')}</TableHead> 
                   <TableHead className="text-xs">{t('list_subscribers.table_header_tax_id', 'Tax ID')}</TableHead> 
-                  <TableHead className="text-xs">{t('list_subscribers.table_header_status')}</TableHead> 
+                  <TableHead className="text-xs">{t('list_subscribers.table_header_address', 'Address')}</TableHead> 
                   <TableHead className="text-xs">{t('list_subscribers.table_header_phone')}</TableHead> 
                 </TableRow>
               </TableHeader>
@@ -209,23 +210,7 @@ export default function ListSubscribersPage() {
                         </Link>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-xs">{formatTaxId(subscriber.taxId)}</TableCell> 
-                      <TableCell>
-                        <Badge
-                            variant={
-                                subscriber.status === 'Active' ? 'default' :
-                                subscriber.status === 'Suspended' ? 'destructive' :
-                                'secondary'
-                            }
-                             className={
-                                subscriber.status === 'Active' ? 'bg-green-100 text-green-800 border-transparent text-xs' : 
-                                subscriber.status === 'Suspended' ? 'bg-red-100 text-red-800 border-transparent text-xs' : 
-                                subscriber.status === 'Inactive' ? 'bg-yellow-100 text-yellow-800 border-transparent text-xs' : 
-                                'text-xs' 
-                             }
-                        >
-                          {t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)}
-                        </Badge>
-                      </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">{subscriber.address}</TableCell> 
                       <TableCell className="text-muted-foreground text-xs">{subscriber.phone}</TableCell> 
                     </TableRow>
                   ))
@@ -244,4 +229,3 @@ export default function ListSubscribersPage() {
     </div>
   );
 }
-
