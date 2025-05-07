@@ -9,24 +9,24 @@ import { useLocale } from '@/contexts/LocaleContext';
 
 export default function LandlinePlansPage() {
   const { t } = useLocale();
+  const iconSize = "h-3 w-3"; // Reduced icon size
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">{t('settings_plans.landline_page_title', 'Landline Plans')}</h1>
+        <h1 className="text-base font-semibold">{t('settings_plans.landline_page_title', 'Landline Plans')}</h1> {/* Reduced heading size */}
         <Button className="bg-green-600 hover:bg-green-700 text-white">
-          <PlusCircle className="mr-2 h-4 w-4" /> {t('settings_plans.add_plan_button_landline', 'Add Landline Plan')}
+          <PlusCircle className={`mr-2 ${iconSize}`} /> {t('settings_plans.add_plan_button_landline', 'Add Landline Plan')}
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('settings_plans.existing_plans_title', 'Existing Landline Plans')}</CardTitle>
-          <CardDescription>{t('settings_plans.existing_plans_description_landline', 'Manage your landline service plans.')}</CardDescription>
+          <CardTitle className="text-sm">{t('settings_plans.existing_plans_title', 'Existing Landline Plans')}</CardTitle> {/* Reduced title size */}
+          <CardDescription className="text-xs">{t('settings_plans.existing_plans_description_landline', 'Manage your landline service plans.')}</CardDescription> 
         </CardHeader>
         <CardContent>
-          {/* Placeholder for table or list of landline plans */}
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-xs"> 
             {t('settings_plans.no_plans_found_landline', 'No landline plans configured yet. Click "Add Landline Plan" to create one.')}
           </p>
         </CardContent>

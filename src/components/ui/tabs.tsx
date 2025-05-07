@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -15,7 +14,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
+      "inline-flex h-8 items-center justify-center rounded-md bg-muted p-0.5 text-muted-foreground", // Adjusted padding and height
       className
     )}
     {...props}
@@ -30,15 +29,13 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "relative inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
-      // Add active indicator styles
-      "data-[state=active]:after:absolute data-[state=active]:after:bottom-full data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-primary data-[state=active]:after:content-['']", // Add top border for active state
+      "relative inline-flex items-center justify-center whitespace-nowrap rounded-sm px-2 py-1 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm", // Adjusted padding, text-sm to text-xs
+      "data-[state=active]:after:absolute data-[state=active]:after:bottom-full data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-primary data-[state=active]:after:content-['']",
       className
     )}
     {...props}
   >
-      {/* Wrap children to allow badge positioning */}
-      <span className="relative flex items-center gap-1.5">
+      <span className="relative flex items-center gap-1 [&>svg]:h-2.5 [&>svg]:w-2.5"> {/* Reduced icon size for tabs trigger */}
         {children}
       </span>
   </TabsPrimitive.Trigger>

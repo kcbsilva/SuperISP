@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from 'react-hook-form';
 import * as z from 'zod';
 import { Button } from "@/components/ui/button";
 import {
@@ -35,9 +35,8 @@ import { CalendarIcon, User, Building, Save } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from '@/hooks/use-toast';
-import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale
+import { useLocale } from '@/contexts/LocaleContext';
 
-// --- Validation Schema ---
 const subscriberSchema = z.object({
   subscriberType: z.enum(['Residential', 'Commercial'], {
     required_error: "You need to select a subscriber type.",
@@ -48,10 +47,10 @@ const subscriberSchema = z.object({
   establishedDate: z.date().optional(),
   address: z.string().min(1, 'Address is required'),
   email: z.string().email('Invalid email address'),
-  phoneNumber: z.string().min(1, 'Phone number is required'), // Basic validation
-  mobileNumber: z.string().optional(), // Basic validation
-  taxId: z.string().optional(), // Consider more specific validation (e.g., regex)
-  businessNumber: z.string().optional(), // Consider more specific validation
+  phoneNumber: z.string().min(1, 'Phone number is required'),
+  mobileNumber: z.string().optional(),
+  taxId: z.string().optional(),
+  businessNumber: z.string().optional(),
 }).refine(data => data.subscriberType !== 'Residential' || (data.fullName && data.fullName.length > 0), {
   message: "Full Name is required for Residential subscribers.",
   path: ["fullName"],
@@ -77,7 +76,8 @@ type SubscriberFormData = z.infer<typeof subscriberSchema>;
 
 export default function AddSubscriberPage() {
   const { toast } = useToast();
-  const { t } = useLocale(); // Get translation function
+  const { t } = useLocale();
+  const iconSize = "h-3 w-3"; // Reduced icon size
   const form = useForm<SubscriberFormData>({
     resolver: zodResolver(subscriberSchema),
     defaultValues: {
@@ -97,30 +97,27 @@ export default function AddSubscriberPage() {
 
   const subscriberType = form.watch('subscriberType');
 
-  // --- Handle Submission ---
   const onSubmit = (data: SubscriberFormData) => {
     console.log('Subscriber Data:', data);
-    // TODO: Implement actual submission logic (e.g., API call)
     const name = data.subscriberType === 'Residential' ? data.fullName : data.companyName;
     toast({
       title: t('add_subscriber.add_success_toast_title'),
       description: t('add_subscriber.add_success_toast_description', 'Details for {name} saved.').replace('{name}', name || ''),
     });
-    form.reset(); // Reset form after successful submission
+    form.reset();
   };
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">{t('add_subscriber.title')}</h1>
+      <h1 className="text-base font-semibold">{t('add_subscriber.title')}</h1> {/* Reduced heading size */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('add_subscriber.card_title')}</CardTitle>
-          <CardDescription>{t('add_subscriber.card_description')}</CardDescription>
+          <CardTitle className="text-sm">{t('add_subscriber.card_title')}</CardTitle> {/* Reduced title size */}
+          <CardDescription className="text-xs">{t('add_subscriber.card_description')}</CardDescription> 
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Subscriber Type */}
               <FormField
                 control={form.control}
                 name="subscriberType"
@@ -137,16 +134,16 @@ export default function AddSubscriberPage() {
                           <FormControl>
                             <RadioGroupItem value="Residential" />
                           </FormControl>
-                          <FormLabel className="font-normal flex items-center gap-2">
-                             <User className="h-4 w-4 text-muted-foreground"/> {t('add_subscriber.type_residential')}
+                          <FormLabel className="font-normal flex items-center gap-2 text-xs"> 
+                             <User className={`${iconSize} text-muted-foreground`}/> {t('add_subscriber.type_residential')}
                           </FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value="Commercial" />
                           </FormControl>
-                          <FormLabel className="font-normal flex items-center gap-2">
-                             <Building className="h-4 w-4 text-muted-foreground"/> {t('add_subscriber.type_commercial')}
+                          <FormLabel className="font-normal flex items-center gap-2 text-xs"> 
+                             <Building className={`${iconSize} text-muted-foreground`}/> {t('add_subscriber.type_commercial')}
                           </FormLabel>
                         </FormItem>
                       </RadioGroup>
@@ -156,7 +153,6 @@ export default function AddSubscriberPage() {
                 )}
               />
 
-              {/* Conditional Fields */}
               {subscriberType === 'Residential' && (
                 <>
                   <FormField
@@ -184,7 +180,7 @@ export default function AddSubscriberPage() {
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "pl-3 text-left font-normal",
+                                  "pl-3 text-left font-normal text-xs", 
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
@@ -193,7 +189,7 @@ export default function AddSubscriberPage() {
                                 ) : (
                                   <span>{t('add_subscriber.birthday_placeholder')}</span>
                                 )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                <CalendarIcon className={`ml-auto ${iconSize} opacity-50`} />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
@@ -256,7 +252,7 @@ export default function AddSubscriberPage() {
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "pl-3 text-left font-normal",
+                                  "pl-3 text-left font-normal text-xs", 
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
@@ -265,7 +261,7 @@ export default function AddSubscriberPage() {
                                 ) : (
                                   <span>{t('add_subscriber.established_date_placeholder')}</span>
                                 )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                <CalendarIcon className={`ml-auto ${iconSize} opacity-50`} />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
@@ -299,7 +295,6 @@ export default function AddSubscriberPage() {
                 </>
               )}
 
-              {/* Common Fields */}
                <FormField
                  control={form.control}
                  name="address"
@@ -307,10 +302,7 @@ export default function AddSubscriberPage() {
                    <FormItem className="md:col-span-2">
                      <FormLabel>{t('add_subscriber.address_label')}</FormLabel>
                      <FormControl>
-                       {/* Using Input for single line address for now */}
                        <Input placeholder={t('add_subscriber.address_placeholder')} {...field} />
-                       {/* Or use Textarea for multi-line:
-                       <Textarea placeholder="123 Main St&#10;Anytown, USA 12345" {...field} /> */}
                      </FormControl>
                      <FormMessage />
                    </FormItem>
@@ -359,7 +351,7 @@ export default function AddSubscriberPage() {
             </CardContent>
             <CardFooter className="border-t px-6 py-4">
               <Button type="submit" disabled={!subscriberType || form.formState.isSubmitting}>
-                <Save className="mr-2 h-4 w-4" />
+                <Save className={`mr-2 ${iconSize}`} />
                 {t('add_subscriber.save_button')}
               </Button>
             </CardFooter>

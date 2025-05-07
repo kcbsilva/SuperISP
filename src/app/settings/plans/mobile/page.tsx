@@ -9,24 +9,24 @@ import { useLocale } from '@/contexts/LocaleContext';
 
 export default function MobilePlansPage() {
   const { t } = useLocale();
+  const iconSize = "h-3 w-3"; // Reduced icon size
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">{t('settings_plans.mobile_page_title', 'Mobile Plans')}</h1>
+        <h1 className="text-base font-semibold">{t('settings_plans.mobile_page_title', 'Mobile Plans')}</h1> {/* Reduced heading size */}
         <Button className="bg-green-600 hover:bg-green-700 text-white">
-          <PlusCircle className="mr-2 h-4 w-4" /> {t('settings_plans.add_plan_button_mobile', 'Add Mobile Plan')}
+          <PlusCircle className={`mr-2 ${iconSize}`} /> {t('settings_plans.add_plan_button_mobile', 'Add Mobile Plan')}
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('settings_plans.existing_plans_title', 'Existing Mobile Plans')}</CardTitle>
-          <CardDescription>{t('settings_plans.existing_plans_description_mobile', 'Manage your mobile service plans.')}</CardDescription>
+          <CardTitle className="text-sm">{t('settings_plans.existing_plans_title', 'Existing Mobile Plans')}</CardTitle> {/* Reduced title size */}
+          <CardDescription className="text-xs">{t('settings_plans.existing_plans_description_mobile', 'Manage your mobile service plans.')}</CardDescription> 
         </CardHeader>
         <CardContent>
-          {/* Placeholder for table or list of mobile plans */}
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-xs"> 
             {t('settings_plans.no_plans_found_mobile', 'No mobile plans configured yet. Click "Add Mobile Plan" to create one.')}
           </p>
         </CardContent>

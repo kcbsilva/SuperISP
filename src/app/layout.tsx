@@ -4,7 +4,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
-import { useState, useEffect } from 'react'; // Import useState and useEffect
+import { useState, useEffect, type ReactNode } from 'react'; // Import useState and useEffect
 // Import specific icons
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, ChevronRight, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
@@ -34,6 +34,8 @@ import {
   Phone, // Icon for Landline Plan
   Combine, // Icon for Combos Plan
   ListFilter, // Icon for Entry Categories
+  UserPlus, // For "New" subscriber
+  UsersRound, // For "List" subscribers
 } from 'lucide-react';
 
 import './globals.css';
@@ -114,6 +116,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   // Check if the current route is the map page
   const isMapPage = pathname === '/maps/map';
 
+  const iconSize = "h-3 w-3"; // Reduced icon size for sidebar
+  const subIconSize = "h-2.5 w-2.5"; // Reduced icon size for submenu items
+
+
   return (
     // TooltipProvider needs to wrap the entire layout content where tooltips are used
     <TooltipProvider>
@@ -125,11 +131,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               className="flex items-center gap-2 text-lg font-semibold text-sidebar-primary px-2" // Added padding for consistency
             >
               {/* Placeholder Icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"> {/* Reduced size */}
                 <path d="M12 .75a8.25 8.25 0 0 0-5.162 14.564.75.75 0 0 1-.318.47l-3.75 2.25a.75.75 0 0 0 0 1.332l3.75 2.25a.75.75 0 0 1 .318.47A8.25 8.25 0 0 0 12 23.25a8.25 8.25 0 0 0 8.25-8.25v-6a8.25 8.25 0 0 0-8.25-8.25Zm-3 9a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Zm0 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" />
               </svg>
               {/* Removed text-based title */}
-              {/* <span className="font-bold">NetHub</span> */}
             </Link>
           </SidebarHeader>
           <SidebarContent>
@@ -137,7 +142,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/')} tooltip={t('sidebar.dashboard')}>
                   <Link href="/" className="flex items-center gap-2">
-                    <LayoutDashboard />
+                    <LayoutDashboard className={iconSize} />
                     <span>{t('sidebar.dashboard')}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -147,12 +152,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/subscribers/list')} tooltip={t('sidebar.subscribers')}>
                   <Link href="/subscribers/list" className="flex items-center gap-2">
-                    <Users />
+                    <Users className={iconSize} />
                     <span className="truncate">{t('sidebar.subscribers')}</span>
-                    {/* Removed ChevronDown */}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              {/* Network Menu - Moved to Settings */}
+
 
               {/* Maps Menu */}
               <SidebarMenuItem>
@@ -161,7 +168,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <TooltipTrigger asChild>
                       <SidebarMenuSubTrigger tooltip={t('sidebar.maps')}>
                         <div className="flex items-center gap-2 cursor-pointer">
-                          <MapPin />
+                          <MapPin className={iconSize} />
                           <span className="truncate">{t('sidebar.maps')}</span>
                           <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                         </div>
@@ -172,8 +179,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/maps/map')} size="sm" tooltip={t('sidebar.maps_map')}>
-                        <Link href="/maps/map" className="flex items-center gap-2"> {/* Updated href */}
-                          <Globe className="h-4 w-4 text-muted-foreground" />
+                        <Link href="/maps/map" className="flex items-center gap-2">
+                          <Globe className={subIconSize + " text-muted-foreground"} />
                           <span>{t('sidebar.maps_map')}</span>
                         </Link>
                       </SidebarMenuButton>
@@ -188,7 +195,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                               tooltip={t('sidebar.maps_elements')}
                             >
                               <div className="flex items-center gap-2 cursor-pointer w-full">
-                                <GitFork className="h-4 w-4 text-muted-foreground" />
+                                <GitFork className={subIconSize + " text-muted-foreground"} />
                                 <span className="truncate">{t('sidebar.maps_elements')}</span>
                                 <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                               </div>
@@ -200,7 +207,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/maps/elements/polls')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Power className="h-4 w-4 text-muted-foreground" />
+                                <Power className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_polls')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -208,7 +215,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/maps/elements/fdhs')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Box className="h-4 w-4 text-muted-foreground" />
+                                <Box className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_fdhs')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -216,7 +223,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/maps/elements/foscs')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Warehouse className="h-4 w-4 text-muted-foreground" />
+                                <Warehouse className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_foscs')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -224,7 +231,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/maps/elements/peds')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Box className="h-4 w-4 text-muted-foreground" />
+                                <Box className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_peds')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -232,7 +239,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/maps/elements/accessories')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Puzzle className="h-4 w-4 text-muted-foreground" />
+                                <Puzzle className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_accessories')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -240,7 +247,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/maps/elements/towers')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <TowerControl className="h-4 w-4 text-muted-foreground" />
+                                <TowerControl className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_towers')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -248,7 +255,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/maps/elements/cables')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Cable className="h-4 w-4 text-muted-foreground" />
+                                <Cable className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_cables')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -267,7 +274,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <TooltipTrigger asChild>
                       <SidebarMenuSubTrigger tooltip={t('sidebar.finances')}>
                         <div className="flex items-center gap-2 cursor-pointer">
-                          <DollarSign />
+                          <DollarSign className={iconSize}/>
                           <span className="truncate">{t('sidebar.finances')}</span>
                           <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                         </div>
@@ -279,7 +286,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/finances/cash-book')} size="sm" tooltip={t('sidebar.finances_cash_book')}>
                         <Link href="/finances/cash-book" className="flex items-center gap-2">
-                          <BookOpen className="h-4 w-4 text-muted-foreground" />
+                          <BookOpen className={subIconSize + " text-muted-foreground"} />
                           <span>{t('sidebar.finances_cash_book')}</span>
                         </Link>
                       </SidebarMenuButton>
@@ -287,7 +294,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/finances/entry-categories')} size="sm" tooltip={t('sidebar.finances_entry_categories')}>
                         <Link href="/finances/entry-categories" className="flex items-center gap-2">
-                          <ListFilter className="h-4 w-4 text-muted-foreground" />
+                          <ListFilter className={subIconSize + " text-muted-foreground"} />
                           <span>{t('sidebar.finances_entry_categories')}</span>
                         </Link>
                       </SidebarMenuButton>
@@ -301,7 +308,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/reports')} tooltip={t('sidebar.reports')}>
                   <Link href="#" className="flex items-center gap-2">
-                    <BarChart3 />
+                    <BarChart3 className={iconSize}/>
                     <span>{t('sidebar.reports')}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -314,7 +321,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <TooltipTrigger asChild>
                       <SidebarMenuSubTrigger tooltip={t('sidebar.settings')}>
                         <div className="flex items-center gap-2 cursor-pointer">
-                          <Settings />
+                          <Settings className={iconSize} />
                           <span className="truncate">{t('sidebar.settings')}</span>
                           <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                         </div>
@@ -326,7 +333,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/settings/global')} size="sm" tooltip={t('sidebar.settings_global')}>
                         <Link href="/settings/global" className="flex items-center gap-2">
-                          <Cog className="h-4 w-4 text-muted-foreground" />
+                          <Cog className={subIconSize + " text-muted-foreground"} />
                           <span>{t('sidebar.settings_global')}</span>
                         </Link>
                       </SidebarMenuButton>
@@ -342,7 +349,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                               tooltip={t('sidebar.settings_business')}
                             >
                               <div className="flex items-center gap-2 cursor-pointer w-full">
-                                <Briefcase className="h-4 w-4 text-muted-foreground" />
+                                <Briefcase className={subIconSize + " text-muted-foreground"} />
                                 <span className="truncate">{t('sidebar.settings_business')}</span>
                                 <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                               </div>
@@ -354,7 +361,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/business/pops')} size="sm" tooltip={t('sidebar.settings_business_pops')}>
                               <Link href="/settings/business/pops" className="flex items-center gap-2">
-                                <Building className="h-4 w-4 text-muted-foreground" />
+                                <Building className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.settings_business_pops')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -374,7 +381,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                               tooltip={t('sidebar.settings_plans', 'Plans')}
                             >
                               <div className="flex items-center gap-2 cursor-pointer w-full">
-                                <ListChecks className="h-4 w-4 text-muted-foreground" />
+                                <ListChecks className={subIconSize + " text-muted-foreground"} />
                                 <span className="truncate">{t('sidebar.settings_plans', 'Plans')}</span>
                                 <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                               </div>
@@ -386,7 +393,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/plans/internet')} size="sm" tooltip={t('sidebar.settings_plans_internet', 'Internet Plans')}>
                               <Link href="/settings/plans/internet" className="flex items-center gap-2">
-                                <Wifi className="h-4 w-4 text-muted-foreground" />
+                                <Wifi className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.settings_plans_internet', 'Internet')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -394,7 +401,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/plans/tv')} size="sm" tooltip={t('sidebar.settings_plans_tv', 'TV')}>
                               <Link href="/settings/plans/tv" className="flex items-center gap-2">
-                                <Tv className="h-4 w-4 text-muted-foreground" />
+                                <Tv className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.settings_plans_tv', 'TV')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -402,7 +409,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/plans/mobile')} size="sm" tooltip={t('sidebar.settings_plans_mobile', 'Mobile')}>
                               <Link href="/settings/plans/mobile" className="flex items-center gap-2">
-                                <Smartphone className="h-4 w-4 text-muted-foreground" />
+                                <Smartphone className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.settings_plans_mobile', 'Mobile')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -410,7 +417,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/plans/landline')} size="sm" tooltip={t('sidebar.settings_plans_landline', 'Landline')}>
                               <Link href="/settings/plans/landline" className="flex items-center gap-2">
-                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                <Phone className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.settings_plans_landline', 'Landline')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -418,7 +425,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/plans/combos')} size="sm" tooltip={t('sidebar.settings_plans_combos', 'Combos')}>
                               <Link href="/settings/plans/combos" className="flex items-center gap-2">
-                                <Combine className="h-4 w-4 text-muted-foreground" />
+                                <Combine className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.settings_plans_combos', 'Combos')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -439,7 +446,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                               tooltip={t('sidebar.network')}
                             >
                               <div className="flex items-center gap-2 cursor-pointer w-full">
-                                <Network className="h-4 w-4 text-muted-foreground" />
+                                <Network className={subIconSize + " text-muted-foreground"} />
                                 <span className="truncate">{t('sidebar.network')}</span>
                                 <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                               </div>
@@ -451,7 +458,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/network/ip')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Code className="h-4 w-4 text-muted-foreground" />
+                                <Code className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.network_ip')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -459,7 +466,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/network/devices')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Router className="h-4 w-4 text-muted-foreground" />
+                                <Router className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.network_devices')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -467,7 +474,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/network/cgnat')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Share2 className="h-4 w-4 text-muted-foreground" />
+                                <Share2 className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.network_cgnat')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -475,7 +482,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/network/radius')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Server className="h-4 w-4 text-muted-foreground" />
+                                <Server className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.network_radius')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -483,7 +490,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/network/vlan')} size="sm">
                               <Link href="#" className="flex items-center gap-2">
-                                <Split className="h-4 w-4 text-muted-foreground" />
+                                <Split className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.network_vlan')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -496,7 +503,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <SidebarMenuItem>
                        <SidebarMenuButton asChild isActive={isActive('/settings/finances/configurations')} size="sm" tooltip={t('sidebar.finances_config')}>
                          <Link href="#" className="flex items-center gap-2">
-                           <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                           <SlidersHorizontal className={subIconSize + " text-muted-foreground"} />
                            <span>{t('sidebar.finances_config')}</span>
                          </Link>
                        </SidebarMenuButton>
@@ -506,7 +513,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/settings/security')} size="sm" tooltip={t('sidebar.security')}>
                         <Link href="#" className="flex items-center gap-2">
-                          <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                          <ShieldCheck className={subIconSize + " text-muted-foreground"} />
                           <span>{t('sidebar.security')}</span>
                         </Link>
                       </SidebarMenuButton>
@@ -522,7 +529,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                               tooltip={t('sidebar.settings_integrations')}
                             >
                               <div className="flex items-center gap-2 cursor-pointer w-full">
-                                <Plug className="h-4 w-4 text-muted-foreground" />
+                                <Plug className={subIconSize + " text-muted-foreground"} />
                                 <span className="truncate">{t('sidebar.settings_integrations')}</span>
                                 <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                               </div>
@@ -534,7 +541,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/integrations/whatsapp')} size="sm" tooltip={t('sidebar.settings_integrations_whatsapp')}>
                               <Link href="#" className="flex items-center gap-2">
-                                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                                <MessageSquare className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.settings_integrations_whatsapp')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -542,7 +549,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/integrations/telegram')} size="sm" tooltip={t('sidebar.settings_integrations_telegram')}>
                               <Link href="#" className="flex items-center gap-2">
-                                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                                <MessageSquare className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.settings_integrations_telegram')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -550,7 +557,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/integrations/meta')} size="sm" tooltip={t('sidebar.settings_integrations_meta')}>
                               <Link href="#" className="flex items-center gap-2">
-                                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                                <MessageSquare className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.settings_integrations_meta')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -558,7 +565,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/integrations/sms')} size="sm" tooltip={t('sidebar.settings_integrations_sms')}>
                               <Link href="#" className="flex items-center gap-2">
-                                <Text className="h-4 w-4 text-muted-foreground" />
+                                <Text className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.settings_integrations_sms')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -577,7 +584,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/pilotview')} tooltip={t('sidebar.pilotview', 'PilotView')}>
                   <Link href="#" className="flex items-center gap-2">
-                    <TbDeviceImacStar />
+                    <TbDeviceImacStar className={iconSize} />
                     <span>{t('sidebar.pilotview', 'PilotView')}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -587,7 +594,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/transitos')} tooltip={t('sidebar.transitos', 'TransitOS')}>
                   <Link href="#" className="flex items-center gap-2">
-                    <SiReactrouter />
+                    <SiReactrouter className={iconSize} />
                     <span>{t('sidebar.transitos', 'TransitOS')}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -597,7 +604,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/zones')} tooltip={t('sidebar.zones', 'Zones')}>
                   <Link href="#" className="flex items-center gap-2">
-                    <SiNextdns /> {/* Using Dna icon for DNS */}
+                    <SiNextdns className={iconSize} /> {/* Using Dna icon for DNS */}
                     <span>{t('sidebar.zones', 'Zones')}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -656,4 +663,3 @@ export default function RootLayout({
     </html>
   );
 }
-

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Save, Globe } from 'lucide-react'; // Added Globe icon
+import { Save, Globe } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -25,77 +25,61 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; // Import Select components
-import { useLocale, type Locale } from '@/contexts/LocaleContext'; // Import useLocale and Locale type
+} from "@/components/ui/select";
+import { useLocale, type Locale } from '@/contexts/LocaleContext';
 
-// Example schema for global settings
 const globalSettingsSchema = z.object({
   companyName: z.string().min(1, 'Company name is required'),
   companyLogoUrl: z.string().url('Invalid URL format').optional().or(z.literal('')),
   defaultCurrency: z.string().length(3, 'Currency code must be 3 letters (e.g., USD)'),
   timezone: z.string().min(1, 'Timezone is required'),
-  language: z.enum(['en', 'fr', 'pt'], { // Add language field with enum
+  language: z.enum(['en', 'fr', 'pt'], {
     required_error: "Please select a default language.",
   }).default('en'),
 });
 
 type GlobalSettingsFormData = z.infer<typeof globalSettingsSchema>;
 
-// Placeholder function to load settings (replace with actual API call)
 const loadGlobalSettings = async (): Promise<GlobalSettingsFormData> => {
   console.log("Simulating loading global settings...");
-  await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-  // Return placeholder data - in a real app, fetch from backend
   return {
     companyName: 'NetHub ISP',
     companyLogoUrl: '',
     defaultCurrency: 'USD',
     timezone: 'America/New_York',
-    language: 'en', // Default language
+    language: 'en',
   };
 };
 
-// Placeholder function to save settings (replace with actual API call)
 const saveGlobalSettings = async (data: GlobalSettingsFormData): Promise<void> => {
   console.log("Simulating saving global settings:", data);
-  await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-  // In a real app, send data to the backend API
 };
 
 
 export default function GlobalSettingsPage() {
   const { toast } = useToast();
-  const { t, setLocale, locale } = useLocale(); // Get translation function and locale state
+  const { t, setLocale, locale } = useLocale();
+  const iconSize = "h-3 w-3"; // Reduced icon size
 
   const form = useForm<GlobalSettingsFormData>({
     resolver: zodResolver(globalSettingsSchema),
-    defaultValues: async () => {
-      // Load existing settings when the form mounts
-      try {
-        const settings = await loadGlobalSettings();
-        return settings;
-      } catch (error) {
-        toast({
-          title: t('global_settings.load_error_title'),
-          description: t('global_settings.load_error_description'),
-          variant: 'destructive',
-        });
-        // Return defaults if loading fails
-        return {
-          companyName: '',
-          companyLogoUrl: '',
-          defaultCurrency: 'USD',
-          timezone: '',
-          language: 'en',
-        };
-      }
-    },
   });
 
-   // Watch language changes in the form to update context immediately
+  React.useEffect(() => {
+    loadGlobalSettings().then(settings => {
+      form.reset(settings);
+    }).catch(error => {
+      toast({
+        title: t('global_settings.load_error_title'),
+        description: t('global_settings.load_error_description'),
+        variant: 'destructive',
+      });
+    });
+  }, [form, t, toast]);
+
   const watchedLanguage = form.watch('language');
   React.useEffect(() => {
-    if (watchedLanguage) {
+    if (watchedLanguage && typeof window !== 'undefined') {
       setLocale(watchedLanguage as Locale);
     }
   }, [watchedLanguage, setLocale]);
@@ -103,7 +87,9 @@ export default function GlobalSettingsPage() {
   const onSubmit = async (data: GlobalSettingsFormData) => {
     try {
       await saveGlobalSettings(data);
-      setLocale(data.language as Locale); // Update locale context on save
+      if (typeof window !== 'undefined') {
+        setLocale(data.language as Locale);
+      }
       toast({
         title: t('global_settings.save_success_title'),
         description: t('global_settings.save_success_description'),
@@ -119,16 +105,15 @@ export default function GlobalSettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">{t('global_settings.title')}</h1>
+      <h1 className="text-base font-semibold">{t('global_settings.title')}</h1> {/* Reduced heading size */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('global_settings.card_title')}</CardTitle>
-          <CardDescription>{t('global_settings.card_description')}</CardDescription>
+          <CardTitle className="text-sm">{t('global_settings.card_title')}</CardTitle> {/* Reduced title size */}
+          <CardDescription className="text-xs">{t('global_settings.card_description')}</CardDescription> 
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Company Name */}
               <FormField
                 control={form.control}
                 name="companyName"
@@ -143,7 +128,6 @@ export default function GlobalSettingsPage() {
                 )}
               />
 
-              {/* Company Logo URL */}
               <FormField
                 control={form.control}
                 name="companyLogoUrl"
@@ -158,7 +142,6 @@ export default function GlobalSettingsPage() {
                 )}
               />
 
-              {/* Default Currency */}
               <FormField
                 control={form.control}
                 name="defaultCurrency"
@@ -173,7 +156,6 @@ export default function GlobalSettingsPage() {
                 )}
               />
 
-              {/* Timezone */}
               <FormField
                 control={form.control}
                 name="timezone"
@@ -181,7 +163,6 @@ export default function GlobalSettingsPage() {
                   <FormItem>
                     <FormLabel>{t('global_settings.timezone_label')}</FormLabel>
                     <FormControl>
-                      {/* In a real app, this might be a Select dropdown populated with timezones */}
                       <Input placeholder={t('global_settings.timezone_placeholder')} {...field} />
                     </FormControl>
                     <FormMessage />
@@ -189,14 +170,13 @@ export default function GlobalSettingsPage() {
                 )}
               />
 
-               {/* Language Selection */}
                <FormField
                  control={form.control}
                  name="language"
                  render={({ field }) => (
                    <FormItem>
                      <FormLabel>{t('global_settings.language_label')}</FormLabel>
-                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                     <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value || 'en'}>
                        <FormControl>
                          <SelectTrigger>
                            <SelectValue placeholder={t('global_settings.language_placeholder')} />
@@ -215,7 +195,7 @@ export default function GlobalSettingsPage() {
             </CardContent>
             <CardFooter className="border-t px-6 py-4">
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? t('global_settings.saving_button') : <><Save className="mr-2 h-4 w-4" /> {t('global_settings.save_button')}</>}
+                {form.formState.isSubmitting ? t('global_settings.saving_button') : <><Save className={`mr-2 ${iconSize}`} /> {t('global_settings.save_button')}</>}
               </Button>
             </CardFooter>
           </form>

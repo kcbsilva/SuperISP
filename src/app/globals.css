@@ -109,7 +109,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground text-sm; /* Applied text-sm for global font size reduction */
+    @apply bg-background text-foreground text-xs; /* Applied text-xs for global font size reduction */
     font-family: Arial, Helvetica, sans-serif; 
   }
 }

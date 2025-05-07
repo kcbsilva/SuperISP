@@ -60,7 +60,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { format, parseISO } from 'date-fns';
-import { enUS, fr, ptBR } from 'date-fns/locale'; // Import locales statically
+import { enUS, fr, ptBR } from 'date-fns/locale';
 import { cn } from "@/lib/utils";
 
 
@@ -68,29 +68,26 @@ import { cn } from "@/lib/utils";
 const entrySchema = z.object({
   date: z.date({ required_error: "Date is required." }),
   description: z.string().min(1, "Description is required."),
-  category: z.string().min(1, "Category is required."), // Could be a select from predefined categories
+  category: z.string().min(1, "Category is required."),
   type: z.enum(['Income', 'Expense'], { required_error: "Entry type is required." }),
-  amount: z.coerce.number().positive("Amount must be positive."), // Coerce to number
+  amount: z.coerce.number().positive("Amount must be positive."),
   reference: z.string().optional(),
 });
 
 type EntryFormData = z.infer<typeof entrySchema>;
 
-// Placeholder type for a cash book entry
 interface CashBookEntry extends EntryFormData {
   id: string;
 }
 
-// Placeholder data - replace with actual data fetching
 const placeholderEntries: CashBookEntry[] = [
   { id: 'entry-1', date: parseISO('2024-07-25'), description: 'Payment from Client X', category: 'Subscription Revenue', type: 'Income', amount: 150.00, reference: 'INV-001' },
   { id: 'entry-2', date: parseISO('2024-07-24'), description: 'Office Supplies', category: 'Operational Costs', type: 'Expense', amount: 45.50 },
   { id: 'entry-3', date: parseISO('2024-07-23'), description: 'Internet Bill', category: 'Utilities', type: 'Expense', amount: 75.00 },
   { id: 'entry-4', date: parseISO('2024-07-22'), description: 'New Equipment Purchase', category: 'Capital Expenditure', type: 'Expense', amount: 1200.00, reference: 'PO-005' },
-  { id: 'entry-5', date: parseISO('2024-07-21'), description: 'Consulting Fee', category: 'Service Revenue', type: 'Income', amount: 500.00 },
+  { id: 'entry-5', date: parseISO('2024-07-21'), description: 'Consulting Fee', category: 'Service Revenue', type: 'Income', amount: 500.00 }, // Added type for consistency
 ];
 
-// Map app locales to date-fns locales
 const dateLocales: Record<AppLocale, typeof enUS> = {
     en: enUS,
     fr: fr,
@@ -120,14 +117,12 @@ export default function CashBookPage() {
 
   const handleAddEntrySubmit = (data: EntryFormData) => {
     console.log("New Entry Data:", data);
-    // TODO: Implement actual API call to add entry
     toast({
       title: t('cash_book.add_entry_success_title'),
       description: t('cash_book.add_entry_success_description', '{type} entry "{description}" added.').replace('{type}', data.type).replace('{description}', data.description),
     });
     form.reset();
     setIsAddEntryDialogOpen(false);
-    // refetch entries after adding
   };
 
   const filteredAndSortedEntries = React.useMemo(() => {
@@ -162,7 +157,6 @@ export default function CashBookPage() {
     }
   };
 
-  // Calculate totals
   const totalIncome = React.useMemo(() =>
     filteredAndSortedEntries
       .filter(e => e.type === 'Income')
@@ -179,28 +173,30 @@ export default function CashBookPage() {
 
   const currencyLocale = locale === 'pt' ? 'pt-BR' : locale === 'fr' ? 'fr-FR' : 'en-US';
   const formatCurrency = (amount: number) => {
-    return amount.toLocaleString(currencyLocale, { style: 'currency', currency: 'USD' }); // Assuming USD, make dynamic if needed
+    return amount.toLocaleString(currencyLocale, { style: 'currency', currency: 'USD' });
   };
 
+  const iconSize = "h-3 w-3"; // Reduced icon size
+  const smallIconSize = "h-2.5 w-2.5"; // For smaller icons like sort arrows, reduced
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">{t('cash_book.title', 'Cash Book')}</h1>
+        <h1 className="text-base font-semibold">{t('cash_book.title', 'Cash Book')}</h1> {/* Reduced heading size */}
         <div className="flex items-center gap-2">
             <Button variant="default" className="bg-primary hover:bg-primary/90">
-                <RefreshCw className="mr-2 h-4 w-4" /> {t('cash_book.refresh_button', 'Refresh')}
+                <RefreshCw className={`mr-2 ${iconSize}`} /> {t('cash_book.refresh_button', 'Refresh')}
             </Button>
              <Dialog open={isAddEntryDialogOpen} onOpenChange={setIsAddEntryDialogOpen}>
                 <DialogTrigger asChild>
                     <Button className="bg-green-600 hover:bg-green-700 text-white">
-                        <PlusCircle className="mr-2 h-4 w-4" /> {t('cash_book.add_entry_button', 'Add Entry')}
+                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('cash_book.add_entry_button', 'Add Entry')}
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>{t('cash_book.add_entry_dialog_title', 'Add New Cash Book Entry')}</DialogTitle>
-                        <DialogDescription>{t('cash_book.add_entry_dialog_description', 'Fill in the details for the new entry.')}</DialogDescription>
+                        <DialogTitle className="text-sm">{t('cash_book.add_entry_dialog_title', 'Add New Cash Book Entry')}</DialogTitle> {/* Reduced title size */}
+                        <DialogDescription className="text-xs">{t('cash_book.add_entry_dialog_description', 'Fill in the details for the new entry.')}</DialogDescription> 
                     </DialogHeader>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleAddEntrySubmit)} className="grid gap-4 py-4">
@@ -216,12 +212,12 @@ export default function CashBookPage() {
                                                     <Button
                                                         variant={"outline"}
                                                         className={cn(
-                                                            "pl-3 text-left font-normal",
+                                                            "pl-3 text-left font-normal text-xs", 
                                                             !field.value && "text-muted-foreground"
                                                         )}
                                                     >
                                                         {field.value ? format(field.value, "PPP", { locale: dateLocales[locale] || enUS }) : <span>{t('cash_book.form_date_placeholder', 'Pick a date')}</span>}
-                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                        <CalendarIcon className={`ml-auto ${smallIconSize} opacity-50`} />
                                                     </Button>
                                                 </FormControl>
                                             </PopoverTrigger>
@@ -258,7 +254,6 @@ export default function CashBookPage() {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{t('cash_book.form_category_label', 'Category')}</FormLabel>
-                                         {/* TODO: Replace with Select populated from finances/entry-categories page */}
                                         <FormControl>
                                             <Input placeholder={t('cash_book.form_category_placeholder', 'e.g., Subscription Revenue')} {...field} />
                                         </FormControl>
@@ -318,7 +313,7 @@ export default function CashBookPage() {
                                     <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>{t('cash_book.form_cancel_button', 'Cancel')}</Button>
                                 </DialogClose>
                                 <Button type="submit" disabled={form.formState.isSubmitting}>
-                                    {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    {form.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
                                     {form.formState.isSubmitting ? t('cash_book.form_saving_button', 'Saving...') : t('cash_book.form_save_button', 'Save Entry')}
                                 </Button>
                             </DialogFooter>
@@ -329,10 +324,9 @@ export default function CashBookPage() {
         </div>
       </div>
 
-       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <DollarSign className={`absolute left-2.5 top-2.5 ${smallIconSize} text-muted-foreground`} />
           <Input
             type="search"
             placeholder={t('cash_book.search_placeholder', 'Search by description, category, reference...')}
@@ -355,8 +349,8 @@ export default function CashBookPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('cash_book.table_title', 'Cash Book Entries')}</CardTitle>
-          <CardDescription>{t('cash_book.table_description', 'View and manage your income and expense entries.')}</CardDescription>
+          <CardTitle className="text-sm">{t('cash_book.table_title', 'Cash Book Entries')}</CardTitle> {/* Reduced title size */}
+          <CardDescription className="text-xs">{t('cash_book.table_description', 'View and manage your income and expense entries.')}</CardDescription> 
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -369,7 +363,7 @@ export default function CashBookPage() {
                   >
                     <div className="flex items-center gap-1">
                         {t('cash_book.table_header_date', 'Date')}
-                        {sortColumn === 'date' && <ArrowUpDown className="h-3 w-3" />}
+                        {sortColumn === 'date' && <ArrowUpDown className={smallIconSize} />}
                     </div>
                   </TableHead>
                   <TableHead>{t('cash_book.table_header_description', 'Description')}</TableHead>
@@ -381,7 +375,7 @@ export default function CashBookPage() {
                   >
                      <div className="flex items-center justify-end gap-1">
                         {t('cash_book.table_header_amount', 'Amount')}
-                        {sortColumn === 'amount' && <ArrowUpDown className="h-3 w-3" />}
+                        {sortColumn === 'amount' && <ArrowUpDown className={smallIconSize} />}
                     </div>
                   </TableHead>
                   <TableHead>{t('cash_book.table_header_reference', 'Reference')}</TableHead>
@@ -408,11 +402,11 @@ export default function CashBookPage() {
                       <TableCell className="text-muted-foreground">{entry.reference || '-'}</TableCell>
                        <TableCell className="text-right">
                             <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <Edit className="h-4 w-4" />
+                                <Edit className={iconSize} />
                                 <span className="sr-only">{t('cash_book.action_edit', 'Edit')}</span>
                             </Button>
                             <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className={iconSize} />
                                 <span className="sr-only">{t('cash_book.action_delete', 'Delete')}</span>
                             </Button>
                         </TableCell>
@@ -430,7 +424,7 @@ export default function CashBookPage() {
           </div>
         </CardContent>
         <CardFooter className="border-t pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="grid grid-cols-3 gap-x-4 gap-y-1 text-sm w-full sm:w-auto">
+            <div className="grid grid-cols-3 gap-x-4 gap-y-1 text-xs w-full sm:w-auto"> 
                 <div className="font-medium text-green-600">{t('cash_book.total_income_label', 'Total Income')}:</div>
                 <div className="col-span-2 text-right sm:text-left text-green-600 font-semibold">{formatCurrency(totalIncome)}</div>
 
@@ -440,7 +434,6 @@ export default function CashBookPage() {
                 <div className="font-medium">{t('cash_book.net_balance_label', 'Net Balance')}:</div>
                 <div className={`col-span-2 text-right sm:text-left font-bold ${netBalance >= 0 ? 'text-green-700' : 'text-red-700'}`}>{formatCurrency(netBalance)}</div>
             </div>
-             {/* Optional: Add Pagination controls here if needed */}
         </CardFooter>
       </Card>
     </div>
