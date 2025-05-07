@@ -69,6 +69,7 @@ const categorySchema = z.object({
   name: z.string().min(1, "Category name is required."), // This will be displayed under "Description" header
   type: z.enum(['Income', 'Expense'], { required_error: "Category type is required." }),
   description: z.string().optional(), // Optional description, not shown in table but searchable
+  parentCategoryId: z.string().optional(), //ID of parent category
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
@@ -103,6 +104,7 @@ export default function EntryCategoriesPage() {
       name: '',
       type: undefined,
       description: '',
+      parentCategoryId: '',
     },
   });
 
@@ -112,10 +114,11 @@ export default function EntryCategoriesPage() {
         name: editingCategory.name,
         type: editingCategory.type,
         description: editingCategory.description || '',
+        parentCategoryId: editingCategory.parentCategoryId || '',
       });
       setIsAddCategoryDialogOpen(true);
     } else {
-      form.reset({ name: '', type: undefined, description: '' });
+      form.reset({ name: '', type: undefined, description: '', parentCategoryId: '' });
     }
   }, [editingCategory, form]);
 
@@ -250,6 +253,21 @@ export default function EntryCategoriesPage() {
                                         <FormLabel>{t('entry_categories.form_description_label', 'Description (Optional)')}</FormLabel>
                                         <FormControl>
                                             <Input placeholder={t('entry_categories.form_description_placeholder', 'e.g., Monthly rent payment for office space')} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            {/* TODO: Add Parent Category Selector here, perhaps a Select populated with existing categories */}
+                            <FormField
+                                control={form.control}
+                                name="parentCategoryId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('entry_categories.form_parent_category_label', 'Parent Category (Optional)')}</FormLabel>
+                                        {/* Replace with a Select component that lists existing categories */}
+                                        <FormControl>
+                                            <Input placeholder={t('entry_categories.form_parent_category_placeholder', 'Select parent category or leave blank')} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

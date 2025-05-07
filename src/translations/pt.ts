@@ -546,6 +546,8 @@ const pt = {
       form_type_expense: 'Despesa',
       form_description_label: 'Descrição (Opcional)',
       form_description_placeholder: 'ex: Pagamento mensal do aluguel do escritório',
+      form_parent_category_label: 'Categoria Pai (Opcional)',
+      form_parent_category_placeholder: 'Selecione a categoria pai ou deixe em branco',
       form_cancel_button: 'Cancelar',
       form_save_button: 'Salvar Categoria',
       form_update_button: 'Atualizar Categoria',

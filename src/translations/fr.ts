@@ -546,6 +546,8 @@ const fr = {
     form_type_expense: 'Dépense',
     form_description_label: 'Description (Facultatif)',
     form_description_placeholder: 'ex: Paiement mensuel du loyer du bureau',
+    form_parent_category_label: 'Catégorie Parente (Facultatif)',
+    form_parent_category_placeholder: 'Sélectionner la catégorie parente ou laisser vide',
     form_cancel_button: 'Annuler',
     form_save_button: 'Enregistrer la Catégorie',
     form_update_button: 'Mettre à Jour la Catégorie',

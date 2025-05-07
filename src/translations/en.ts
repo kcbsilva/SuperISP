@@ -546,6 +546,8 @@ const en = {
     form_type_expense: 'Expense',
     form_description_label: 'Description (Optional)',
     form_description_placeholder: 'e.g., Monthly rent payment for office space',
+    form_parent_category_label: 'Parent Category (Optional)',
+    form_parent_category_placeholder: 'Select parent category or leave blank',
     form_cancel_button: 'Cancel',
     form_save_button: 'Save Category',
     form_update_button: 'Update Category',
