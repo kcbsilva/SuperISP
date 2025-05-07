@@ -172,9 +172,22 @@ export default function EntryCategoriesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-4">
         <h1 className="text-2xl font-semibold">{t('entry_categories.title', 'Entry Categories')}</h1>
-        <div className="flex items-center gap-2">
+        
+        {/* Search Bar moved here */}
+        <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+            type="search"
+            placeholder={t('entry_categories.search_placeholder', 'Search categories...')}
+            className="pl-8 w-full"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            />
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
             <Button variant="default" className="bg-primary hover:bg-primary/90">
                 <RefreshCw className="mr-2 h-4 w-4" /> {t('entry_categories.refresh_button', 'Refresh')}
             </Button>
@@ -257,7 +270,8 @@ export default function EntryCategoriesPage() {
         </div>
       </div>
 
-       {/* Search Bar */}
+       {/* Search Bar - Removed from here */}
+      {/* 
       <div className="relative">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
@@ -267,7 +281,8 @@ export default function EntryCategoriesPage() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-      </div>
+      </div> 
+      */}
 
       <Card>
         {/* CardHeader removed */}
@@ -300,10 +315,31 @@ export default function EntryCategoriesPage() {
                                 <Edit className="h-4 w-4" />
                                 <span className="sr-only">{t('entry_categories.action_edit', 'Edit')}</span>
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteCategory(category)}>
-                                <Trash2 className="h-4 w-4" />
-                                <span className="sr-only">{t('entry_categories.action_delete', 'Delete')}</span>
-                            </Button>
+                             <AlertDialog>
+                               <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                                    <Trash2 className="h-4 w-4" />
+                                    <span className="sr-only">{t('entry_categories.action_delete', 'Delete')}</span>
+                                </Button>
+                               </AlertDialogTrigger>
+                               <AlertDialogContent>
+                                 <AlertDialogHeader>
+                                   <AlertDialogTitle>{t('entry_categories.delete_confirm_title', 'Are you sure?')}</AlertDialogTitle>
+                                   <AlertDialogDescription>
+                                     {t('entry_categories.delete_confirm_description', 'This action cannot be undone. This will permanently delete the category "{categoryName}".').replace('{categoryName}', category.name || '')}
+                                   </AlertDialogDescription>
+                                 </AlertDialogHeader>
+                                 <AlertDialogFooter>
+                                   <AlertDialogCancel onClick={() => { setCategoryToDelete(null); setIsConfirmDeleteDialogOpen(false); }}>{t('entry_categories.delete_confirm_cancel', 'Cancel')}</AlertDialogCancel>
+                                   <AlertDialogAction
+                                     className={buttonVariants({ variant: "destructive" })}
+                                     onClick={() => confirmDeleteCategory()} // Pass category to confirmDelete
+                                   >
+                                     {t('entry_categories.delete_confirm_delete', 'Delete')}
+                                   </AlertDialogAction>
+                                 </AlertDialogFooter>
+                               </AlertDialogContent>
+                             </AlertDialog>
                         </TableCell>
                     </TableRow>
                   ))
@@ -321,7 +357,8 @@ export default function EntryCategoriesPage() {
         {/* Optional: Add Pagination controls here if needed */}
       </Card>
 
-      {/* Controlled AlertDialog for delete confirmation */}
+      {/* Controlled AlertDialog for delete confirmation - This can be removed if individual triggers are used */}
+       {/* 
       <AlertDialog open={isConfirmDeleteDialogOpen} onOpenChange={setIsConfirmDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -341,6 +378,8 @@ export default function EntryCategoriesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      */}
     </div>
   );
 }
+
