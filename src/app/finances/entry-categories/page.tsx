@@ -5,10 +5,10 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
+  // CardDescription, // Removed
+  // CardHeader, // Removed
+  // CardTitle, // Removed
+  // CardFooter, // Removed
 } from "@/components/ui/card";
 import {
   Table,
@@ -45,7 +45,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusCircle, Edit, Trash2, Loader2, RefreshCw, Search, Settings2 } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Loader2, RefreshCw, Search } from 'lucide-react'; // Removed Settings2
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
@@ -60,22 +60,21 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  // AlertDialogTrigger, // No longer needed here for individual row delete buttons
 } from "@/components/ui/alert-dialog";
 import { buttonVariants } from '@/components/ui/button';
 
 // Validation Schema for a new category
 const categorySchema = z.object({
-  name: z.string().min(1, "Category name is required."),
+  name: z.string().min(1, "Category name is required."), // This will be displayed under "Description" header
   type: z.enum(['Income', 'Expense'], { required_error: "Category type is required." }),
-  description: z.string().optional(),
+  description: z.string().optional(), // Optional description, not shown in table but searchable
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
 
 interface EntryCategory extends CategoryFormData {
   id: string;
-  createdAt: Date;
+  createdAt: Date; // Still part of the data model, just not displayed
 }
 
 // Placeholder data - replace with actual data fetching
@@ -166,8 +165,8 @@ export default function EntryCategoriesPage() {
 
   const filteredCategories = React.useMemo(() => {
     return placeholderCategories.filter(category =>
-      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      category.name.toLowerCase().includes(searchTerm.toLowerCase()) || // Search by name (displayed as Description)
+      (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase())) // Search by optional description
     );
   }, [searchTerm]);
 
@@ -197,7 +196,7 @@ export default function EntryCategoriesPage() {
                         <form onSubmit={form.handleSubmit(handleAddOrUpdateCategorySubmit)} className="grid gap-4 py-4">
                             <FormField
                                 control={form.control}
-                                name="name"
+                                name="name" // This is the primary identifier, shown as "Description" in table
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{t('entry_categories.form_name_label', 'Category Name')}</FormLabel>
@@ -231,7 +230,7 @@ export default function EntryCategoriesPage() {
                             />
                              <FormField
                                 control={form.control}
-                                name="description"
+                                name="description" // Optional description, not in table
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{t('entry_categories.form_description_label', 'Description (Optional)')}</FormLabel>
@@ -271,19 +270,15 @@ export default function EntryCategoriesPage() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>{t('entry_categories.table_title', 'Configured Categories')}</CardTitle>
-          <CardDescription>{t('entry_categories.table_description', 'Manage categories for your cash book entries.')}</CardDescription>
-        </CardHeader>
-        <CardContent>
+        {/* CardHeader removed */}
+        <CardContent className="pt-6"> {/* Added padding-top as CardHeader was removed */}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('entry_categories.table_header_name', 'Name')}</TableHead>
-                  <TableHead>{t('entry_categories.table_header_type', 'Type')}</TableHead>
+                  <TableHead className="w-28">{t('entry_categories.table_header_category_number', 'Category No.')}</TableHead>
                   <TableHead>{t('entry_categories.table_header_description', 'Description')}</TableHead>
-                  <TableHead>{t('entry_categories.table_header_created_at', 'Created At')}</TableHead>
+                  <TableHead>{t('entry_categories.table_header_type', 'Type')}</TableHead>
                   <TableHead className="text-right w-28">{t('entry_categories.table_header_actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -291,7 +286,8 @@ export default function EntryCategoriesPage() {
                 {filteredCategories.length > 0 ? (
                   filteredCategories.map((category) => (
                     <TableRow key={category.id}>
-                      <TableCell className="font-medium">{category.name}</TableCell>
+                      <TableCell className="font-medium">{category.type === 'Income' ? '1' : '2'}</TableCell>
+                      <TableCell className="font-medium">{category.name}</TableCell> {/* Display name as Description */}
                       <TableCell>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                           category.type === 'Income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -299,14 +295,11 @@ export default function EntryCategoriesPage() {
                           {t(`entry_categories.category_type_${category.type.toLowerCase()}` as any, category.type)}
                         </span>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{category.description || '-'}</TableCell>
-                      <TableCell className="text-muted-foreground">{category.createdAt.toLocaleDateString()}</TableCell>
                        <TableCell className="text-right">
                             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditCategory(category)}>
                                 <Edit className="h-4 w-4" />
                                 <span className="sr-only">{t('entry_categories.action_edit', 'Edit')}</span>
                             </Button>
-                            {/* Removed AlertDialogTrigger from here, using controlled dialog */}
                             <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDeleteCategory(category)}>
                                 <Trash2 className="h-4 w-4" />
                                 <span className="sr-only">{t('entry_categories.action_delete', 'Delete')}</span>
@@ -316,7 +309,7 @@ export default function EntryCategoriesPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={4} className="text-center text-muted-foreground py-8"> {/* Adjusted colSpan */}
                       {searchTerm ? t('entry_categories.no_categories_found_search', 'No categories found matching your search.') : t('entry_categories.no_categories_found', 'No categories configured yet.')}
                     </TableCell>
                   </TableRow>
@@ -351,6 +344,3 @@ export default function EntryCategoriesPage() {
     </div>
   );
 }
-
-
-    

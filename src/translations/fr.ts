@@ -520,12 +520,13 @@ const fr = {
     add_category_button: 'Ajouter une Catégorie',
     refresh_button: 'Actualiser',
     search_placeholder: 'Rechercher des catégories...',
-    table_title: 'Catégories Configurées',
-    table_description: 'Gérez les catégories pour vos écritures de livre de caisse.',
-    table_header_name: 'Nom',
+    // table_title: 'Catégories Configurées', // Removed
+    // table_description: 'Gérez les catégories pour vos écritures de livre de caisse.', // Removed
+    table_header_category_number: 'N° Catégorie', // Added
+    table_header_description: 'Description', // Name is now Description
     table_header_type: 'Type',
-    table_header_description: 'Description',
-    table_header_created_at: 'Créé le',
+    // table_header_description: 'Description', // Original description column removed
+    // table_header_created_at: 'Créé le', // Removed
     table_header_actions: 'Actions',
     category_type_income: 'Revenu',
     category_type_expense: 'Dépense',
@@ -563,4 +564,3 @@ const fr = {
 };
 
 export default fr;
-

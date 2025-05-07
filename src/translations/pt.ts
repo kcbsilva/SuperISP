@@ -520,12 +520,13 @@ const pt = {
       add_category_button: 'Adicionar Categoria',
       refresh_button: 'Atualizar',
       search_placeholder: 'Buscar categorias...',
-      table_title: 'Categorias Configurada',
-      table_description: 'Gerencie as categorias para seus lançamentos do livro caixa.',
-      table_header_name: 'Nome',
+      // table_title: 'Categorias Configurada', // Removed
+      // table_description: 'Gerencie as categorias para seus lançamentos do livro caixa.', // Removed
+      table_header_category_number: 'Nº Categoria', // Added
+      table_header_description: 'Descrição', // Name is now Description
       table_header_type: 'Tipo',
-      table_header_description: 'Descrição',
-      table_header_created_at: 'Criado em',
+      // table_header_description: 'Descrição', // Original description column removed
+      // table_header_created_at: 'Criado em', // Removed
       table_header_actions: 'Ações',
       category_type_income: 'Receita',
       category_type_expense: 'Despesa',
@@ -563,4 +564,3 @@ const pt = {
 };
 
 export default pt;
-

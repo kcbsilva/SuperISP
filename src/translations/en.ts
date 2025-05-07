@@ -520,12 +520,13 @@ const en = {
     add_category_button: 'Add Category',
     refresh_button: 'Refresh',
     search_placeholder: 'Search categories...',
-    table_title: 'Configured Categories',
-    table_description: 'Manage categories for your cash book entries.',
-    table_header_name: 'Name',
+    // table_title: 'Configured Categories', // Removed
+    // table_description: 'Manage categories for your cash book entries.', // Removed
+    table_header_category_number: 'Category No.', // Added
+    table_header_description: 'Description', // Name is now Description
     table_header_type: 'Type',
-    table_header_description: 'Description',
-    table_header_created_at: 'Created At',
+    // table_header_description: 'Description', // Original description column removed from table display
+    // table_header_created_at: 'Created At', // Removed
     table_header_actions: 'Actions',
     category_type_income: 'Income',
     category_type_expense: 'Expense',
@@ -563,4 +564,3 @@ const en = {
 };
 
 export default en;
-
