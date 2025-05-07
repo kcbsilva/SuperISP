@@ -286,7 +286,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/finances/entry-categories')} size="sm" tooltip={t('sidebar.finances_entry_categories')}>
-                        <Link href="#" className="flex items-center gap-2">
+                        <Link href="/finances/entry-categories" className="flex items-center gap-2">
                           <ListFilter className="h-4 w-4 text-muted-foreground" />
                           <span>{t('sidebar.finances_entry_categories')}</span>
                         </Link>
@@ -656,3 +656,4 @@ export default function RootLayout({
     </html>
   );
 }
+
