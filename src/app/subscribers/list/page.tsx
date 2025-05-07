@@ -107,9 +107,58 @@ export default function ListSubscribersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-base font-semibold">{t('sidebar.subscribers')}</h1> {/* Reduced heading size */}
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <h1 className="text-base font-semibold">{t('sidebar.subscribers')}</h1>
+        
+        <div className="flex flex-1 flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <div className="relative flex-1">
+              <Search className={`absolute left-2.5 top-2.5 ${iconSize} text-muted-foreground`} />
+              <Input
+                type="search"
+                placeholder={t('list_subscribers.search_placeholder')}
+                className="pl-8 w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="shrink-0 w-full sm:w-auto">
+                  <Filter className={`mr-2 ${iconSize}`} /> {t('list_subscribers.filter_button')}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[200px]">
+                 <DropdownMenuLabel>{t('list_subscribers.filter_type_label')}</DropdownMenuLabel>
+                 <DropdownMenuSeparator />
+                 <DropdownMenuCheckboxItem
+                    checked={filters.type.includes('Residential')}
+                    onCheckedChange={(checked) => handleFilterChange('type', 'Residential', !!checked)}
+                 >
+                    {t('list_subscribers.filter_type_residential')}
+                 </DropdownMenuCheckboxItem>
+                 <DropdownMenuCheckboxItem
+                     checked={filters.type.includes('Commercial')}
+                     onCheckedChange={(checked) => handleFilterChange('type', 'Commercial', !!checked)}
+                 >
+                     {t('list_subscribers.filter_type_commercial')}
+                 </DropdownMenuCheckboxItem>
+
+                 <DropdownMenuLabel className="mt-2">{t('list_subscribers.filter_status_label')}</DropdownMenuLabel>
+                 <DropdownMenuSeparator />
+                 {(['Active', 'Inactive', 'Suspended', 'Planned'] as SubscriberStatus[]).map(status => (
+                     <DropdownMenuCheckboxItem
+                        key={status}
+                        checked={filters.status.includes(status)}
+                        onCheckedChange={(checked) => handleFilterChange('status', status, !!checked)}
+                     >
+                        {t(`list_subscribers.filter_status_${status.toLowerCase()}` as any, status)}
+                     </DropdownMenuCheckboxItem>
+                 ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
             <Button
                 variant="default"
                 onClick={handleRefresh}
@@ -127,57 +176,9 @@ export default function ListSubscribersPage() {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className={`absolute left-2.5 top-2.5 ${iconSize} text-muted-foreground`} />
-          <Input
-            type="search"
-            placeholder={t('list_subscribers.search_placeholder')}
-            className="pl-8 w-full"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="shrink-0">
-              <Filter className={`mr-2 ${iconSize}`} /> {t('list_subscribers.filter_button')}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[200px]">
-             <DropdownMenuLabel>{t('list_subscribers.filter_type_label')}</DropdownMenuLabel>
-             <DropdownMenuSeparator />
-             <DropdownMenuCheckboxItem
-                checked={filters.type.includes('Residential')}
-                onCheckedChange={(checked) => handleFilterChange('type', 'Residential', !!checked)}
-             >
-                {t('list_subscribers.filter_type_residential')}
-             </DropdownMenuCheckboxItem>
-             <DropdownMenuCheckboxItem
-                 checked={filters.type.includes('Commercial')}
-                 onCheckedChange={(checked) => handleFilterChange('type', 'Commercial', !!checked)}
-             >
-                 {t('list_subscribers.filter_type_commercial')}
-             </DropdownMenuCheckboxItem>
-
-             <DropdownMenuLabel className="mt-2">{t('list_subscribers.filter_status_label')}</DropdownMenuLabel>
-             <DropdownMenuSeparator />
-             {(['Active', 'Inactive', 'Suspended', 'Planned'] as SubscriberStatus[]).map(status => (
-                 <DropdownMenuCheckboxItem
-                    key={status}
-                    checked={filters.status.includes(status)}
-                    onCheckedChange={(checked) => handleFilterChange('status', status, !!checked)}
-                 >
-                    {t(`list_subscribers.filter_status_${status.toLowerCase()}` as any, status)}
-                 </DropdownMenuCheckboxItem>
-             ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
 
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="pt-0"> {/* Removed pt-6 */}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -243,3 +244,4 @@ export default function ListSubscribersPage() {
     </div>
   );
 }
+
