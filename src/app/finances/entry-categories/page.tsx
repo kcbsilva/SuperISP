@@ -278,6 +278,21 @@ export default function EntryCategoriesPage() {
     });
   }, [editingCategory, form.watch('type'), getCategoryNumber, placeholderCategories]);
 
+  const getIndentationLevel = React.useCallback((category: EntryCategory, allCategories: EntryCategory[]): number => {
+    if (category.id === STATIC_INCOME_ID || category.id === STATIC_EXPENSE_ID) return 0;
+    let level = 0;
+    let current: EntryCategory | undefined = category;
+    const visited = new Set<string>(); // To detect cycles
+
+    while(current && current.parentCategoryId && current.parentCategoryId !== STATIC_INCOME_ID && current.parentCategoryId !== STATIC_EXPENSE_ID && !visited.has(current.id)) {
+      visited.add(current.id);
+      level++;
+      current = allCategories.find(c => c.id === current!.parentCategoryId);
+      if(current?.id === STATIC_INCOME_ID || current?.id === STATIC_EXPENSE_ID) break; // Stop if parent is static root
+    }
+    return level;
+  }, []);
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -436,10 +451,16 @@ export default function EntryCategoriesPage() {
                 {filteredAndSortedCategories.length > 0 ? (
                   filteredAndSortedCategories.map((category) => {
                     const isStatic = category.id === STATIC_INCOME_ID || category.id === STATIC_EXPENSE_ID;
+                    const indentationLevel = getIndentationLevel(category, placeholderCategories);
                     return (
                     <TableRow key={category.id}>
                       <TableCell className="font-medium py-2">{getCategoryNumber(category, placeholderCategories)}</TableCell>
-                      <TableCell className="font-medium py-2">{category.name}</TableCell>
+                      <TableCell 
+                        className="font-medium py-2"
+                        style={{ paddingLeft: `${indentationLevel * 1.5 + 1}rem` }} // 1.5rem per level + base padding
+                      >
+                          {category.name}
+                      </TableCell>
                       <TableCell className="py-2">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                           category.type === 'Income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -498,4 +519,3 @@ export default function EntryCategoriesPage() {
     </div>
   );
 }
-
