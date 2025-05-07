@@ -52,7 +52,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger, // Added AlertDialogTrigger
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { PlusCircle, Edit, Trash2, Loader2, RefreshCw } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -61,17 +61,21 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/mysql/pops'; // Assuming PoP service exists
+import { getPops } from '@/services/mysql/pops';
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 
 // VLAN Schema
 const vlanSchema = z.object({
   vlanId: z.coerce.number().int().min(1, "VLAN ID must be between 1 and 4094.").max(4094, "VLAN ID must be between 1 and 4094."),
-  name: z.string().min(1, "VLAN name is required."),
+  name: z.string().min(1, "VLAN name is required."), // Kept in schema for data integrity, removed from table
   description: z.string().optional(),
-  popId: z.string().min(1, "PoP selection is required."),
+  popId: z.string().min(1, "PoP selection is required."), // Kept in schema for data integrity, removed from table
   subnet: z.string().regex(/^(\d{1,3}\.){3}\d{1,3}\/\d{1,2}$/, "Invalid subnet format (e.g., 192.168.1.0/24)."),
+  isTagged: z.boolean().default(true),
+  status: z.enum(['Active', 'Inactive']).default('Active'),
 });
 
 type VlanFormData = z.infer<typeof vlanSchema>;
@@ -82,9 +86,9 @@ interface Vlan extends VlanFormData {
 }
 
 const placeholderVlans: Vlan[] = [
-  { id: 'vlan-1', vlanId: 10, name: 'Data VLAN - HQ', description: 'Main data network for headquarters', popId: 'sim-1', subnet: '192.168.10.0/24', createdAt: new Date() },
-  { id: 'vlan-2', vlanId: 20, name: 'VoIP VLAN - Branch A', popId: 'sim-2', subnet: '10.10.20.0/25', createdAt: new Date(Date.now() - 86400000) },
-  { id: 'vlan-3', vlanId: 30, name: 'Guest WiFi', description: 'Isolated network for guests', popId: 'sim-1', subnet: '172.16.30.0/24', createdAt: new Date(Date.now() - 172800000) },
+  { id: 'vlan-1', vlanId: 10, name: 'Data VLAN - HQ', description: 'Main data network for headquarters', popId: 'sim-1', subnet: '192.168.10.0/24', createdAt: new Date(), isTagged: true, status: 'Active' },
+  { id: 'vlan-2', vlanId: 20, name: 'VoIP VLAN - Branch A', popId: 'sim-2', subnet: '10.10.20.0/25', createdAt: new Date(Date.now() - 86400000), isTagged: false, status: 'Active' },
+  { id: 'vlan-3', vlanId: 30, name: 'Guest WiFi', description: 'Isolated network for guests', popId: 'sim-1', subnet: '172.16.30.0/24', createdAt: new Date(Date.now() - 172800000), isTagged: true, status: 'Inactive' },
 ];
 
 const queryClient = new QueryClient();
@@ -101,7 +105,7 @@ function VlanManagementPage() {
   const { t } = useLocale();
   const { toast } = useToast();
   const [isAddVlanDialogOpen, setIsAddVlanDialogOpen] = React.useState(false);
-  const [vlans, setVlans] = React.useState<Vlan[]>(placeholderVlans); // Using state for dynamic updates
+  const [vlans, setVlans] = React.useState<Vlan[]>(placeholderVlans);
   const [vlanToDelete, setVlanToDelete] = React.useState<Vlan | null>(null);
   const iconSize = "h-3 w-3";
 
@@ -118,6 +122,8 @@ function VlanManagementPage() {
       description: '',
       popId: '',
       subnet: '',
+      isTagged: true,
+      status: 'Active',
     },
   });
 
@@ -125,10 +131,10 @@ function VlanManagementPage() {
     console.log("New VLAN Data:", data);
     const newVlan: Vlan = {
         ...data,
-        id: `vlan-${Date.now()}`, // Simulate ID generation
+        id: `vlan-${Date.now()}`,
         createdAt: new Date(),
     };
-    setVlans(prev => [newVlan, ...prev]); // Add to local state
+    setVlans(prev => [newVlan, ...prev]);
     toast({
       title: t('vlan_page.add_success_title', 'VLAN Added'),
       description: t('vlan_page.add_success_description', 'VLAN {name} ({vlanId}) has been added.').replace('{name}', data.name).replace('{vlanId}', data.vlanId.toString()),
@@ -138,7 +144,6 @@ function VlanManagementPage() {
   };
 
   const handleEditVlan = (vlan: Vlan) => {
-    // Placeholder for edit functionality
     toast({
       title: t('vlan_page.edit_not_implemented_title', 'Edit Not Implemented'),
       description: t('vlan_page.edit_not_implemented_desc', 'Editing VLAN {name} is not yet available.').replace('{name}', vlan.name),
@@ -147,7 +152,7 @@ function VlanManagementPage() {
 
   const confirmDeleteVlan = () => {
     if (vlanToDelete) {
-      setVlans(prev => prev.filter(v => v.id !== vlanToDelete.id)); // Remove from local state
+      setVlans(prev => prev.filter(v => v.id !== vlanToDelete.id));
       toast({
         title: t('vlan_page.delete_success_title', 'VLAN Deleted'),
         description: t('vlan_page.delete_success_description', 'VLAN {name} ({vlanId}) has been deleted.').replace('{name}', vlanToDelete.name).replace('{vlanId}', vlanToDelete.vlanId.toString()),
@@ -191,7 +196,7 @@ function VlanManagementPage() {
                                     </FormItem>
                                 )}
                             />
-                            <FormField
+                             <FormField
                                 control={form.control}
                                 name="name"
                                 render={({ field }) => (
@@ -257,6 +262,48 @@ function VlanManagementPage() {
                                     </FormItem>
                                 )}
                             />
+                             <FormField
+                                control={form.control}
+                                name="isTagged"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                        <div className="space-y-0.5">
+                                            <FormLabel>{t('vlan_page.form_is_tagged_label', 'Tagged VLAN')}</FormLabel>
+                                            <DialogDescription className="text-xs">
+                                                {t('vlan_page.form_is_tagged_description', 'Specifies if the VLAN uses 802.1Q tagging.')}
+                                            </DialogDescription>
+                                        </div>
+                                        <FormControl>
+                                            <Switch
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="status"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('vlan_page.form_status_label', 'Status')}</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder={t('vlan_page.form_status_placeholder', 'Select status')} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="Active">{t('vlan_page.form_status_active', 'Active')}</SelectItem>
+                                                <SelectItem value="Inactive">{t('vlan_page.form_status_inactive', 'Inactive')}</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <DialogFooter>
                                 <DialogClose asChild>
                                     <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>{t('vlan_page.form_cancel_button', 'Cancel')}</Button>
@@ -290,9 +337,9 @@ function VlanManagementPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-20 text-xs">{t('vlan_page.table_header_vlan_id', 'VLAN ID')}</TableHead>
-                    <TableHead className="text-xs">{t('vlan_page.table_header_name', 'Name')}</TableHead>
-                    <TableHead className="text-xs">{t('vlan_page.table_header_pop', 'PoP')}</TableHead>
                     <TableHead className="text-xs">{t('vlan_page.table_header_description', 'Description')}</TableHead>
+                    <TableHead className="text-xs">{t('vlan_page.table_header_tagged', 'Tagged/Untagged')}</TableHead>
+                    <TableHead className="text-xs">{t('vlan_page.table_header_status', 'Status')}</TableHead>
                     <TableHead className="text-right w-28 text-xs">{t('vlan_page.table_header_actions', 'Actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -300,9 +347,17 @@ function VlanManagementPage() {
                   {vlans.map((vlan) => (
                     <TableRow key={vlan.id}>
                       <TableCell className="font-mono text-muted-foreground text-xs">{vlan.vlanId}</TableCell>
-                      <TableCell className="font-medium text-xs">{vlan.name}</TableCell>
-                      <TableCell className="text-muted-foreground text-xs">{pops.find(p => p.id.toString() === vlan.popId)?.name || vlan.popId}</TableCell>
                       <TableCell className="text-muted-foreground text-xs">{vlan.description || '-'}</TableCell>
+                      <TableCell className="text-xs">
+                        <Badge variant={vlan.isTagged ? 'default' : 'secondary'} className={`text-xs ${vlan.isTagged ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
+                           {vlan.isTagged ? t('vlan_page.tagged', 'Tagged') : t('vlan_page.untagged', 'Untagged')}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs">
+                         <Badge variant={vlan.status === 'Active' ? 'default' : 'secondary'} className={`text-xs ${vlan.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                           {t(`vlan_page.status_${vlan.status.toLowerCase()}` as any, vlan.status)}
+                         </Badge>
+                      </TableCell>
                       <TableCell className="text-right">
                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditVlan(vlan)}>
                                 <Edit className={iconSize} />
@@ -328,8 +383,6 @@ function VlanManagementPage() {
                                      className={buttonVariants({ variant: "destructive" })}
                                      onClick={() => {
                                        setVlanToDelete(vlan);
-                                       // This will trigger the useEffect or a direct call to confirmDeleteVlan
-                                       // For simplicity, direct call, but in real app, might use useEffect based on vlanToDelete
                                        confirmDeleteVlan();
                                      }}
                                    >
