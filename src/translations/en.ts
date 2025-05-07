@@ -659,7 +659,13 @@ const en = {
     status_active: 'Active',
     status_inactive: 'Inactive',
     no_rules_found: 'No CGNAT rules configured yet.',
+    export_action_title: "Export Rule (Simulated)",
+    export_action_description: "Exporting rule {id} to {format} format.",
+    export_action_alt_text: "Export to...",
+    export_linux: "Linux",
+    export_mikrotik: "MikroTik",
   },
 };
 
 export default en;
+

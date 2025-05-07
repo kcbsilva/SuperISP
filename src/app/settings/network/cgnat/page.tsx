@@ -5,9 +5,9 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  // CardDescription, // Removed
+  // CardHeader, // Removed
+  // CardTitle, // Removed
 } from "@/components/ui/card";
 import {
   Table,
@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, RefreshCw, Edit, Trash2, Loader2 } from 'lucide-react';
+import { PlusCircle, RefreshCw, Edit, Trash2, Loader2, ChevronDown } from 'lucide-react'; // Added ChevronDown
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -48,6 +48,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"; // Added DropdownMenu components
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -113,6 +119,16 @@ export default function CgnatPage() {
 
   const getStatusBadgeVariant = (status: 'Active' | 'Inactive') => {
     return status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+  };
+
+  const handleExport = (format: 'Linux' | 'MikroTik', ruleId: string) => {
+    toast({
+        title: t('cgnat_page.export_action_title', 'Export Rule (Simulated)'),
+        description: t('cgnat_page.export_action_description', 'Exporting rule {id} to {format} format.')
+                        .replace('{id}', ruleId)
+                        .replace('{format}', format),
+    });
+    console.log(`Exporting rule ${ruleId} to ${format}`);
   };
 
   return (
@@ -270,11 +286,8 @@ export default function CgnatPage() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">{t('cgnat_page.table_title', 'CGNAT Rules')}</CardTitle>
-          <CardDescription className="text-xs">{t('cgnat_page.table_description', 'Manage your Carrier-Grade NAT rules.')}</CardDescription>
-        </CardHeader>
-        <CardContent>
+        {/* CardHeader removed */}
+        <CardContent className="pt-6"> {/* Added pt-6 to give some space since CardHeader was removed */}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -313,6 +326,22 @@ export default function CgnatPage() {
                                 <Trash2 className={iconSize} />
                                 <span className="sr-only">{t('cgnat_page.action_delete', 'Delete')}</span>
                             </Button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                                        <ChevronDown className={iconSize} />
+                                        <span className="sr-only">{t('cgnat_page.export_action_alt_text', 'Export to...')}</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => handleExport('Linux', rule.id)}>
+                                        {t('cgnat_page.export_linux', 'Linux')}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleExport('MikroTik', rule.id)}>
+                                        {t('cgnat_page.export_mikrotik', 'MikroTik')}
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </TableCell>
                     </TableRow>
                   ))
@@ -331,3 +360,4 @@ export default function CgnatPage() {
     </div>
   );
 }
+

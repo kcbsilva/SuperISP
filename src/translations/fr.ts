@@ -658,7 +658,13 @@ const fr = {
     status_active: 'Actif',
     status_inactive: 'Inactif',
     no_rules_found: 'Aucune règle CGNAT configurée pour le moment.',
+    export_action_title: "Exporter la Règle (Simulé)",
+    export_action_description: "Exportation de la règle {id} au format {format}.",
+    export_action_alt_text: "Exporter vers...",
+    export_linux: "Linux",
+    export_mikrotik: "MikroTik",
   },
 };
 
 export default fr;
+

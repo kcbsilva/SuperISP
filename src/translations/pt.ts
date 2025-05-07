@@ -659,7 +659,13 @@ const pt = {
       status_active: 'Ativo',
       status_inactive: 'Inativo',
       no_rules_found: 'Nenhuma regra CGNAT configurada ainda.',
+      export_action_title: "Exportar Regra (Simulado)",
+      export_action_description: "Exportando regra {id} para o formato {format}.",
+      export_action_alt_text: "Exportar para...",
+      export_linux: "Linux",
+      export_mikrotik: "MikroTik",
     },
 };
 
 export default pt;
+
