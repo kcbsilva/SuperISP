@@ -280,16 +280,33 @@ export default function EntryCategoriesPage() {
 
   const getIndentationLevel = React.useCallback((category: EntryCategory, allCategories: EntryCategory[]): number => {
     if (category.id === STATIC_INCOME_ID || category.id === STATIC_EXPENSE_ID) return 0;
+    
     let level = 0;
     let current: EntryCategory | undefined = category;
-    const visited = new Set<string>(); // To detect cycles
+    const visited = new Set<string>(); 
 
-    while(current && current.parentCategoryId && current.parentCategoryId !== STATIC_INCOME_ID && current.parentCategoryId !== STATIC_EXPENSE_ID && !visited.has(current.id)) {
-      visited.add(current.id);
-      level++;
-      current = allCategories.find(c => c.id === current!.parentCategoryId);
-      if(current?.id === STATIC_INCOME_ID || current?.id === STATIC_EXPENSE_ID) break; // Stop if parent is static root
+    while (current && current.parentCategoryId && !visited.has(current.id)) {
+        visited.add(current.id);
+        const parent = allCategories.find(c => c.id === current!.parentCategoryId);
+        if (!parent) break; // Should not happen if data is consistent
+
+        // Crucially, only increment level if the parent is NOT a static root.
+        // Children of static roots are level 1.
+        if (parent.id !== STATIC_INCOME_ID && parent.id !== STATIC_EXPENSE_ID) {
+            level++;
+        } else {
+           // If the parent is a static root, this is the first level of indentation for user categories.
+           level = 1; 
+           break; // Stop further traversal up from static roots for indentation calculation.
+        }
+        current = parent;
+         if (current.id === STATIC_INCOME_ID || current.id === STATIC_EXPENSE_ID) break;
     }
+     // If after the loop, current is a direct child of a static root, its level is 1.
+    if(current && current.parentCategoryId && (current.parentCategoryId === STATIC_INCOME_ID || current.parentCategoryId === STATIC_EXPENSE_ID) && level === 0) {
+        return 1;
+    }
+
     return level;
   }, []);
 
@@ -519,3 +536,4 @@ export default function EntryCategoriesPage() {
     </div>
   );
 }
+
