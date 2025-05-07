@@ -299,7 +299,7 @@ export default function CgnatPage() {
                   <TableHead className="text-xs">{t('cgnat_page.table_header_num_ports', '# of Ports')}</TableHead>
                   <TableHead className="text-xs">{t('cgnat_page.table_header_protocol', 'Protocol')}</TableHead>
                   <TableHead className="text-xs">{t('cgnat_page.table_header_status', 'Status')}</TableHead>
-                  <TableHead className="text-right w-28 text-xs">{t('cgnat_page.table_header_actions', 'Actions')}</TableHead>
+                  <TableHead className="text-right w-32 text-xs">{t('cgnat_page.table_header_actions', 'Actions')}</TableHead> {/* Increased width for actions */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -318,6 +318,7 @@ export default function CgnatPage() {
                          </Badge>
                       </TableCell>
                       <TableCell className="text-right">
+                        <div className="flex items-center justify-end space-x-1"> {/* Added flex container */}
                             <Button variant="ghost" size="icon" className="h-7 w-7">
                                 <Edit className={iconSize} />
                                 <span className="sr-only">{t('cgnat_page.action_edit', 'Edit')}</span>
@@ -342,6 +343,7 @@ export default function CgnatPage() {
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
+                        </div>
                         </TableCell>
                     </TableRow>
                   ))
