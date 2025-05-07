@@ -364,12 +364,12 @@ function SubscriberProfilePage() {
         <CardHeader>
           <div className="flex items-center gap-4">
             {subscriber.type === 'Residential' ? (
-              <User className="h-4 w-4 text-muted-foreground" /> {/* Main profile icon size reduced */}
+              <User className="h-4 w-4 text-muted-foreground" />
             ) : (
               <Building className="h-4 w-4 text-muted-foreground" />
             )}
             <div>
-              <CardTitle className="text-base">{subscriber.type === 'Residential' ? subscriber.name : subscriber.companyName}  (ID: {subscriber.id})</CardTitle> {/* Title font size reduced */}
+              <CardTitle className="text-base">{subscriber.type === 'Residential' ? subscriber.name : subscriber.companyName}  (ID: {subscriber.id})</CardTitle>
             </div>
           </div>
         </CardHeader>
@@ -525,9 +525,9 @@ function SubscriberProfilePage() {
                                     {pop.name} ({pop.location})
                                   </SelectItem>
                                 ))}
-                                 {isLoadingPops && <div className="p-2 text-center text-muted-foreground">{t('subscriber_profile.add_service_pop_loading')}</div>}
-                                 {popsError && <div className="p-2 text-center text-destructive">{t('subscriber_profile.add_service_pop_error')}</div>}
-                                 {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground">{t('subscriber_profile.add_service_pop_none')}</div>}
+                                 {isLoadingPops && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_loading')}</div>}
+                                 {popsError && <div className="p-2 text-center text-destructive text-xs">{t('subscriber_profile.add_service_pop_error')}</div>}
+                                 {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_none')}</div>}
                               </SelectContent>
                             </Select>
                             <FormMessage />
