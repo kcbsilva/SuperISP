@@ -51,6 +51,7 @@ import { useLocale } from '@/contexts/LocaleContext';
 import { format, type Locale as DateFnsLocale } from 'date-fns'; // Keep format import, import Locale as DateFnsLocale
 import { fr as frLocale, ptBR as ptBRLocale, enUS as enUSLocale } from 'date-fns/locale'; // Corrected import path for locales
 import { Badge } from '@/components/ui/badge';
+import { cn } from "@/lib/utils"; // Import cn utility
 
 
 // Validation Schema for the Add Service form
@@ -414,7 +415,7 @@ function SubscriberProfilePage() {
         <CardHeader>
           <div className="flex items-center gap-4">
             {subscriber.type === 'Residential' ? (
-              <User className="h-4 w-4 text-muted-foreground" /> 
+              <User className="h-4 w-4 text-muted-foreground" />
             ) : (
               <Building className="h-4 w-4 text-muted-foreground" />
             )}
