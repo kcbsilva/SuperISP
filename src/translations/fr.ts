@@ -304,6 +304,7 @@ const fr = {
      service_action_clear_mac: 'Effacer MAC',
      service_action_update_login: 'Mettre à Jour Identifiants',
      service_action_change_billing_date: 'Changer la Date de Facturation',
+     service_action_monitor_traffic: 'Surveiller le Trafic',
      update_login_dialog_title: 'Mettre à Jour les Identifiants de Connexion',
      update_login_dialog_description: 'Mettre à jour les identifiants PPPoE pour le service {serviceId}.',
      update_login_cancel_button: 'Annuler',
@@ -701,4 +702,3 @@ const fr = {
 };
 
 export default fr;
-

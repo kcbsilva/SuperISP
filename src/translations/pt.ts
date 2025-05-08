@@ -302,6 +302,7 @@ const pt = {
     service_action_clear_mac: 'Limpar MAC',
     service_action_update_login: 'Atualizar Login',
     service_action_change_billing_date: 'Alterar Data de Faturamento',
+    service_action_monitor_traffic: 'Monitorar Tráfego',
     update_login_dialog_title: 'Atualizar Credenciais de Login',
     update_login_dialog_description: 'Atualizar credenciais de login PPPoE para o serviço {serviceId}.',
     update_login_cancel_button: 'Cancelar',
@@ -699,4 +700,3 @@ const pt = {
 };
 
 export default pt;
-
