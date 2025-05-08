@@ -39,7 +39,9 @@ import {
   Archive, // Added for Inventory
   Factory, // Icon for Manufacturers
   Package as PackageIcon, // Icon for Products
-  Truck // Icon for Suppliers (using Truck as an example, can be changed)
+  Truck, // Icon for Suppliers (using Truck as an example, can be changed)
+  FileText as FileTextIcon, // for ONU Templates
+  GitBranch, // for FTTx
 } from 'lucide-react';
 
 import './globals.css';
@@ -270,6 +272,35 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
               </SidebarMenuItem>
+
+              {/* FTTx Menu */}
+              <SidebarMenuItem>
+                <SidebarMenuSub>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SidebarMenuSubTrigger tooltip={t('sidebar.fttx', 'FTTx')}>
+                        <div className="flex items-center gap-2 cursor-pointer">
+                          <GitBranch className={iconSize}/>
+                          <span className="truncate">{t('sidebar.fttx', 'FTTx')}</span>
+                          <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                        </div>
+                      </SidebarMenuSubTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" align="center">{t('sidebar.fttx', 'FTTx')}</TooltipContent>
+                  </Tooltip>
+                  <SidebarMenuSubContent>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/fttx/onu-templates')} size="sm" tooltip={t('sidebar.fttx_onu_templates', 'ONU Templates')}>
+                        <Link href="/fttx/onu-templates" className="flex items-center gap-2">
+                          <FileTextIcon className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.fttx_onu_templates', 'ONU Templates')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenuSubContent>
+                </SidebarMenuSub>
+              </SidebarMenuItem>
+
 
               {/* Finances Menu */}
               <SidebarMenuItem>
@@ -758,4 +789,3 @@ export default function RootLayout({
     </html>
   );
 }
-
