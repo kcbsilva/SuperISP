@@ -22,34 +22,34 @@ const pt = {
     maps_elements_towers: 'Torres',
     maps_elements_cables: 'Cabos',
     maps_map: 'Mapa',
-    fttx: 'FTTx', // Added FTTx
-    fttx_olts: 'OLTs', // Added OLTs
-    fttx_onu_templates: 'Modelos ONU', // Added ONU Templates
+    fttx: 'FTTx',
+    fttx_olts: 'OLTs',
+    fttx_onu_templates: 'Modelos ONU',
     zones: 'Zonas',
     finances: 'Finanças',
     finances_cash_book: 'Livro Caixa',
-    finances_entry_categories: 'Categorias de Lançamento', // Added
+    finances_entry_categories: 'Categorias de Lançamento',
     finances_config: 'Configurações Financeiras',
-    inventory: 'Inventário', // Added Inventory
+    inventory: 'Inventário',
     inventory_warehouses: 'Armazéns',
     inventory_suppliers: 'Fornecedores',
     inventory_products: 'Produtos',
     inventory_manufacturers: 'Fabricantes',
     inventory_categories: 'Categorias',
     reports: 'Relatórios',
-    hr: 'RH', // Added HR
-    hr_employees: 'Funcionários', // Added HR Employees
+    hr: 'RH',
+    hr_employees: 'Funcionários',
     security: 'Segurança',
     settings: 'Configurações',
     settings_global: 'Configurações Globais',
     settings_business: 'Negócios',
     settings_business_pops: 'PoPs (Ponto de Presença)',
-    settings_plans: 'Planos', // Added
-    settings_plans_internet: 'Internet', // Added
-    settings_plans_tv: 'TV', // Added
-    settings_plans_mobile: 'Celular', // Added
-    settings_plans_landline: 'Telefone Fixo', // Added
-    settings_plans_combos: 'Combos', // Added
+    settings_plans: 'Planos',
+    settings_plans_internet: 'Internet',
+    settings_plans_tv: 'TV',
+    settings_plans_mobile: 'Celular',
+    settings_plans_landline: 'Telefone Fixo',
+    settings_plans_combos: 'Combos',
     settings_integrations: 'Integrações',
     settings_integrations_whatsapp: 'WhatsApp',
     settings_integrations_telegram: 'Telegram',
@@ -60,7 +60,6 @@ const pt = {
     expand_sidebar: 'Expandir barra lateral',
     collapse_sidebar: 'Recolher barra lateral',
   },
-  // Search Bar
   search: {
     placeholder: 'Buscar clientes, equipamentos, elementos...',
     clients_label: 'Clientes',
@@ -69,7 +68,6 @@ const pt = {
     elements_label: 'Elementos',
     no_results_found: 'Nenhum resultado encontrado para "{term}"',
   },
-  // Header Icons & Dropdowns
   header: {
     changelog: 'Registro de alterações',
     changelog_label: 'Versão 0.1.0',
@@ -87,7 +85,6 @@ const pt = {
     profile_action_desc: 'Processo de logout iniciado (Não Implementado)',
     toggle_theme: 'Alternar tema',
   },
-  // Global Settings Page
   global_settings: {
     title: 'Configurações Globais',
     card_title: 'Configurações Regionais e da Empresa',
@@ -114,7 +111,6 @@ const pt = {
     load_error_title: 'Erro ao Carregar Configurações',
     load_error_description: 'Não foi possível carregar as configurações globais existentes.',
   },
-  // PoPs Page
   pops: {
     title: 'Pontos de Presença (PoPs)',
     add_button: 'Adicionar PoP',
@@ -164,7 +160,6 @@ const pt = {
     loading_error: 'Erro ao carregar PoPs: {message}',
     no_pops_found: 'Nenhum PoP encontrado. Clique em "Adicionar PoP" para criar um.',
   },
-  // Add Subscriber Page
   add_subscriber: {
     title: 'Adicionar Novo Assinante',
     card_title: 'Informações do Assinante',
@@ -197,7 +192,6 @@ const pt = {
     add_success_toast_description: 'Detalhes de {name} salvos.',
     required_field: '{field} é obrigatório.',
   },
-   // List Subscribers Page
   list_subscribers: {
     title: 'Assinantes',
     add_button: 'Adicionar Novo',
@@ -228,7 +222,6 @@ const pt = {
     status_planned: 'Planejado',
     status_canceled: 'Cancelado',
   },
-   // Subscriber Profile Page
   subscriber_profile: {
     overview_tab: 'Visão Geral',
     services_tab: 'Serviços',
@@ -245,7 +238,7 @@ const pt = {
     overview_type: 'Tipo',
     overview_status: 'Status',
     overview_address: 'Endereço',
-    overview_point_of_reference: 'Ponto de Referência', // Added translation
+    overview_point_of_reference: 'Ponto de Referência',
     overview_email: 'Email',
     overview_phone: 'Telefone',
     overview_landline: 'Telefone Fixo',
@@ -331,15 +324,15 @@ const pt = {
     billing_make_payment_button: 'Realizar Pagamento',
     billing_all_invoices: 'Todas as Faturas',
     billing_pending_invoices: 'Faturas Pendentes',
-    billing_paid_invoices: 'Faturas Pagas', // Changed from Anteriores to Pagas
+    billing_paid_invoices: 'Faturas Pagas',
     billing_canceled_invoices: 'Faturas Canceladas',
     billing_no_invoices: 'Nenhuma fatura encontrada.',
     billing_no_pending_invoices: 'Nenhuma fatura pendente.',
-    billing_no_paid_invoices: 'Nenhum histórico de faturas pagas encontrado.', // Changed from Anteriores to Pagas
+    billing_no_paid_invoices: 'Nenhum histórico de faturas pagas encontrado.',
     billing_no_canceled_invoices: 'Nenhuma fatura cancelada encontrada.',
     billing_filter_all: 'Todas',
     billing_filter_pending: 'Pendentes',
-    billing_filter_paid: 'Pagas', // Changed from Anteriores to Pagas
+    billing_filter_paid: 'Pagas',
     billing_filter_canceled: 'Canceladas',
     billing_filter_payment_plan: 'Plano de Pagamento',
     billing_filter_promise_to_pay: 'Promessa de Pagamento',
@@ -380,7 +373,6 @@ const pt = {
     history_user_label: 'Usuário',
     history_none: 'Nenhuma entrada de histórico encontrada.',
     loading_skeleton: 'Carregando...',
-    // Internet Service Specific
     services_technology: 'Tecnologia',
     services_data_rate: 'Taxa de Dados (Down/Up)',
     services_ip_address: 'Endereço IP',
@@ -403,9 +395,8 @@ const pt = {
     services_mac_address: 'Endereço MAC',
     services_xpon_sn: 'S/N xPON',
   },
-   // Dashboard Page
   dashboard: {
-    dashboard_view_label: 'Visualização do Painel', // Added label for dashboard selector
+    dashboard_view_label: 'Visualização do Painel',
     select_view: 'Selecionar Visualização do Painel',
     general_view: 'Visão Geral',
     financial_view: 'Painel Financeiro',
@@ -433,7 +424,6 @@ const pt = {
     quick_actions_label: 'Ações Rápidas',
     quick_action_tooltip: 'Ação Rápida {action} (ex: Adicionar Cliente)',
     quick_action_sr: 'Adicionar {action}',
-    // Financial Dashboard Specific
     financial: {
         revenue_by_plan_title: 'Receita por Plano',
         revenue_by_plan_desc: 'Divisão do MRR por plano de assinatura.',
@@ -444,7 +434,6 @@ const pt = {
         pie_chart_placeholder: 'Dados do gráfico de pizza não disponíveis.',
       },
    },
-   // Map Page
    maps_page: {
      layers_tooltip: 'Gerenciar Camadas',
      map_placeholder_label: 'Espaço reservado para o mapa',
@@ -466,7 +455,6 @@ const pt = {
      geocode_error_title: 'Erro de Geocodificação',
      geocode_error_desc: 'Não foi possível encontrar as coordenadas do local.',
    },
-    // Settings - Plans
     settings_plans: {
       internet_page_title: 'Planos de Internet',
       add_plan_button: 'Adicionar Plano de Internet',
@@ -489,8 +477,7 @@ const pt = {
       add_plan_button_combos: 'Adicionar Plano Combo',
       existing_plans_description_combos: 'Gerencie seus planos de serviço combo.',
       no_plans_found_combos: 'Nenhum plano combo configurado ainda. Clique em "Adicionar Plano Combo" para criar um.',
-      // Table headers for Internet Plans
-      table_header_id: 'ID', // Added ID translation
+      table_header_id: 'ID',
       table_header_name: 'Nome',
       table_header_upload: 'Upload',
       table_header_download: 'Download',
@@ -500,13 +487,11 @@ const pt = {
       table_header_actions: 'Ações',
       edit_action: 'Editar',
       remove_action: 'Remover',
-      // Connection Types
       connection_type_fiber: 'Fibra',
       connection_type_radio: 'Rádio',
       connection_type_satellite: 'Satélite',
       connection_type_utp: 'UTP',
     },
-    // Cash Book Page
     cash_book: {
       title: 'Livro Caixa',
       add_entry_button: 'Adicionar Lançamento',
@@ -549,12 +534,11 @@ const pt = {
       form_save_button: 'Salvar Lançamento',
       form_saving_button: 'Salvando...',
       add_entry_success_title: 'Lançamento Adicionado',
-      add_success_description: 'Lançamento do tipo {type} "{description}" adicionado.',
+      add_entry_success_description: 'Lançamento do tipo {type} "{description}" adicionado.',
       total_income_label: 'Total de Receitas',
       total_expenses_label: 'Total de Despesas',
       net_balance_label: 'Saldo Líquido',
     },
-    // Entry Categories Page
     entry_categories: {
       title: 'Categorias de Lançamento',
       add_category_button: 'Adicionar Categoria',
@@ -605,7 +589,6 @@ const pt = {
       static_edit_error_title: 'Erro ao Editar',
       static_edit_error_description: 'O nome ou tipo das categorias estáticas "Receita" e "Despesa" não pode ser alterado.',
     },
-    // VLAN Page
     vlan_page: {
         title: 'Rede Local Virtual (VLAN)',
         add_button: 'Adicionar VLAN',
@@ -660,7 +643,6 @@ const pt = {
         status_inactive: 'Inativa',
         no_vlans_found: 'Nenhuma VLAN configurada ainda. Clique em "Adicionar VLAN" para criar uma.',
     },
-    // CGNAT Page
     cgnat_page: {
       title: 'Configuração CGNAT',
       add_button: 'Adicionar Regra CGNAT',
@@ -709,7 +691,6 @@ const pt = {
       export_linux: "Linux",
       export_mikrotik: "MikroTik",
     },
-    // ONU Templates Page
     onu_templates: {
       title: 'Modelos ONU',
       add_template_button: 'Adicionar Modelo',
@@ -758,7 +739,6 @@ const pt = {
       success_condition_text_label: 'O seguinte texto:',
       success_condition_text_placeholder: 'ex: success, completed',
     },
-    // FTTx OLTs Page
     fttx_olts: {
       title: 'Terminais de Linha Óptica (OLTs)',
       add_olt_button: 'Adicionar OLT',
@@ -779,20 +759,19 @@ const pt = {
       no_olts_found: 'Nenhum OLT registrado ainda. Clique em "Adicionar OLT" para criar um.',
       add_olt_not_implemented_title: 'Adicionar OLT (Não Implementado)',
       add_olt_not_implemented_desc: 'A funcionalidade para adicionar novos OLTs ainda não está disponível.',
-      add_olt_not_implemented_desc_port: 'A funcionalidade para adicionar novos OLTs (incluindo a porta de gerenciamento) ainda não está disponível.', // Added for port context
+      add_olt_not_implemented_desc_port: 'A funcionalidade para adicionar novos OLTs (incluindo a porta de gerenciamento) ainda não está disponível.',
       edit_olt_not_implemented_title: 'Editar OLT (Não Implementado)',
       edit_olt_not_implemented_desc: 'A edição do OLT {id} ainda não está disponível.',
       delete_olt_not_implemented_title: 'Excluir OLT (Não Implementado)',
       delete_olt_not_implemented_desc: 'A exclusão do OLT {id} ainda não está disponível.',
-      olt_actions_menu: 'Ações OLT', 
-      list_non_provisioned_onxs: 'Listar ONXs Não Provisionados', 
-      list_provisioned_onxs: 'Listar ONXs Provisionados', 
-      list_onxs_title_provisioned: 'Listar ONXs Provisionados (Não Implementado)', 
-      list_onxs_desc_provisioned: 'A listagem de ONXs provisionados para o OLT {id} ainda não está disponível.', 
-      list_onxs_title_non_provisioned: 'Listar ONXs Não Provisionados (Não Implementado)', 
-      list_onxs_desc_non_provisioned: 'A listagem de ONXs não provisionados para o OLT {id} ainda não está disponível.', 
+      olt_actions_menu: 'Ações OLT',
+      list_non_provisioned_onxs: 'Listar ONXs Não Provisionados',
+      list_provisioned_onxs: 'Listar ONXs Provisionados',
+      list_onxs_title_provisioned: 'Listar ONXs Provisionados (Não Implementado)',
+      list_onxs_desc_provisioned: 'A listagem de ONXs provisionados para o OLT {id} ainda não está disponível.',
+      list_onxs_title_non_provisioned: 'Listar ONXs Não Provisionados (Não Implementado)',
+      list_onxs_desc_non_provisioned: 'A listagem de ONXs não provisionados para o OLT {id} ainda não está disponível.',
     },
 };
 
 export default pt;
-

@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import { useState, useEffect, type ReactNode } from 'react'; // Import useState and useEffect
+import Image from 'next/image'; // Import next/image
 // Import specific icons
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, ChevronRight, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
@@ -44,6 +45,8 @@ import {
   GitBranch, // for FTTx
   NetworkIcon, // For OLTs (using a generic Network icon for now)
 } from 'lucide-react';
+
+import prolterLogoSrc from '@/app/assets/prolter-logo.svg'; // Import the SVG asset path
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -137,10 +140,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               href="/"
               className="flex items-center gap-2 text-lg font-semibold text-sidebar-primary px-2" // Added padding for consistency
             >
-              {/* Placeholder Icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"> {/* Reduced size */}
-                <path d="M12 .75a8.25 8.25 0 0 0-5.162 14.564.75.75 0 0 1-.318.47l-3.75 2.25a.75.75 0 0 0 0 1.332l3.75 2.25a.75.75 0 0 1 .318.47A8.25 8.25 0 0 0 12 23.25a8.25 8.25 0 0 0 8.25-8.25v-6a8.25 8.25 0 0 0-8.25-8.25Zm-3 9a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Zm0 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" />
-              </svg>
+              <Image src={prolterLogoSrc} alt="Prolter Logo" width={16} height={16} className="w-4 h-4" /> {/* Using next/image */}
               {/* Removed text-based title */}
             </Link>
           </SidebarHeader>
@@ -164,9 +164,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-
-              {/* Network Menu - Moved to Settings */}
-
 
               {/* Maps Menu */}
               <SidebarMenuItem>
@@ -798,3 +795,4 @@ export default function RootLayout({
     </html>
   );
 }
+
