@@ -28,6 +28,11 @@ const fr = {
     finances_entry_categories: 'Catégories d\'entrées', // Added
     finances_config: 'Configurations financières',
     inventory: 'Inventaire', // Added Inventory
+    inventory_warehouses: 'Entrepôts',
+    inventory_suppliers: 'Fournisseurs',
+    inventory_products: 'Produits',
+    inventory_manufacturers: 'Fabricants',
+    inventory_categories: 'Catégories',
     reports: 'Rapports',
     hr: 'RH', // Added HR
     hr_employees: 'Employés', // Added HR Employees

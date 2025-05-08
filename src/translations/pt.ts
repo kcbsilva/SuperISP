@@ -28,6 +28,11 @@ const pt = {
     finances_entry_categories: 'Categorias de Lançamento', // Added
     finances_config: 'Configurações Financeiras',
     inventory: 'Inventário', // Added Inventory
+    inventory_warehouses: 'Armazéns',
+    inventory_suppliers: 'Fornecedores',
+    inventory_products: 'Produtos',
+    inventory_manufacturers: 'Fabricantes',
+    inventory_categories: 'Categorias',
     reports: 'Relatórios',
     hr: 'RH', // Added HR
     hr_employees: 'Funcionários', // Added HR Employees

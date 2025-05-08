@@ -37,6 +37,9 @@ import {
   UserPlus, // For "New" subscriber
   UsersRound, // For "List" subscribers,
   Archive, // Added for Inventory
+  Factory, // Icon for Manufacturers
+  Package as PackageIcon, // Icon for Products
+  Truck // Icon for Suppliers (using Truck as an example, can be changed)
 } from 'lucide-react';
 
 import './globals.css';
@@ -305,15 +308,66 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuSub>
               </SidebarMenuItem>
 
-              {/* Inventory Menu */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/inventory')} tooltip={t('sidebar.inventory', 'Inventory')}>
-                  <Link href="#" className="flex items-center gap-2">
-                    <Archive className={iconSize}/> {/* Using Archive icon for Inventory */}
-                    <span>{t('sidebar.inventory', 'Inventory')}</span>
-                  </Link>
-                </SidebarMenuButton>
+               {/* Inventory Menu */}
+               <SidebarMenuItem>
+                <SidebarMenuSub>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SidebarMenuSubTrigger tooltip={t('sidebar.inventory', 'Inventory')}>
+                        <div className="flex items-center gap-2 cursor-pointer">
+                          <Archive className={iconSize}/>
+                          <span className="truncate">{t('sidebar.inventory', 'Inventory')}</span>
+                          <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                        </div>
+                      </SidebarMenuSubTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" align="center">{t('sidebar.inventory', 'Inventory')}</TooltipContent>
+                  </Tooltip>
+                  <SidebarMenuSubContent>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/inventory/warehouses')} size="sm" tooltip={t('sidebar.inventory_warehouses', 'Warehouses')}>
+                        <Link href="#" className="flex items-center gap-2">
+                          <Warehouse className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.inventory_warehouses', 'Warehouses')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/inventory/suppliers')} size="sm" tooltip={t('sidebar.inventory_suppliers', 'Suppliers')}>
+                        <Link href="#" className="flex items-center gap-2">
+                          <Truck className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.inventory_suppliers', 'Suppliers')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/inventory/products')} size="sm" tooltip={t('sidebar.inventory_products', 'Products')}>
+                        <Link href="#" className="flex items-center gap-2">
+                          <PackageIcon className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.inventory_products', 'Products')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/inventory/manufacturers')} size="sm" tooltip={t('sidebar.inventory_manufacturers', 'Manufacturers')}>
+                        <Link href="#" className="flex items-center gap-2">
+                          <Factory className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.inventory_manufacturers', 'Manufacturers')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/inventory/categories')} size="sm" tooltip={t('sidebar.inventory_categories', 'Categories')}>
+                        <Link href="#" className="flex items-center gap-2">
+                          <ListFilter className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.inventory_categories', 'Categories')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenuSubContent>
+                </SidebarMenuSub>
               </SidebarMenuItem>
+
 
               {/* Reports Menu */}
               <SidebarMenuItem>
