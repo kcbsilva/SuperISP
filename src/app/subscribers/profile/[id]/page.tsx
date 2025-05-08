@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning } from 'lucide-react'; // Added ListFilterIcon
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound } from 'lucide-react'; // Added ListFilterIcon, Network, Cable, Satellite, KeyRound
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -91,7 +91,30 @@ const getSubscriberData = (id: string | string[]) => {
         establishedDate: null as Date | null,
         businessNumber: '',
         services: [
-            { id: 'svc-1', type: 'Internet', plan: 'Fiber 100', popId: 'sim-1', status: 'Active' },
+             {
+                id: 'svc-1', type: 'Internet', plan: 'Fiber 100', popId: 'sim-1', status: 'Active',
+                technology: 'Fiber', downloadSpeed: '100 Mbps', uploadSpeed: '50 Mbps',
+                ipAddress: '203.0.113.10', onlineStatus: 'Online', authenticationType: 'PPPoE',
+                fdhId: 'FDH-Central-01', fdhPort: 'A3', pppoeUsername: 'user1@isp.com', pppoePassword: 'password123',
+             },
+             {
+                id: 'svc-7', type: 'Internet', plan: 'Radio Basic 20', popId: 'sim-2', status: 'Active',
+                technology: 'Radio', downloadSpeed: '20 Mbps', uploadSpeed: '5 Mbps',
+                ipAddress: '203.0.113.11', onlineStatus: 'Offline', authenticationType: 'IPxMAC',
+                apName: 'AP-North-Sector', macAddress: '00:1A:2B:3C:4D:5F',
+             },
+              {
+                id: 'svc-8', type: 'Internet', plan: 'UTP Office 50', popId: 'sim-1', status: 'Suspended',
+                technology: 'UTP', downloadSpeed: '50 Mbps', uploadSpeed: '50 Mbps',
+                ipAddress: '203.0.113.12', onlineStatus: 'Offline', authenticationType: 'StaticIP',
+                switchId: 'Switch-CORE-01-Port23',
+             },
+             {
+                id: 'svc-9', type: 'Internet', plan: 'Satellite Remote 10', popId: 'sim-3', status: 'Canceled',
+                technology: 'Satellite', downloadSpeed: '10 Mbps', uploadSpeed: '1 Mbps',
+                ipAddress: '203.0.113.14', onlineStatus: 'Offline', authenticationType: 'IPoE',
+                ipoeUsername: 'sat_user_001', ipoePassword: 'securepassword',
+             },
             { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: 'sim-1', status: 'Active' },
             { id: 'svc-4', type: 'Landline', plan: 'Unlimited Local', popId: 'sim-1', status: 'Active' },
             { id: 'svc-5', type: 'Mobile', plan: '5GB Data Plan', popId: 'sim-1', status: 'Inactive' },
@@ -164,7 +187,12 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.birthday = null as Date | null;
         baseData.taxId = '';
         baseData.services = [
-             { id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: 'sim-2', status: 'Active' }
+             {
+                id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: 'sim-2', status: 'Active',
+                technology: 'Fiber', downloadSpeed: '1 Gbps', uploadSpeed: '500 Mbps',
+                ipAddress: '203.0.113.20', onlineStatus: 'Online', authenticationType: 'StaticIP',
+                fdhId: 'FDH-Commercial-01', fdhPort: 'B1',
+             }
         ];
         baseData.billing.balance = 150.75;
         baseData.billing.pendingInvoices = [
@@ -218,6 +246,28 @@ const OverviewSection: React.FC<{title: string, icon: React.ElementType, childre
             {children}
         </fieldset>
     );
+};
+
+const ServiceDetailItem: React.FC<{ label: string; value?: string | null; children?: React.ReactNode; className?: string }> = ({ label, value, children, className }) => {
+  const { t } = useLocale();
+  if (!value && !children) return null;
+  return (
+    <div className={cn("text-xs", className)}>
+      <span className="text-muted-foreground">{t(label, label)}: </span>
+      {children || <span className="font-medium">{value || t('subscriber_profile.not_available')}</span>}
+    </div>
+  );
+};
+
+const getTechnologyIcon = (technology?: string) => {
+    const iconSize = "h-4 w-4 text-primary"; // Standardized icon size for technology
+    switch (technology?.toLowerCase()) {
+        case 'fiber': return <Network className={iconSize} />; // Using Network as a generic fiber icon
+        case 'radio': return <Wifi className={iconSize} />;
+        case 'utp': return <Cable className={iconSize} />; // Using Cable for UTP
+        case 'satellite': return <Satellite className={iconSize} />;
+        default: return <ServerIcon className={iconSize} />; // Default icon
+    }
 };
 
 
@@ -364,7 +414,7 @@ function SubscriberProfilePage() {
         <CardHeader>
           <div className="flex items-center gap-4">
             {subscriber.type === 'Residential' ? (
-              <User className="h-4 w-4 text-muted-foreground" />
+              <User className="h-4 w-4 text-muted-foreground" /> 
             ) : (
               <Building className="h-4 w-4 text-muted-foreground" />
             )}
@@ -562,45 +612,89 @@ function SubscriberProfilePage() {
                     {filteredServices.length > 0 ? (
                         <ul className="space-y-3">
                            {filteredServices.map(service => (
-                               <li key={service.id} className="flex justify-between items-center p-3 border rounded-md">
-                                   <div>
-                                       <span className="font-medium text-xs">{t(`subscriber_profile.services_type_${service.type.toLowerCase()}` as any, service.type)}</span> - <span className="text-xs text-muted-foreground">{service.plan}</span> {/* Font sizes adjusted */}
-                                   </div>
-                                   <div className="flex items-center gap-2">
-                                       <span className="text-xs text-muted-foreground">{t('subscriber_profile.services_pop_label')}: {pops.find(p => p.id.toString() === service.popId)?.name || service.popId}</span>
-                                       <span className={`text-xs px-2 py-0.5 rounded-full ${service.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                                         {t(`list_subscribers.status_${service.status.toLowerCase()}` as any, service.status)}
-                                       </span>
-                                       <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-7 w-7"> {/* Reduced size */}
-                                                    <MoreVertical className={iconSize} />
-                                                    <span className="sr-only">{t('subscriber_profile.service_actions_sr', 'Service Actions')}</span>
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem onClick={() => handleServiceAction('sign', service.id)}>
-                                                    {t('subscriber_profile.service_action_sign', 'Sign Contract')}
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => handleServiceAction('cancel', service.id)} className="text-destructive">
-                                                    {t('subscriber_profile.service_action_cancel', 'Cancel Contract')}
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => handleServiceAction('print_service_contract', service.id)}>
-                                                    {t('subscriber_profile.service_action_print_service_contract', 'Print Service Contract')}
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => handleServiceAction('print_responsibility_term', service.id)}>
-                                                    {t('subscriber_profile.service_action_print_responsibility_term', 'Print Term of Responsibility')}
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => handleServiceAction('print_cancelation_term', service.id)}>
-                                                    {t('subscriber_profile.service_action_print_cancelation_term', 'Print Term of Cancelation')}
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service.id)}>
-                                                    {t('subscriber_profile.service_action_transfer_contract', 'Transfer Contract')}
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                               <li key={service.id} className="p-3 border rounded-md">
+                                   <div className="flex justify-between items-start">
+                                       <div>
+                                          <div className="flex items-center gap-2 mb-1">
+                                            {service.type === 'Internet' && getTechnologyIcon(service.technology)}
+                                            <span className="font-medium text-xs">{t(`subscriber_profile.services_type_${service.type.toLowerCase()}` as any, service.type)}</span>
+                                            <span className="text-xs text-muted-foreground">- {service.plan}</span>
+                                          </div>
+                                          {service.type === 'Internet' && (
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1 mt-2">
+                                              <ServiceDetailItem label="subscriber_profile.services_data_rate" value={`${service.downloadSpeed || '-'}/${service.uploadSpeed || '-'}`} />
+                                              <ServiceDetailItem label="subscriber_profile.services_ip_address" value={service.ipAddress} />
+                                              <ServiceDetailItem label="subscriber_profile.services_online_status">
+                                                <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${service.onlineStatus === 'Online' ? 'text-green-600' : 'text-red-600'}`}>
+                                                    <span className={`h-2 w-2 rounded-full ${service.onlineStatus === 'Online' ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                                                    {t(`subscriber_profile.status_${service.onlineStatus?.toLowerCase()}` as any, service.onlineStatus)}
+                                                </span>
+                                              </ServiceDetailItem>
+
+                                              {/* Technology Specific */}
+                                              {service.technology === 'Fiber' && <>
+                                                <ServiceDetailItem label="subscriber_profile.services_fdh_id" value={service.fdhId} />
+                                                <ServiceDetailItem label="subscriber_profile.services_fdh_port" value={service.fdhPort} />
+                                              </>}
+                                              {service.technology === 'Radio' && <ServiceDetailItem label="subscriber_profile.services_ap_name" value={service.apName} />}
+                                              {service.technology === 'UTP' && <ServiceDetailItem label="subscriber_profile.services_switch_id" value={service.switchId} />}
+
+                                              {/* Authentication Specific */}
+                                               <ServiceDetailItem label="subscriber_profile.services_auth_type" value={service.authenticationType ? t(`subscriber_profile.auth_type_${service.authenticationType.toLowerCase()}` as any, service.authenticationType) : undefined} />
+                                              {service.authenticationType === 'PPPoE' && <>
+                                                <ServiceDetailItem label="subscriber_profile.services_pppoe_user" value={service.pppoeUsername} />
+                                                <ServiceDetailItem label="subscriber_profile.services_pppoe_pass" value={service.pppoePassword ? '********' : undefined} />
+                                              </>}
+                                              {service.authenticationType === 'IPoE' && <>
+                                                <ServiceDetailItem label="subscriber_profile.services_ipoe_user" value={service.ipoeUsername} />
+                                                <ServiceDetailItem label="subscriber_profile.services_ipoe_pass" value={service.ipoePassword ? '********' : undefined} />
+                                              </>}
+                                              {service.authenticationType === 'IPxMAC' && <ServiceDetailItem label="subscriber_profile.services_mac_address" value={service.macAddress} />}
+                                            </div>
+                                          )}
+                                       </div>
+
+                                       <div className="flex flex-col items-end gap-1 shrink-0">
+                                           <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                             service.status === 'Active' ? 'bg-green-100 text-green-800' :
+                                             service.status === 'Suspended' ? 'bg-yellow-100 text-yellow-800' :
+                                             service.status === 'Canceled' ? 'bg-red-100 text-red-800' :
+                                             'bg-gray-100 text-gray-800' // for Inactive or Planned
+                                           }`}>
+                                             {t(`list_subscribers.status_${service.status.toLowerCase()}` as any, service.status)}
+                                           </span>
+                                            <span className="text-xs text-muted-foreground">{t('subscriber_profile.services_pop_label')}: {pops.find(p => p.id.toString() === service.popId)?.name || service.popId}</span>
+                                           <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                                                        <MoreVertical className={iconSize} />
+                                                        <span className="sr-only">{t('subscriber_profile.service_actions_sr', 'Service Actions')}</span>
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('sign', service.id)}>
+                                                        {t('subscriber_profile.service_action_sign', 'Sign Contract')}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('cancel', service.id)} className="text-destructive">
+                                                        {t('subscriber_profile.service_action_cancel', 'Cancel Contract')}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('print_service_contract', service.id)}>
+                                                        {t('subscriber_profile.service_action_print_service_contract', 'Print Service Contract')}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('print_responsibility_term', service.id)}>
+                                                        {t('subscriber_profile.service_action_print_responsibility_term', 'Print Term of Responsibility')}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('print_cancelation_term', service.id)}>
+                                                        {t('subscriber_profile.service_action_print_cancelation_term', 'Print Term of Cancelation')}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service.id)}>
+                                                        {t('subscriber_profile.service_action_transfer_contract', 'Transfer Contract')}
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                       </div>
                                    </div>
                                </li>
                            ))}
