@@ -55,6 +55,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger, // Added AlertDialogTrigger import
 } from "@/components/ui/alert-dialog";
 import { PlusCircle, Edit, Trash2, Loader2, RefreshCw } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -327,3 +328,4 @@ export default function OnuTemplatesPage() {
     </div>
   );
 }
+
