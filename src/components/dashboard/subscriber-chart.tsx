@@ -24,8 +24,13 @@ const chartData = [
 const chartConfig = {
   newSubscribers: {
     label: "New Subscribers",
-    color: "hsl(var(--chart-1))", // Use theme color variable
+    color: "hsl(var(--chart-1))", // Use main primary color from the new theme
   },
+  // Example of using another chart color if needed
+  // anotherMetric: {
+  //   label: "Another Metric",
+  //   color: "hsl(var(--chart-2))", // Use the accent color from the new theme
+  // }
 } satisfies ChartConfig
 
 export function SubscriberChart() {

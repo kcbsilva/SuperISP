@@ -754,7 +754,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
         <SidebarInset noMargin={isMapPage}> {/* Pass noMargin prop */}
           <div className="fixed top-0 left-0 w-full z-50 h-1">
-            {isLoading && <Progress value={progress} className="w-full h-1 rounded-none bg-transparent [&>*]:bg-green-600" indicatorClassName="bg-green-600" />}
+            {isLoading && <Progress value={progress} className="w-full h-1 rounded-none bg-transparent [&>*]:bg-accent" indicatorClassName="bg-accent" />}
           </div>
           {/* Conditionally render the AppHeader */}
           {!isMapPage && <AppHeader />}
@@ -798,4 +798,3 @@ export default function RootLayout({
     </html>
   );
 }
-

@@ -4,119 +4,122 @@
 
 @layer base {
   :root {
-    /* Light Theme Colors - Based on User Request */
-    --background: 200 17% 94%; /* Light Gray (#ECEFF1) */
-    --foreground: 0 0% 3.9%; /* Default Dark */
+    /* Light Theme Colors - New Palette */
+    --background: 0 0% 90%; /* Light Gray (#E5E5E5) */
+    --foreground: 219 70% 9%; /* Very Dark Blue (#081124) */
     --card: 0 0% 100%; /* White */
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 233 64% 30%; /* Dark Blue (#1A237E) */
-    --primary-foreground: 0 0% 98%; /* Light */
-    --secondary: 0 0% 96.1%; /* Default Light Gray */
-    --secondary-foreground: 0 0% 9%; /* Default Dark */
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 174 63% 39%; /* Teal (#26A69A) */
-    --accent-foreground: 0 0% 98%; /* Light */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 200 17% 88%; /* Slightly darker gray than background */
-    --input: 200 17% 88%;
-    --ring: 174 63% 39%; /* Teal for focus rings */
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --card-foreground: 219 70% 9%; /* Very Dark Blue */
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 219 70% 9%; /* Very Dark Blue */
+    --primary: 219 50% 28%; /* Dark Blue (#233B6E) */
+    --primary-foreground: 0 0% 90%; /* Light Gray (#E5E5E5) */
+    --secondary: 216 49% 16%; /* Darker Blue (#14213D) */
+    --secondary-foreground: 0 0% 90%; /* Light Gray */
+    --muted: 0 0% 96.1%; /* Default Light Gray - slightly off-white */
+    --muted-foreground: 216 49% 30%; /* Mid-tone of Darker Blue */
+    --accent: 38 96% 52%; /* Orange/Yellow (#FCA311) */
+    --accent-foreground: 219 70% 9%; /* Very Dark Blue for contrast on yellow */
+    --destructive: 0 84.2% 60.2%; /* Default Red */
+    --destructive-foreground: 0 0% 98%; /* Default Light */
+    --border: 0 0% 82%; /* Slightly darker than #E5E5E5 for borders */
+    --input: 0 0% 82%; /* Similar to border */
+    --ring: 38 96% 52%; /* Orange/Yellow for focus rings */
+    --chart-1: 219 50% 28%; /* #233B6E */
+    --chart-2: 38 96% 52%; /* #FCA311 */
+    --chart-3: 216 49% 16%; /* #14213D */
+    --chart-4: 219 50% 48%; /* Lighter #233B6E */
+    --chart-5: 38 96% 62%; /* Lighter #FCA311 */
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Green colors for buttons */
+    /* Light Theme Sidebar */
+    --sidebar-background: 0 0% 100%; /* White (same as card) */
+    --sidebar-foreground: 219 70% 9%; /* Very Dark Blue */
+    --sidebar-primary: 219 50% 28%; /* Dark Blue */
+    --sidebar-primary-foreground: 0 0% 90%; /* Light Gray */
+    --sidebar-accent: 0 0% 96%; /* Light gray for hover */
+    --sidebar-accent-foreground: 219 50% 28%; /* Dark Blue text on hover */
+    --sidebar-border: 0 0% 82%; /* Consistent with main border */
+    --sidebar-ring: 38 96% 52%; /* Orange/Yellow */
+
+
+    /* Green colors for buttons/badges (keeping existing logic, can be themed if needed) */
     --green-100: 120 60% 90%;
     --green-600: 134 61% 41%;
     --green-700: 134 61% 36%;
     --green-800: 134 61% 31%;
 
-    /* Red colors for badges */
-    --red-100: 0 70% 90%; /* Light red background */
-    --red-800: 0 70% 35%; /* Dark red text */
+    /* Red colors for badges (keeping existing logic) */
+    --red-100: 0 70% 90%;
+    --red-800: 0 70% 35%;
 
-    /* Yellow colors for badges */
-    --yellow-100: 45 90% 90%; /* Light yellow background */
-    --yellow-800: 45 70% 35%; /* Dark yellow text */
+    /* Yellow colors for badges (keeping existing logic) */
+    --yellow-100: 45 90% 90%;
+    --yellow-800: 45 70% 35%;
 
-    /* Blue colors for badges */
-    --blue-100: 210 90% 90%; /* Light blue background */
-    --blue-800: 210 70% 35%; /* Dark blue text */
+    /* Blue colors for badges (keeping existing logic) */
+    --blue-100: 210 90% 90%;
+    --blue-800: 210 70% 35%;
 
-    /* Gray colors for badges */
-    --gray-100: 210 15% 90%; /* Light gray background */
-    --gray-800: 210 10% 35%; /* Dark gray text */
+    /* Gray colors for badges (keeping existing logic) */
+    --gray-100: 210 15% 90%;
+    --gray-800: 210 10% 35%;
   }
-  .dark {
-    /* Dark Theme Colors (Optional - Keeping defaults for now) */
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Dark theme green colors */
+  .dark {
+    /* Dark Theme Colors - New Palette */
+    --background: 219 70% 9%; /* Very Dark Blue (#081124) */
+    --foreground: 0 0% 90%; /* Light Gray (#E5E5E5) */
+    --card: 216 49% 16%; /* Darker Blue (#14213D) */
+    --card-foreground: 0 0% 90%; /* Light Gray */
+    --popover: 216 49% 16%; /* Darker Blue */
+    --popover-foreground: 0 0% 90%; /* Light Gray */
+    --primary: 38 96% 52%; /* Orange/Yellow (#FCA311) */
+    --primary-foreground: 219 70% 9%; /* Very Dark Blue on yellow */
+    --secondary: 219 50% 28%; /* Dark Blue (#233B6E) */
+    --secondary-foreground: 0 0% 90%; /* Light Gray */
+    --muted: 216 49% 20%; /* Darker than card */
+    --muted-foreground: 0 0% 70%; /* Lighter gray for muted text */
+    --accent: 219 50% 28%; /* Dark Blue (#233B6E) - can be different from secondary if needed */
+    --accent-foreground: 0 0% 90%; /* Light Gray */
+    --destructive: 0 70% 45%; /* Darker Red */
+    --destructive-foreground: 0 0% 98%; /* Light */
+    --border: 219 50% 28%; /* Dark Blue for borders */
+    --input: 216 49% 22%; /* Slightly lighter than card for input bg */
+    --ring: 38 96% 52%; /* Orange/Yellow */
+
+    --chart-1: 219 50% 28%; /* #233B6E */
+    --chart-2: 38 96% 52%; /* #FCA311 */
+    --chart-3: 0 0% 90%; /* #E5E5E5 - Light gray for contrast */
+    --chart-4: 219 50% 48%; /* Lighter #233B6E */
+    --chart-5: 38 96% 72%; /* Lighter #FCA311 */
+
+    /* Dark Theme Sidebar */
+    --sidebar-background: 216 49% 16%; /* Darker Blue (same as card) */
+    --sidebar-foreground: 0 0% 90%; /* Light Gray */
+    --sidebar-primary: 38 96% 52%; /* Orange/Yellow */
+    --sidebar-primary-foreground: 219 70% 9%; /* Very Dark Blue */
+    --sidebar-accent: 219 50% 22%; /* Slightly lighter blue than card for hover */
+    --sidebar-accent-foreground: 38 96% 52%; /* Orange/Yellow text on hover */
+    --sidebar-border: 219 50% 28%; /* Dark Blue */
+    --sidebar-ring: 38 96% 52%; /* Orange/Yellow */
+
+    /* Dark theme green/red/yellow/blue/gray for badges (adjust if needed) */
     --green-100: 120 60% 10%;
     --green-600: 134 61% 41%;
     --green-700: 134 61% 46%;
     --green-800: 134 61% 51%;
 
-    /* Dark theme red colors */
-    --red-100: 0 70% 15%; /* Darker red background */
-    --red-800: 0 70% 70%; /* Lighter red text */
+    --red-100: 0 70% 15%;
+    --red-800: 0 70% 70%;
 
-    /* Dark theme yellow colors */
-    --yellow-100: 45 70% 15%; /* Darker yellow background */
-    --yellow-800: 45 70% 70%; /* Lighter yellow text */
+    --yellow-100: 45 70% 15%;
+    --yellow-800: 45 70% 70%;
 
-    /* Dark theme blue colors */
-    --blue-100: 210 70% 15%; /* Darker blue background */
-    --blue-800: 210 70% 70%; /* Lighter blue text */
+    --blue-100: 210 70% 15%;
+    --blue-800: 210 70% 70%;
 
-    /* Dark theme gray colors */
-    --gray-100: 210 10% 15%; /* Darker gray background */
-    --gray-800: 210 10% 70%; /* Lighter gray text */
+    --gray-100: 210 10% 15%;
+    --gray-800: 210 10% 70%;
   }
 }
 
@@ -125,8 +128,8 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground text-xs; /* Applied text-xs for global font size reduction */
-    font-family: Arial, Helvetica, sans-serif; 
+    @apply bg-background text-foreground text-xs;
+    font-family: Arial, Helvetica, sans-serif;
   }
 }
 
@@ -135,7 +138,7 @@
 .text-green-800 { color: hsl(var(--green-800)); }
 .bg-green-600 { background-color: hsl(var(--green-600)); }
 .hover\:bg-green-700:hover { background-color: hsl(var(--green-700)); }
-.text-white { color: white; } /* Assuming white text on dark green button */
+.text-white { color: white; }
 
 /* Utility classes for red colors */
 .bg-red-100 { background-color: hsl(var(--red-100)); }
@@ -152,3 +155,8 @@
 /* Utility classes for gray colors */
 .bg-gray-100 { background-color: hsl(var(--gray-100)); }
 .text-gray-800 { color: hsl(var(--gray-800)); }
+
+/* Utility class for accent background (Orange/Yellow) */
+.bg-accent { background-color: hsl(var(--accent)); }
+.text-accent-foreground { color: hsl(var(--accent-foreground)); }
+.hover\:bg-accent\/90:hover { background-color: hsla(var(--accent), 0.9); }

@@ -262,9 +262,9 @@ export default function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                   <div className="flex items-center justify-center h-48 border rounded-lg bg-muted text-muted-foreground">
-                     <PieChart className={`h-4 w-4 mr-2`} /> {/* Reduced icon size */}
-                     <span className="text-xs">{t('dashboard.financial.pie_chart_placeholder')}</span>
+                   <div className="flex items-center justify-center h-48 border rounded-lg bg-muted text-primary">
+                     <PieChart className={`h-4 w-4 mr-2`} /> {/* Reduced icon size and use text-primary for theme */}
+                     <span className="text-xs text-muted-foreground">{t('dashboard.financial.pie_chart_placeholder')}</span>
                    </div>
                 </CardContent>
               </Card>
@@ -276,9 +276,9 @@ export default function DashboardPage() {
                    </div>
                 </CardHeader>
                 <CardContent>
-                   <div className="flex items-center justify-center h-48 border rounded-lg bg-muted text-muted-foreground">
+                   <div className="flex items-center justify-center h-48 border rounded-lg bg-muted text-primary">
                      <PieChart className={`h-4 w-4 mr-2`} />
-                     <span className="text-xs">{t('dashboard.financial.pie_chart_placeholder')}</span>
+                     <span className="text-xs text-muted-foreground">{t('dashboard.financial.pie_chart_placeholder')}</span>
                    </div>
                 </CardContent>
               </Card>
@@ -290,9 +290,9 @@ export default function DashboardPage() {
                     </div>
                  </CardHeader>
                  <CardContent>
-                   <div className="flex items-center justify-center h-48 border rounded-lg bg-muted text-muted-foreground">
+                   <div className="flex items-center justify-center h-48 border rounded-lg bg-muted text-primary">
                      <PieChart className={`h-4 w-4 mr-2`} />
-                     <span className="text-xs">{t('dashboard.financial.pie_chart_placeholder')}</span>
+                     <span className="text-xs text-muted-foreground">{t('dashboard.financial.pie_chart_placeholder')}</span>
                    </div>
                  </CardContent>
                </Card>
