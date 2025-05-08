@@ -28,6 +28,8 @@ const fr = {
     finances_entry_categories: 'Catégories d\'entrées', // Added
     finances_config: 'Configurations financières',
     reports: 'Rapports',
+    hr: 'RH', // Added HR
+    hr_employees: 'Employés', // Added HR Employees
     security: 'Sécurité',
     settings: 'Paramètres',
     settings_global: 'Paramètres globaux',
@@ -702,3 +704,4 @@ const fr = {
 };
 
 export default fr;
+

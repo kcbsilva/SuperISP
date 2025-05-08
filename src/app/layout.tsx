@@ -21,7 +21,7 @@ import {
   Settings2, // Added for Config/Settings icons
   BookOpen, // Added for Cash Book
   SlidersHorizontal, // Added for Financial Config
-  Briefcase, // Added for Business
+  Briefcase, // Added for Business and HR
   Building, // Added for PoPs
   Cog, // Icon for Global Settings
   Plane, // Icon for PilotView
@@ -313,6 +313,36 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+                {/* HR Menu */}
+                <SidebarMenuItem>
+                <SidebarMenuSub>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SidebarMenuSubTrigger tooltip={t('sidebar.hr', 'HR')}>
+                        <div className="flex items-center gap-2 cursor-pointer">
+                          <Briefcase className={iconSize}/> {/* Using Briefcase icon for HR */}
+                          <span className="truncate">{t('sidebar.hr', 'HR')}</span>
+                          <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                        </div>
+                      </SidebarMenuSubTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" align="center">{t('sidebar.hr', 'HR')}</TooltipContent>
+                  </Tooltip>
+                  <SidebarMenuSubContent>
+                    {/* Placeholder for HR submenu items */}
+                     <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={isActive('/hr/employees')} size="sm" tooltip={t('sidebar.hr_employees', 'Employees')}>
+                           <Link href="#" className="flex items-center gap-2">
+                             <Users className={subIconSize + " text-muted-foreground"} />
+                             <span>{t('sidebar.hr_employees', 'Employees')}</span>
+                           </Link>
+                        </SidebarMenuButton>
+                     </SidebarMenuItem>
+                  </SidebarMenuSubContent>
+                </SidebarMenuSub>
+              </SidebarMenuItem>
+
 
               {/* Settings Menu */}
               <SidebarMenuItem>

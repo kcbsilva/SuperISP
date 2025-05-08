@@ -28,6 +28,8 @@ const pt = {
     finances_entry_categories: 'Categorias de Lançamento', // Added
     finances_config: 'Configurações Financeiras',
     reports: 'Relatórios',
+    hr: 'RH', // Added HR
+    hr_employees: 'Funcionários', // Added HR Employees
     security: 'Segurança',
     settings: 'Configurações',
     settings_global: 'Configurações Globais',
@@ -700,3 +702,4 @@ const pt = {
 };
 
 export default pt;
+
