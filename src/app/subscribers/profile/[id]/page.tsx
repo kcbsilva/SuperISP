@@ -53,6 +53,15 @@ import { format, type Locale as DateFnsLocale } from 'date-fns'; // Keep format 
 import { fr as frLocale, ptBR as ptBRLocale, enUS as enUSLocale } from 'date-fns/locale'; // Corrected import path for locales
 import { Badge } from '@/components/ui/badge';
 import { cn } from "@/lib/utils"; // Import cn utility
+import { Checkbox } from '@/components/ui/checkbox'; // Import Checkbox
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 
 // Validation Schema for the Add Service form
@@ -133,8 +142,8 @@ const getSubscriberData = (id: string | string[]) => {
             { id: 'svc-6', type: 'Combo', plan: 'Internet + TV Basic', popId: 'sim-1', status: 'Active' },
         ],
         billing: {
-            balance: 50.00,
-            nextBillDate: '2024-08-15',
+            balance: 175.25, // Updated balance
+            nextBillDate: '2024-09-15', // Updated next bill date
             pastInvoices: [ // These are now considered "Paid" invoices
                 { id: 'inv-001', date: '2024-07-15', amount: 50.00, status: 'Paid' },
                 { id: 'inv-002', date: '2024-06-15', amount: 50.00, status: 'Paid' },
@@ -142,8 +151,10 @@ const getSubscriberData = (id: string | string[]) => {
             canceledInvoices: [
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
-            pendingInvoices: [
-                 { id: 'inv-p01', date: '2024-08-15', amount: 50.00, status: 'Due' }
+            pendingInvoices: [ // Updated pending invoices with more details
+                 { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
+                 { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
+                 { id: 'inv-p03', contractId: 'SVC-COMBO-003', dateMade: '2024-07-25', dueDate: '2024-08-10', value: 75.00, wallet: 'PayPal', status: 'Due' },
             ],
             paymentPlans: [
                 {id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active'},
@@ -210,7 +221,7 @@ const getSubscriberData = (id: string | string[]) => {
         ];
         baseData.billing.balance = 150.75;
         baseData.billing.pendingInvoices = [
-             { id: 'inv-p02', date: '2024-08-15', amount: 150.75, status: 'Due' }
+             { id: 'inv-p02', contractId: 'SVC-BIZ-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 150.75, wallet: 'Company Account', status: 'Due' }
         ]
     }
 
@@ -276,9 +287,9 @@ const ServiceDetailItem: React.FC<{ label: string; value?: string | null; childr
 const getTechnologyIcon = (technology?: string) => {
     const iconSize = "h-4 w-4 text-primary"; // Standardized icon size for technology
     switch (technology?.toLowerCase()) {
-        case 'fiber': return <Network className={iconSize} data-ai-hint="fiber optic" />; 
+        case 'fiber': return <Network className={iconSize} data-ai-hint="fiber optic" />;
         case 'radio': return <Wifi className={iconSize} data-ai-hint="radio signal" />;
-        case 'utp': return <Cable className={iconSize} data-ai-hint="ethernet cable" />; 
+        case 'utp': return <Cable className={iconSize} data-ai-hint="ethernet cable" />;
         case 'satellite': return <Satellite className={iconSize} data-ai-hint="satellite dish" />;
         default: return <ServerIcon className={iconSize} data-ai-hint="server rack" />;
     }
@@ -482,7 +493,7 @@ function SubscriberProfilePage() {
         <CardHeader>
           <div className="flex items-center gap-4">
             {subscriber.type === 'Residential' ? (
-              <User className="h-4 w-4 text-muted-foreground" /> 
+              <User className="h-4 w-4 text-muted-foreground" />
             ) : (
               <Building className="h-4 w-4 text-muted-foreground" />
             )}
@@ -865,35 +876,49 @@ function SubscriberProfilePage() {
                          <h4 className="text-xs font-semibold mb-2 flex items-center gap-2">
                              <Clock className={`${tabIconSize} text-destructive`} /> {t('subscriber_profile.billing_pending_invoices')} ({subscriber.billing?.pendingInvoices?.length ?? 0})
                          </h4>
-                         {subscriber.billing?.pendingInvoices?.length > 0 ? (
-                             <ul className="space-y-2 text-xs">
-                                 {subscriber.billing.pendingInvoices.map(inv => (
-                                     <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md bg-destructive/5">
-                                         <div>
-                                            <span>{inv.id} - {inv.date}</span>
-                                            <span className="font-medium ml-2">${inv.amount.toFixed(2)}</span>
-                                         </div>
-                                         <div className="flex items-center gap-2">
-                                            {getInvoiceStatusBadge(inv.status)}
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                                                        <MoreVertical className={`${iconSize} h-3 w-3`} />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('print_pdf', inv)}>
-                                                        <Printer className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_print_pdf')}
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', inv)}>
-                                                         <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                         </div>
-                                     </li>
-                                 ))}
-                             </ul>
+                        {subscriber.billing?.pendingInvoices?.length > 0 ? (
+                             <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-10"><Checkbox /></TableHead>
+                                        <TableHead className="text-xs">{t('subscriber_profile.billing_header_contract_id')}</TableHead>
+                                        <TableHead className="text-xs">{t('subscriber_profile.billing_header_date_made')}</TableHead>
+                                        <TableHead className="text-xs">{t('subscriber_profile.billing_header_due_date')}</TableHead>
+                                        <TableHead className="text-xs text-right">{t('subscriber_profile.billing_header_value')}</TableHead>
+                                        <TableHead className="text-xs">{t('subscriber_profile.billing_header_wallet')}</TableHead>
+                                        <TableHead className="text-xs text-right">{t('subscriber_profile.billing_header_actions')}</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {subscriber.billing.pendingInvoices.map(inv => (
+                                        <TableRow key={inv.id} className="bg-destructive/5">
+                                            <TableCell><Checkbox id={`select-inv-${inv.id}`} /></TableCell>
+                                            <TableCell className="text-xs font-mono">{inv.contractId}</TableCell>
+                                            <TableCell className="text-xs">{format(new Date(inv.dateMade), 'PP', { locale: dateLocales[locale] || enUSLocale })}</TableCell>
+                                            <TableCell className="text-xs">{format(new Date(inv.dueDate), 'PP', { locale: dateLocales[locale] || enUSLocale })}</TableCell>
+                                            <TableCell className="text-xs text-right font-medium">${inv.value.toFixed(2)}</TableCell>
+                                            <TableCell className="text-xs">{inv.wallet}</TableCell>
+                                            <TableCell className="text-right">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-6 w-6">
+                                                            <MoreVertical className={`${iconSize} h-3 w-3`} />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem onClick={() => handleBillingItemAction('print_pdf', inv)}>
+                                                            <Printer className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_print_pdf')}
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', inv)}>
+                                                             <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                             </Table>
                          ) : (
                              <p className="text-xs text-muted-foreground">{t('subscriber_profile.billing_no_pending_invoices')}</p>
                          )}
