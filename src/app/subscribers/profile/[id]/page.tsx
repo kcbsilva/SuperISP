@@ -151,7 +151,7 @@ const getSubscriberData = (id: string | string[]) => {
             canceledInvoices: [
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
-            pendingInvoices: [ // Updated pending invoices with more details
+            pendingInvoices: [ // Corrected pending invoices based on user request
                  { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
                  { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
                  { id: 'inv-p03', contractId: 'SVC-COMBO-003', dateMade: '2024-07-25', dueDate: '2024-08-10', value: 75.00, wallet: 'PayPal', status: 'Due' },
