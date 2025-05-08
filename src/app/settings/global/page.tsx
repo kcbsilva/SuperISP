@@ -2,11 +2,11 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card"; // Removed CardDescription, CardHeader, CardTitle
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Save, Globe } from 'lucide-react';
+// import { Label } from '@/components/ui/label'; // No longer directly used, FormLabel is used
+import { Save } from 'lucide-react'; // Removed Globe as it's not used
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -40,34 +40,48 @@ const globalSettingsSchema = z.object({
 
 type GlobalSettingsFormData = z.infer<typeof globalSettingsSchema>;
 
+// Simulated initial settings load
+let initialSettings: GlobalSettingsFormData = {
+  companyName: 'NetHub ISP',
+  companyLogoUrl: '',
+  defaultCurrency: 'USD',
+  timezone: 'America/New_York',
+  language: 'en',
+};
+
 const loadGlobalSettings = async (): Promise<GlobalSettingsFormData> => {
   console.log("Simulating loading global settings...");
-  return {
-    companyName: 'NetHub ISP',
-    companyLogoUrl: '',
-    defaultCurrency: 'USD',
-    timezone: 'America/New_York',
-    language: 'en',
-  };
+  // In a real app, this would fetch from a persistent store
+  // For now, it returns a copy of the current `initialSettings`
+  return { ...initialSettings };
 };
 
 const saveGlobalSettings = async (data: GlobalSettingsFormData): Promise<void> => {
   console.log("Simulating saving global settings:", data);
+  // In a real app, this would save to a persistent store
+  // For now, it updates the `initialSettings` in memory
+  initialSettings = { ...data };
 };
 
 
 export default function GlobalSettingsPage() {
   const { toast } = useToast();
-  const { t, setLocale, locale } = useLocale();
+  const { t, setLocale } = useLocale(); // Removed locale as it's not directly used here, only t and setLocale
   const iconSize = "h-3 w-3"; // Reduced icon size
 
   const form = useForm<GlobalSettingsFormData>({
     resolver: zodResolver(globalSettingsSchema),
+    // defaultValues will be set by useEffect
   });
 
   React.useEffect(() => {
+    // Load settings only once on component mount
     loadGlobalSettings().then(settings => {
       form.reset(settings);
+      // Set initial locale from loaded settings
+      if (settings.language && typeof window !== 'undefined') {
+         setLocale(settings.language as Locale);
+      }
     }).catch(error => {
       toast({
         title: t('global_settings.load_error_title'),
@@ -75,20 +89,14 @@ export default function GlobalSettingsPage() {
         variant: 'destructive',
       });
     });
-  }, [form, t, toast]);
-
-  const watchedLanguage = form.watch('language');
-  React.useEffect(() => {
-    if (watchedLanguage && typeof window !== 'undefined') {
-      setLocale(watchedLanguage as Locale);
-    }
-  }, [watchedLanguage, setLocale]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array: run only on mount
 
   const onSubmit = async (data: GlobalSettingsFormData) => {
     try {
       await saveGlobalSettings(data);
       if (typeof window !== 'undefined') {
-        setLocale(data.language as Locale);
+        setLocale(data.language as Locale); // Update locale context after saving
       }
       toast({
         title: t('global_settings.save_success_title'),
@@ -105,15 +113,12 @@ export default function GlobalSettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-base font-semibold">{t('global_settings.title')}</h1> {/* Reduced heading size */}
+      <h1 className="text-base font-semibold">{t('global_settings.title')}</h1>
       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">{t('global_settings.card_title')}</CardTitle> {/* Reduced title size */}
-          <CardDescription className="text-xs">{t('global_settings.card_description')}</CardDescription> 
-        </CardHeader>
+        {/* CardHeader and CardDescription removed */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6"> {/* Added pt-6 to CardContent */}
               <FormField
                 control={form.control}
                 name="companyName"
@@ -176,7 +181,14 @@ export default function GlobalSettingsPage() {
                  render={({ field }) => (
                    <FormItem>
                      <FormLabel>{t('global_settings.language_label')}</FormLabel>
-                     <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value || 'en'}>
+                     <Select
+                        onValueChange={(value) => {
+                            field.onChange(value);
+                            // Optionally, update locale context immediately on select change,
+                            // or wait for form submission. For now, we wait for submission.
+                        }}
+                        value={field.value || 'en'} // Ensure value is controlled
+                     >
                        <FormControl>
                          <SelectTrigger>
                            <SelectValue placeholder={t('global_settings.language_placeholder')} />
