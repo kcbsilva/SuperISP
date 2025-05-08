@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare } from 'lucide-react'; // Added Eraser for Clear MAC, KeySquare for Update Login
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide } from 'lucide-react'; // Added Eraser for Clear MAC, KeySquare for Update Login, CalendarIconLucide
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -376,7 +376,7 @@ function SubscriberProfilePage() {
   };
 
 
-  const handleServiceAction = (action: 'sign' | 'cancel' | 'print_service_contract' | 'print_responsibility_term' | 'print_cancelation_term' | 'transfer_contract' | 'clear_mac' | 'update_login', service: any) => {
+  const handleServiceAction = (action: 'sign' | 'cancel' | 'print_service_contract' | 'print_responsibility_term' | 'print_cancelation_term' | 'transfer_contract' | 'clear_mac' | 'update_login' | 'change_billing_date', service: any) => {
     console.log(`${action} for service ${service.id}`);
     if (action === 'update_login') {
         setSelectedServiceForLoginUpdate(service);
@@ -767,6 +767,10 @@ function SubscriberProfilePage() {
                                                     <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service)}>
                                                         {t('subscriber_profile.service_action_transfer_contract', 'Transfer Contract')}
                                                     </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('change_billing_date', service)}>
+                                                        <CalendarIconLucide className={`mr-2 ${iconSize}`} />
+                                                        {t('subscriber_profile.service_action_change_billing_date', 'Change Billing Date')}
+                                                    </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                        </div>
@@ -1130,3 +1134,4 @@ function SubscriberProfilePage() {
     </div>
   );
 }
+

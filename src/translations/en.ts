@@ -302,14 +302,15 @@ const en = {
      service_action_print_cancelation_term: 'Print Term of Cancelation',
      service_action_transfer_contract: 'Transfer Contract',
      service_action_clear_mac: 'Clear MAC',
-     service_action_update_login: 'Update Login', // Added translation
-     update_login_dialog_title: 'Update Login Credentials', // Added translation
-     update_login_dialog_description: 'Update PPPoE login credentials for service {serviceId}.', // Added translation
-     update_login_cancel_button: 'Cancel', // Added translation
-     update_login_save_button: 'Save Credentials', // Added translation
-     update_login_saving_button: 'Saving...', // Added translation
-     update_login_success_toast_title: 'Login Updated', // Added translation
-     update_login_success_toast_description: 'Login credentials have been updated.', // Added translation
+     service_action_update_login: 'Update Login', 
+     service_action_change_billing_date: 'Change Billing Date',
+     update_login_dialog_title: 'Update Login Credentials', 
+     update_login_dialog_description: 'Update PPPoE login credentials for service {serviceId}.', 
+     update_login_cancel_button: 'Cancel', 
+     update_login_save_button: 'Save Credentials', 
+     update_login_saving_button: 'Saving...', 
+     update_login_success_toast_title: 'Login Updated', 
+     update_login_success_toast_description: 'Login credentials have been updated.', 
      billing_card_title: 'Billing',
      billing_card_description: 'Invoices, payments, and billing history.',
      billing_balance: 'Current Balance',
@@ -701,3 +702,4 @@ const en = {
 };
 
 export default en;
+

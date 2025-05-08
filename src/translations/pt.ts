@@ -300,14 +300,15 @@ const pt = {
     service_action_print_cancelation_term: 'Imprimir Termo de Cancelamento',
     service_action_transfer_contract: 'Transferir Contrato',
     service_action_clear_mac: 'Limpar MAC',
-    service_action_update_login: 'Atualizar Login', // Added translation
-    update_login_dialog_title: 'Atualizar Credenciais de Login', // Added translation
-    update_login_dialog_description: 'Atualizar credenciais de login PPPoE para o serviço {serviceId}.', // Added translation
-    update_login_cancel_button: 'Cancelar', // Added translation
-    update_login_save_button: 'Salvar Credenciais', // Added translation
-    update_login_saving_button: 'Salvando...', // Added translation
-    update_login_success_toast_title: 'Login Atualizado', // Added translation
-    update_login_success_toast_description: 'As credenciais de login foram atualizadas.', // Added translation
+    service_action_update_login: 'Atualizar Login',
+    service_action_change_billing_date: 'Alterar Data de Faturamento',
+    update_login_dialog_title: 'Atualizar Credenciais de Login',
+    update_login_dialog_description: 'Atualizar credenciais de login PPPoE para o serviço {serviceId}.',
+    update_login_cancel_button: 'Cancelar',
+    update_login_save_button: 'Salvar Credenciais',
+    update_login_saving_button: 'Salvando...',
+    update_login_success_toast_title: 'Login Atualizado',
+    update_login_success_toast_description: 'As credenciais de login foram atualizadas.',
     billing_card_title: 'Faturamento',
     billing_card_description: 'Faturas, pagamentos e histórico de faturamento.',
     billing_balance: 'Saldo Atual',
@@ -698,3 +699,4 @@ const pt = {
 };
 
 export default pt;
+
