@@ -27,6 +27,7 @@ const pt = {
     finances_cash_book: 'Livro Caixa',
     finances_entry_categories: 'Categorias de Lançamento', // Added
     finances_config: 'Configurações Financeiras',
+    inventory: 'Inventário', // Added Inventory
     reports: 'Relatórios',
     hr: 'RH', // Added HR
     hr_employees: 'Funcionários', // Added HR Employees

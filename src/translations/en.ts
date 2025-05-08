@@ -27,6 +27,7 @@ const en = {
     finances_cash_book: 'Cash Book',
     finances_entry_categories: 'Entry Categories', // Added
     finances_config: 'Financial Configurations',
+    inventory: 'Inventory', // Added Inventory
     reports: 'Reports',
     hr: 'HR', // Added HR
     hr_employees: 'Employees', // Added HR Employees

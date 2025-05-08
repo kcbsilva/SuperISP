@@ -27,6 +27,7 @@ const fr = {
     finances_cash_book: 'Livre de caisse',
     finances_entry_categories: 'Catégories d\'entrées', // Added
     finances_config: 'Configurations financières',
+    inventory: 'Inventaire', // Added Inventory
     reports: 'Rapports',
     hr: 'RH', // Added HR
     hr_employees: 'Employés', // Added HR Employees

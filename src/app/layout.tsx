@@ -36,6 +36,7 @@ import {
   ListFilter, // Icon for Entry Categories
   UserPlus, // For "New" subscriber
   UsersRound, // For "List" subscribers,
+  Archive, // Added for Inventory
 } from 'lucide-react';
 
 import './globals.css';
@@ -302,6 +303,16 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     {/* Financial Configurations moved to Settings */}
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
+              </SidebarMenuItem>
+
+              {/* Inventory Menu */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/inventory')} tooltip={t('sidebar.inventory', 'Inventory')}>
+                  <Link href="#" className="flex items-center gap-2">
+                    <Archive className={iconSize}/> {/* Using Archive icon for Inventory */}
+                    <span>{t('sidebar.inventory', 'Inventory')}</span>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
 
               {/* Reports Menu */}
