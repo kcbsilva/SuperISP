@@ -55,9 +55,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger, // Added AlertDialogTrigger import
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Edit, Trash2, Loader2, RefreshCw } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Added Tabs
+import { PlusCircle, Edit, Trash2, Loader2, RefreshCw, FileText as FileTextIcon, FileX as FileXIcon, CheckCircle, XCircle } from 'lucide-react'; // Added more icons
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
@@ -69,7 +70,10 @@ const onuTemplateSchema = z.object({
   templateName: z.string().min(1, "Template name is required."),
   manufacturer: z.string().min(1, "Manufacturer is required."),
   model: z.string().min(1, "Model is required."),
-  script: z.string().min(1, "Provisioning script is required."),
+  provisioningScript: z.string().min(1, "Provisioning script is required."),
+  unprovisioningScript: z.string().optional(),
+  successConditionType: z.enum(['responseDoesNotContain', 'responseContains'], { required_error: "Success condition type is required." }),
+  successConditionText: z.string().min(1, "Success condition text is required."),
 });
 
 type OnuTemplateFormData = z.infer<typeof onuTemplateSchema>;
@@ -80,11 +84,10 @@ interface OnuTemplate extends OnuTemplateFormData {
 }
 
 const placeholderTemplates: OnuTemplate[] = [
-  { id: 'tpl-1', templateName: 'Fiberhome GPON Residential', manufacturer: 'Fiberhome', model: 'AN5506-01-A1', script: '# Sample Script\ncd onu\nset whitelist phy_addr address {{onuSerial}} action add slot {{slot}} pon {{port}} onu {{onuId}} type {{model}}', createdAt: new Date() },
-  { id: 'tpl-2', templateName: 'Huawei EPON Business', manufacturer: 'Huawei', model: 'HG8245H', script: '# Another Sample Script\nconfig\ninterface gpon 0/{{slot}}\nonu add {{port}} {{onuId}} sn {{onuSerial}} type {{model}}\nquit', createdAt: new Date(Date.now() - 86400000) },
+  { id: 'tpl-1', templateName: 'Fiberhome GPON Residential', manufacturer: 'Fiberhome', model: 'AN5506-01-A1', provisioningScript: '# Sample Provisioning Script\ncd onu\nset whitelist phy_addr address {{onuSerial}} action add slot {{slot}} pon {{port}} onu {{onuId}} type {{model}}', unprovisioningScript: '# Sample Unprovisioning Script\ncd onu\ndelete whitelist phy_addr address {{onuSerial}}', successConditionType: 'responseContains', successConditionText: 'success', createdAt: new Date() },
+  { id: 'tpl-2', templateName: 'Huawei EPON Business', manufacturer: 'Huawei', model: 'HG8245H', provisioningScript: '# Another Sample Provisioning Script\nconfig\ninterface gpon 0/{{slot}}\nonu add {{port}} {{onuId}} sn {{onuSerial}} type {{model}}\nquit', successConditionType: 'responseDoesNotContain', successConditionText: 'error', createdAt: new Date(Date.now() - 86400000) },
 ];
 
-// Simulated list of manufacturers - in a real app, this might come from a database or config
 const manufacturers = ["Fiberhome", "Huawei", "ZTE", "Nokia", "Ubiquiti"];
 
 
@@ -97,6 +100,8 @@ export default function OnuTemplatesPage() {
   const [templateToDelete, setTemplateToDelete] = React.useState<OnuTemplate | null>(null);
 
   const iconSize = "h-3 w-3";
+  const tabIconSize = "h-2.5 w-2.5";
+
 
   const form = useForm<OnuTemplateFormData>({
     resolver: zodResolver(onuTemplateSchema),
@@ -104,7 +109,10 @@ export default function OnuTemplatesPage() {
       templateName: '',
       manufacturer: '',
       model: '',
-      script: '',
+      provisioningScript: '',
+      unprovisioningScript: '',
+      successConditionType: undefined,
+      successConditionText: '',
     },
   });
 
@@ -113,20 +121,18 @@ export default function OnuTemplatesPage() {
       form.reset(editingTemplate);
       setIsModalOpen(true);
     } else {
-      form.reset({ templateName: '', manufacturer: '', model: '', script: '' });
+      form.reset({ templateName: '', manufacturer: '', model: '', provisioningScript: '', unprovisioningScript: '', successConditionType: undefined, successConditionText: '' });
     }
   }, [editingTemplate, form]);
 
   const handleFormSubmit = (data: OnuTemplateFormData) => {
     if (editingTemplate) {
-      // Update existing template
       setTemplates(prev => prev.map(tpl => tpl.id === editingTemplate.id ? { ...tpl, ...data } : tpl));
       toast({
         title: t('onu_templates.update_success_title', 'Template Updated'),
         description: t('onu_templates.update_success_description', 'ONU template "{name}" has been updated.').replace('{name}', data.templateName),
       });
     } else {
-      // Add new template
       const newTemplate: OnuTemplate = {
         ...data,
         id: `tpl-${Date.now()}`,
@@ -196,53 +202,125 @@ export default function OnuTemplatesPage() {
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name="manufacturer"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('onu_templates.form_manufacturer_label', 'Manufacturer')}</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <div className="grid grid-cols-2 gap-4">
+                                <FormField
+                                    control={form.control}
+                                    name="manufacturer"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>{t('onu_templates.form_manufacturer_label', 'Manufacturer')}</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder={t('onu_templates.form_manufacturer_placeholder', 'Select Manufacturer')} />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {manufacturers.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="model"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>{t('onu_templates.form_model_label', 'Model')}</FormLabel>
                                             <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder={t('onu_templates.form_manufacturer_placeholder', 'Select Manufacturer')} />
-                                                </SelectTrigger>
+                                                <Input placeholder={t('onu_templates.form_model_placeholder', 'e.g., 5506-01-A1')} {...field} />
                                             </FormControl>
-                                            <SelectContent>
-                                                {manufacturers.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="model"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('onu_templates.form_model_label', 'Model')}</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder={t('onu_templates.form_model_placeholder', 'e.g., 5506-01-A1')} {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="script"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('onu_templates.form_script_label', 'Provisioning Script')}</FormLabel>
-                                        <FormControl>
-                                            <Textarea placeholder={t('onu_templates.form_script_placeholder', 'Enter provisioning script template here...')} {...field} rows={10} className="font-mono text-xs"/>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <DialogFooter>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <Tabs defaultValue="provisioning">
+                                <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="provisioning">
+                                      <FileTextIcon className={`mr-1.5 ${tabIconSize}`} /> {t('onu_templates.tab_provisioning', 'Provisioning Script')}
+                                    </TabsTrigger>
+                                    <TabsTrigger value="unprovisioning">
+                                      <FileXIcon className={`mr-1.5 ${tabIconSize}`} /> {t('onu_templates.tab_unprovisioning', 'Unprovisioning Script')}
+                                    </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="provisioning">
+                                    <FormField
+                                        control={form.control}
+                                        name="provisioningScript"
+                                        render={({ field }) => (
+                                            <FormItem className="mt-4">
+                                                {/* <FormLabel>{t('onu_templates.form_script_label', 'Provisioning Script')}</FormLabel> */}
+                                                <FormControl>
+                                                    <Textarea placeholder={t('onu_templates.form_script_placeholder', 'Enter provisioning script template here...')} {...field} rows={10} className="font-mono text-xs"/>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="unprovisioning">
+                                     <FormField
+                                        control={form.control}
+                                        name="unprovisioningScript"
+                                        render={({ field }) => (
+                                            <FormItem className="mt-4">
+                                                {/* <FormLabel>{t('onu_templates.form_unprovisioning_script_label', 'Unprovisioning Script (Optional)')}</FormLabel> */}
+                                                <FormControl>
+                                                    <Textarea placeholder={t('onu_templates.form_unprovisioning_script_placeholder', 'Enter unprovisioning script template here...')} {...field} rows={10} className="font-mono text-xs"/>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TabsContent>
+                            </Tabs>
+                            
+                            <Card className="mt-2 p-4">
+                                <FormLabel className="text-xs font-medium mb-2 block">{t('onu_templates.success_condition_label', 'Success Condition')}</FormLabel>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                     <FormField
+                                        control={form.control}
+                                        name="successConditionType"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-xs">{t('onu_templates.success_condition_type_label', 'Consider successful if:')}</FormLabel>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder={t('onu_templates.success_condition_type_placeholder', 'Select condition type')} />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="responseContains">{t('onu_templates.success_condition_type_contains', 'Response CONTAINS')}</SelectItem>
+                                                        <SelectItem value="responseDoesNotContain">{t('onu_templates.success_condition_type_not_contains', 'Response DOES NOT CONTAIN')}</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="successConditionText"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-xs">{t('onu_templates.success_condition_text_label', 'The following text:')}</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder={t('onu_templates.success_condition_text_placeholder', 'e.g., success, completed')} {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                            </Card>
+
+
+                            <DialogFooter className="mt-4">
                                 <DialogClose asChild>
                                     <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>{t('onu_templates.form_cancel_button', 'Cancel')}</Button>
                                 </DialogClose>
@@ -328,4 +406,3 @@ export default function OnuTemplatesPage() {
     </div>
   );
 }
-
