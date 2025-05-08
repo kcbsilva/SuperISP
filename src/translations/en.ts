@@ -330,12 +330,14 @@ const en = {
      billing_next_date: 'Next Bill Date',
      billing_not_available: 'N/A',
      billing_view_invoices_button: 'View Invoices',
-     billing_make_payment_button: 'Make Payment',
-     billing_all_invoices: 'All Invoices',
+     billing_make_invoice_button: 'Make Invoice',
+     billing_make_invoice_button_toast_title: 'Make Invoice (Simulated)',
+     billing_make_invoice_button_toast_desc: 'Functionality to create a new invoice is not yet implemented.',
+     billing_all_invoices: 'All Items',
      billing_pending_invoices: 'Pending Invoices',
      billing_paid_invoices: 'Paid Invoices', // Changed from Past to Paid
      billing_canceled_invoices: 'Canceled Invoices',
-     billing_no_invoices: 'No invoices found.',
+     billing_no_invoices: 'No items found.',
      billing_no_pending_invoices: 'No pending invoices.',
      billing_no_paid_invoices: 'No paid invoice history found.', // Changed from Past to Paid
      billing_no_canceled_invoices: 'No canceled invoices found.',
@@ -354,6 +356,11 @@ const en = {
      invoice_status_paid: 'Paid',
      invoice_status_due: 'Due',
      invoice_status_canceled: 'Canceled',
+     billing_item_type_invoice: 'Invoice',
+     billing_item_type_paymentPlan: 'Payment Plan',
+     billing_item_type_promiseToPay: 'Promise to Pay',
+     billing_action_print_pdf: 'Generate PDF',
+     billing_action_send_email: 'Send by Email',
      service_calls_card_title: 'Service Calls',
      service_calls_new_button: 'New Service Call',
      service_calls_none: 'No service call history found.',
@@ -458,6 +465,7 @@ const en = {
      add_element_tooltip: 'Add a new network element to the map',
      add_cable_tooltip: 'Add Cable',
      add_fosc_tooltip: 'Add FDH',
+     add_fdh_tooltip: 'Add FDH', // Added specific for FDH
      add_poll_tooltip: 'Add Hydro Poll',
      add_tower_tooltip: 'Add Tower',
      add_pop_tooltip: 'Add PoP',
@@ -797,4 +805,3 @@ const en = {
 };
 
 export default en;
-

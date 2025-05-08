@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark } from 'lucide-react'; // Added Landmark for Point of Reference
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark, FilePlus2, Printer, Send } from 'lucide-react'; // Added Landmark for Point of Reference, FilePlus2 for Make Invoice, Printer, Send
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -276,11 +276,11 @@ const ServiceDetailItem: React.FC<{ label: string; value?: string | null; childr
 const getTechnologyIcon = (technology?: string) => {
     const iconSize = "h-4 w-4 text-primary"; // Standardized icon size for technology
     switch (technology?.toLowerCase()) {
-        case 'fiber': return <Network className={iconSize} />; // Using Network as a generic fiber icon
-        case 'radio': return <Wifi className={iconSize} />;
-        case 'utp': return <Cable className={iconSize} />; // Using Cable for UTP
-        case 'satellite': return <Satellite className={iconSize} />;
-        default: return <ServerIcon className={iconSize} />; // Default icon
+        case 'fiber': return <Network className={iconSize} data-ai-hint="fiber optic" />; 
+        case 'radio': return <Wifi className={iconSize} data-ai-hint="radio signal" />;
+        case 'utp': return <Cable className={iconSize} data-ai-hint="ethernet cable" />; 
+        case 'satellite': return <Satellite className={iconSize} data-ai-hint="satellite dish" />;
+        default: return <ServerIcon className={iconSize} data-ai-hint="server rack" />;
     }
 };
 
@@ -378,6 +378,20 @@ function SubscriberProfilePage() {
     });
   };
 
+  const handleMakeInvoice = () => {
+    toast({
+        title: t('subscriber_profile.billing_make_invoice_button_toast_title'),
+        description: t('subscriber_profile.billing_make_invoice_button_toast_desc'),
+    });
+  };
+
+  const handleBillingItemAction = (action: 'print_pdf' | 'send_email', item: any) => {
+    toast({
+        title: `${t(`subscriber_profile.billing_action_${action}` as any, action.replace(/_/g, ' '))} (Simulated)`,
+        description: `Action for item ${item.id} is not yet implemented.`,
+    });
+  }
+
 
   const handleServiceAction = (action: 'sign' | 'cancel' | 'print_service_contract' | 'print_responsibility_term' | 'print_cancelation_term' | 'transfer_contract' | 'clear_mac' | 'update_login' | 'change_billing_date' | 'monitor_traffic', service: any) => {
     console.log(`${action} for service ${service.id}`);
@@ -408,9 +422,11 @@ function SubscriberProfilePage() {
   const allInvoices = React.useMemo(() => {
     if (!subscriber?.billing) return [];
     return [
-      ...(subscriber.billing.pendingInvoices || []),
-      ...(subscriber.billing.pastInvoices || []), // These are "Paid" invoices
-      ...(subscriber.billing.canceledInvoices || []),
+      ...(subscriber.billing.pendingInvoices || []).map(inv => ({...inv, itemType: 'invoice'})),
+      ...(subscriber.billing.pastInvoices || []).map(inv => ({...inv, itemType: 'invoice'})), // These are "Paid" invoices
+      ...(subscriber.billing.canceledInvoices || []).map(inv => ({...inv, itemType: 'invoice'})),
+      ...(subscriber.billing.paymentPlans || []).map(plan => ({...plan, itemType: 'paymentPlan'})),
+      ...(subscriber.billing.promisesToPay || []).map(promise => ({...promise, itemType: 'promiseToPay'})),
     ];
   }, [subscriber?.billing]);
 
@@ -420,15 +436,15 @@ function SubscriberProfilePage() {
       case 'All':
         return allInvoices;
       case 'Pending':
-        return subscriber.billing.pendingInvoices || [];
+        return (subscriber.billing.pendingInvoices || []).map(inv => ({...inv, itemType: 'invoice'}));
       case 'Paid':
-        return subscriber.billing.pastInvoices || []; // "Past" is now "Paid"
+        return (subscriber.billing.pastInvoices || []).map(inv => ({...inv, itemType: 'invoice'})); // "Past" is now "Paid"
       case 'Canceled':
-        return subscriber.billing.canceledInvoices || [];
+        return (subscriber.billing.canceledInvoices || []).map(inv => ({...inv, itemType: 'invoice'}));
       case 'PaymentPlan':
-        return subscriber.billing.paymentPlans || [];
+        return (subscriber.billing.paymentPlans || []).map(plan => ({...plan, itemType: 'paymentPlan'}));
       case 'PromiseToPay':
-        return subscriber.billing.promisesToPay || [];
+        return (subscriber.billing.promisesToPay || []).map(promise => ({...promise, itemType: 'promiseToPay'}));
       default:
         return [];
     }
@@ -792,7 +808,7 @@ function SubscriberProfilePage() {
         <TabsContent value="billing">
           <div className="mb-4 flex justify-between items-center">
              <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)} className="w-full">
-                <TabsList className="mb-4 grid w-full grid-cols-6 h-auto">
+                <TabsList className="grid w-full grid-cols-6 h-auto">
                     <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_all')}</TabsTrigger>
                     <TabsTrigger value="Pending"><Clock className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
                     <TabsTrigger value="Paid"><CheckCircle className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_paid')}</TabsTrigger>
@@ -801,23 +817,42 @@ function SubscriberProfilePage() {
                     <TabsTrigger value="PromiseToPay"><Handshake className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_promise_to_pay')}</TabsTrigger>
                 </TabsList>
              </Tabs>
-             {/* Add buttons for Billing actions here if needed */}
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white ml-4 shrink-0" onClick={handleMakeInvoice}>
+                <FilePlus2 className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_make_invoice_button')}
+              </Button>
           </div>
              <Card>
-                 <CardContent className="space-y-6 pt-6">
+                 <CardContent className="pt-6">
                     <TabsContent value="All" className="mt-0 space-y-2">
                          <h4 className="text-xs font-semibold mb-2 flex items-center gap-2"> {/* Font size reduced */}
                              <ListFilterIcon className={`${tabIconSize} text-primary`} /> {t('subscriber_profile.billing_all_invoices')} ({allInvoices.length})
                          </h4>
                          {allInvoices.length > 0 ? (
                              <ul className="space-y-2 text-xs">
-                                 {allInvoices.map(inv => (
-                                     <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md">
+                                 {allInvoices.map(item => (
+                                     <li key={item.id} className="flex justify-between items-center p-2 border rounded-md">
                                         <div>
-                                          <span>{inv.id} - {inv.date}</span>
-                                          <span className="ml-2 text-muted-foreground">(${inv.amount.toFixed(2)})</span>
+                                          <span>ID: {item.id} - {item.itemType === 'invoice' ? (item as any).date : (item as any).startDate || (item as any).promiseDate}</span>
+                                          <span className="ml-2 text-muted-foreground">(${(item as any).amount?.toFixed(2) || (item as any).installmentAmount?.toFixed(2)})</span>
                                         </div>
-                                        {getInvoiceStatusBadge(inv.status)}
+                                        <div className="flex items-center gap-2">
+                                            {item.itemType === 'invoice' ? getInvoiceStatusBadge((item as any).status) : <Badge variant="outline" className="text-xs">{t(`subscriber_profile.billing_item_type_${item.itemType}` as any, item.itemType)}</Badge>}
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                                                        <MoreVertical className={`${iconSize} h-3 w-3`} />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('print_pdf', item)}>
+                                                        <Printer className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_print_pdf')}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', item)}>
+                                                         <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
                                      </li>
                                  ))}
                              </ul>
@@ -834,8 +869,28 @@ function SubscriberProfilePage() {
                              <ul className="space-y-2 text-xs">
                                  {subscriber.billing.pendingInvoices.map(inv => (
                                      <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md bg-destructive/5">
-                                         <span>{inv.id} - {inv.date}</span>
-                                         <span className="font-medium">${inv.amount.toFixed(2)} ({t('subscriber_profile.invoice_status_due', 'Due')})</span>
+                                         <div>
+                                            <span>{inv.id} - {inv.date}</span>
+                                            <span className="font-medium ml-2">${inv.amount.toFixed(2)}</span>
+                                         </div>
+                                         <div className="flex items-center gap-2">
+                                            {getInvoiceStatusBadge(inv.status)}
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                                                        <MoreVertical className={`${iconSize} h-3 w-3`} />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('print_pdf', inv)}>
+                                                        <Printer className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_print_pdf')}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', inv)}>
+                                                         <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                         </div>
                                      </li>
                                  ))}
                              </ul>
@@ -852,8 +907,28 @@ function SubscriberProfilePage() {
                              <ul className="space-y-2 text-xs">
                                  {subscriber.billing.pastInvoices.map(inv => (
                                      <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md">
-                                         <span>{inv.id} - {inv.date}</span>
-                                         <span className="text-green-600">${inv.amount.toFixed(2)} ({t('subscriber_profile.invoice_status_paid', 'Paid')})</span>
+                                         <div>
+                                            <span>{inv.id} - {inv.date}</span>
+                                            <span className="text-green-600 ml-2">${inv.amount.toFixed(2)}</span>
+                                         </div>
+                                         <div className="flex items-center gap-2">
+                                            {getInvoiceStatusBadge(inv.status)}
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                                                        <MoreVertical className={`${iconSize} h-3 w-3`} />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('print_pdf', inv)}>
+                                                        <Printer className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_print_pdf')}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', inv)}>
+                                                         <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
                                      </li>
                                  ))}
                              </ul>
@@ -870,8 +945,28 @@ function SubscriberProfilePage() {
                             <ul className="space-y-2 text-xs">
                                 {subscriber.billing.canceledInvoices.map(inv => (
                                     <li key={inv.id} className="flex justify-between items-center p-2 border rounded-md">
-                                        <span>{inv.id} - {inv.date}</span>
-                                        <span className="text-muted-foreground">${inv.amount.toFixed(2)} ({inv.reason})</span>
+                                        <div>
+                                          <span>{inv.id} - {inv.date}</span>
+                                          <span className="text-muted-foreground ml-2">${inv.amount.toFixed(2)} ({inv.reason})</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {getInvoiceStatusBadge(inv.status)}
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                                                        <MoreVertical className={`${iconSize} h-3 w-3`} />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('print_pdf', inv)}>
+                                                        <Printer className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_print_pdf')}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', inv)}>
+                                                         <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
                                     </li>
                                 ))}
                             </ul>
@@ -888,7 +983,24 @@ function SubscriberProfilePage() {
                                 {subscriber.billing.paymentPlans.map(plan => (
                                     <li key={plan.id} className="flex justify-between items-center p-2 border rounded-md">
                                         <span>{t('subscriber_profile.billing_payment_plan_start_date')}: {plan.startDate} - {plan.installments} x ${plan.installmentAmount.toFixed(2)}</span>
+                                        <div className="flex items-center gap-2">
                                         <span className={`text-xs px-2 py-0.5 rounded-full ${plan.status === 'Active' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>{plan.status}</span>
+                                         <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                                                        <MoreVertical className={`${iconSize} h-3 w-3`} />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('print_pdf', plan)}>
+                                                        <Printer className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_print_pdf')}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', plan)}>
+                                                         <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
                                     </li>
                                 ))}
                             </ul>
@@ -905,7 +1017,24 @@ function SubscriberProfilePage() {
                                 {subscriber.billing.promisesToPay.map(promise => (
                                     <li key={promise.id} className="flex justify-between items-center p-2 border rounded-md">
                                         <span>{t('subscriber_profile.billing_promise_date')}: {promise.promiseDate} - ${promise.amount.toFixed(2)}</span>
-                                         <span className={`text-xs px-2 py-0.5 rounded-full ${promise.status === 'Pending' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}`}>{promise.status}</span>
+                                         <div className="flex items-center gap-2">
+                                            <span className={`text-xs px-2 py-0.5 rounded-full ${promise.status === 'Pending' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}`}>{promise.status}</span>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                                                        <MoreVertical className={`${iconSize} h-3 w-3`} />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('print_pdf', promise)}>
+                                                        <Printer className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_print_pdf')}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', promise)}>
+                                                         <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                         </div>
                                     </li>
                                 ))}
                             </ul>
@@ -1116,4 +1245,3 @@ function SubscriberProfilePage() {
     </div>
   );
 }
-
