@@ -509,9 +509,7 @@ function SubscriberProfilePage() {
 
         <TabsContent value="overview">
           <Card>
-            <CardHeader>
-            </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 pt-6">
               <OverviewSection
                 title={t('subscriber_profile.personal_info_section')}
                 icon={subscriber.type === 'Residential' ? User : Briefcase}
@@ -560,13 +558,18 @@ function SubscriberProfilePage() {
         </TabsContent>
 
         <TabsContent value="services">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                {/* Removed CardTitle and CardDescription from here */}
-              </div>
-                {/* Add Service Dialog Trigger */}
-               <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}> {/* Dialog */}
+            <Tabs defaultValue="All" value={activeServiceTab} onValueChange={(value) => setActiveServiceTab(value as ServiceTypeFilter)} className="mb-4">
+                <TabsList className="grid w-full grid-cols-6 h-auto">
+                    <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_all')}</TabsTrigger>
+                    <TabsTrigger value="Internet"><Wifi className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_internet')}</TabsTrigger>
+                    <TabsTrigger value="TV"><Tv className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_tv')}</TabsTrigger>
+                    <TabsTrigger value="Landline"><PhoneCall className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_landline')}</TabsTrigger>
+                    <TabsTrigger value="Mobile"><Smartphone className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_mobile')}</TabsTrigger>
+                    <TabsTrigger value="Combo"><Combine className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_combo')}</TabsTrigger>
+                </TabsList>
+            </Tabs>
+            <div className="mb-4 flex justify-end">
+                 <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
                  <DialogTrigger asChild>
                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                         <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.add_service_button')}
@@ -646,18 +649,9 @@ function SubscriberProfilePage() {
                   </Form>
                 </DialogContent>
               </Dialog>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="All" value={activeServiceTab} onValueChange={(value) => setActiveServiceTab(value as ServiceTypeFilter)}>
-                 <TabsList className="mb-4 grid w-full grid-cols-6 h-auto">
-                   <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_all')}</TabsTrigger>
-                   <TabsTrigger value="Internet"><Wifi className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_internet')}</TabsTrigger>
-                   <TabsTrigger value="TV"><Tv className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_tv')}</TabsTrigger>
-                   <TabsTrigger value="Landline"><PhoneCall className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_landline')}</TabsTrigger>
-                   <TabsTrigger value="Mobile"><Smartphone className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_mobile')}</TabsTrigger>
-                   <TabsTrigger value="Combo"><Combine className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_combo')}</TabsTrigger>
-                 </TabsList>
-                 <TabsContent value={activeServiceTab} className="mt-0">
+            </div>
+            <Card>
+                <CardContent className="pt-6">
                     {filteredServices.length > 0 ? (
                         <ul className="space-y-3">
                            {filteredServices.map(service => (
@@ -785,30 +779,23 @@ function SubscriberProfilePage() {
                     ) : (
                         <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.services_none_filtered')}</p>
                     )}
-                </TabsContent>
-              </Tabs>
-            </CardContent>
+                </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="billing">
-           <Card>
-             <CardHeader className="flex flex-row items-center justify-between">
-                 <div>
-                  {/* Removed CardTitle and CardDescription */}
-                 </div>
-             </CardHeader>
-             <CardContent className="space-y-6">
-                 <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)}>
-                    <TabsList className="mb-4 grid w-full grid-cols-6 h-auto">
-                       <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_all')}</TabsTrigger>
-                       <TabsTrigger value="Pending"><Clock className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
-                       <TabsTrigger value="Paid"><CheckCircle className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_paid')}</TabsTrigger>
-                       <TabsTrigger value="Canceled"><XCircle className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_canceled')}</TabsTrigger>
-                       <TabsTrigger value="PaymentPlan"><CalendarClock className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_payment_plan')}</TabsTrigger>
-                       <TabsTrigger value="PromiseToPay"><Handshake className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_promise_to_pay')}</TabsTrigger>
-                    </TabsList>
-
+             <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)} className="mb-4">
+                <TabsList className="mb-4 grid w-full grid-cols-6 h-auto">
+                    <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_all')}</TabsTrigger>
+                    <TabsTrigger value="Pending"><Clock className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
+                    <TabsTrigger value="Paid"><CheckCircle className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_paid')}</TabsTrigger>
+                    <TabsTrigger value="Canceled"><XCircle className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_canceled')}</TabsTrigger>
+                    <TabsTrigger value="PaymentPlan"><CalendarClock className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_payment_plan')}</TabsTrigger>
+                    <TabsTrigger value="PromiseToPay"><Handshake className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_promise_to_pay')}</TabsTrigger>
+                </TabsList>
+             </Tabs>
+             <Card>
+                 <CardContent className="space-y-6 pt-6">
                     <TabsContent value="All" className="mt-0 space-y-2">
                          <h4 className="text-xs font-semibold mb-2 flex items-center gap-2"> {/* Font size reduced */}
                              <ListFilterIcon className={`${tabIconSize} text-primary`} /> {t('subscriber_profile.billing_all_invoices')} ({allInvoices.length})
@@ -917,23 +904,19 @@ function SubscriberProfilePage() {
                             <p className="text-xs text-muted-foreground">{t('subscriber_profile.billing_no_promises_to_pay')}</p>
                         )}
                     </TabsContent>
-                 </Tabs>
-             </CardContent>
+                 </CardContent>
            </Card>
          </TabsContent>
 
 
         <TabsContent value="service-calls">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-               <div>
-                {/* Removed CardTitle and CardDescription */}
-               </div>
-                <Button size="sm">
+            <div className="mb-4 flex justify-end">
+                 <Button size="sm">
                         <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.service_calls_new_button')}
                 </Button>
-            </CardHeader>
-            <CardContent>
+            </div>
+          <Card>
+            <CardContent className="pt-6">
              {subscriber.serviceCalls && subscriber.serviceCalls.length > 0 ? (
                   <ul className="space-y-3">
                      {subscriber.serviceCalls.map(call => (
@@ -953,23 +936,20 @@ function SubscriberProfilePage() {
         </TabsContent>
 
         <TabsContent value="inventory">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-               <div>
-                {/* Removed CardTitle and CardDescription */}
-               </div>
+            <Tabs defaultValue="All" value={activeInventoryTab} onValueChange={(value) => setActiveInventoryTab(value as InventoryFilter)} className="mb-4">
+                <TabsList className="grid w-full grid-cols-3 h-auto">
+                    <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_all')}</TabsTrigger>
+                    <TabsTrigger value="Lent"><Package className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_lent')}</TabsTrigger>
+                    <TabsTrigger value="Sold"><DollarSign className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_sold')}</TabsTrigger>
+                </TabsList>
+            </Tabs>
+             <div className="mb-4 flex justify-end">
                <Button size="sm">
                         <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.inventory_assign_button')}
                </Button>
-            </CardHeader>
-            <CardContent>
-               <Tabs defaultValue="All" value={activeInventoryTab} onValueChange={(value) => setActiveInventoryTab(value as InventoryFilter)}>
-                  <TabsList className="mb-4 grid w-full grid-cols-3 h-auto">
-                     <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_all')}</TabsTrigger>
-                     <TabsTrigger value="Lent"><Package className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_lent')}</TabsTrigger>
-                     <TabsTrigger value="Sold"><DollarSign className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_sold')}</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value={activeInventoryTab} className="mt-0">
+            </div>
+            <Card>
+                <CardContent className="pt-6">
                      {filteredInventory.length > 0 ? (
                          <ul className="space-y-3">
                             {filteredInventory.map(item => (
@@ -989,23 +969,18 @@ function SubscriberProfilePage() {
                      ) : (
                          <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.inventory_none_filtered')}</p>
                      )}
-                  </TabsContent>
-               </Tabs>
-            </CardContent>
-          </Card>
+                </CardContent>
+            </Card>
         </TabsContent>
 
         <TabsContent value="documents">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                {/* Removed CardTitle and CardDescription */}
-              </div>
+            <div className="mb-4 flex justify-end">
               <Button size="sm">
                     <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.documents_upload_button')}
               </Button>
-            </CardHeader>
-            <CardContent>
+            </div>
+          <Card>
+            <CardContent className="pt-6">
               {subscriber.documents && subscriber.documents.length > 0 ? (
                 <ul className="space-y-3">
                   {subscriber.documents.map(doc => (
@@ -1025,16 +1000,13 @@ function SubscriberProfilePage() {
         </TabsContent>
 
         <TabsContent value="notes">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-               <div>
-                {/* Removed CardTitle and CardDescription */}
-               </div>
+            <div className="mb-4 flex justify-end">
                 <Button size="sm">
                         <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.notes_add_button')}
                 </Button>
-            </CardHeader>
-            <CardContent>
+            </div>
+          <Card>
+            <CardContent className="pt-6">
               {subscriber.notes && subscriber.notes.length > 0 ? (
                   <ul className="space-y-3">
                      {subscriber.notes.map(note => (
@@ -1053,10 +1025,7 @@ function SubscriberProfilePage() {
 
         <TabsContent value="history">
           <Card>
-            <CardHeader>
-              {/* Removed CardTitle and CardDescription */}
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               {subscriber.history && subscriber.history.length > 0 ? (
                   <ul className="space-y-3">
                      {subscriber.history.map(entry => (
@@ -1138,3 +1107,4 @@ function SubscriberProfilePage() {
     </div>
   );
 }
+
