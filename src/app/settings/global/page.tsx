@@ -71,16 +71,30 @@ export default function GlobalSettingsPage() {
 
   const form = useForm<GlobalSettingsFormData>({
     resolver: zodResolver(globalSettingsSchema),
-    // defaultValues will be set by useEffect
+    defaultValues: { // Ensure all fields, especially optional strings, have initial defined values
+      companyName: '',
+      companyLogoUrl: '',
+      defaultCurrency: '',
+      timezone: '',
+      language: 'en', // Default language
+    },
   });
 
   React.useEffect(() => {
     // Load settings only once on component mount
     loadGlobalSettings().then(settings => {
-      form.reset(settings);
+      // Ensure all loaded settings are defined or default to empty strings for form control
+      const validatedSettings = {
+        companyName: settings.companyName || '',
+        companyLogoUrl: settings.companyLogoUrl || '',
+        defaultCurrency: settings.defaultCurrency || '',
+        timezone: settings.timezone || '',
+        language: settings.language || 'en',
+      };
+      form.reset(validatedSettings);
       // Set initial locale from loaded settings
-      if (settings.language && typeof window !== 'undefined') {
-         setLocale(settings.language as Locale);
+      if (validatedSettings.language && typeof window !== 'undefined') {
+         setLocale(validatedSettings.language as Locale);
       }
     }).catch(error => {
       toast({
@@ -216,3 +230,4 @@ export default function GlobalSettingsPage() {
     </div>
   );
 }
+
