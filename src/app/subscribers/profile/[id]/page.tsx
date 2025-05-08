@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound } from 'lucide-react'; // Added ListFilterIcon, Network, Cable, Satellite, KeyRound
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser } from 'lucide-react'; // Added Eraser for Clear MAC
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -97,24 +97,25 @@ const getSubscriberData = (id: string | string[]) => {
                 technology: 'Fiber', downloadSpeed: '100 Mbps', uploadSpeed: '50 Mbps',
                 ipAddress: '203.0.113.10', onlineStatus: 'Online', authenticationType: 'PPPoE',
                 fdhId: 'FDH-Central-01', fdhPort: 'A3', pppoeUsername: 'user1@isp.com', pppoePassword: 'password123',
+                xponSn: 'GPON12345678', // Added xPON SN for Fiber
              },
              {
                 id: 'svc-7', type: 'Internet', plan: 'Radio Basic 20', popId: 'sim-2', status: 'Active',
                 technology: 'Radio', downloadSpeed: '20 Mbps', uploadSpeed: '5 Mbps',
                 ipAddress: '203.0.113.11', onlineStatus: 'Offline', authenticationType: 'IPxMAC',
-                apName: 'AP-North-Sector', macAddress: '00:1A:2B:3C:4D:5F',
+                apName: 'AP-North-Sector', macAddress: '00:1A:2B:3C:4D:5F', // MAC Address for Radio
              },
               {
                 id: 'svc-8', type: 'Internet', plan: 'UTP Office 50', popId: 'sim-1', status: 'Suspended',
                 technology: 'UTP', downloadSpeed: '50 Mbps', uploadSpeed: '50 Mbps',
                 ipAddress: '203.0.113.12', onlineStatus: 'Offline', authenticationType: 'StaticIP',
-                switchId: 'Switch-CORE-01-Port23',
+                switchId: 'Switch-CORE-01-Port23', macAddress: '11:22:33:AA:BB:CC', // MAC Address for UTP
              },
              {
                 id: 'svc-9', type: 'Internet', plan: 'Satellite Remote 10', popId: 'sim-3', status: 'Canceled',
                 technology: 'Satellite', downloadSpeed: '10 Mbps', uploadSpeed: '1 Mbps',
                 ipAddress: '203.0.113.14', onlineStatus: 'Offline', authenticationType: 'IPoE',
-                ipoeUsername: 'sat_user_001', ipoePassword: 'securepassword',
+                ipoeUsername: 'sat_user_001', ipoePassword: 'securepassword', macAddress: 'DD:EE:FF:77:88:99', // MAC Address for Satellite
              },
             { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: 'sim-1', status: 'Active' },
             { id: 'svc-4', type: 'Landline', plan: 'Unlimited Local', popId: 'sim-1', status: 'Active' },
@@ -192,7 +193,7 @@ const getSubscriberData = (id: string | string[]) => {
                 id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: 'sim-2', status: 'Active',
                 technology: 'Fiber', downloadSpeed: '1 Gbps', uploadSpeed: '500 Mbps',
                 ipAddress: '203.0.113.20', onlineStatus: 'Online', authenticationType: 'StaticIP',
-                fdhId: 'FDH-Commercial-01', fdhPort: 'B1',
+                fdhId: 'FDH-Commercial-01', fdhPort: 'B1', xponSn: 'GPON98765432', // Added xPON SN
              }
         ];
         baseData.billing.balance = 150.75;
@@ -333,7 +334,7 @@ function SubscriberProfilePage() {
     });
   };
 
-  const handleServiceAction = (action: 'sign' | 'cancel' | 'print_service_contract' | 'print_responsibility_term' | 'print_cancelation_term' | 'transfer_contract', serviceId: string) => {
+  const handleServiceAction = (action: 'sign' | 'cancel' | 'print_service_contract' | 'print_responsibility_term' | 'print_cancelation_term' | 'transfer_contract' | 'clear_mac', serviceId: string) => {
     console.log(`${action} for service ${serviceId}`);
     toast({
       title: `${t(`subscriber_profile.service_action_${action}` as any, action.replace(/_/g, ' '))} (Simulated)`,
@@ -415,7 +416,7 @@ function SubscriberProfilePage() {
         <CardHeader>
           <div className="flex items-center gap-4">
             {subscriber.type === 'Residential' ? (
-              <User className="h-4 w-4 text-muted-foreground" />
+              <User className="h-4 w-4 text-muted-foreground" /> 
             ) : (
               <Building className="h-4 w-4 text-muted-foreground" />
             )}
@@ -636,9 +637,18 @@ function SubscriberProfilePage() {
                                               {service.technology === 'Fiber' && <>
                                                 <ServiceDetailItem label="subscriber_profile.services_fdh_id" value={service.fdhId} />
                                                 <ServiceDetailItem label="subscriber_profile.services_fdh_port" value={service.fdhPort} />
+                                                <ServiceDetailItem label="subscriber_profile.services_xpon_sn" value={service.xponSn} />
                                               </>}
-                                              {service.technology === 'Radio' && <ServiceDetailItem label="subscriber_profile.services_ap_name" value={service.apName} />}
-                                              {service.technology === 'UTP' && <ServiceDetailItem label="subscriber_profile.services_switch_id" value={service.switchId} />}
+                                              {service.technology === 'Radio' && <>
+                                                <ServiceDetailItem label="subscriber_profile.services_ap_name" value={service.apName} />
+                                                <ServiceDetailItem label="subscriber_profile.services_mac_address" value={service.macAddress} />
+                                              </>}
+                                              {service.technology === 'UTP' && <>
+                                                <ServiceDetailItem label="subscriber_profile.services_switch_id" value={service.switchId} />
+                                                 <ServiceDetailItem label="subscriber_profile.services_mac_address" value={service.macAddress} />
+                                              </>}
+                                               {service.technology === 'Satellite' && <ServiceDetailItem label="subscriber_profile.services_mac_address" value={service.macAddress} />}
+
 
                                               {/* Authentication Specific */}
                                                <ServiceDetailItem label="subscriber_profile.services_auth_type" value={service.authenticationType ? t(`subscriber_profile.auth_type_${service.authenticationType.toLowerCase()}` as any, service.authenticationType) : undefined} />
@@ -650,7 +660,9 @@ function SubscriberProfilePage() {
                                                 <ServiceDetailItem label="subscriber_profile.services_ipoe_user" value={service.ipoeUsername} />
                                                 <ServiceDetailItem label="subscriber_profile.services_ipoe_pass" value={service.ipoePassword ? '********' : undefined} />
                                               </>}
-                                              {service.authenticationType === 'IPxMAC' && <ServiceDetailItem label="subscriber_profile.services_mac_address" value={service.macAddress} />}
+                                              {service.authenticationType === 'IPxMAC' && !service.technology?.toLowerCase().includes('fiber') && (
+                                                  <ServiceDetailItem label="subscriber_profile.services_mac_address" value={service.macAddress} />
+                                              )}
                                             </div>
                                           )}
                                        </div>
@@ -689,6 +701,15 @@ function SubscriberProfilePage() {
                                                     <DropdownMenuItem onClick={() => handleServiceAction('print_cancelation_term', service.id)}>
                                                         {t('subscriber_profile.service_action_print_cancelation_term', 'Print Term of Cancelation')}
                                                     </DropdownMenuItem>
+                                                    {service.type === 'Internet' && (
+                                                        <>
+                                                          <DropdownMenuSeparator />
+                                                          <DropdownMenuItem onClick={() => handleServiceAction('clear_mac', service.id)}>
+                                                            <Eraser className={`mr-2 ${iconSize}`} />
+                                                            {t('subscriber_profile.service_action_clear_mac', 'Clear MAC')}
+                                                          </DropdownMenuItem>
+                                                        </>
+                                                    )}
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service.id)}>
                                                         {t('subscriber_profile.service_action_transfer_contract', 'Transfer Contract')}
@@ -997,3 +1018,4 @@ function SubscriberProfilePage() {
     </div>
   );
 }
+

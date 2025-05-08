@@ -276,7 +276,7 @@ const fr = {
      add_service_save_button: 'Ajouter le service',
      add_service_saving_button: 'Ajout...',
      add_service_success_toast_title: 'Service ajouté (Simulé)',
-     add_service_success_toast_description: 'Service {serviceType} ajouté pour {name}.',
+     add_service_success_toast_description: '{serviceType} service ajouté pour {name}.',
      services_pop_label: 'PoP',
      services_none: 'Aucun service actif trouvé pour cet abonné.',
      services_none_filtered: 'Aucun service trouvé correspondant au filtre actuel.',
@@ -287,10 +287,10 @@ const fr = {
      services_filter_landline: 'Fixe',
      services_filter_mobile: 'Mobile',
      services_filter_combo: 'Combo',
-     services_type_internet: 'Internet Service',
-     services_type_tv: 'TV Service',
-     services_type_landline: 'Landline Service',
-     services_type_mobile: 'Mobile Service',
+     services_type_internet: 'Service Internet',
+     services_type_tv: 'Service TV',
+     services_type_landline: 'Service Fixe',
+     services_type_mobile: 'Service Mobile',
      services_type_combo: 'Forfait Combo',
      services_type_other: 'Autre Service',
      service_actions_sr: 'Actions de service',
@@ -300,6 +300,7 @@ const fr = {
      service_action_print_responsibility_term: 'Imprimer le Terme de Responsabilité',
      service_action_print_cancelation_term: 'Imprimer le Terme d\'Annulation',
      service_action_transfer_contract: 'Transférer le Contrat',
+     service_action_clear_mac: 'Effacer MAC',
      billing_card_title: 'Facturation',
      billing_card_description: 'Factures, paiements et historique de facturation.',
      billing_balance: 'Solde actuel',
@@ -379,6 +380,7 @@ const fr = {
      services_ipoe_user: 'Util. IPoE',
      services_ipoe_pass: 'Mot de Passe IPoE',
      services_mac_address: 'Adresse MAC',
+     services_xpon_sn: 'N° Série xPON',
    },
     // Dashboard Page
    dashboard: {
@@ -689,3 +691,4 @@ const fr = {
 };
 
 export default fr;
+

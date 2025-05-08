@@ -300,6 +300,7 @@ const en = {
      service_action_print_responsibility_term: 'Print Term of Responsibility',
      service_action_print_cancelation_term: 'Print Term of Cancelation',
      service_action_transfer_contract: 'Transfer Contract',
+     service_action_clear_mac: 'Clear MAC',
      billing_card_title: 'Billing',
      billing_card_description: 'Invoices, payments, and billing history.',
      billing_balance: 'Current Balance',
@@ -379,6 +380,7 @@ const en = {
      services_ipoe_user: 'IPoE User',
      services_ipoe_pass: 'IPoE Pass',
      services_mac_address: 'MAC Address',
+     services_xpon_sn: 'xPON SN',
    },
     // Dashboard Page
    dashboard: {
@@ -690,3 +692,4 @@ const en = {
 };
 
 export default en;
+

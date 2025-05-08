@@ -72,10 +72,8 @@ const pt = {
     my_account: 'Minha Conta',
     profile_menu_item: 'Perfil',
     logout_menu_item: 'Sair',
-    profile_action_title: 'Perfil',
-    profile_action_desc: 'Navegar para a página de perfil (Não Implementado)',
-    logout_action_title: 'Sair',
-    logout_action_desc: 'Processo de logout iniciado (Não Implementado)',
+    profile_action_title: 'Sair',
+    profile_action_desc: 'Processo de logout iniciado (Não Implementado)',
     toggle_theme: 'Alternar tema',
   },
   // Global Settings Page
@@ -300,6 +298,7 @@ const pt = {
     service_action_print_responsibility_term: 'Imprimir Termo de Responsabilidade',
     service_action_print_cancelation_term: 'Imprimir Termo de Cancelamento',
     service_action_transfer_contract: 'Transferir Contrato',
+    service_action_clear_mac: 'Limpar MAC',
     billing_card_title: 'Faturamento',
     billing_card_description: 'Faturas, pagamentos e histórico de faturamento.',
     billing_balance: 'Saldo Atual',
@@ -379,6 +378,7 @@ const pt = {
     services_ipoe_user: 'Usuário IPoE',
     services_ipoe_pass: 'Senha IPoE',
     services_mac_address: 'Endereço MAC',
+    services_xpon_sn: 'S/N xPON',
   },
    // Dashboard Page
   dashboard: {
@@ -432,8 +432,7 @@ const pt = {
      add_element_button: 'Adicionar Elemento',
      add_element_tooltip: 'Adicionar um novo elemento de rede ao mapa',
      add_cable_tooltip: 'Adicionar Cabo',
-     add_fosc_tooltip: 'Adicionar FOSC',
-     add_fdh_tooltip: 'Adicionar FDH',
+     add_fosc_tooltip: 'Adicionar FDH',
      add_poll_tooltip: 'Adicionar Poste Hidro',
      add_tower_tooltip: 'Adicionar Torre',
      add_pop_tooltip: 'Adicionar PoP',
@@ -690,3 +689,4 @@ const pt = {
 };
 
 export default pt;
+
