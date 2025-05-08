@@ -5,9 +5,9 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  // CardDescription, // Removed
+  // CardHeader, // Removed
+  // CardTitle, // Removed
 } from "@/components/ui/card";
 import {
   Table,
@@ -19,9 +19,15 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Edit, Trash2, RefreshCw } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, RefreshCw, MoreVertical } from 'lucide-react'; // Added MoreVertical
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Olt {
   id: string;
@@ -67,6 +73,13 @@ export default function OltsPage() {
     });
   };
 
+  const handleListOnxs = (oltId: string, type: 'provisioned' | 'non-provisioned') => {
+    toast({
+        title: t(`fttx_olts.list_onxs_title_${type}`, `List ${type} ONXs (Not Implemented)`),
+        description: t(`fttx_olts.list_onxs_desc_${type}`, `Listing ${type} ONXs for OLT {id} is not yet available.`).replace('{id}', oltId),
+    });
+  }
+
   const getTechnologyBadgeVariant = (technology: Olt['technology']) => {
     switch (technology) {
       case 'GPON':
@@ -96,13 +109,8 @@ export default function OltsPage() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">{t('fttx_olts.table_title', 'Registered OLTs')}</CardTitle>
-          <CardDescription className="text-xs">
-            {t('fttx_olts.table_description', 'View and manage your Optical Line Terminals.')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        {/* CardHeader and CardDescription removed */}
+        <CardContent className="pt-6"> {/* Added pt-6 for spacing after removing CardHeader */}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -143,6 +151,22 @@ export default function OltsPage() {
                                 <Trash2 className={iconSize} />
                                 <span className="sr-only">{t('fttx_olts.action_delete', 'Delete')}</span>
                             </Button>
+                             <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                                        <MoreVertical className={iconSize} />
+                                        <span className="sr-only">{t('fttx_olts.olt_actions_menu', 'OLT Actions')}</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => handleListOnxs(olt.id, 'non-provisioned')}>
+                                        {t('fttx_olts.list_non_provisioned_onxs', 'List Non-Provisioned ONXs')}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleListOnxs(olt.id, 'provisioned')}>
+                                        {t('fttx_olts.list_provisioned_onxs', 'List Provisioned ONXs')}
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </TableCell>
                     </TableRow>
                   ))

@@ -784,8 +784,14 @@ const fr = {
     edit_olt_not_implemented_desc: 'La modification de l\'OLT {id} n\'est pas encore disponible.',
     delete_olt_not_implemented_title: 'Supprimer OLT (Non implémenté)',
     delete_olt_not_implemented_desc: 'La suppression de l\'OLT {id} n\'est pas encore disponible.',
+    olt_actions_menu: 'Actions OLT', // Added
+    list_non_provisioned_onxs: 'Lister ONXs Non Provisionnés', // Added
+    list_provisioned_onxs: 'Lister ONXs Provisionnés', // Added
+    list_onxs_title_provisioned: 'Lister ONXs Provisionnés (Non implémenté)', // Added
+    list_onxs_desc_provisioned: 'La liste des ONXs provisionnés pour l\'OLT {id} n\'est pas encore disponible.', // Added
+    list_onxs_title_non_provisioned: 'Lister ONXs Non Provisionnés (Non implémenté)', // Corrected key
+    list_onxs_desc_non_provisioned: 'La liste des ONXs non provisionnés pour l\'OLT {id} n\'est pas encore disponible.', // Corrected key
   },
 };
 
 export default fr;
-
