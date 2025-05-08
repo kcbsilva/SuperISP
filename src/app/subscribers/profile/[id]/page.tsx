@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart } from 'lucide-react'; // Added LineChart
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark } from 'lucide-react'; // Added Landmark for Point of Reference
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -90,6 +90,7 @@ const getSubscriberData = (id: string | string[]) => {
         type: 'Residential',
         status: 'Active',
         address: '123 Placeholder St, Anytown, USA 12345',
+        pointOfReference: 'Near the old oak tree', // Added Point of Reference
         email: `subscriber${id}@example.com`,
         phone: `555-0${id}`,
         landline: `555-1${id}`,
@@ -174,6 +175,7 @@ const getSubscriberData = (id: string | string[]) => {
     if (id === 'sub-1') {
         baseData.name = 'Alice Wonderland';
         baseData.address = '123 Fantasy Lane, Wonderland, WND 12345';
+        baseData.pointOfReference = 'Next to the Mad Hatter Tea Party';
         baseData.email = 'alice@example.com';
         baseData.phone = '555-1111';
         baseData.landline = '555-1010';
@@ -188,6 +190,7 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.type = 'Commercial';
         baseData.companyName = 'Bob The Builder Inc.';
         baseData.address = '456 Construction Ave, Builderville, BLD 67890';
+        baseData.pointOfReference = 'Yellow crane visible from the street';
         baseData.email = 'bob@example.com';
         baseData.phone = '555-2222';
         baseData.landline = '555-2020';
@@ -532,7 +535,10 @@ function SubscriberProfilePage() {
                 title={t('subscriber_profile.address_section')}
                 icon={MapPinIcon}
               >
-                <OverviewDetailItem icon={Home} label={t('subscriber_profile.overview_address')} value={subscriber.address} />
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <OverviewDetailItem icon={Home} label={t('subscriber_profile.overview_address')} value={subscriber.address} />
+                    <OverviewDetailItem icon={Landmark} label={t('subscriber_profile.overview_point_of_reference')} value={subscriber.pointOfReference} />
+                 </div>
               </OverviewSection>
 
               <OverviewSection
@@ -558,7 +564,8 @@ function SubscriberProfilePage() {
         </TabsContent>
 
         <TabsContent value="services">
-            <Tabs defaultValue="All" value={activeServiceTab} onValueChange={(value) => setActiveServiceTab(value as ServiceTypeFilter)} className="mb-4">
+          <div className="mb-4 flex justify-between items-center">
+            <Tabs defaultValue="All" value={activeServiceTab} onValueChange={(value) => setActiveServiceTab(value as ServiceTypeFilter)} className="w-full">
                 <TabsList className="grid w-full grid-cols-6 h-auto">
                     <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_all')}</TabsTrigger>
                     <TabsTrigger value="Internet"><Wifi className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_internet')}</TabsTrigger>
@@ -568,88 +575,87 @@ function SubscriberProfilePage() {
                     <TabsTrigger value="Combo"><Combine className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_combo')}</TabsTrigger>
                 </TabsList>
             </Tabs>
-            <div className="mb-4 flex justify-end">
-                 <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
-                 <DialogTrigger asChild>
-                   <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.add_service_button')}
-                   </Button>
-                 </DialogTrigger>
-                 <DialogContent className="sm:max-w-[425px]">
-                   <DialogHeader>
-                     <DialogTitle>{t('subscriber_profile.add_service_dialog_title')}</DialogTitle>
-                     <DialogDescription>
-                       {t('subscriber_profile.add_service_dialog_description')}
-                     </DialogDescription>
-                   </DialogHeader>
-                   <Form {...addServiceForm}>
-                     <form onSubmit={addServiceForm.handleSubmit(handleAddServiceSubmit)} className="grid gap-4 py-4">
-                       <FormField
-                        control={addServiceForm.control}
-                        name="serviceType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>{t('subscriber_profile.add_service_type_label')}</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder={t('subscriber_profile.add_service_type_placeholder')} />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Internet">{t('subscriber_profile.add_service_type_internet')}</SelectItem>
-                                <SelectItem value="TV">{t('subscriber_profile.add_service_type_tv')}</SelectItem>
-                                <SelectItem value="Phone">{t('subscriber_profile.add_service_type_landline')}</SelectItem>
-                                <SelectItem value="Mobile">{t('subscriber_profile.add_service_type_mobile')}</SelectItem>
-                                <SelectItem value="Combo">{t('subscriber_profile.add_service_type_combo')}</SelectItem>
-                                <SelectItem value="Other">{t('subscriber_profile.add_service_type_other')}</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={addServiceForm.control}
-                        name="popId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>{t('subscriber_profile.add_service_pop_label')}</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingPops || !!popsError}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder={isLoadingPops ? t('subscriber_profile.add_service_pop_loading') : popsError ? t('subscriber_profile.add_service_pop_error') : t('subscriber_profile.add_service_pop_placeholder')} />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {!isLoadingPops && !popsError && pops.map((pop) => (
-                                  <SelectItem key={pop.id.toString()} value={pop.id.toString()}>
-                                    {pop.name} ({pop.location})
-                                  </SelectItem>
-                                ))}
-                                 {isLoadingPops && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_loading')}</div>}
-                                 {popsError && <div className="p-2 text-center text-destructive text-xs">{t('subscriber_profile.add_service_pop_error')}</div>}
-                                 {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_none')}</div>}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <DialogFooter>
-                        <DialogClose asChild>
-                          <Button type="button" variant="outline" disabled={addServiceForm.formState.isSubmitting}>{t('subscriber_profile.add_service_cancel_button')}</Button>
-                        </DialogClose>
-                        <Button type="submit" disabled={addServiceForm.formState.isSubmitting}>
-                          {addServiceForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                          {addServiceForm.formState.isSubmitting ? t('subscriber_profile.add_service_saving_button') : t('subscriber_profile.add_service_save_button')}
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
-            </div>
+            <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white ml-4 shrink-0">
+                  <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.add_service_button')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>{t('subscriber_profile.add_service_dialog_title')}</DialogTitle>
+                  <DialogDescription>
+                    {t('subscriber_profile.add_service_dialog_description')}
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...addServiceForm}>
+                  <form onSubmit={addServiceForm.handleSubmit(handleAddServiceSubmit)} className="grid gap-4 py-4">
+                    <FormField
+                      control={addServiceForm.control}
+                      name="serviceType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('subscriber_profile.add_service_type_label')}</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder={t('subscriber_profile.add_service_type_placeholder')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Internet">{t('subscriber_profile.add_service_type_internet')}</SelectItem>
+                              <SelectItem value="TV">{t('subscriber_profile.add_service_type_tv')}</SelectItem>
+                              <SelectItem value="Phone">{t('subscriber_profile.add_service_type_landline')}</SelectItem>
+                              <SelectItem value="Mobile">{t('subscriber_profile.add_service_type_mobile')}</SelectItem>
+                              <SelectItem value="Combo">{t('subscriber_profile.add_service_type_combo')}</SelectItem>
+                              <SelectItem value="Other">{t('subscriber_profile.add_service_type_other')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={addServiceForm.control}
+                      name="popId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('subscriber_profile.add_service_pop_label')}</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingPops || !!popsError}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder={isLoadingPops ? t('subscriber_profile.add_service_pop_loading') : popsError ? t('subscriber_profile.add_service_pop_error') : t('subscriber_profile.add_service_pop_placeholder')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {!isLoadingPops && !popsError && pops.map((pop) => (
+                                <SelectItem key={pop.id.toString()} value={pop.id.toString()}>
+                                  {pop.name} ({pop.location})
+                                </SelectItem>
+                              ))}
+                               {isLoadingPops && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_loading')}</div>}
+                               {popsError && <div className="p-2 text-center text-destructive text-xs">{t('subscriber_profile.add_service_pop_error')}</div>}
+                               {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_none')}</div>}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button type="button" variant="outline" disabled={addServiceForm.formState.isSubmitting}>{t('subscriber_profile.add_service_cancel_button')}</Button>
+                      </DialogClose>
+                      <Button type="submit" disabled={addServiceForm.formState.isSubmitting}>
+                        {addServiceForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
+                        {addServiceForm.formState.isSubmitting ? t('subscriber_profile.add_service_saving_button') : t('subscriber_profile.add_service_save_button')}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
             <Card>
                 <CardContent className="pt-6">
                     {filteredServices.length > 0 ? (
@@ -784,7 +790,8 @@ function SubscriberProfilePage() {
         </TabsContent>
 
         <TabsContent value="billing">
-             <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)} className="mb-4">
+          <div className="mb-4 flex justify-between items-center">
+             <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)} className="w-full">
                 <TabsList className="mb-4 grid w-full grid-cols-6 h-auto">
                     <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_all')}</TabsTrigger>
                     <TabsTrigger value="Pending"><Clock className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
@@ -794,6 +801,8 @@ function SubscriberProfilePage() {
                     <TabsTrigger value="PromiseToPay"><Handshake className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_promise_to_pay')}</TabsTrigger>
                 </TabsList>
              </Tabs>
+             {/* Add buttons for Billing actions here if needed */}
+          </div>
              <Card>
                  <CardContent className="space-y-6 pt-6">
                     <TabsContent value="All" className="mt-0 space-y-2">
@@ -911,7 +920,7 @@ function SubscriberProfilePage() {
 
         <TabsContent value="service-calls">
             <div className="mb-4 flex justify-end">
-                 <Button size="sm">
+                 <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                         <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.service_calls_new_button')}
                 </Button>
             </div>
@@ -936,18 +945,18 @@ function SubscriberProfilePage() {
         </TabsContent>
 
         <TabsContent value="inventory">
-            <Tabs defaultValue="All" value={activeInventoryTab} onValueChange={(value) => setActiveInventoryTab(value as InventoryFilter)} className="mb-4">
+          <div className="mb-4 flex justify-between items-center">
+            <Tabs defaultValue="All" value={activeInventoryTab} onValueChange={(value) => setActiveInventoryTab(value as InventoryFilter)} className="w-full">
                 <TabsList className="grid w-full grid-cols-3 h-auto">
                     <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_all')}</TabsTrigger>
                     <TabsTrigger value="Lent"><Package className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_lent')}</TabsTrigger>
                     <TabsTrigger value="Sold"><DollarSign className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_sold')}</TabsTrigger>
                 </TabsList>
             </Tabs>
-             <div className="mb-4 flex justify-end">
-               <Button size="sm">
-                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.inventory_assign_button')}
-               </Button>
-            </div>
+            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white ml-4 shrink-0">
+              <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.inventory_assign_button')}
+            </Button>
+          </div>
             <Card>
                 <CardContent className="pt-6">
                      {filteredInventory.length > 0 ? (
@@ -975,7 +984,7 @@ function SubscriberProfilePage() {
 
         <TabsContent value="documents">
             <div className="mb-4 flex justify-end">
-              <Button size="sm">
+              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                     <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.documents_upload_button')}
               </Button>
             </div>
@@ -1001,7 +1010,7 @@ function SubscriberProfilePage() {
 
         <TabsContent value="notes">
             <div className="mb-4 flex justify-end">
-                <Button size="sm">
+                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                         <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.notes_add_button')}
                 </Button>
             </div>

@@ -245,6 +245,7 @@ const pt = {
     overview_type: 'Tipo',
     overview_status: 'Status',
     overview_address: 'Endereço',
+    overview_point_of_reference: 'Ponto de Referência', // Added translation
     overview_email: 'Email',
     overview_phone: 'Telefone',
     overview_landline: 'Telefone Fixo',
@@ -794,3 +795,4 @@ const pt = {
 };
 
 export default pt;
+

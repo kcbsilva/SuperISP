@@ -247,6 +247,7 @@ const fr = {
      overview_type: 'Type',
      overview_status: 'Statut',
      overview_address: 'Adresse',
+     overview_point_of_reference: 'Point de Référence', // Added translation
      overview_email: 'Email',
      overview_phone: 'Téléphone',
      overview_landline: 'Téléphone Fixe',
@@ -796,3 +797,4 @@ const fr = {
 };
 
 export default fr;
+

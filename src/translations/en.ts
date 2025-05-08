@@ -247,6 +247,7 @@ const en = {
      overview_type: 'Type',
      overview_status: 'Status',
      overview_address: 'Address',
+     overview_point_of_reference: 'Point of Reference', // Added translation
      overview_email: 'Email',
      overview_phone: 'Phone',
      overview_landline: 'Landline',
