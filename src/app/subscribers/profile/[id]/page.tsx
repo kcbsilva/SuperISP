@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser } from 'lucide-react'; // Added Eraser for Clear MAC
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare } from 'lucide-react'; // Added Eraser for Clear MAC, KeySquare for Update Login
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -40,6 +40,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -63,6 +64,14 @@ const addServiceSchema = z.object({
 });
 
 type AddServiceFormData = z.infer<typeof addServiceSchema>;
+
+// Validation Schema for Update Login form
+const updateLoginSchema = z.object({
+  pppoeUsername: z.string().min(1, "PPPoE Username is required."),
+  pppoePassword: z.string().min(1, "PPPoE Password is required."),
+});
+type UpdateLoginFormData = z.infer<typeof updateLoginSchema>;
+
 
 // Types for service filtering
 type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile' | 'Combo';
@@ -279,6 +288,8 @@ function SubscriberProfilePage() {
   const { toast } = useToast();
   const { t, locale } = useLocale();
   const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = React.useState(false);
+  const [isUpdateLoginDialogOpen, setIsUpdateLoginDialogOpen] = React.useState(false);
+  const [selectedServiceForLoginUpdate, setSelectedServiceForLoginUpdate] = React.useState<any | null>(null);
   const [activeServiceTab, setActiveServiceTab] = React.useState<ServiceTypeFilter>('All');
   const [activeInventoryTab, setActiveInventoryTab] = React.useState<InventoryFilter>('All');
   const [activeBillingTab, setActiveBillingTab] = React.useState<BillingFilter>('Pending'); // Default to pending
@@ -298,6 +309,24 @@ function SubscriberProfilePage() {
       popId: '',
     },
   });
+
+  const updateLoginForm = useForm<UpdateLoginFormData>({
+    resolver: zodResolver(updateLoginSchema),
+    defaultValues: {
+      pppoeUsername: '',
+      pppoePassword: '',
+    },
+  });
+
+  React.useEffect(() => {
+    if (selectedServiceForLoginUpdate && selectedServiceForLoginUpdate.authenticationType === 'PPPoE') {
+      updateLoginForm.reset({
+        pppoeUsername: selectedServiceForLoginUpdate.pppoeUsername || '',
+        pppoePassword: selectedServiceForLoginUpdate.pppoePassword || '',
+      });
+    }
+  }, [selectedServiceForLoginUpdate, updateLoginForm]);
+
 
   const subscriber = React.useMemo(() => getSubscriberData(subscriberId), [subscriberId]);
 
@@ -334,12 +363,30 @@ function SubscriberProfilePage() {
     });
   };
 
-  const handleServiceAction = (action: 'sign' | 'cancel' | 'print_service_contract' | 'print_responsibility_term' | 'print_cancelation_term' | 'transfer_contract' | 'clear_mac', serviceId: string) => {
-    console.log(`${action} for service ${serviceId}`);
+  const handleUpdateLoginSubmit = (data: UpdateLoginFormData) => {
+    console.log('Update Login Data:', data, 'for service:', selectedServiceForLoginUpdate?.id);
+    // Here you would typically call an API to update the login credentials
+    updateLoginForm.reset();
+    setIsUpdateLoginDialogOpen(false);
+    setSelectedServiceForLoginUpdate(null);
     toast({
-      title: `${t(`subscriber_profile.service_action_${action}` as any, action.replace(/_/g, ' '))} (Simulated)`,
-      description: `Action for service ${serviceId} is not yet implemented.`,
+      title: t('subscriber_profile.update_login_success_toast_title'),
+      description: t('subscriber_profile.update_login_success_toast_description'),
     });
+  };
+
+
+  const handleServiceAction = (action: 'sign' | 'cancel' | 'print_service_contract' | 'print_responsibility_term' | 'print_cancelation_term' | 'transfer_contract' | 'clear_mac' | 'update_login', service: any) => {
+    console.log(`${action} for service ${service.id}`);
+    if (action === 'update_login') {
+        setSelectedServiceForLoginUpdate(service);
+        setIsUpdateLoginDialogOpen(true);
+    } else {
+        toast({
+            title: `${t(`subscriber_profile.service_action_${action}` as any, action.replace(/_/g, ' '))} (Simulated)`,
+            description: `Action for service ${service.id} is not yet implemented.`,
+        });
+    }
   };
 
   const filteredServices = React.useMemo(() => {
@@ -685,33 +732,39 @@ function SubscriberProfilePage() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem onClick={() => handleServiceAction('sign', service.id)}>
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('sign', service)}>
                                                         {t('subscriber_profile.service_action_sign', 'Sign Contract')}
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleServiceAction('cancel', service.id)} className="text-destructive">
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('cancel', service)} className="text-destructive">
                                                         {t('subscriber_profile.service_action_cancel', 'Cancel Contract')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator />
-                                                    <DropdownMenuItem onClick={() => handleServiceAction('print_service_contract', service.id)}>
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('print_service_contract', service)}>
                                                         {t('subscriber_profile.service_action_print_service_contract', 'Print Service Contract')}
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleServiceAction('print_responsibility_term', service.id)}>
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('print_responsibility_term', service)}>
                                                         {t('subscriber_profile.service_action_print_responsibility_term', 'Print Term of Responsibility')}
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleServiceAction('print_cancelation_term', service.id)}>
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('print_cancelation_term', service)}>
                                                         {t('subscriber_profile.service_action_print_cancelation_term', 'Print Term of Cancelation')}
                                                     </DropdownMenuItem>
                                                     {service.type === 'Internet' && (
                                                         <>
                                                           <DropdownMenuSeparator />
-                                                          <DropdownMenuItem onClick={() => handleServiceAction('clear_mac', service.id)}>
+                                                          <DropdownMenuItem onClick={() => handleServiceAction('clear_mac', service)}>
                                                             <Eraser className={`mr-2 ${iconSize}`} />
                                                             {t('subscriber_profile.service_action_clear_mac', 'Clear MAC')}
                                                           </DropdownMenuItem>
+                                                           {service.authenticationType === 'PPPoE' && (
+                                                                <DropdownMenuItem onClick={() => handleServiceAction('update_login', service)}>
+                                                                    <KeySquare className={`mr-2 ${iconSize}`} />
+                                                                    {t('subscriber_profile.service_action_update_login', 'Update Login')}
+                                                                </DropdownMenuItem>
+                                                            )}
                                                         </>
                                                     )}
                                                     <DropdownMenuSeparator />
-                                                    <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service.id)}>
+                                                    <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service)}>
                                                         {t('subscriber_profile.service_action_transfer_contract', 'Transfer Contract')}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
@@ -1015,7 +1068,65 @@ function SubscriberProfilePage() {
         </TabsContent>
 
       </Tabs>
+
+      {/* Update Login Dialog */}
+      <Dialog open={isUpdateLoginDialogOpen} onOpenChange={(isOpen) => {
+          setIsUpdateLoginDialogOpen(isOpen);
+          if (!isOpen) setSelectedServiceForLoginUpdate(null);
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('subscriber_profile.update_login_dialog_title')}</DialogTitle>
+            <DialogDescription>
+              {t('subscriber_profile.update_login_dialog_description', 'Update PPPoE login credentials for service {serviceId}.')
+                .replace('{serviceId}', selectedServiceForLoginUpdate?.id || '')}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...updateLoginForm}>
+            <form onSubmit={updateLoginForm.handleSubmit(handleUpdateLoginSubmit)} className="grid gap-4 py-4">
+              <FormField
+                control={updateLoginForm.control}
+                name="pppoeUsername"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('subscriber_profile.services_pppoe_user')}</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={updateLoginForm.control}
+                name="pppoePassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('subscriber_profile.services_pppoe_pass')}</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button type="button" variant="outline" disabled={updateLoginForm.formState.isSubmitting}>
+                    {t('subscriber_profile.update_login_cancel_button')}
+                  </Button>
+                </DialogClose>
+                <Button type="submit" disabled={updateLoginForm.formState.isSubmitting}>
+                  {updateLoginForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
+                  {updateLoginForm.formState.isSubmitting
+                    ? t('subscriber_profile.update_login_saving_button')
+                    : t('subscriber_profile.update_login_save_button')}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-

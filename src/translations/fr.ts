@@ -217,6 +217,7 @@ const fr = {
      status_inactive: 'Inactif',
      status_suspended: 'Suspendu',
      status_planned: 'Prévu',
+     status_canceled: 'Annulé',
    },
     // Subscriber Profile Page
    subscriber_profile: {
@@ -301,6 +302,14 @@ const fr = {
      service_action_print_cancelation_term: 'Imprimer le Terme d\'Annulation',
      service_action_transfer_contract: 'Transférer le Contrat',
      service_action_clear_mac: 'Effacer MAC',
+     service_action_update_login: 'Mettre à Jour Identifiants', // Added translation
+     update_login_dialog_title: 'Mettre à Jour les Identifiants de Connexion', // Added translation
+     update_login_dialog_description: 'Mettre à jour les identifiants PPPoE pour le service {serviceId}.', // Added translation
+     update_login_cancel_button: 'Annuler', // Added translation
+     update_login_save_button: 'Enregistrer Identifiants', // Added translation
+     update_login_saving_button: 'Enregistrement...', // Added translation
+     update_login_success_toast_title: 'Identifiants Mis à Jour', // Added translation
+     update_login_success_toast_description: 'Les identifiants de connexion ont été mis à jour.', // Added translation
      billing_card_title: 'Facturation',
      billing_card_description: 'Factures, paiements et historique de facturation.',
      billing_balance: 'Solde actuel',
@@ -691,4 +700,3 @@ const fr = {
 };
 
 export default fr;
-
