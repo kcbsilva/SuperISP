@@ -23,6 +23,7 @@ const fr = {
     maps_elements_cables: 'Câbles',
     maps_map: 'Carte',
     fttx: 'FTTx', // Added FTTx
+    fttx_olts: 'OLTs', // Added OLTs
     fttx_onu_templates: 'Modèles ONU', // Added ONU Templates
     zones: 'Zones',
     finances: 'Finances',
@@ -758,6 +759,33 @@ const fr = {
     success_condition_text_label: 'Le texte suivant :',
     success_condition_text_placeholder: 'ex: success, completed',
   },
+  // FTTx OLTs Page
+  fttx_olts: {
+    title: 'Terminaux de Ligne Optique (OLT)',
+    add_olt_button: 'Ajouter OLT',
+    refresh_button: 'Actualiser',
+    table_title: 'OLTs Enregistrés',
+    table_description: 'Visualisez et gérez vos Terminaux de Ligne Optique.',
+    table_header_id: 'ID',
+    table_header_description: 'Description',
+    table_header_manufacturer: 'Fabricant',
+    table_header_model: 'Modèle',
+    table_header_technology: 'Technologie',
+    table_header_ports: 'Ports',
+    table_header_clients: 'Clients',
+    table_header_ip_address: 'Adresse IP',
+    table_header_actions: 'Actions',
+    action_edit: 'Modifier',
+    action_delete: 'Supprimer',
+    no_olts_found: 'Aucun OLT enregistré pour le moment. Cliquez sur "Ajouter OLT" pour en créer un.',
+    add_olt_not_implemented_title: 'Ajouter OLT (Non implémenté)',
+    add_olt_not_implemented_desc: 'La fonctionnalité pour ajouter de nouveaux OLTs n\'est pas encore disponible.',
+    edit_olt_not_implemented_title: 'Modifier OLT (Non implémenté)',
+    edit_olt_not_implemented_desc: 'La modification de l\'OLT {id} n\'est pas encore disponible.',
+    delete_olt_not_implemented_title: 'Supprimer OLT (Non implémenté)',
+    delete_olt_not_implemented_desc: 'La suppression de l\'OLT {id} n\'est pas encore disponible.',
+  },
 };
 
 export default fr;
+

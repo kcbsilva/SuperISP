@@ -42,6 +42,7 @@ import {
   Truck, // Icon for Suppliers (using Truck as an example, can be changed)
   FileText as FileTextIcon, // for ONU Templates
   GitBranch, // for FTTx
+  NetworkIcon, // For OLTs (using a generic Network icon for now)
 } from 'lucide-react';
 
 import './globals.css';
@@ -289,6 +290,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <TooltipContent side="right" align="center">{t('sidebar.fttx', 'FTTx')}</TooltipContent>
                   </Tooltip>
                   <SidebarMenuSubContent>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/fttx/olts')} size="sm" tooltip={t('sidebar.fttx_olts', 'OLTs')}>
+                        <Link href="/fttx/olts" className="flex items-center gap-2">
+                          <NetworkIcon className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.fttx_olts', 'OLTs')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/fttx/onu-templates')} size="sm" tooltip={t('sidebar.fttx_onu_templates', 'ONU Templates')}>
                         <Link href="/fttx/onu-templates" className="flex items-center gap-2">
@@ -789,3 +798,4 @@ export default function RootLayout({
     </html>
   );
 }
+
