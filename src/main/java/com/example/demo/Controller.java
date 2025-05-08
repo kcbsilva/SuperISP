@@ -1,15 +1,14 @@
 
-    package com.example.demo;
+package com.example.demo;
 
-    import org.springframework.web.bind.annotation.GetMapping;
-    import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-    @RestController
-    public class Controller {
+@RestController
+public class Controller {
 
-        @GetMapping("/data")
-        public String getData() {
-            return "Here is your data!";
-        }
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello, world!";
     }
-    
+}

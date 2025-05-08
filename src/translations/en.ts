@@ -456,8 +456,7 @@ const en = {
      add_element_button: 'Add Element',
      add_element_tooltip: 'Add a new network element to the map',
      add_cable_tooltip: 'Add Cable',
-     add_fosc_tooltip: 'Add FOSC',
-     add_fdh_tooltip: 'Add FDH',
+     add_fosc_tooltip: 'Add FDH',
      add_poll_tooltip: 'Add Hydro Poll',
      add_tower_tooltip: 'Add Tower',
      add_pop_tooltip: 'Add PoP',
@@ -781,18 +780,20 @@ const en = {
     no_olts_found: 'No OLTs registered yet. Click "Add OLT" to create one.',
     add_olt_not_implemented_title: 'Add OLT (Not Implemented)',
     add_olt_not_implemented_desc: 'The functionality to add new OLTs is not yet available.',
+    add_olt_not_implemented_desc_port: 'The functionality to add new OLTs (including management port) is not yet available.', // Added for port context
     edit_olt_not_implemented_title: 'Edit OLT (Not Implemented)',
     edit_olt_not_implemented_desc: 'Editing OLT {id} is not yet available.',
     delete_olt_not_implemented_title: 'Delete OLT (Not Implemented)',
     delete_olt_not_implemented_desc: 'Deleting OLT {id} is not yet available.',
-    olt_actions_menu: 'OLT Actions', // Added
-    list_non_provisioned_onxs: 'List Non-Provisioned ONXs', // Added
-    list_provisioned_onxs: 'List Provisioned ONXs', // Added
-    list_onxs_title_provisioned: 'List Provisioned ONXs (Not Implemented)', // Added
-    list_onxs_desc_provisioned: 'Listing provisioned ONXs for OLT {id} is not yet available.', // Added
-    list_onxs_title_non_provisioned: 'List Non-Provisioned ONXs (Not Implemented)', // Corrected key
-    list_onxs_desc_non_provisioned: 'Listing non-provisioned ONXs for OLT {id} is not yet available.', // Corrected key
+    olt_actions_menu: 'OLT Actions', 
+    list_non_provisioned_onxs: 'List Non-Provisioned ONXs', 
+    list_provisioned_onxs: 'List Provisioned ONXs', 
+    list_onxs_title_provisioned: 'List Provisioned ONXs (Not Implemented)', 
+    list_onxs_desc_provisioned: 'Listing provisioned ONXs for OLT {id} is not yet available.', 
+    list_onxs_title_non_provisioned: 'List Non-Provisioned ONXs (Not Implemented)', 
+    list_onxs_desc_non_provisioned: 'Listing non-provisioned ONXs for OLT {id} is not yet available.', 
   },
 };
 
 export default en;
+

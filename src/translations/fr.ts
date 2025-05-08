@@ -780,17 +780,18 @@ const fr = {
     no_olts_found: 'Aucun OLT enregistré pour le moment. Cliquez sur "Ajouter OLT" pour en créer un.',
     add_olt_not_implemented_title: 'Ajouter OLT (Non implémenté)',
     add_olt_not_implemented_desc: 'La fonctionnalité pour ajouter de nouveaux OLTs n\'est pas encore disponible.',
+    add_olt_not_implemented_desc_port: 'La fonctionnalité pour ajouter de nouveaux OLTs (y compris le port de gestion) n\'est pas encore disponible.', // Added for port context
     edit_olt_not_implemented_title: 'Modifier OLT (Non implémenté)',
     edit_olt_not_implemented_desc: 'La modification de l\'OLT {id} n\'est pas encore disponible.',
     delete_olt_not_implemented_title: 'Supprimer OLT (Non implémenté)',
     delete_olt_not_implemented_desc: 'La suppression de l\'OLT {id} n\'est pas encore disponible.',
-    olt_actions_menu: 'Actions OLT', // Added
-    list_non_provisioned_onxs: 'Lister ONXs Non Provisionnés', // Added
-    list_provisioned_onxs: 'Lister ONXs Provisionnés', // Added
-    list_onxs_title_provisioned: 'Lister ONXs Provisionnés (Non implémenté)', // Added
-    list_onxs_desc_provisioned: 'La liste des ONXs provisionnés pour l\'OLT {id} n\'est pas encore disponible.', // Added
-    list_onxs_title_non_provisioned: 'Lister ONXs Non Provisionnés (Non implémenté)', // Corrected key
-    list_onxs_desc_non_provisioned: 'La liste des ONXs non provisionnés pour l\'OLT {id} n\'est pas encore disponible.', // Corrected key
+    olt_actions_menu: 'Actions OLT', 
+    list_non_provisioned_onxs: 'Lister ONXs Non Provisionnés', 
+    list_provisioned_onxs: 'Lister ONXs Provisionnés', 
+    list_onxs_title_provisioned: 'Lister ONXs Provisionnés (Non implémenté)', 
+    list_onxs_desc_provisioned: 'La liste des ONXs provisionnés pour l\'OLT {id} n\'est pas encore disponible.', 
+    list_onxs_title_non_provisioned: 'Lister ONXs Non Provisionnés (Non implémenté)', 
+    list_onxs_desc_non_provisioned: 'La liste des ONXs non provisionnés pour l\'OLT {id} n\'est pas encore disponible.', 
   },
 };
 

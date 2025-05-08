@@ -548,7 +548,7 @@ const pt = {
       form_save_button: 'Salvar Lançamento',
       form_saving_button: 'Salvando...',
       add_entry_success_title: 'Lançamento Adicionado',
-      add_entry_success_description: 'Lançamento do tipo {type} "{description}" adicionado.',
+      add_success_description: 'Lançamento do tipo {type} "{description}" adicionado.',
       total_income_label: 'Total de Receitas',
       total_expenses_label: 'Total de Despesas',
       net_balance_label: 'Saldo Líquido',
@@ -778,17 +778,18 @@ const pt = {
       no_olts_found: 'Nenhum OLT registrado ainda. Clique em "Adicionar OLT" para criar um.',
       add_olt_not_implemented_title: 'Adicionar OLT (Não Implementado)',
       add_olt_not_implemented_desc: 'A funcionalidade para adicionar novos OLTs ainda não está disponível.',
+      add_olt_not_implemented_desc_port: 'A funcionalidade para adicionar novos OLTs (incluindo a porta de gerenciamento) ainda não está disponível.', // Added for port context
       edit_olt_not_implemented_title: 'Editar OLT (Não Implementado)',
       edit_olt_not_implemented_desc: 'A edição do OLT {id} ainda não está disponível.',
       delete_olt_not_implemented_title: 'Excluir OLT (Não Implementado)',
       delete_olt_not_implemented_desc: 'A exclusão do OLT {id} ainda não está disponível.',
-      olt_actions_menu: 'Ações OLT', // Added
-      list_non_provisioned_onxs: 'Listar ONXs Não Provisionados', // Added
-      list_provisioned_onxs: 'Listar ONXs Provisionados', // Added
-      list_onxs_title_provisioned: 'Listar ONXs Provisionados (Não Implementado)', // Added
-      list_onxs_desc_provisioned: 'A listagem de ONXs provisionados para o OLT {id} ainda não está disponível.', // Added
-      list_onxs_title_non_provisioned: 'Listar ONXs Não Provisionados (Não Implementado)', // Corrected key
-      list_onxs_desc_non_provisioned: 'A listagem de ONXs não provisionados para o OLT {id} ainda não está disponível.', // Corrected key
+      olt_actions_menu: 'Ações OLT', 
+      list_non_provisioned_onxs: 'Listar ONXs Não Provisionados', 
+      list_provisioned_onxs: 'Listar ONXs Provisionados', 
+      list_onxs_title_provisioned: 'Listar ONXs Provisionados (Não Implementado)', 
+      list_onxs_desc_provisioned: 'A listagem de ONXs provisionados para o OLT {id} ainda não está disponível.', 
+      list_onxs_title_non_provisioned: 'Listar ONXs Não Provisionados (Não Implementado)', 
+      list_onxs_desc_non_provisioned: 'A listagem de ONXs não provisionados para o OLT {id} ainda não está disponível.', 
     },
 };
 
