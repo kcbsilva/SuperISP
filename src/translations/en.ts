@@ -36,9 +36,9 @@ const en = {
     inventory_products: 'Products',
     inventory_manufacturers: 'Manufacturers',
     inventory_categories: 'Categories',
-    reports: 'Reports',
     hr: 'HR', // Added HR
     hr_employees: 'Employees', // Added HR Employees
+    reports: 'Reports',
     security: 'Security',
     settings: 'Settings',
     settings_global: 'Global Settings',
@@ -271,6 +271,15 @@ const en = {
      contracts_card_title: 'Contracts', // Added translation
      contracts_card_description: 'Manage contracts associated with this subscriber.', // Added translation
      contracts_none: 'No contracts found for this subscriber.', // Added translation
+     new_contract_button: 'New Contract',
+     contracts_filter_all: 'All',
+     contracts_filter_active: 'Active',
+     contracts_filter_inactive: 'Inactive',
+     contracts_none_all_filtered: 'No contracts found.',
+     contracts_none_active_filtered: 'No active contracts found.',
+     contracts_none_inactive_filtered: 'No inactive contracts found.',
+     new_contract_toast_title: 'New Contract (Simulated)',
+     new_contract_toast_desc: 'Functionality to create a new contract is not yet implemented.',
      services_card_title: 'Services',
      services_card_description: 'Services currently subscribed to by the customer.',
      add_service_button: 'Add Service',

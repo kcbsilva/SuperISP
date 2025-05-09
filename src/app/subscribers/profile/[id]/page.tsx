@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark, FilePlus2, Printer, Send, FileSignature } from 'lucide-react'; // Added Landmark for Point of Reference, FilePlus2 for Make Invoice, Printer, Send, FileSignature
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark, FilePlus2, Printer, Send, FileSignature, FilePlus } from 'lucide-react'; // Added Landmark for Point of Reference, FilePlus2 for Make Invoice, Printer, Send, FileSignature, FilePlus
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -88,6 +88,8 @@ type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile' | 'Co
 type InventoryFilter = 'All' | 'Lent' | 'Sold';
 // Types for billing filtering - Added 'All', Renamed 'Past' to 'Paid'
 type BillingFilter = 'All' | 'Pending' | 'Paid' | 'Canceled' | 'PaymentPlan' | 'PromiseToPay';
+// Types for contract filtering
+type ContractStatusFilter = 'All' | 'Active' | 'Inactive';
 
 
 // Placeholder data - replace with actual data fetching based on ID
@@ -309,6 +311,7 @@ function SubscriberProfilePage() {
   const [activeServiceTab, setActiveServiceTab] = React.useState<ServiceTypeFilter>('All');
   const [activeInventoryTab, setActiveInventoryTab] = React.useState<InventoryFilter>('All');
   const [activeBillingTab, setActiveBillingTab] = React.useState<BillingFilter>('Pending'); // Default to pending
+  const [activeContractTab, setActiveContractTab] = React.useState<ContractStatusFilter>('Active'); // Added state for contract sub-tabs
   const iconSize = "h-3 w-3"; // Reduced icon size for general use
   const tabIconSize = "h-2.5 w-2.5"; // Even smaller for tabs, reduced
 
@@ -418,6 +421,14 @@ function SubscriberProfilePage() {
         });
     }
   };
+
+  const handleNewContract = () => {
+    toast({
+      title: t('subscriber_profile.new_contract_toast_title', 'New Contract (Simulated)'),
+      description: t('subscriber_profile.new_contract_toast_desc', 'Functionality to create a new contract is not yet implemented.'),
+    });
+  };
+
 
   const filteredServices = React.useMemo(() => {
     if (!subscriber?.services) return [];
@@ -597,12 +608,32 @@ function SubscriberProfilePage() {
 
         <TabsContent value="contracts">
            <Card>
-             <CardHeader>
-               <CardTitle className="text-sm">{t('subscriber_profile.contracts_card_title')}</CardTitle>
-               <CardDescription className="text-xs">{t('subscriber_profile.contracts_card_description')}</CardDescription>
-             </CardHeader>
-             <CardContent className="pt-6">
-               <p className="text-xs text-muted-foreground">{t('subscriber_profile.contracts_none')}</p>
+            <CardHeader className="flex flex-row justify-between items-center">
+                <div>
+                    <CardTitle className="text-sm">{t('subscriber_profile.contracts_card_title')}</CardTitle>
+                    <CardDescription className="text-xs">{t('subscriber_profile.contracts_card_description')}</CardDescription>
+                </div>
+                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={handleNewContract}>
+                    <FilePlus className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.new_contract_button')}
+                </Button>
+            </CardHeader>
+             <CardContent className="pt-0"> {/* Reduced padding top */}
+                <Tabs defaultValue="Active" value={activeContractTab} onValueChange={(value) => setActiveContractTab(value as ContractStatusFilter)} className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 h-auto mb-4"> {/* Added mb-4 */}
+                        <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_all', 'All')}</TabsTrigger>
+                        <TabsTrigger value="Active"><CheckCircle className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_active', 'Active')}</TabsTrigger>
+                        <TabsTrigger value="Inactive"><XCircle className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_inactive', 'Inactive')}</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="All">
+                        <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.contracts_none_all_filtered', 'No contracts found.')}</p>
+                    </TabsContent>
+                    <TabsContent value="Active">
+                        <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.contracts_none_active_filtered', 'No active contracts found.')}</p>
+                    </TabsContent>
+                    <TabsContent value="Inactive">
+                         <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.contracts_none_inactive_filtered', 'No inactive contracts found.')}</p>
+                    </TabsContent>
+                </Tabs>
              </CardContent>
            </Card>
         </TabsContent>
@@ -1288,4 +1319,3 @@ function SubscriberProfilePage() {
     </div>
   );
 }
-
