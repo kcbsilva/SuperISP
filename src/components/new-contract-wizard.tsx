@@ -35,7 +35,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { CalendarIcon, Loader2, PlusCircle, Trash2, Check, Wifi, Tv, Phone as PhoneIcon, Smartphone, Combine as CombineIcon, Package as PackageIcon } from 'lucide-react'; // Added PackageIcon for Other
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { CalendarIcon, Loader2, PlusCircle, Trash2, Check, Wifi, Tv, Phone as PhoneIcon, Smartphone, Combine as CombineIcon, Package as PackageIcon, DollarSign } from 'lucide-react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -52,13 +60,13 @@ import { useToast } from '@/hooks/use-toast';
 const contractStep1Schema = z.object({
   billingDate: z.date({ required_error: "Billing date is required." }),
   popId: z.string().min(1, "PoP selection is required."),
+  hasInstallationFee: z.boolean().default(false), // New: Checkbox to indicate if there's a fee
   installationFee: z.coerce.number().min(0, "Installation fee cannot be negative.").optional(),
-  isFreeInstallation: z.boolean().default(false),
   paymentMethod: z.string().min(1, "Payment method is required."),
   billingType: z.enum(['Prepaid', 'Postpaid'], { required_error: "Billing type is required."}),
   contractTermMonths: z.coerce.number().int().min(1, "Contract term must be at least 1 month."),
-}).refine(data => data.isFreeInstallation || (data.installationFee !== undefined && data.installationFee >= 0), {
-    message: "Installation fee is required if installation is not free.",
+}).refine(data => !data.hasInstallationFee || (data.installationFee !== undefined && data.installationFee >= 0), {
+    message: "Installation fee is required if the 'Has Installation Fee' box is checked.",
     path: ["installationFee"],
 });
 type ContractStep1FormData = z.infer<typeof contractStep1Schema>;
@@ -84,7 +92,7 @@ interface Plan {
   popId: string;
   technology?: string; // For Internet plans
   serviceType: z.infer<typeof serviceTypeEnum>;
-  price: number; // Example, add more details as needed
+  price: number;
 }
 
 // Placeholder Plan Data - In a real app, this would be fetched
@@ -103,11 +111,12 @@ const placeholderPlans: Plan[] = [
 ];
 
 interface AddedService {
-  id: string; // Unique ID for this instance of the service in the contract
+  id: string;
   serviceType: z.infer<typeof serviceTypeEnum>;
   planId: string;
   planName: string;
   technology?: string;
+  price: number;
 }
 
 interface NewContractWizardProps {
@@ -117,7 +126,7 @@ interface NewContractWizardProps {
 }
 
 export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContractWizardProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = React.useState(1);
   const [isAddServiceModalOpen, setIsAddServiceModalOpen] = React.useState(false);
@@ -129,8 +138,8 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
     defaultValues: {
       billingDate: new Date(),
       popId: '',
+      hasInstallationFee: false,
       installationFee: 0,
-      isFreeInstallation: false,
       paymentMethod: undefined,
       billingType: undefined,
       contractTermMonths: 12,
@@ -151,16 +160,34 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
     queryFn: getPops,
   });
 
-  const watchIsFreeInstallation = mainForm.watch('isFreeInstallation');
-  const watchInstallationFee = mainForm.watch('installationFee');
+  const watchHasInstallationFee = mainForm.watch('hasInstallationFee');
   const watchSelectedPopId = mainForm.watch('popId');
 
   const watchServiceTypeForAddModal = addServiceToContractForm.watch('serviceType');
   const watchTechnologyForAddModal = addServiceToContractForm.watch('technology');
 
+  const totalMonthlyCost = React.useMemo(() => {
+    return addedServices.reduce((sum, service) => sum + service.price, 0);
+  }, [addedServices]);
+
+  const currencyLocale = locale === 'pt' ? 'pt-BR' : locale === 'fr' ? 'fr-FR' : 'en-US';
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString(currencyLocale, { style: 'currency', currency: 'USD' }); // Assuming USD for now
+  };
+
+  React.useEffect(() => {
+    if (!watchHasInstallationFee) {
+      mainForm.setValue('installationFee', 0);
+    }
+  }, [watchHasInstallationFee, mainForm]);
+
 
   const handleSubmitStep1: SubmitHandler<ContractStep1FormData> = (data) => {
-    console.log('Step 1 Data (Main Contract):', data);
+    const finalData = {
+      ...data,
+      installationFee: data.hasInstallationFee ? data.installationFee : 0,
+    };
+    console.log('Step 1 Data (Main Contract):', finalData);
     console.log('Added Services:', addedServices);
     if (addedServices.length === 0) {
         toast({
@@ -174,8 +201,6 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
       title: t('new_contract_wizard.step1_saved_title'),
       description: t('new_contract_wizard.step1_saved_desc'),
     });
-    // setCurrentStep(2); // Placeholder for next step
-    // For now, let's close the main wizard on successful "Next" as step 2 is not implemented
     onClose();
   };
 
@@ -196,11 +221,12 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
     const selectedPlan = placeholderPlans.find(p => p.id === data.planId);
     if (selectedPlan) {
       setAddedServices(prev => [...prev, {
-        id: `service-${Date.now()}`, // Simple unique ID
+        id: `service-${Date.now()}`,
         serviceType: data.serviceType,
         planId: selectedPlan.id,
         planName: selectedPlan.name,
         technology: data.serviceType === 'Internet' ? data.technology : undefined,
+        price: selectedPlan.price,
       }]);
       toast({
         title: t('new_contract_wizard.service_added_to_contract_title'),
@@ -291,68 +317,88 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
               />
             </div>
 
-            {/* Services Display Area */}
+            {/* Services Section */}
             <FormItem>
-              <FormLabel>{t('new_contract_wizard.services_label')}</FormLabel>
-              <div className="min-h-[80px] border border-input rounded-md p-3 space-y-2 bg-background">
+              <div className="flex justify-between items-center mb-1">
+                <FormLabel>{t('new_contract_wizard.services_label')}</FormLabel>
+                <div className="text-right">
+                    <Button type="button" variant="outline" size="sm" onClick={handleOpenAddServiceModal} className="shrink-0">
+                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('new_contract_wizard.add_service_button')}
+                    </Button>
+                </div>
+              </div>
+              <div className="min-h-[100px] border border-input rounded-md p-3 bg-background">
                 {addedServices.length === 0 ? (
                   <p className="text-xs text-muted-foreground text-center py-4">{t('new_contract_wizard.no_services_added_yet')}</p>
                 ) : (
-                  addedServices.map(service => (
-                    <div key={service.id} className="flex items-center justify-between p-2 border rounded-md text-xs bg-muted/50">
-                      <div>
-                        <span className="font-medium">{t(`new_contract_wizard.service_type_${service.serviceType.toLowerCase()}` as any, service.serviceType)}</span>: {service.planName}
-                        {service.technology && <span className="text-muted-foreground ml-1">({service.technology})</span>}
-                      </div>
-                      <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleRemoveService(service.id)}>
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs">{t('new_contract_wizard.service_description_header', 'Service Description')}</TableHead>
+                        <TableHead className="text-xs text-right">{t('new_contract_wizard.service_cost_header', 'Cost')}</TableHead>
+                        <TableHead className="w-10 text-xs text-right">{t('new_contract_wizard.service_actions_header', 'Actions')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {addedServices.map(service => (
+                        <TableRow key={service.id}>
+                          <TableCell className="text-xs">
+                            <span className="font-medium">{t(`new_contract_wizard.service_type_${service.serviceType.toLowerCase()}` as any, service.serviceType)}</span>: {service.planName}
+                            {service.technology && <span className="text-muted-foreground ml-1">({service.technology})</span>}
+                          </TableCell>
+                          <TableCell className="text-xs text-right">{formatCurrency(service.price)}</TableCell>
+                          <TableCell className="text-right">
+                            <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleRemoveService(service.id)}>
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 )}
               </div>
-              <Button type="button" variant="outline" size="sm" onClick={handleOpenAddServiceModal} className="mt-2">
-                <PlusCircle className={`mr-2 ${iconSize}`} /> {t('new_contract_wizard.add_service_button')}
-              </Button>
+              {addedServices.length > 0 && (
+                <div className="text-right text-sm font-semibold mt-2">
+                    {t('new_contract_wizard.total_monthly_cost_label', 'Total Monthly Cost:')} {formatCurrency(totalMonthlyCost)}
+                </div>
+              )}
             </FormItem>
 
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
-              <FormField
-                control={mainForm.control}
-                name="installationFee"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('new_contract_wizard.installation_fee_label')}</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="0.00" {...field} disabled={watchIsFreeInstallation} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={mainForm.control}
-                name="isFreeInstallation"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-2 pb-2">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          field.onChange(checked);
-                          if (checked) mainForm.setValue('installationFee', 0);
-                        }}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs font-normal">
-                      {t('new_contract_wizard.free_installation_label')}
-                    </FormLabel>
-                  </FormItem>
-                )}
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
+                 <FormField
+                    control={mainForm.control}
+                    name="hasInstallationFee"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-2">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="text-xs font-normal cursor-pointer">
+                          {t('new_contract_wizard.has_installation_fee_label', 'Charge Installation Fee?')}
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                <FormField
+                    control={mainForm.control}
+                    name="installationFee"
+                    render={({ field }) => (
+                    <FormItem className={!watchHasInstallationFee ? 'hidden' : ''}>
+                        {/* <FormLabel>{t('new_contract_wizard.installation_fee_label')}</FormLabel> */}
+                        <FormControl>
+                        <Input type="number" placeholder="0.00" {...field} disabled={!watchHasInstallationFee} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
             </div>
-            {!watchIsFreeInstallation && (watchInstallationFee || 0) > 0 && (
+            {watchHasInstallationFee && (mainForm.getValues('installationFee') || 0) > 0 && (
               <p className="text-xs text-muted-foreground">
                 {t('new_contract_wizard.installation_fee_category_info')} 1.2 {t('new_contract_wizard.income_category_installation')}
               </p>
@@ -418,7 +464,6 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
         </Form>
       );
     }
-    // Placeholder for Step 2 and 3
     return <p className="text-center text-sm py-8">Step {currentStep} content goes here.</p>;
   };
 
@@ -427,7 +472,6 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-sm">{t('new_contract_wizard.title')} - {t('new_contract_wizard.step')} {currentStep}</DialogTitle>
-          {/* Removed main modal description */}
         </DialogHeader>
         <div className="flex justify-center items-center space-x-2 my-4">
           {[1, 2, 3].map(step => (
@@ -441,7 +485,6 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
         </div>
         {renderStepContent()}
 
-        {/* Add Service Modal */}
         <Dialog open={isAddServiceModalOpen} onOpenChange={setIsAddServiceModalOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
@@ -459,7 +502,7 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
                       <Select onValueChange={(value) => {
                           field.onChange(value);
                           if (value !== 'Internet') addServiceToContractForm.setValue('technology', undefined);
-                          addServiceToContractForm.setValue('planId', ''); // Reset plan on service type change
+                          addServiceToContractForm.setValue('planId', '');
                       }} defaultValue={field.value}>
                         <FormControl><SelectTrigger><SelectValue placeholder={t('new_contract_wizard.service_type_placeholder')} /></SelectTrigger></FormControl>
                         <SelectContent>
@@ -481,7 +524,7 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
                         <FormLabel>{t('new_contract_wizard.technology_label')}</FormLabel>
                         <Select onValueChange={(value) => {
                             field.onChange(value);
-                            addServiceToContractForm.setValue('planId', ''); // Reset plan on technology change
+                            addServiceToContractForm.setValue('planId', '');
                         }} defaultValue={field.value}>
                           <FormControl><SelectTrigger><SelectValue placeholder={t('new_contract_wizard.technology_placeholder')} /></SelectTrigger></FormControl>
                           <SelectContent>
@@ -503,12 +546,12 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
                       <FormLabel>{t('new_contract_wizard.plan_label')}</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value} disabled={filteredPlansForModal.length === 0}>
                         <FormControl><SelectTrigger><SelectValue placeholder={
-                            filteredPlansForModal.length === 0 ? 
-                            (watchServiceTypeForAddModal === 'Internet' && !watchTechnologyForAddModal ? t('new_contract_wizard.select_technology_first') : t('new_contract_wizard.no_plans_available')) 
+                            filteredPlansForModal.length === 0 ?
+                            (watchServiceTypeForAddModal === 'Internet' && !watchTechnologyForAddModal ? t('new_contract_wizard.select_technology_first') : t('new_contract_wizard.no_plans_available'))
                             : t('new_contract_wizard.plan_placeholder')} /></SelectTrigger></FormControl>
                         <SelectContent>
                           {filteredPlansForModal.map(plan => (
-                            <SelectItem key={plan.id} value={plan.id}>{plan.name} (${plan.price.toFixed(2)})</SelectItem>
+                            <SelectItem key={plan.id} value={plan.id}>{plan.name} ({formatCurrency(plan.price)})</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>

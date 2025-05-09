@@ -804,8 +804,9 @@ const fr = {
     service_type_mobile: 'Mobile',
     service_type_combo: 'Combo',
     service_type_other: 'Autre',
+    has_installation_fee_label: 'Facturer Frais d\'Installation?', // New label
     installation_fee_label: 'Frais d\'Installation',
-    free_installation_label: 'Installation Gratuite',
+    free_installation_label: 'Installation Gratuite', // Kept for potential other uses
     installation_fee_category_info: 'Catégorie:',
     income_category_installation: 'Frais d\'Installation',
     payment_method_label: 'Mode de Paiement *',
@@ -855,6 +856,10 @@ const fr = {
     error_finding_plan_desc: 'Impossible de trouver les détails du forfait sélectionné.',
     no_services_title: 'Aucun Service',
     no_services_desc: 'Veuillez ajouter au moins un service au contrat avant de continuer.',
+    total_monthly_cost_label: 'Coût Mensuel Total:',
+    service_description_header: 'Description du Service',
+    service_cost_header: 'Coût',
+    service_actions_header: 'Actions',
   },
 };
 

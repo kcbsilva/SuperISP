@@ -804,8 +804,9 @@ const pt = {
       service_type_mobile: 'Celular',
       service_type_combo: 'Combo',
       service_type_other: 'Outro',
+      has_installation_fee_label: 'Cobrar Taxa de Instalação?', // New label
       installation_fee_label: 'Taxa de Instalação',
-      free_installation_label: 'Instalação Gratuita',
+      free_installation_label: 'Instalação Gratuita', // Kept for potential other uses
       installation_fee_category_info: 'Categoria:',
       income_category_installation: 'Taxas de Instalação',
       payment_method_label: 'Método de Pagamento *',
@@ -855,6 +856,10 @@ const pt = {
       error_finding_plan_desc: 'Não foi possível encontrar os detalhes do plano selecionado.',
       no_services_title: 'Nenhum Serviço',
       no_services_desc: 'Por favor, adicione pelo menos um serviço ao contrato antes de prosseguir.',
+      total_monthly_cost_label: 'Custo Mensal Total:',
+      service_description_header: 'Descrição do Serviço',
+      service_cost_header: 'Custo',
+      service_actions_header: 'Ações',
     },
 };
 

@@ -825,8 +825,9 @@ const en = {
     service_type_mobile: 'Mobile',
     service_type_combo: 'Combo',
     service_type_other: 'Other',
+    has_installation_fee_label: 'Charge Installation Fee?', // New label
     installation_fee_label: 'Installation Fee',
-    free_installation_label: 'Free Installation',
+    free_installation_label: 'Free Installation', // Kept for potential other uses, though main logic changed
     installation_fee_category_info: 'Category:',
     income_category_installation: 'Installation Fees',
     payment_method_label: 'Payment Method *',
@@ -876,6 +877,10 @@ const en = {
     error_finding_plan_desc: 'Could not find the selected plan details.',
     no_services_title: 'No Services',
     no_services_desc: 'Please add at least one service to the contract before proceeding.',
+    total_monthly_cost_label: 'Total Monthly Cost:',
+    service_description_header: 'Service Description',
+    service_cost_header: 'Cost',
+    service_actions_header: 'Actions',
   },
 };
 
