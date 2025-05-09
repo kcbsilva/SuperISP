@@ -680,7 +680,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     {/* Financial Configurations moved here */}
                     <SidebarMenuItem>
                        <SidebarMenuButton asChild isActive={isActive('/settings/finances/configurations')} size="sm" tooltip={t('sidebar.finances_config')}>
-                         <Link href="#" className="flex items-center gap-2">
+                         <Link href="/settings/finances/configurations" className="flex items-center gap-2">
                            <SlidersHorizontal className={subIconSize + " text-muted-foreground"} />
                            <span>{t('sidebar.finances_config')}</span>
                          </Link>
@@ -841,6 +841,7 @@ export default function RootLayout({
     </html>
   );
 }
+
 
 
 
