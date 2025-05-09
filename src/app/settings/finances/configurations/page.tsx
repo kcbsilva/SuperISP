@@ -408,4 +408,7 @@ function FinancialConfigurationsPage() {
             </Dialog>
           </div>
         </CardContent>
-      
+    </Card>
+  </div>
+);
+}
