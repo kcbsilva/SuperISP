@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark, FilePlus2, Printer, Send, FileSignature, FilePlus } from 'lucide-react'; // Added Landmark for Point of Reference, FilePlus2 for Make Invoice, Printer, Send, FileSignature, FilePlus
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark, FilePlus2, Printer, Send, FileSignature, FilePlus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -30,7 +30,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator, // Import Separator
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import {
   Form,
@@ -49,11 +49,11 @@ import { getPops } from '@/services/mysql/pops';
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
-import { format, type Locale as DateFnsLocale } from 'date-fns'; // Keep format import, import Locale as DateFnsLocale
-import { fr as frLocale, ptBR as ptBRLocale, enUS as enUSLocale } from 'date-fns/locale'; // Corrected import path for locales
+import { format, type Locale as DateFnsLocale } from 'date-fns';
+import { fr as frLocale, ptBR as ptBRLocale, enUS as enUSLocale } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
-import { cn } from "@/lib/utils"; // Import cn utility
-import { Checkbox } from '@/components/ui/checkbox'; // Import Checkbox
+import { cn } from "@/lib/utils";
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
   TableBody,
@@ -62,6 +62,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { NewContractWizard } from '@/components/new-contract-wizard';
 
 
 // Validation Schema for the Add Service form
@@ -86,13 +87,13 @@ type UpdateLoginFormData = z.infer<typeof updateLoginSchema>;
 type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile' | 'Combo';
 // Types for inventory filtering
 type InventoryFilter = 'All' | 'Lent' | 'Sold';
-// Types for billing filtering - Added 'All', Renamed 'Past' to 'Paid'
+// Types for billing filtering
 type BillingFilter = 'All' | 'Pending' | 'Paid' | 'Canceled' | 'PaymentPlan' | 'PromiseToPay';
 // Types for contract filtering
 type ContractStatusFilter = 'All' | 'Active' | 'Inactive';
 
 
-// Placeholder data - replace with actual data fetching based on ID
+// Placeholder data
 const getSubscriberData = (id: string | string[]) => {
     console.log("Fetching data for subscriber ID:", id);
     const baseData = {
@@ -101,7 +102,7 @@ const getSubscriberData = (id: string | string[]) => {
         type: 'Residential',
         status: 'Active',
         address: '123 Placeholder St, Anytown, USA 12345',
-        pointOfReference: 'Near the old oak tree', // Added Point of Reference
+        pointOfReference: 'Near the old oak tree',
         email: `subscriber${id}@example.com`,
         phone: `555-0${id}`,
         landline: `555-1${id}`,
@@ -118,25 +119,25 @@ const getSubscriberData = (id: string | string[]) => {
                 technology: 'Fiber', downloadSpeed: '100 Mbps', uploadSpeed: '50 Mbps',
                 ipAddress: '203.0.113.10', onlineStatus: 'Online', authenticationType: 'PPPoE',
                 fdhId: 'FDH-Central-01', fdhPort: 'A3', pppoeUsername: 'user1@isp.com', pppoePassword: 'password123',
-                xponSn: 'GPON12345678', // Added xPON SN for Fiber
+                xponSn: 'GPON12345678',
              },
              {
                 id: 'svc-7', type: 'Internet', plan: 'Radio Basic 20', popId: 'sim-2', status: 'Active',
                 technology: 'Radio', downloadSpeed: '20 Mbps', uploadSpeed: '5 Mbps',
                 ipAddress: '203.0.113.11', onlineStatus: 'Offline', authenticationType: 'IPxMAC',
-                apName: 'AP-North-Sector', macAddress: '00:1A:2B:3C:4D:5F', // MAC Address for Radio
+                apName: 'AP-North-Sector', macAddress: '00:1A:2B:3C:4D:5F',
              },
               {
                 id: 'svc-8', type: 'Internet', plan: 'UTP Office 50', popId: 'sim-1', status: 'Suspended',
                 technology: 'UTP', downloadSpeed: '50 Mbps', uploadSpeed: '50 Mbps',
                 ipAddress: '203.0.113.12', onlineStatus: 'Offline', authenticationType: 'StaticIP',
-                switchId: 'Switch-CORE-01-Port23', macAddress: '11:22:33:AA:BB:CC', // MAC Address for UTP
+                switchId: 'Switch-CORE-01-Port23', macAddress: '11:22:33:AA:BB:CC',
              },
              {
                 id: 'svc-9', type: 'Internet', plan: 'Satellite Remote 10', popId: 'sim-3', status: 'Canceled',
                 technology: 'Satellite', downloadSpeed: '10 Mbps', uploadSpeed: '1 Mbps',
                 ipAddress: '203.0.113.14', onlineStatus: 'Offline', authenticationType: 'IPoE',
-                ipoeUsername: 'sat_user_001', ipoePassword: 'securepassword', macAddress: 'DD:EE:FF:77:88:99', // MAC Address for Satellite
+                ipoeUsername: 'sat_user_001', ipoePassword: 'securepassword', macAddress: 'DD:EE:FF:77:88:99',
              },
             { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: 'sim-1', status: 'Active' },
             { id: 'svc-4', type: 'Landline', plan: 'Unlimited Local', popId: 'sim-1', status: 'Active' },
@@ -144,16 +145,16 @@ const getSubscriberData = (id: string | string[]) => {
             { id: 'svc-6', type: 'Combo', plan: 'Internet + TV Basic', popId: 'sim-1', status: 'Active' },
         ],
         billing: {
-            balance: 175.25, // Updated balance
-            nextBillDate: '2024-09-15', // Updated next bill date
-            pastInvoices: [ // These are now considered "Paid" invoices
+            balance: 175.25,
+            nextBillDate: '2024-09-15',
+            pastInvoices: [
                 { id: 'inv-001', date: '2024-07-15', amount: 50.00, status: 'Paid' },
                 { id: 'inv-002', date: '2024-06-15', amount: 50.00, status: 'Paid' },
             ],
             canceledInvoices: [
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
-            pendingInvoices: [
+             pendingInvoices: [
                 { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
                 { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
             ],
@@ -196,7 +197,7 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.idNumber = 'ID-ALICE-001';
         baseData.signupDate = new Date(2022, 0, 10);
         baseData.billing.balance = 0.00;
-        baseData.billing.pendingInvoices =  [
+         baseData.billing.pendingInvoices =  [
              { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
              { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
          ];
@@ -220,13 +221,13 @@ const getSubscriberData = (id: string | string[]) => {
                 id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: 'sim-2', status: 'Active',
                 technology: 'Fiber', downloadSpeed: '1 Gbps', uploadSpeed: '500 Mbps',
                 ipAddress: '203.0.113.20', onlineStatus: 'Online', authenticationType: 'StaticIP',
-                fdhId: 'FDH-Commercial-01', fdhPort: 'B1', xponSn: 'GPON98765432', // Added xPON SN
+                fdhId: 'FDH-Commercial-01', fdhPort: 'B1', xponSn: 'GPON98765432',
              }
         ];
         baseData.billing.balance = 150.75;
         baseData.billing.pendingInvoices = [
              { id: 'inv-p02', contractId: 'SVC-BIZ-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 150.75, wallet: 'Company Account', status: 'Due' }
-        ]
+        ];
     }
 
     return baseData;
@@ -250,13 +251,13 @@ const dateLocales: Record<string, DateFnsLocale> = {
 
 const OverviewDetailItem: React.FC<{icon: React.ElementType, label: string, value?: string | null | Date}> = ({icon: Icon, label, value}) => {
   const { t, locale } = useLocale();
-  const iconSize = "h-3 w-3"; // Reduced icon size for detail items
+  const iconSize = "h-3 w-3";
   return (
     <div className="flex items-start gap-3">
         <Icon className={`${iconSize} text-muted-foreground mt-1`} />
         <div>
             <p className="text-xs text-muted-foreground">{label}</p>
-            <p className="text-xs font-medium"> {/* Main value font size to text-xs */}
+            <p className="text-xs font-medium">
                 {value instanceof Date ? format(value, 'PP', { locale: dateLocales[locale] || enUSLocale }) : value || t('subscriber_profile.not_available')}
             </p>
         </div>
@@ -265,10 +266,10 @@ const OverviewDetailItem: React.FC<{icon: React.ElementType, label: string, valu
 };
 
 const OverviewSection: React.FC<{title: string, icon: React.ElementType, children: React.ReactNode}> = ({title, icon: Icon, children}) => {
-    const iconSize = "h-3 w-3"; // Reduced icon size for section icon
+    const iconSize = "h-3 w-3";
     return (
         <fieldset className="border border-border rounded-md p-4 pt-2 space-y-4">
-            <legend className="text-sm font-semibold px-2 flex items-center gap-2"> {/* Reduced legend font size */}
+            <legend className="text-sm font-semibold px-2 flex items-center gap-2">
                 <Icon className={`${iconSize} text-primary`} />
                 {title}
             </legend>
@@ -289,7 +290,7 @@ const ServiceDetailItem: React.FC<{ label: string; value?: string | null; childr
 };
 
 const getTechnologyIcon = (technology?: string) => {
-    const iconSize = "h-4 w-4 text-primary"; // Standardized icon size for technology
+    const iconSize = "h-4 w-4 text-primary";
     switch (technology?.toLowerCase()) {
         case 'fiber': return <Network className={iconSize} data-ai-hint="fiber optic" />;
         case 'radio': return <Wifi className={iconSize} data-ai-hint="radio signal" />;
@@ -307,13 +308,14 @@ function SubscriberProfilePage() {
   const { t, locale } = useLocale();
   const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = React.useState(false);
   const [isUpdateLoginDialogOpen, setIsUpdateLoginDialogOpen] = React.useState(false);
+  const [isNewContractWizardOpen, setIsNewContractWizardOpen] = React.useState(false);
   const [selectedServiceForLoginUpdate, setSelectedServiceForLoginUpdate] = React.useState<any | null>(null);
   const [activeServiceTab, setActiveServiceTab] = React.useState<ServiceTypeFilter>('All');
   const [activeInventoryTab, setActiveInventoryTab] = React.useState<InventoryFilter>('All');
-  const [activeBillingTab, setActiveBillingTab] = React.useState<BillingFilter>('Pending'); // Default to pending
-  const [activeContractTab, setActiveContractTab] = React.useState<ContractStatusFilter>('Active'); // Added state for contract sub-tabs
-  const iconSize = "h-3 w-3"; // Reduced icon size for general use
-  const tabIconSize = "h-2.5 w-2.5"; // Even smaller for tabs, reduced
+  const [activeBillingTab, setActiveBillingTab] = React.useState<BillingFilter>('Pending');
+  const [activeContractTab, setActiveContractTab] = React.useState<ContractStatusFilter>('Active');
+  const iconSize = "h-3 w-3";
+  const tabIconSize = "h-2.5 w-2.5";
 
 
   const { data: pops = [], isLoading: isLoadingPops, error: popsError } = useQuery<Pop[], Error>({
@@ -384,7 +386,6 @@ function SubscriberProfilePage() {
 
   const handleUpdateLoginSubmit = (data: UpdateLoginFormData) => {
     console.log('Update Login Data:', data, 'for service:', selectedServiceForLoginUpdate?.id);
-    // Here you would typically call an API to update the login credentials
     updateLoginForm.reset();
     setIsUpdateLoginDialogOpen(false);
     setSelectedServiceForLoginUpdate(null);
@@ -422,11 +423,8 @@ function SubscriberProfilePage() {
     }
   };
 
-  const handleNewContract = () => {
-    toast({
-      title: t('subscriber_profile.new_contract_toast_title', 'New Contract (Simulated)'),
-      description: t('subscriber_profile.new_contract_toast_desc', 'Functionality to create a new contract is not yet implemented.'),
-    });
+  const handleOpenNewContractWizard = () => {
+    setIsNewContractWizardOpen(true);
   };
 
 
@@ -442,12 +440,11 @@ function SubscriberProfilePage() {
     return subscriber.inventory.filter(item => item.status === activeInventoryTab);
   }, [subscriber?.inventory, activeInventoryTab]);
 
-  // Combine all invoices for the "All" tab
   const allInvoices = React.useMemo(() => {
     if (!subscriber?.billing) return [];
     return [
       ...(subscriber.billing.pendingInvoices || []).map(inv => ({...inv, itemType: 'invoice'})),
-      ...(subscriber.billing.pastInvoices || []).map(inv => ({...inv, itemType: 'invoice'})), // These are "Paid" invoices
+      ...(subscriber.billing.pastInvoices || []).map(inv => ({...inv, itemType: 'invoice'})),
       ...(subscriber.billing.canceledInvoices || []).map(inv => ({...inv, itemType: 'invoice'})),
       ...(subscriber.billing.paymentPlans || []).map(plan => ({...plan, itemType: 'paymentPlan'})),
       ...(subscriber.billing.promisesToPay || []).map(promise => ({...promise, itemType: 'promiseToPay'})),
@@ -462,7 +459,7 @@ function SubscriberProfilePage() {
       case 'Pending':
         return (subscriber.billing.pendingInvoices || []).map(inv => ({...inv, itemType: 'invoice'}));
       case 'Paid':
-        return (subscriber.billing.pastInvoices || []).map(inv => ({...inv, itemType: 'invoice'})); // "Past" is now "Paid"
+        return (subscriber.billing.pastInvoices || []).map(inv => ({...inv, itemType: 'invoice'}));
       case 'Canceled':
         return (subscriber.billing.canceledInvoices || []).map(inv => ({...inv, itemType: 'invoice'}));
       case 'PaymentPlan':
@@ -518,7 +515,7 @@ function SubscriberProfilePage() {
       </Card>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 md:grid-cols-9"> {/* Updated grid-cols */}
+        <TabsList className="grid w-full grid-cols-5 md:grid-cols-9">
           <TabsTrigger value="overview">
             <User className={`mr-1.5 ${tabIconSize}`} /> {t('subscriber_profile.overview_tab')}
           </TabsTrigger>
@@ -607,131 +604,132 @@ function SubscriberProfilePage() {
         </TabsContent>
 
         <TabsContent value="contracts">
-           <Card>
-            <CardHeader className="flex flex-row justify-between items-center">
-                {/* CardTitle and CardDescription removed */}
-                 <Tabs defaultValue="Active" value={activeContractTab} onValueChange={(value) => setActiveContractTab(value as ContractStatusFilter)} className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 h-auto"> {/* Added mb-4 */}
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center">
+                <Tabs defaultValue="Active" value={activeContractTab} onValueChange={(value) => setActiveContractTab(value as ContractStatusFilter)} className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 h-auto">
                         <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_all', 'All')}</TabsTrigger>
                         <TabsTrigger value="Active"><CheckCircle className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_active', 'Active')}</TabsTrigger>
                         <TabsTrigger value="Inactive"><XCircle className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_inactive', 'Inactive')}</TabsTrigger>
                     </TabsList>
                 </Tabs>
-                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white ml-4 shrink-0" onClick={handleNewContract}>
+                 <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white ml-4 shrink-0" onClick={handleOpenNewContractWizard}>
                     <FilePlus className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.new_contract_button')}
                 </Button>
-            </CardHeader>
-             <CardContent className="pt-0"> {/* Reduced padding top */}
-                <Tabs defaultValue="Active" value={activeContractTab} onValueChange={(value) => setActiveContractTab(value as ContractStatusFilter)} className="w-full">
-                     {/* TabsList moved to CardHeader */}
-                    <TabsContent value="All">
-                        <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.contracts_none_all_filtered', 'No contracts found.')}</p>
-                    </TabsContent>
-                    <TabsContent value="Active">
-                        <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.contracts_none_active_filtered', 'No active contracts found.')}</p>
-                    </TabsContent>
-                    <TabsContent value="Inactive">
-                         <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.contracts_none_inactive_filtered', 'No inactive contracts found.')}</p>
-                    </TabsContent>
-                </Tabs>
-             </CardContent>
-           </Card>
+            </div>
+             <Card>
+                 <CardContent className="pt-6">
+                    <Tabs defaultValue="Active" value={activeContractTab} onValueChange={(value) => setActiveContractTab(value as ContractStatusFilter)} className="w-full">
+                        <TabsContent value="All" className="mt-0">
+                            <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.contracts_none_all_filtered', 'No contracts found.')}</p>
+                        </TabsContent>
+                        <TabsContent value="Active" className="mt-0">
+                            <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.contracts_none_active_filtered', 'No active contracts found.')}</p>
+                        </TabsContent>
+                        <TabsContent value="Inactive" className="mt-0">
+                             <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.contracts_none_inactive_filtered', 'No inactive contracts found.')}</p>
+                        </TabsContent>
+                    </Tabs>
+                 </CardContent>
+            </Card>
+           </div>
         </TabsContent>
 
 
         <TabsContent value="services">
-          <div className="mb-4 flex justify-between items-center">
-            <Tabs defaultValue="All" value={activeServiceTab} onValueChange={(value) => setActiveServiceTab(value as ServiceTypeFilter)} className="w-full">
-                <TabsList className="grid w-full grid-cols-6 h-auto">
-                    <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_all')}</TabsTrigger>
-                    <TabsTrigger value="Internet"><Wifi className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_internet')}</TabsTrigger>
-                    <TabsTrigger value="TV"><Tv className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_tv')}</TabsTrigger>
-                    <TabsTrigger value="Landline"><PhoneCall className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_landline')}</TabsTrigger>
-                    <TabsTrigger value="Mobile"><Smartphone className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_mobile')}</TabsTrigger>
-                    <TabsTrigger value="Combo"><Combine className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_combo')}</TabsTrigger>
-                </TabsList>
-            </Tabs>
-            <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white ml-4 shrink-0">
-                  <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.add_service_button')}
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle className="text-sm">{t('subscriber_profile.add_service_dialog_title')}</DialogTitle>
-                  <DialogDescription className="text-xs">
-                    {t('subscriber_profile.add_service_dialog_description')}
-                  </DialogDescription>
-                </DialogHeader>
-                <Form {...addServiceForm}>
-                  <form onSubmit={addServiceForm.handleSubmit(handleAddServiceSubmit)} className="grid gap-4 py-4">
-                    <FormField
-                      control={addServiceForm.control}
-                      name="serviceType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('subscriber_profile.add_service_type_label')}</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder={t('subscriber_profile.add_service_type_placeholder')} />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="Internet">{t('subscriber_profile.add_service_type_internet')}</SelectItem>
-                              <SelectItem value="TV">{t('subscriber_profile.add_service_type_tv')}</SelectItem>
-                              <SelectItem value="Phone">{t('subscriber_profile.add_service_type_landline')}</SelectItem>
-                              <SelectItem value="Mobile">{t('subscriber_profile.add_service_type_mobile')}</SelectItem>
-                              <SelectItem value="Combo">{t('subscriber_profile.add_service_type_combo')}</SelectItem>
-                              <SelectItem value="Other">{t('subscriber_profile.add_service_type_other')}</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={addServiceForm.control}
-                      name="popId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('subscriber_profile.add_service_pop_label')}</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingPops || !!popsError}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder={isLoadingPops ? t('subscriber_profile.add_service_pop_loading') : popsError ? t('subscriber_profile.add_service_pop_error') : t('subscriber_profile.add_service_pop_placeholder')} />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {!isLoadingPops && !popsError && pops.map((pop) => (
-                                <SelectItem key={pop.id.toString()} value={pop.id.toString()}>
-                                  {pop.name} ({pop.location})
-                                </SelectItem>
-                              ))}
-                               {isLoadingPops && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_loading')}</div>}
-                               {popsError && <div className="p-2 text-center text-destructive text-xs">{t('subscriber_profile.add_service_pop_error')}</div>}
-                               {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_none')}</div>}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button type="button" variant="outline" disabled={addServiceForm.formState.isSubmitting}>{t('subscriber_profile.add_service_cancel_button')}</Button>
-                      </DialogClose>
-                      <Button type="submit" disabled={addServiceForm.formState.isSubmitting}>
-                        {addServiceForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                        {addServiceForm.formState.isSubmitting ? t('subscriber_profile.add_service_saving_button') : t('subscriber_profile.add_service_save_button')}
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
-          </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center">
+              <Tabs defaultValue="All" value={activeServiceTab} onValueChange={(value) => setActiveServiceTab(value as ServiceTypeFilter)} className="w-full">
+                  <TabsList className="grid w-full grid-cols-6 h-auto">
+                      <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_all')}</TabsTrigger>
+                      <TabsTrigger value="Internet"><Wifi className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_internet')}</TabsTrigger>
+                      <TabsTrigger value="TV"><Tv className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_tv')}</TabsTrigger>
+                      <TabsTrigger value="Landline"><PhoneCall className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_landline')}</TabsTrigger>
+                      <TabsTrigger value="Mobile"><Smartphone className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_mobile')}</TabsTrigger>
+                      <TabsTrigger value="Combo"><Combine className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_combo')}</TabsTrigger>
+                  </TabsList>
+              </Tabs>
+              <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white ml-4 shrink-0">
+                    <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.add_service_button')}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle className="text-sm">{t('subscriber_profile.add_service_dialog_title')}</DialogTitle>
+                    <DialogDescription className="text-xs">
+                      {t('subscriber_profile.add_service_dialog_description')}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Form {...addServiceForm}>
+                    <form onSubmit={addServiceForm.handleSubmit(handleAddServiceSubmit)} className="grid gap-4 py-4">
+                      <FormField
+                        control={addServiceForm.control}
+                        name="serviceType"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t('subscriber_profile.add_service_type_label')}</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={t('subscriber_profile.add_service_type_placeholder')} />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="Internet">{t('subscriber_profile.add_service_type_internet')}</SelectItem>
+                                <SelectItem value="TV">{t('subscriber_profile.add_service_type_tv')}</SelectItem>
+                                <SelectItem value="Phone">{t('subscriber_profile.add_service_type_landline')}</SelectItem>
+                                <SelectItem value="Mobile">{t('subscriber_profile.add_service_type_mobile')}</SelectItem>
+                                <SelectItem value="Combo">{t('subscriber_profile.add_service_type_combo')}</SelectItem>
+                                <SelectItem value="Other">{t('subscriber_profile.add_service_type_other')}</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={addServiceForm.control}
+                        name="popId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t('subscriber_profile.add_service_pop_label')}</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingPops || !!popsError}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={isLoadingPops ? t('subscriber_profile.add_service_pop_loading') : popsError ? t('subscriber_profile.add_service_pop_error') : t('subscriber_profile.add_service_pop_placeholder')} />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {!isLoadingPops && !popsError && pops.map((pop) => (
+                                  <SelectItem key={pop.id.toString()} value={pop.id.toString()}>
+                                    {pop.name} ({pop.location})
+                                  </SelectItem>
+                                ))}
+                                 {isLoadingPops && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_loading')}</div>}
+                                 {popsError && <div className="p-2 text-center text-destructive text-xs">{t('subscriber_profile.add_service_pop_error')}</div>}
+                                 {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_none')}</div>}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button type="button" variant="outline" disabled={addServiceForm.formState.isSubmitting}>{t('subscriber_profile.add_service_cancel_button')}</Button>
+                        </DialogClose>
+                        <Button type="submit" disabled={addServiceForm.formState.isSubmitting}>
+                          {addServiceForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
+                          {addServiceForm.formState.isSubmitting ? t('subscriber_profile.add_service_saving_button') : t('subscriber_profile.add_service_save_button')}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+            </div>
             <Card>
                 <CardContent className="pt-6">
                     {filteredServices.length > 0 ? (
@@ -756,7 +754,6 @@ function SubscriberProfilePage() {
                                                 </span>
                                               </ServiceDetailItem>
 
-                                              {/* Technology Specific */}
                                               {service.technology === 'Fiber' && <>
                                                 <ServiceDetailItem label="subscriber_profile.services_fdh_id" value={service.fdhId} />
                                                 <ServiceDetailItem label="subscriber_profile.services_fdh_port" value={service.fdhPort} />
@@ -773,7 +770,6 @@ function SubscriberProfilePage() {
                                                {service.technology === 'Satellite' && <ServiceDetailItem label="subscriber_profile.services_mac_address" value={service.macAddress} />}
 
 
-                                              {/* Authentication Specific */}
                                                <ServiceDetailItem label="subscriber_profile.services_auth_type" value={service.authenticationType ? t(`subscriber_profile.auth_type_${service.authenticationType.toLowerCase()}` as any, service.authenticationType) : undefined} />
                                               {service.authenticationType === 'PPPoE' && <>
                                                 <ServiceDetailItem label="subscriber_profile.services_pppoe_user" value={service.pppoeUsername} />
@@ -795,7 +791,7 @@ function SubscriberProfilePage() {
                                              service.status === 'Active' ? 'bg-green-100 text-green-800' :
                                              service.status === 'Suspended' ? 'bg-yellow-100 text-yellow-800' :
                                              service.status === 'Canceled' ? 'bg-red-100 text-red-800' :
-                                             'bg-gray-100 text-gray-800' // for Inactive or Planned
+                                             'bg-gray-100 text-gray-800'
                                            }`}>
                                              {t(`list_subscribers.status_${service.status.toLowerCase()}` as any, service.status)}
                                            </span>
@@ -863,28 +859,30 @@ function SubscriberProfilePage() {
                     )}
                 </CardContent>
           </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="billing">
-          <div className="mb-4 flex justify-between items-center">
-             <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)} className="w-full">
-                <TabsList className="grid w-full grid-cols-6 h-auto">
-                    <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_all')}</TabsTrigger>
-                    <TabsTrigger value="Pending"><Clock className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
-                    <TabsTrigger value="Paid"><CheckCircle className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_paid')}</TabsTrigger>
-                    <TabsTrigger value="Canceled"><XCircle className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_canceled')}</TabsTrigger>
-                    <TabsTrigger value="PaymentPlan"><CalendarClock className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_payment_plan')}</TabsTrigger>
-                    <TabsTrigger value="PromiseToPay"><Handshake className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_promise_to_pay')}</TabsTrigger>
-                </TabsList>
-             </Tabs>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white ml-4 shrink-0" onClick={handleMakeInvoice}>
-                <FilePlus2 className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_make_invoice_button')}
-              </Button>
-          </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center">
+              <Tabs defaultValue="Pending" value={activeBillingTab} onValueChange={(value) => setActiveBillingTab(value as BillingFilter)} className="w-full">
+                  <TabsList className="grid w-full grid-cols-6 h-auto">
+                      <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_all')}</TabsTrigger>
+                      <TabsTrigger value="Pending"><Clock className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_pending')}</TabsTrigger>
+                      <TabsTrigger value="Paid"><CheckCircle className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_paid')}</TabsTrigger>
+                      <TabsTrigger value="Canceled"><XCircle className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_canceled')}</TabsTrigger>
+                      <TabsTrigger value="PaymentPlan"><CalendarClock className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_payment_plan')}</TabsTrigger>
+                      <TabsTrigger value="PromiseToPay"><Handshake className={`mr-1.5 ${tabIconSize}`}/>{t('subscriber_profile.billing_filter_promise_to_pay')}</TabsTrigger>
+                  </TabsList>
+              </Tabs>
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white ml-4 shrink-0" onClick={handleMakeInvoice}>
+                  <FilePlus2 className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_make_invoice_button')}
+                </Button>
+            </div>
              <Card>
                  <CardContent className="pt-6">
                     <TabsContent value="All" className="mt-0 space-y-2">
-                         <h4 className="text-xs font-semibold mb-2 flex items-center gap-2"> {/* Font size reduced */}
+                         <h4 className="text-xs font-semibold mb-2 flex items-center gap-2">
                              <ListFilterIcon className={`${tabIconSize} text-primary`} /> {t('subscriber_profile.billing_all_invoices')} ({allInvoices.length})
                          </h4>
                          {allInvoices.length > 0 ? (
@@ -1118,11 +1116,13 @@ function SubscriberProfilePage() {
                     </TabsContent>
                  </CardContent>
            </Card>
+          </div>
          </TabsContent>
 
 
         <TabsContent value="service-calls">
-            <div className="mb-4 flex justify-end">
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-end">
                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                         <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.service_calls_new_button')}
                 </Button>
@@ -1134,7 +1134,7 @@ function SubscriberProfilePage() {
                      {subscriber.serviceCalls.map(call => (
                          <li key={call.id} className="flex justify-between items-center p-3 border rounded-md">
                              <div>
-                                 <span className="font-medium text-xs">{call.date}</span> - <span className="text-xs text-muted-foreground">{call.issue}</span> {/* Font sizes adjusted */}
+                                 <span className="font-medium text-xs">{call.date}</span> - <span className="text-xs text-muted-foreground">{call.issue}</span>
                              </div>
                              <span className={`text-xs px-2 py-0.5 rounded-full ${call.status === 'Resolved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{t(`subscriber_profile.service_call_status_${call.status.toLowerCase()}` as any, call.status)}</span>
                          </li>
@@ -1145,21 +1145,23 @@ function SubscriberProfilePage() {
              )}
             </CardContent>
           </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="inventory">
-          <div className="mb-4 flex justify-between items-center">
-            <Tabs defaultValue="All" value={activeInventoryTab} onValueChange={(value) => setActiveInventoryTab(value as InventoryFilter)} className="w-full">
-                <TabsList className="grid w-full grid-cols-3 h-auto">
-                    <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_all')}</TabsTrigger>
-                    <TabsTrigger value="Lent"><Package className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_lent')}</TabsTrigger>
-                    <TabsTrigger value="Sold"><DollarSign className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_sold')}</TabsTrigger>
-                </TabsList>
-            </Tabs>
-            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white ml-4 shrink-0">
-              <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.inventory_assign_button')}
-            </Button>
-          </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center">
+              <Tabs defaultValue="All" value={activeInventoryTab} onValueChange={(value) => setActiveInventoryTab(value as InventoryFilter)} className="w-full">
+                  <TabsList className="grid w-full grid-cols-3 h-auto">
+                      <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_all')}</TabsTrigger>
+                      <TabsTrigger value="Lent"><Package className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_lent')}</TabsTrigger>
+                      <TabsTrigger value="Sold"><DollarSign className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.inventory_filter_sold')}</TabsTrigger>
+                  </TabsList>
+              </Tabs>
+              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white ml-4 shrink-0">
+                <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.inventory_assign_button')}
+              </Button>
+            </div>
             <Card>
                 <CardContent className="pt-6">
                      {filteredInventory.length > 0 ? (
@@ -1167,7 +1169,7 @@ function SubscriberProfilePage() {
                             {filteredInventory.map(item => (
                                 <li key={item.id} className="flex justify-between items-center p-3 border rounded-md">
                                     <div>
-                                        <span className="font-medium text-xs">{item.type}</span> - <span className="text-xs text-muted-foreground">{item.model}</span> {/* Font sizes adjusted */}
+                                        <span className="font-medium text-xs">{item.type}</span> - <span className="text-xs text-muted-foreground">{item.model}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <span className="text-xs text-muted-foreground">{t('subscriber_profile.inventory_serial_label')}: {item.serial}</span>
@@ -1183,77 +1185,84 @@ function SubscriberProfilePage() {
                      )}
                 </CardContent>
             </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="documents">
-            <div className="mb-4 flex justify-end">
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-end">
               <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                     <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.documents_upload_button')}
               </Button>
             </div>
-          <Card>
-            <CardContent className="pt-6">
-              {subscriber.documents && subscriber.documents.length > 0 ? (
-                <ul className="space-y-3">
-                  {subscriber.documents.map(doc => (
-                    <li key={doc.id} className="flex justify-between items-center p-3 border rounded-md">
-                      <div>
-                        <span className="font-medium text-xs">{doc.name}</span> {/* Font size adjusted */}
-                      </div>
-                      <span className="text-xs text-muted-foreground">{t('subscriber_profile.documents_uploaded_label')}: {doc.uploaded}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.documents_none')}</p>
-              )}
-            </CardContent>
-          </Card>
+            <Card>
+              <CardContent className="pt-6">
+                {subscriber.documents && subscriber.documents.length > 0 ? (
+                  <ul className="space-y-3">
+                    {subscriber.documents.map(doc => (
+                      <li key={doc.id} className="flex justify-between items-center p-3 border rounded-md">
+                        <div>
+                          <span className="font-medium text-xs">{doc.name}</span>
+                        </div>
+                        <span className="text-xs text-muted-foreground">{t('subscriber_profile.documents_uploaded_label')}: {doc.uploaded}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.documents_none')}</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="notes">
-            <div className="mb-4 flex justify-end">
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-end">
                 <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                         <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.notes_add_button')}
                 </Button>
             </div>
-          <Card>
-            <CardContent className="pt-6">
-              {subscriber.notes && subscriber.notes.length > 0 ? (
-                  <ul className="space-y-3">
-                     {subscriber.notes.map(note => (
-                         <li key={note.id} className="p-3 border rounded-md">
-                             <p className="text-xs mb-1">{note.text}</p>
-                             <p className="text-xs text-muted-foreground">{t('subscriber_profile.notes_author_label')}: {note.author} - {note.date}</p>
-                         </li>
-                     ))}
-                  </ul>
-              ) : (
-                  <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.notes_none')}</p>
-              )}
-            </CardContent>
-          </Card>
+            <Card>
+              <CardContent className="pt-6">
+                {subscriber.notes && subscriber.notes.length > 0 ? (
+                    <ul className="space-y-3">
+                       {subscriber.notes.map(note => (
+                           <li key={note.id} className="p-3 border rounded-md">
+                               <p className="text-xs mb-1">{note.text}</p>
+                               <p className="text-xs text-muted-foreground">{t('subscriber_profile.notes_author_label')}: {note.author} - {note.date}</p>
+                           </li>
+                       ))}
+                    </ul>
+                ) : (
+                    <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.notes_none')}</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="history">
-          <Card>
-            <CardContent className="pt-6">
-              {subscriber.history && subscriber.history.length > 0 ? (
-                  <ul className="space-y-3">
-                     {subscriber.history.map(entry => (
-                         <li key={entry.id} className="flex justify-between items-center p-3 border rounded-md">
-                             <div>
-                                 <span className="font-medium text-xs">{entry.event}</span> {/* Font size adjusted */}
-                             </div>
-                             <span className="text-xs text-muted-foreground">{t('subscriber_profile.history_user_label')}: {entry.user} - {entry.timestamp}</span>
-                         </li>
-                     ))}
-                  </ul>
-              ) : (
-                  <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.history_none')}</p>
-              )}
-            </CardContent>
-          </Card>
+          <div className="flex flex-col gap-4">
+            <Card>
+              <CardContent className="pt-6">
+                {subscriber.history && subscriber.history.length > 0 ? (
+                    <ul className="space-y-3">
+                       {subscriber.history.map(entry => (
+                           <li key={entry.id} className="flex justify-between items-center p-3 border rounded-md">
+                               <div>
+                                   <span className="font-medium text-xs">{entry.event}</span>
+                               </div>
+                               <span className="text-xs text-muted-foreground">{t('subscriber_profile.history_user_label')}: {entry.user} - {entry.timestamp}</span>
+                           </li>
+                       ))}
+                    </ul>
+                ) : (
+                    <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.history_none')}</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
       </Tabs>
@@ -1316,6 +1325,15 @@ function SubscriberProfilePage() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* New Contract Wizard Dialog */}
+      {isNewContractWizardOpen && (
+        <NewContractWizard
+          isOpen={isNewContractWizardOpen}
+          onClose={() => setIsNewContractWizardOpen(false)}
+          subscriberId={subscriber.id}
+        />
+      )}
     </div>
   );
 }
