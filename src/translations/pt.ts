@@ -606,7 +606,7 @@ const pt = {
       delete_confirm_title: 'Tem certeza?',
       delete_confirm_description: 'Esta ação não pode ser desfeita. Isso excluirá permanentemente a categoria "{categoryName}".',
       delete_confirm_cancel: 'Cancelar',
-      delete_confirm_delete: 'Excluir',
+      form_confirm_delete: 'Excluir',
       static_delete_error_title: 'Erro de Exclusão',
       static_delete_error_description: 'As categorias estáticas "Receita" e "Despesa" não podem ser excluídas.',
       static_edit_error_title: 'Erro de Edição',
@@ -859,12 +859,15 @@ const pt = {
       service_description_header: 'Descrição do Serviço',
       service_cost_header: 'Custo',
       service_actions_header: 'Ações',
+      step_content_placeholder: 'Conteúdo do passo {currentStep} aqui.',
+      no_billing_dates_configured: 'Nenhuma data de faturamento configurada. Por favor, adicione-as nas Configurações Financeiras.',
     },
     financial_configs: {
       billing_dates_title: 'Datas de Faturamento',
       table_header_day_of_month: 'Dia do Mês',
       table_header_status: 'Status',
       table_header_actions: 'Ações',
+      table_header_active_contracts: 'Contratos Ativos',
       action_delete: 'Excluir',
       no_billing_days: 'Nenhum dia de faturamento configurado.',
       add_day_button: 'Adicionar Dia de Faturamento',
@@ -891,7 +894,7 @@ const pt = {
       delete_day_success_title: 'Dia de Faturamento Excluído',
       delete_day_success_description: 'Dia de faturamento "{dayOfMonth}" excluído.',
       delete_confirm_title: 'Tem certeza?',
-      delete_confirm_description_day: 'Isso excluirá permanentemente a regra do dia de faturamento para "{dayOfMonth}".',
+      delete_confirm_description_day: 'Isso excluirá permanentemente a regra do dia de facturação para "{dayOfMonth}".',
       delete_confirm_cancel: 'Cancelar',
       delete_confirm_delete: 'Excluir',
       status_active: 'Ativo',
@@ -903,3 +906,4 @@ const pt = {
 };
 
 export default pt;
+

@@ -861,12 +861,15 @@ const fr = {
     service_description_header: 'Description du Service',
     service_cost_header: 'Coût',
     service_actions_header: 'Actions',
+    step_content_placeholder: 'Contenu de l\'étape {currentStep} ici.',
+    no_billing_dates_configured: 'Aucune date de facturation configurée. Veuillez les ajouter dans Configurations Financières.',
   },
   financial_configs: {
     billing_dates_title: 'Dates de Facturation',
     table_header_day_of_month: 'Jour du Mois',
     table_header_status: 'Statut',
     table_header_actions: 'Actions',
+    table_header_active_contracts: 'Contrats Actifs',
     action_delete: 'Supprimer',
     no_billing_days: 'Aucun jour de facturation configuré.',
     add_day_button: 'Ajouter Jour de Facturation',
@@ -905,3 +908,4 @@ const fr = {
 };
 
 export default fr;
+

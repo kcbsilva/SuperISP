@@ -530,7 +530,6 @@ const en = {
     connection_type_satellite: 'Satellite',
     connection_type_utp: 'UTP',
   },
-  // Cash Book Page
   cash_book: {
     title: 'Cash Book',
     add_entry_button: 'Add Entry',
@@ -578,7 +577,6 @@ const en = {
     total_expenses_label: 'Total Expenses',
     net_balance_label: 'Net Balance',
   },
-  // Entry Categories Page
   entry_categories: {
     title: 'Entry Categories',
     add_category_button: 'Add Entry',
@@ -880,12 +878,15 @@ const en = {
     service_description_header: 'Service Description',
     service_cost_header: 'Cost',
     service_actions_header: 'Actions',
+    step_content_placeholder: 'Step {currentStep} content goes here.',
+    no_billing_dates_configured: 'No billing dates configured. Please add them in Financial Configurations.',
   },
   financial_configs: {
     billing_dates_title: 'Billing Dates',
     table_header_day_of_month: 'Day of Month',
     table_header_status: 'Status',
     table_header_actions: 'Actions',
+    table_header_active_contracts: 'Active Contracts',
     action_delete: 'Delete',
     no_billing_days: 'No billing days configured yet.',
     add_day_button: 'Add Billing Day',

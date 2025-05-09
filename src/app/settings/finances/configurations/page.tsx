@@ -97,13 +97,13 @@ type BillingDayFormData = z.infer<typeof billingDaySchema>;
 
 interface BillingDay extends BillingDayFormData {
   id: string;
-  // activeContracts removed for now
+  activeContracts: number; // Added activeContracts
 }
 
 const placeholderBillingDays: BillingDay[] = [
-  { id: 'bd-1', dayOfMonth: 1, status: true, permittedPopIds: ['sim-1'] },
-  { id: 'bd-2', dayOfMonth: 15, status: true, permittedPopIds: ['sim-1', 'sim-2'] },
-  { id: 'bd-3', dayOfMonth: 'Last Day', status: false, permittedPopIds: ['sim-3'] },
+  { id: 'bd-1', dayOfMonth: 1, status: true, permittedPopIds: ['sim-1'], activeContracts: 120 },
+  { id: 'bd-2', dayOfMonth: 15, status: true, permittedPopIds: ['sim-1', 'sim-2'], activeContracts: 75 },
+  { id: 'bd-3', dayOfMonth: 'Last Day', status: false, permittedPopIds: ['sim-3'], activeContracts: 0 },
 ];
 
 const queryClient = new QueryClient();
@@ -143,6 +143,7 @@ function FinancialConfigurationsPage() {
     const newBillingDay: BillingDay = {
       ...data,
       id: `bd-${Date.now()}`,
+      activeContracts: 0, // New days start with 0 active contracts
     };
     setBillingDays(prev => [...prev, newBillingDay].sort((a, b) => {
         const dayA = a.dayOfMonth === 'Last Day' ? 32 : a.dayOfMonth; // Treat 'Last Day' as 32 for sorting
@@ -228,6 +229,7 @@ function FinancialConfigurationsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-xs">{t('financial_configs.table_header_day_of_month', 'Day of Month')}</TableHead>
+                    <TableHead className="text-xs">{t('financial_configs.table_header_active_contracts', 'Active Contracts')}</TableHead>
                     <TableHead className="text-xs">{t('financial_configs.table_header_status')}</TableHead>
                     <TableHead className="text-right w-20 text-xs">{t('financial_configs.table_header_actions')}</TableHead>
                   </TableRow>
@@ -238,6 +240,7 @@ function FinancialConfigurationsPage() {
                       <TableCell className="text-xs">
                         {bd.dayOfMonth === 'Last Day' ? t('financial_configs.day_last', 'Last Day') : bd.dayOfMonth}
                       </TableCell>
+                      <TableCell className="text-xs text-center">{bd.activeContracts}</TableCell>
                       <TableCell className="text-xs">
                         <Switch
                           checked={bd.status}
@@ -405,7 +408,4 @@ function FinancialConfigurationsPage() {
             </Dialog>
           </div>
         </CardContent>
-      </Card>
-    </div>
-  );
-}
+      

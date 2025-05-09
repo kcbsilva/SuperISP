@@ -29,12 +29,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+// Calendar and Popover for billing date are no longer needed as it's a select now
+// import { Calendar } from '@/components/ui/calendar';
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from '@/components/ui/popover';
 import {
   Table,
   TableBody,
@@ -51,14 +52,29 @@ import { useQuery } from '@tanstack/react-query';
 import { getPops } from '@/services/mysql/pops';
 import type { Pop } from '@/types/pops';
 import { useLocale } from '@/contexts/LocaleContext';
-import { format } from 'date-fns';
+// import { format } from 'date-fns'; // Not needed for select
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 
+// Simulate fetching billing dates from financial configurations
+// In a real app, this would come from a service or shared state
+const placeholderBillingDaysFromConfig: { id: string; dayOfMonth: number | 'Last Day'; status: boolean }[] = [
+  { id: 'bd-1', dayOfMonth: 1, status: true },
+  { id: 'bd-2', dayOfMonth: 15, status: true },
+  { id: 'bd-3', dayOfMonth: 'Last Day', status: false },
+  { id: 'bd-4', dayOfMonth: 10, status: true },
+];
+
+
+const dayOfMonthSchema = z.union([
+  z.coerce.number().int().min(1).max(31),
+  z.literal('Last Day')
+]);
+
 // Main contract schema (Step 1)
 const contractStep1Schema = z.object({
-  billingDate: z.date({ required_error: "Billing date is required." }),
+  billingDate: dayOfMonthSchema, // Changed from z.date
   popId: z.string().min(1, "PoP selection is required."),
   hasInstallationFee: z.boolean().default(false),
   installationFee: z.coerce.number().min(0, "Installation fee cannot be negative.").optional(),
@@ -136,7 +152,7 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
   const mainForm = useForm<ContractStep1FormData>({
     resolver: zodResolver(contractStep1Schema),
     defaultValues: {
-      billingDate: new Date(),
+      billingDate: 1, // Default to 1st day, will be string or number
       popId: '',
       hasInstallationFee: false,
       installationFee: 0,
@@ -180,6 +196,14 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
       mainForm.setValue('installationFee', 0);
     }
   }, [watchHasInstallationFee, mainForm]);
+
+  // Filter active billing days from config for the dropdown
+  const activeBillingDays = React.useMemo(() => {
+    return placeholderBillingDaysFromConfig
+      .filter(bd => bd.status)
+      .map(bd => bd.dayOfMonth)
+      .sort((a,b) => (a === 'Last Day' ? 32 : a) - (b === 'Last Day' ? 32 : b) ); // Sort numerically, 'Last Day' at end
+  }, []);
 
 
   const handleSubmitStep1: SubmitHandler<ContractStep1FormData> = (data) => {
@@ -266,27 +290,23 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
                 control={mainForm.control}
                 name="billingDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem>
                     <FormLabel>{t('new_contract_wizard.billing_date_label')}</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "pl-3 text-left font-normal text-xs",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? format(field.value, "PPP") : <span>{t('new_contract_wizard.billing_date_placeholder')}</span>}
-                            <CalendarIcon className={`ml-auto ${iconSize} opacity-50`} />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                      </PopoverContent>
-                    </Popover>
+                    <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('new_contract_wizard.billing_date_placeholder')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {activeBillingDays.map(day => (
+                          <SelectItem key={day.toString()} value={day.toString()}>
+                            {day === 'Last Day' ? t('financial_configs.day_last', 'Last Day') : day}
+                          </SelectItem>
+                        ))}
+                        {activeBillingDays.length === 0 && <SelectItem value="" disabled>{t('new_contract_wizard.no_billing_dates_configured')}</SelectItem>}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -467,11 +487,11 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
         </Form>
       );
     }
-    return <p className="text-center text-sm py-8">Step {currentStep} content goes here.</p>;
+    return <p className="text-center text-sm py-8">{t('new_contract_wizard.step_content_placeholder', 'Step {currentStep} content goes here.').replace('{currentStep}', currentStep.toString())}</p>;
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) { onClose(); setCurrentStep(1); setAddedServices([]); mainForm.reset(); } }}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-sm">{t('new_contract_wizard.title')} - {t('new_contract_wizard.step')} {currentStep}</DialogTitle>
@@ -577,4 +597,3 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
     </Dialog>
   );
 }
-
