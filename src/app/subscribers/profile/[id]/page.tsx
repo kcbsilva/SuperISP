@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark, FilePlus2, Printer, Send } from 'lucide-react'; // Added Landmark for Point of Reference, FilePlus2 for Make Invoice, Printer, Send
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark, FilePlus2, Printer, Send, FileSignature } from 'lucide-react'; // Added Landmark for Point of Reference, FilePlus2 for Make Invoice, Printer, Send, FileSignature
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -193,11 +193,11 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.taxId = '123.456.789-00';
         baseData.idNumber = 'ID-ALICE-001';
         baseData.signupDate = new Date(2022, 0, 10);
-        baseData.billing.balance = 70.00; // Adjusted balance
-        baseData.billing.pendingInvoices = [ // Correctly assigned
-            { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
-            { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
-        ];
+        baseData.billing.balance = 0.00;
+        baseData.billing.pendingInvoices =  [
+             { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
+             { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
+         ];
     } else if (id === 'sub-2') {
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
@@ -507,9 +507,12 @@ function SubscriberProfilePage() {
       </Card>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 md:grid-cols-8">
+        <TabsList className="grid w-full grid-cols-5 md:grid-cols-9"> {/* Updated grid-cols */}
           <TabsTrigger value="overview">
             <User className={`mr-1.5 ${tabIconSize}`} /> {t('subscriber_profile.overview_tab')}
+          </TabsTrigger>
+          <TabsTrigger value="contracts">
+            <FileSignature className={`mr-1.5 ${tabIconSize}`} /> {t('subscriber_profile.contracts_tab')}
           </TabsTrigger>
           <TabsTrigger value="services">
              <ServerIcon className={`mr-1.5 ${tabIconSize}`} /> {t('subscriber_profile.services_tab')}
@@ -591,6 +594,19 @@ function SubscriberProfilePage() {
             </CardFooter>
           </Card>
         </TabsContent>
+
+        <TabsContent value="contracts">
+           <Card>
+             <CardHeader>
+               <CardTitle className="text-sm">{t('subscriber_profile.contracts_card_title')}</CardTitle>
+               <CardDescription className="text-xs">{t('subscriber_profile.contracts_card_description')}</CardDescription>
+             </CardHeader>
+             <CardContent className="pt-6">
+               <p className="text-xs text-muted-foreground">{t('subscriber_profile.contracts_none')}</p>
+             </CardContent>
+           </Card>
+        </TabsContent>
+
 
         <TabsContent value="services">
           <div className="mb-4 flex justify-between items-center">
@@ -1027,7 +1043,7 @@ function SubscriberProfilePage() {
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
-                                        </div>
+                                         </div>
                                     </li>
                                 ))}
                             </ul>
@@ -1272,3 +1288,4 @@ function SubscriberProfilePage() {
     </div>
   );
 }
+

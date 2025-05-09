@@ -224,6 +224,7 @@ const pt = {
   },
   subscriber_profile: {
     overview_tab: 'Visão Geral',
+    contracts_tab: 'Contratos',
     services_tab: 'Serviços',
     billing_tab: 'Faturamento',
     service_calls_tab: 'Chamados',
@@ -258,6 +259,9 @@ const pt = {
     edit_toast_description: 'A edição para {name} ainda não está funcional.',
     delete_toast_title: 'Excluir Assinante (Não implementado)',
     delete_toast_description: 'A exclusão para {name} ainda não está funcional.',
+    contracts_card_title: 'Contratos',
+    contracts_card_description: 'Gerenciar contratos associados a este assinante.',
+    contracts_none: 'Nenhum contrato encontrado para este assinante.',
     services_card_title: 'Serviços',
     services_card_description: 'Serviços atualmente assinados pelo cliente.',
     add_service_button: 'Adicionar Serviço',

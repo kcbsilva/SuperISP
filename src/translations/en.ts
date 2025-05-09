@@ -233,6 +233,7 @@ const en = {
    // Subscriber Profile Page
    subscriber_profile: {
      overview_tab: 'Overview',
+     contracts_tab: 'Contracts', // Added translation
      services_tab: 'Services',
      billing_tab: 'Billing',
      service_calls_tab: 'Service Calls',
@@ -267,6 +268,9 @@ const en = {
      edit_toast_description: 'Editing for {name} is not yet functional.',
      delete_toast_title: 'Delete Subscriber (Not Implemented)',
      delete_toast_description: 'Deletion for {name} is not yet functional.',
+     contracts_card_title: 'Contracts', // Added translation
+     contracts_card_description: 'Manage contracts associated with this subscriber.', // Added translation
+     contracts_none: 'No contracts found for this subscriber.', // Added translation
      services_card_title: 'Services',
      services_card_description: 'Services currently subscribed to by the customer.',
      add_service_button: 'Add Service',
@@ -726,7 +730,6 @@ const en = {
     export_linux: "Linux",
     export_mikrotik: "MikroTik",
   },
-  // ONU Templates Page
   onu_templates: {
     title: 'ONU Templates',
     add_template_button: 'Add Template',

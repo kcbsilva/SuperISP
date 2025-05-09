@@ -226,6 +226,7 @@ const fr = {
    },
    subscriber_profile: {
      overview_tab: 'Aperçu',
+     contracts_tab: 'Contrats',
      services_tab: 'Services',
      billing_tab: 'Facturation',
      service_calls_tab: 'Appels de service',
@@ -260,6 +261,9 @@ const fr = {
      edit_toast_description: 'La modification pour {name} n\'est pas encore fonctionnelle.',
      delete_toast_title: 'Supprimer l\'abonné (Non implémenté)',
      delete_toast_description: 'La suppression pour {name} n\'est pas encore fonctionnelle.',
+     contracts_card_title: 'Contrats',
+     contracts_card_description: 'Gérer les contrats associés à cet abonné.',
+     contracts_none: 'Aucun contrat trouvé pour cet abonné.',
      services_card_title: 'Services',
      services_card_description: 'Services auxquels le client est actuellement abonné.',
      add_service_button: 'Ajouter un service',
