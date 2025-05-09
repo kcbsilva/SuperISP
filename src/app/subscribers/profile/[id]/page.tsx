@@ -153,9 +153,9 @@ const getSubscriberData = (id: string | string[]) => {
             canceledInvoices: [
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
-             pendingInvoices: [
-                 { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
-                 { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
+            pendingInvoices: [
+                { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
+                { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
             ],
             paymentPlans: [
                 { id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active' },
@@ -609,21 +609,21 @@ function SubscriberProfilePage() {
         <TabsContent value="contracts">
            <Card>
             <CardHeader className="flex flex-row justify-between items-center">
-                <div>
-                    <CardTitle className="text-sm">{t('subscriber_profile.contracts_card_title')}</CardTitle>
-                    <CardDescription className="text-xs">{t('subscriber_profile.contracts_card_description')}</CardDescription>
-                </div>
-                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={handleNewContract}>
+                {/* CardTitle and CardDescription removed */}
+                 <Tabs defaultValue="Active" value={activeContractTab} onValueChange={(value) => setActiveContractTab(value as ContractStatusFilter)} className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 h-auto"> {/* Added mb-4 */}
+                        <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_all', 'All')}</TabsTrigger>
+                        <TabsTrigger value="Active"><CheckCircle className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_active', 'Active')}</TabsTrigger>
+                        <TabsTrigger value="Inactive"><XCircle className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_inactive', 'Inactive')}</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white ml-4 shrink-0" onClick={handleNewContract}>
                     <FilePlus className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.new_contract_button')}
                 </Button>
             </CardHeader>
              <CardContent className="pt-0"> {/* Reduced padding top */}
                 <Tabs defaultValue="Active" value={activeContractTab} onValueChange={(value) => setActiveContractTab(value as ContractStatusFilter)} className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 h-auto mb-4"> {/* Added mb-4 */}
-                        <TabsTrigger value="All"><ListFilterIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_all', 'All')}</TabsTrigger>
-                        <TabsTrigger value="Active"><CheckCircle className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_active', 'Active')}</TabsTrigger>
-                        <TabsTrigger value="Inactive"><XCircle className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_filter_inactive', 'Inactive')}</TabsTrigger>
-                    </TabsList>
+                     {/* TabsList moved to CardHeader */}
                     <TabsContent value="All">
                         <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.contracts_none_all_filtered', 'No contracts found.')}</p>
                     </TabsContent>
