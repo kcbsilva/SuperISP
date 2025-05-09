@@ -8,11 +8,11 @@ import { useState, useEffect, type ReactNode } from 'react'; // Import useState 
 import Image from 'next/image'; // Import next/image
 // Import specific icons
 import {
-  LayoutDashboard, ShieldCheck, Settings, Users, Network, ChevronDown, ChevronRight, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
+  LayoutDashboard, ShieldCheck, Settings, Users, ChevronDown, ChevronRight, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
   Code, // Added for IPv4/6
   Router, // Added for Devices
   Share2, // Added for CGNAT
-  Server, // Added for RADIUS
+  Server as ServerIcon, // Added for RADIUS & Services, aliased to avoid conflict
   Split, // Added for VLAN
   DollarSign, // Added for Finances
   BarChart3, // Added for Reports
@@ -43,7 +43,12 @@ import {
   Truck, // Icon for Suppliers (using Truck as an example, can be changed)
   FileText as FileTextIcon, // for ONU Templates
   GitBranch, // for FTTx
-  NetworkIcon, // For OLTs (using a generic Network icon for now)
+  Network as NetworkIcon, // For OLTs (using a generic Network icon for now)
+  Sun, // For theme toggle
+  Moon, // For theme toggle
+  Info, // For changelog
+  LogOut, // For logout
+  UserCircle, // For profile menu
 } from 'lucide-react';
 
 import prolterLogoSrc from '@/app/assets/prolter-logo.svg'; // Import the SVG asset path
@@ -73,7 +78,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
 import { Progress } from '@/components/ui/progress'; // Import Progress component
 import { LocaleProvider, useLocale } from '@/contexts/LocaleContext'; // Import LocaleProvider and useLocale
-import { ThemeProvider } from '@/components/theme-provider'; // Corrected import path
+import { ThemeProvider, useTheme } from '@/components/theme-provider'; // Corrected import path
 
 
 // Create a client
@@ -138,10 +143,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarHeader>
             <Link
               href="/"
-              className="flex items-center gap-2 text-lg font-semibold text-sidebar-primary px-2" // Added padding for consistency
+              className="flex items-center justify-center px-2 py-2 text-secondary dark:text-primary" // Updated dark theme color
             >
-              <Image src={prolterLogoSrc} alt="Prolter Logo" width={16} height={16} className="w-4 h-4" /> {/* Using next/image */}
-              {/* Removed text-based title */}
+              <Image src={prolterLogoSrc} alt="Prolter Logo" width={131} height={32} />
             </Link>
           </SidebarHeader>
           <SidebarContent>
@@ -209,7 +213,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </Tooltip>
                         <SidebarMenuSubContent>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/polls')} size="sm">
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/polls')} size="sm" tooltip={t('sidebar.maps_elements_polls')}>
                               <Link href="#" className="flex items-center gap-2">
                                 <Power className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_polls')}</span>
@@ -217,7 +221,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/fdhs')} size="sm">
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/fdhs')} size="sm" tooltip={t('sidebar.maps_elements_fdhs')}>
                               <Link href="#" className="flex items-center gap-2">
                                 <Box className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_fdhs')}</span>
@@ -225,7 +229,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/foscs')} size="sm">
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/foscs')} size="sm" tooltip={t('sidebar.maps_elements_foscs')}>
                               <Link href="#" className="flex items-center gap-2">
                                 <Warehouse className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_foscs')}</span>
@@ -233,7 +237,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/peds')} size="sm">
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/peds')} size="sm" tooltip={t('sidebar.maps_elements_peds')}>
                               <Link href="#" className="flex items-center gap-2">
                                 <Box className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_peds')}</span>
@@ -241,7 +245,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/accessories')} size="sm">
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/accessories')} size="sm" tooltip={t('sidebar.maps_elements_accessories')}>
                               <Link href="#" className="flex items-center gap-2">
                                 <Puzzle className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_accessories')}</span>
@@ -249,7 +253,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/towers')} size="sm">
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/towers')} size="sm" tooltip={t('sidebar.maps_elements_towers')}>
                               <Link href="#" className="flex items-center gap-2">
                                 <TowerControl className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_towers')}</span>
@@ -257,7 +261,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/cables')} size="sm">
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/cables')} size="sm" tooltip={t('sidebar.maps_elements_cables')}>
                               <Link href="#" className="flex items-center gap-2">
                                 <Cable className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_cables')}</span>
@@ -578,7 +582,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                               tooltip={t('sidebar.network')}
                             >
                               <div className="flex items-center gap-2 cursor-pointer w-full">
-                                <Network className={subIconSize + " text-muted-foreground"} />
+                                <NetworkIcon className={subIconSize + " text-muted-foreground"} />
                                 <span className="truncate">{t('sidebar.network')}</span>
                                 <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                               </div>
@@ -588,7 +592,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </Tooltip>
                         <SidebarMenuSubContent>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/network/ip')} size="sm">
+                            <SidebarMenuButton asChild isActive={isActive('/settings/network/ip')} size="sm" tooltip={t('sidebar.network_ip')}>
                               <Link href="#" className="flex items-center gap-2">
                                 <Code className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.network_ip')}</span>
@@ -596,7 +600,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/network/devices')} size="sm">
+                            <SidebarMenuButton asChild isActive={isActive('/settings/network/devices')} size="sm" tooltip={t('sidebar.network_devices')}>
                               <Link href="#" className="flex items-center gap-2">
                                 <Router className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.network_devices')}</span>
@@ -612,9 +616,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/network/radius')} size="sm">
+                            <SidebarMenuButton asChild isActive={isActive('/settings/network/radius')} size="sm" tooltip={t('sidebar.network_radius')}>
                               <Link href="#" className="flex items-center gap-2">
-                                <Server className={subIconSize + " text-muted-foreground"} />
+                                <ServerIcon className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.network_radius')}</span>
                               </Link>
                             </SidebarMenuButton>
