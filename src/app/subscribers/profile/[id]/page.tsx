@@ -151,12 +151,12 @@ const getSubscriberData = (id: string | string[]) => {
             canceledInvoices: [
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
-            pendingInvoices: [
+             pendingInvoices: [
                  { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
                  { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
             ],
             paymentPlans: [
-                {id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active'},
+                { id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active' },
             ],
             promisesToPay: [
                 {id: 'ptp-1', promiseDate: '2024-08-10', amount: 50.00, status: 'Pending'},
@@ -193,8 +193,8 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.taxId = '123.456.789-00';
         baseData.idNumber = 'ID-ALICE-001';
         baseData.signupDate = new Date(2022, 0, 10);
-        baseData.billing.balance = 0.00;
-        baseData.billing.pendingInvoices = [
+        baseData.billing.balance = 70.00; // Adjusted balance
+        baseData.billing.pendingInvoices = [ // Correctly assigned
             { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
             { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
         ];
@@ -403,7 +403,7 @@ function SubscriberProfilePage() {
         title: `${t(`subscriber_profile.billing_action_${action}` as any, action.replace(/_/g, ' '))} (Simulated)`,
         description: `Action for item ${item.id} is not yet implemented.`,
     });
-  }
+  };
 
 
   const handleServiceAction = (action: 'sign' | 'cancel' | 'print_service_contract' | 'print_responsibility_term' | 'print_cancelation_term' | 'transfer_contract' | 'clear_mac' | 'update_login' | 'change_billing_date' | 'monitor_traffic', service: any) => {
