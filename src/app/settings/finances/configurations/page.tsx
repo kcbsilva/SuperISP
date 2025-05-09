@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  DialogDescription as DialogDescriptionComponent, // Renamed to avoid conflict with CardDescription
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -205,7 +205,7 @@ function FinancialConfigurationsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">{t('financial_configs.billing_dates_title')}</CardTitle>
-          <CardDescription className="text-xs">{t('financial_configs.billing_dates_description')}</CardDescription>
+          {/* CardDescription removed as requested */}
         </CardHeader>
         <CardContent>
           <div className="border rounded-md min-h-[200px] p-4">
@@ -280,7 +280,7 @@ function FinancialConfigurationsPage() {
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle className="text-sm">{t('financial_configs.add_date_modal_title')}</DialogTitle>
-                  <DialogDescription className="text-xs">{t('financial_configs.add_date_modal_description')}</DialogDescription>
+                  <DialogDescriptionComponent className="text-xs">{t('financial_configs.add_date_modal_description')}</DialogDescriptionComponent>
                 </DialogHeader>
                 <Form {...addDateForm}>
                   <form onSubmit={addDateForm.handleSubmit(handleAddDateSubmit)} className="grid gap-4 py-4">
@@ -325,9 +325,9 @@ function FinancialConfigurationsPage() {
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                            <div className="space-y-0.5">
                              <FormLabel>{t('financial_configs.form_status_label')}</FormLabel>
-                             <DialogDescription className="text-xs">
+                             <DialogDescriptionComponent className="text-xs">
                                {field.value ? t('financial_configs.form_status_active_desc') : t('financial_configs.form_status_inactive_desc')}
-                             </DialogDescription>
+                             </DialogDescriptionComponent>
                            </div>
                            <FormControl>
                              <Switch
@@ -405,3 +405,4 @@ function FinancialConfigurationsPage() {
     </div>
   );
 }
+
