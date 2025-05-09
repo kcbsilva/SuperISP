@@ -5,7 +5,7 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
+  // CardDescription, // Removed
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -36,12 +36,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+// import { Calendar } from "@/components/ui/calendar"; // No longer needed for day of month
+// import {
+//     Popover,
+//     PopoverContent,
+//     PopoverTrigger,
+// } from "@/components/ui/popover"; // No longer needed for day of month
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,43 +62,48 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Switch } from '@/components/ui/switch';
-import { PlusCircle, Trash2, Loader2, CalendarIcon, RefreshCw, ChevronRight, ChevronLeft } from 'lucide-react';
+import { PlusCircle, Trash2, Loader2, RefreshCw, ChevronRight, ChevronLeft } from 'lucide-react'; // CalendarIcon removed
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { format } from 'date-fns';
-import { enUS, fr, ptBR } from 'date-fns/locale';
+// import { format } from 'date-fns'; // Not directly needed for day of month display
+// import { enUS, fr, ptBR } from 'date-fns/locale'; // Not directly needed
 import { cn } from "@/lib/utils";
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { getPops } from '@/services/mysql/pops';
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const dateLocales: Record<string, typeof enUS> = {
-    en: enUS,
-    fr: fr,
-    pt: ptBR,
-};
+// const dateLocales: Record<string, typeof enUS> = {
+//     en: enUS,
+//     fr: fr,
+//     pt: ptBR,
+// };
 
-const billingDateSchema = z.object({
-  date: z.date({ required_error: "Date is required." }),
+const dayOfMonthSchema = z.union([
+  z.coerce.number().int().min(1).max(31),
+  z.literal('Last Day')
+]);
+
+const billingDaySchema = z.object({
+  dayOfMonth: dayOfMonthSchema,
   status: z.boolean().default(true),
   permittedPopIds: z.array(z.string()).min(1, "At least one PoP must be permitted."),
 });
 
-type BillingDateFormData = z.infer<typeof billingDateSchema>;
+type BillingDayFormData = z.infer<typeof billingDaySchema>;
 
-interface BillingDate extends BillingDateFormData {
+interface BillingDay extends BillingDayFormData {
   id: string;
-  activeContracts: number; // Placeholder
+  // activeContracts removed for now
 }
 
-const placeholderBillingDates: BillingDate[] = [
-  { id: 'bd-1', date: new Date(2024, 0, 1), status: true, permittedPopIds: ['sim-1'], activeContracts: 120 },
-  { id: 'bd-2', date: new Date(2024, 0, 15), status: true, permittedPopIds: ['sim-1', 'sim-2'], activeContracts: 85 },
-  { id: 'bd-3', date: new Date(2024, 0, 28), status: false, permittedPopIds: ['sim-3'], activeContracts: 0 },
+const placeholderBillingDays: BillingDay[] = [
+  { id: 'bd-1', dayOfMonth: 1, status: true, permittedPopIds: ['sim-1'] },
+  { id: 'bd-2', dayOfMonth: 15, status: true, permittedPopIds: ['sim-1', 'sim-2'] },
+  { id: 'bd-3', dayOfMonth: 'Last Day', status: false, permittedPopIds: ['sim-3'] },
 ];
 
 const queryClient = new QueryClient();
@@ -112,11 +117,11 @@ export default function FinancialConfigurationsPageWrapper() {
 }
 
 function FinancialConfigurationsPage() {
-  const { t, locale } = useLocale();
+  const { t } = useLocale(); // locale removed as date formatting is not the primary display
   const { toast } = useToast();
-  const [billingDates, setBillingDates] = React.useState<BillingDate[]>(placeholderBillingDates);
-  const [isAddDateModalOpen, setIsAddDateModalOpen] = React.useState(false);
-  const [dateToDelete, setDateToDelete] = React.useState<BillingDate | null>(null);
+  const [billingDays, setBillingDays] = React.useState<BillingDay[]>(placeholderBillingDays);
+  const [isAddDayModalOpen, setIsAddDayModalOpen] = React.useState(false);
+  const [dayToDelete, setDayToDelete] = React.useState<BillingDay | null>(null);
 
   const iconSize = "h-3 w-3";
 
@@ -125,47 +130,50 @@ function FinancialConfigurationsPage() {
     queryFn: getPops,
   });
 
-  const addDateForm = useForm<BillingDateFormData>({
-    resolver: zodResolver(billingDateSchema),
+  const addDayForm = useForm<BillingDayFormData>({
+    resolver: zodResolver(billingDaySchema),
     defaultValues: {
-      date: new Date(),
+      dayOfMonth: 1, // Default to 1st day
       status: true,
       permittedPopIds: [],
     },
   });
 
-  const handleAddDateSubmit = (data: BillingDateFormData) => {
-    const newBillingDate: BillingDate = {
+  const handleAddDaySubmit = (data: BillingDayFormData) => {
+    const newBillingDay: BillingDay = {
       ...data,
       id: `bd-${Date.now()}`,
-      activeContracts: 0, // New dates start with 0 contracts
     };
-    setBillingDates(prev => [newBillingDate, ...prev].sort((a,b) => a.date.getTime() - b.date.getTime()));
+    setBillingDays(prev => [...prev, newBillingDay].sort((a, b) => {
+        const dayA = a.dayOfMonth === 'Last Day' ? 32 : a.dayOfMonth; // Treat 'Last Day' as 32 for sorting
+        const dayB = b.dayOfMonth === 'Last Day' ? 32 : b.dayOfMonth;
+        return dayA - dayB;
+    }));
     toast({
-      title: t('financial_configs.add_date_success_title'),
-      description: t('financial_configs.add_date_success_description', 'Billing date {date} added.').replace('{date}', format(data.date, "PP", { locale: dateLocales[locale] || enUS })),
+      title: t('financial_configs.add_day_success_title', 'Billing Day Added'),
+      description: t('financial_configs.add_day_success_description', 'Billing day "{dayOfMonth}" added.').replace('{dayOfMonth}', data.dayOfMonth.toString()),
     });
-    addDateForm.reset();
-    setIsAddDateModalOpen(false);
+    addDayForm.reset();
+    setIsAddDayModalOpen(false);
   };
 
-  const confirmDeleteDate = () => {
-    if (dateToDelete) {
-      setBillingDates(prev => prev.filter(d => d.id !== dateToDelete.id));
+  const confirmDeleteDay = () => {
+    if (dayToDelete) {
+      setBillingDays(prev => prev.filter(d => d.id !== dayToDelete.id));
       toast({
-        title: t('financial_configs.delete_date_success_title'),
-        description: t('financial_configs.delete_date_success_description', 'Billing date {date} deleted.').replace('{date}', format(dateToDelete.date, "PP", { locale: dateLocales[locale] || enUS })),
+        title: t('financial_configs.delete_day_success_title', 'Billing Day Deleted'),
+        description: t('financial_configs.delete_day_success_description', 'Billing day "{dayOfMonth}" deleted.').replace('{dayOfMonth}', dayToDelete.dayOfMonth.toString()),
         variant: 'destructive',
       });
-      setDateToDelete(null);
+      setDayToDelete(null);
     }
   };
 
-  const toggleBillingDateStatus = (id: string, currentStatus: boolean) => {
-    setBillingDates(prev => prev.map(bd => bd.id === id ? { ...bd, status: !currentStatus } : bd));
+  const toggleBillingDayStatus = (id: string, currentStatus: boolean) => {
+    setBillingDays(prev => prev.map(bd => bd.id === id ? { ...bd, status: !currentStatus } : bd));
     toast({
       title: t('financial_configs.status_change_toast_title'),
-      description: t('financial_configs.status_change_toast_description', 'Status updated.'),
+      description: t('financial_configs.status_change_toast_description'),
     });
   };
   
@@ -173,30 +181,37 @@ function FinancialConfigurationsPage() {
   const [selectedPermittedPop, setSelectedPermittedPop] = React.useState<string | null>(null);
 
   const availablePops = React.useMemo(() => {
-    const permittedIds = addDateForm.watch('permittedPopIds') || [];
+    const permittedIds = addDayForm.watch('permittedPopIds') || [];
     return pops.filter(pop => !permittedIds.includes(pop.id.toString()));
-  }, [pops, addDateForm.watch('permittedPopIds')]);
+  }, [pops, addDayForm.watch('permittedPopIds')]);
 
   const permittedPopsDetails = React.useMemo(() => {
-    const permittedIds = addDateForm.watch('permittedPopIds') || [];
+    const permittedIds = addDayForm.watch('permittedPopIds') || [];
     return pops.filter(pop => permittedIds.includes(pop.id.toString()));
-  }, [pops, addDateForm.watch('permittedPopIds')]);
+  }, [pops, addDayForm.watch('permittedPopIds')]);
 
   const handleAddPopToPermitted = () => {
     if (selectedAvailablePop) {
-      const currentPermitted = addDateForm.getValues('permittedPopIds') || [];
-      addDateForm.setValue('permittedPopIds', [...currentPermitted, selectedAvailablePop], { shouldValidate: true });
+      const currentPermitted = addDayForm.getValues('permittedPopIds') || [];
+      addDayForm.setValue('permittedPopIds', [...currentPermitted, selectedAvailablePop], { shouldValidate: true });
       setSelectedAvailablePop(null);
     }
   };
 
   const handleRemovePopFromPermitted = () => {
     if (selectedPermittedPop) {
-      const currentPermitted = addDateForm.getValues('permittedPopIds') || [];
-      addDateForm.setValue('permittedPopIds', currentPermitted.filter(id => id !== selectedPermittedPop), { shouldValidate: true });
+      const currentPermitted = addDayForm.getValues('permittedPopIds') || [];
+      addDayForm.setValue('permittedPopIds', currentPermitted.filter(id => id !== selectedPermittedPop), { shouldValidate: true });
       setSelectedPermittedPop(null);
     }
   };
+
+  const dayOfMonthOptions = React.useMemo(() => {
+    const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+    days.push('Last Day');
+    return days;
+  }, []);
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -205,29 +220,28 @@ function FinancialConfigurationsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">{t('financial_configs.billing_dates_title')}</CardTitle>
-          {/* CardDescription removed as requested */}
         </CardHeader>
         <CardContent>
           <div className="border rounded-md min-h-[200px] p-4">
-            {billingDates.length > 0 ? (
+            {billingDays.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs">{t('financial_configs.table_header_date')}</TableHead>
-                    <TableHead className="text-xs text-center">{t('financial_configs.table_header_active_contracts')}</TableHead>
+                    <TableHead className="text-xs">{t('financial_configs.table_header_day_of_month', 'Day of Month')}</TableHead>
                     <TableHead className="text-xs">{t('financial_configs.table_header_status')}</TableHead>
                     <TableHead className="text-right w-20 text-xs">{t('financial_configs.table_header_actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {billingDates.map((bd) => (
+                  {billingDays.map((bd) => (
                     <TableRow key={bd.id}>
-                      <TableCell className="text-xs">{format(bd.date, "PP", { locale: dateLocales[locale] || enUS })}</TableCell>
-                      <TableCell className="text-xs text-center">{bd.activeContracts}</TableCell>
+                      <TableCell className="text-xs">
+                        {bd.dayOfMonth === 'Last Day' ? t('financial_configs.day_last', 'Last Day') : bd.dayOfMonth}
+                      </TableCell>
                       <TableCell className="text-xs">
                         <Switch
                           checked={bd.status}
-                          onCheckedChange={() => toggleBillingDateStatus(bd.id, bd.status)}
+                          onCheckedChange={() => toggleBillingDayStatus(bd.id, bd.status)}
                           aria-label={t('financial_configs.toggle_status_aria_label')}
                         />
                          <span className="ml-2 text-xs">{bd.status ? t('financial_configs.status_active') : t('financial_configs.status_inactive')}</span>
@@ -244,16 +258,16 @@ function FinancialConfigurationsPage() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>{t('financial_configs.delete_confirm_title')}</AlertDialogTitle>
                               <AlertDialogDescription className="text-xs">
-                                {t('financial_configs.delete_confirm_description', 'This will permanently delete the billing date {date}.').replace('{date}', format(bd.date, "PP", { locale: dateLocales[locale] || enUS}))}
+                                {t('financial_configs.delete_confirm_description_day', 'This will permanently delete the billing day rule for "{dayOfMonth}".').replace('{dayOfMonth}', bd.dayOfMonth.toString())}
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel onClick={() => setDateToDelete(null)}>{t('financial_configs.delete_confirm_cancel')}</AlertDialogCancel>
+                              <AlertDialogCancel onClick={() => setDayToDelete(null)}>{t('financial_configs.delete_confirm_cancel')}</AlertDialogCancel>
                               <AlertDialogAction
                                 className={buttonVariants({ variant: "destructive" })}
                                 onClick={() => {
-                                  setDateToDelete(bd);
-                                  confirmDeleteDate();
+                                  setDayToDelete(bd);
+                                  confirmDeleteDay();
                                 }}
                               >
                                 {t('financial_configs.delete_confirm_delete')}
@@ -267,59 +281,49 @@ function FinancialConfigurationsPage() {
                 </TableBody>
               </Table>
             ) : (
-              <p className="text-center text-muted-foreground py-4 text-xs">{t('financial_configs.no_billing_dates')}</p>
+              <p className="text-center text-muted-foreground py-4 text-xs">{t('financial_configs.no_billing_days')}</p>
             )}
           </div>
           <div className="mt-4">
-            <Dialog open={isAddDateModalOpen} onOpenChange={setIsAddDateModalOpen}>
+            <Dialog open={isAddDayModalOpen} onOpenChange={setIsAddDayModalOpen}>
               <DialogTrigger asChild>
                 <Button size="sm">
-                  <PlusCircle className={`mr-2 ${iconSize}`} /> {t('financial_configs.add_date_button')}
+                  <PlusCircle className={`mr-2 ${iconSize}`} /> {t('financial_configs.add_day_button', 'Add Billing Day')}
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                  <DialogTitle className="text-sm">{t('financial_configs.add_date_modal_title')}</DialogTitle>
-                  <DialogDescriptionComponent className="text-xs">{t('financial_configs.add_date_modal_description')}</DialogDescriptionComponent>
+                  <DialogTitle className="text-sm">{t('financial_configs.add_day_modal_title', 'Add New Billing Day')}</DialogTitle>
+                  <DialogDescriptionComponent className="text-xs">{t('financial_configs.add_day_modal_description', 'Configure a new day of the month for billing cycles.')}</DialogDescriptionComponent>
                 </DialogHeader>
-                <Form {...addDateForm}>
-                  <form onSubmit={addDateForm.handleSubmit(handleAddDateSubmit)} className="grid gap-4 py-4">
+                <Form {...addDayForm}>
+                  <form onSubmit={addDayForm.handleSubmit(handleAddDaySubmit)} className="grid gap-4 py-4">
                     <FormField
-                      control={addDateForm.control}
-                      name="date"
+                      control={addDayForm.control}
+                      name="dayOfMonth"
                       render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>{t('financial_configs.form_date_label')}</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "pl-3 text-left font-normal text-xs",
-                                    !field.value && "text-muted-foreground"
-                                  )}
-                                >
-                                  {field.value ? format(field.value, "PPP", { locale: dateLocales[locale] || enUS }) : <span>{t('financial_configs.form_date_placeholder')}</span>}
-                                  <CalendarIcon className={`ml-auto ${iconSize} opacity-50`} />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
+                        <FormItem>
+                          <FormLabel>{t('financial_configs.form_day_of_month_label', 'Day of Month')}</FormLabel>
+                           <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder={t('financial_configs.form_day_of_month_placeholder', 'Select a day')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {dayOfMonthOptions.map(day => (
+                                <SelectItem key={day} value={day}>
+                                  {day === 'Last Day' ? t('financial_configs.day_last', 'Last Day') : day}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                     <FormField
-                      control={addDateForm.control}
+                      control={addDayForm.control}
                       name="status"
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
@@ -342,7 +346,7 @@ function FinancialConfigurationsPage() {
 
                     {/* Permitted PoPs Selection */}
                     <FormField
-                      control={addDateForm.control}
+                      control={addDayForm.control}
                       name="permittedPopIds"
                       render={({ field }) => ( // field is not directly used here, but necessary for FormField
                         <FormItem>
@@ -388,11 +392,11 @@ function FinancialConfigurationsPage() {
                     
                     <DialogFooter>
                       <DialogClose asChild>
-                        <Button type="button" variant="outline" disabled={addDateForm.formState.isSubmitting}>{t('financial_configs.form_cancel_button')}</Button>
+                        <Button type="button" variant="outline" disabled={addDayForm.formState.isSubmitting}>{t('financial_configs.form_cancel_button')}</Button>
                       </DialogClose>
-                      <Button type="submit" disabled={addDateForm.formState.isSubmitting}>
-                        {addDateForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                        {t('financial_configs.form_save_button')}
+                      <Button type="submit" disabled={addDayForm.formState.isSubmitting}>
+                        {addDayForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
+                        {t('financial_configs.form_save_button_day', 'Save Billing Day')}
                       </Button>
                     </DialogFooter>
                   </form>
@@ -405,4 +409,3 @@ function FinancialConfigurationsPage() {
     </div>
   );
 }
-
