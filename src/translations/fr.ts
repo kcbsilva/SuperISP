@@ -804,9 +804,8 @@ const fr = {
     service_type_mobile: 'Mobile',
     service_type_combo: 'Combo',
     service_type_other: 'Autre',
-    has_installation_fee_label: 'Facturer Frais d\'Installation?', // New label
+    has_installation_fee_label: 'Facturer Frais d\'Installation?',
     installation_fee_label: 'Frais d\'Installation',
-    free_installation_label: 'Installation Gratuite', // Kept for potential other uses
     installation_fee_category_info: 'Catégorie:',
     income_category_installation: 'Frais d\'Installation',
     payment_method_label: 'Mode de Paiement *',
@@ -864,3 +863,4 @@ const fr = {
 };
 
 export default fr;
+

@@ -60,7 +60,7 @@ import { useToast } from '@/hooks/use-toast';
 const contractStep1Schema = z.object({
   billingDate: z.date({ required_error: "Billing date is required." }),
   popId: z.string().min(1, "PoP selection is required."),
-  hasInstallationFee: z.boolean().default(false), // New: Checkbox to indicate if there's a fee
+  hasInstallationFee: z.boolean().default(false),
   installationFee: z.coerce.number().min(0, "Installation fee cannot be negative.").optional(),
   paymentMethod: z.string().min(1, "Payment method is required."),
   billingType: z.enum(['Prepaid', 'Postpaid'], { required_error: "Billing type is required."}),
@@ -371,14 +371,14 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
                     control={mainForm.control}
                     name="hasInstallationFee"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-2">
+                      <FormItem className="flex flex-row items-center space-x-2 pt-5"> {/* Adjusted pt-5 to align with input */}
                         <FormControl>
                           <Checkbox
                             checked={field.value}
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
-                        <FormLabel className="text-xs font-normal cursor-pointer">
+                        <FormLabel className="text-xs font-normal cursor-pointer mt-0!"> {/* Removed default margin top from label */}
                           {t('new_contract_wizard.has_installation_fee_label', 'Charge Installation Fee?')}
                         </FormLabel>
                       </FormItem>
@@ -388,8 +388,8 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
                     control={mainForm.control}
                     name="installationFee"
                     render={({ field }) => (
-                    <FormItem className={!watchHasInstallationFee ? 'hidden' : ''}>
-                        {/* <FormLabel>{t('new_contract_wizard.installation_fee_label')}</FormLabel> */}
+                    <FormItem className={!watchHasInstallationFee ? 'invisible' : ''}> {/* Use invisible to keep layout stable */}
+                        <FormLabel>{t('new_contract_wizard.installation_fee_label')}</FormLabel>
                         <FormControl>
                         <Input type="number" placeholder="0.00" {...field} disabled={!watchHasInstallationFee} />
                         </FormControl>
@@ -403,56 +403,59 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
                 {t('new_contract_wizard.installation_fee_category_info')} 1.2 {t('new_contract_wizard.income_category_installation')}
               </p>
             )}
-
-            <FormField
-              control={mainForm.control}
-              name="paymentMethod"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('new_contract_wizard.payment_method_label')}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl><SelectTrigger><SelectValue placeholder={t('new_contract_wizard.payment_method_placeholder')} /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      {paymentMethods.map(method => (
-                        <SelectItem key={method} value={method}>{t(`new_contract_wizard.payment_method_${method.toLowerCase().replace(/\s+/g, '_')}` as any, method)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={mainForm.control}
-              name="billingType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('new_contract_wizard.billing_type_label')}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl><SelectTrigger><SelectValue placeholder={t('new_contract_wizard.billing_type_placeholder')} /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="Prepaid">{t('new_contract_wizard.billing_type_prepaid')}</SelectItem>
-                      <SelectItem value="Postpaid">{t('new_contract_wizard.billing_type_postpaid')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <FormField
+                control={mainForm.control}
+                name="paymentMethod"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>{t('new_contract_wizard.payment_method_label')}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue placeholder={t('new_contract_wizard.payment_method_placeholder')} /></SelectTrigger></FormControl>
+                        <SelectContent>
+                        {paymentMethods.map(method => (
+                            <SelectItem key={method} value={method}>{t(`new_contract_wizard.payment_method_${method.toLowerCase().replace(/\s+/g, '_')}` as any, method)}</SelectItem>
+                        ))}
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={mainForm.control}
+                name="contractTermMonths"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>{t('new_contract_wizard.contract_term_label')}</FormLabel>
+                    <FormControl><Input type="number" placeholder={t('new_contract_wizard.contract_term_placeholder')} {...field} /></FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={mainForm.control}
+                name="billingType"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>{t('new_contract_wizard.billing_type_label')}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue placeholder={t('new_contract_wizard.billing_type_placeholder')} /></SelectTrigger></FormControl>
+                        <SelectContent>
+                        <SelectItem value="Prepaid">{t('new_contract_wizard.billing_type_prepaid')}</SelectItem>
+                        <SelectItem value="Postpaid">{t('new_contract_wizard.billing_type_postpaid')}</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
             <p className="text-xs text-muted-foreground">
               {t('new_contract_wizard.monthly_fee_category_info')} 1.1 {t('new_contract_wizard.income_category_monthly')}
             </p>
-            <FormField
-              control={mainForm.control}
-              name="contractTermMonths"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('new_contract_wizard.contract_term_label')}</FormLabel>
-                  <FormControl><Input type="number" placeholder={t('new_contract_wizard.contract_term_placeholder')} {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            
             <DialogFooter>
               <DialogClose asChild><Button type="button" variant="outline" onClick={onClose} disabled={mainForm.formState.isSubmitting}>{t('new_contract_wizard.cancel_button')}</Button></DialogClose>
               <Button type="submit" disabled={mainForm.formState.isSubmitting}>
@@ -574,3 +577,4 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
     </Dialog>
   );
 }
+

@@ -804,9 +804,8 @@ const pt = {
       service_type_mobile: 'Celular',
       service_type_combo: 'Combo',
       service_type_other: 'Outro',
-      has_installation_fee_label: 'Cobrar Taxa de Instalação?', // New label
+      has_installation_fee_label: 'Cobrar Taxa de Instalação?',
       installation_fee_label: 'Taxa de Instalação',
-      free_installation_label: 'Instalação Gratuita', // Kept for potential other uses
       installation_fee_category_info: 'Categoria:',
       income_category_installation: 'Taxas de Instalação',
       payment_method_label: 'Método de Pagamento *',
@@ -864,3 +863,4 @@ const pt = {
 };
 
 export default pt;
+

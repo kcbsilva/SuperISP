@@ -825,9 +825,8 @@ const en = {
     service_type_mobile: 'Mobile',
     service_type_combo: 'Combo',
     service_type_other: 'Other',
-    has_installation_fee_label: 'Charge Installation Fee?', // New label
+    has_installation_fee_label: 'Charge Installation Fee?',
     installation_fee_label: 'Installation Fee',
-    free_installation_label: 'Free Installation', // Kept for potential other uses, though main logic changed
     installation_fee_category_info: 'Category:',
     income_category_installation: 'Installation Fees',
     payment_method_label: 'Payment Method *',
@@ -885,3 +884,4 @@ const en = {
 };
 
 export default en;
+
