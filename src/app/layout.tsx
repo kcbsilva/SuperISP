@@ -122,7 +122,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   }, [pathname]); // Trigger effect when pathname changes
 
   // Determine if a link is active
-  const isActive = (href: string) => pathname === href || (href !== '/' && pathname.startsWith(href));
+  const isActive = (href: string) => {
+    const cleanHref = href.split('?')[0]; // Ignore query params for active check
+    const cleanPathname = pathname.split('?')[0];
+    return cleanPathname === cleanHref || (cleanHref !== '/' && cleanPathname.startsWith(cleanHref));
+  };
 
 
   // Check if the current route is the map page
@@ -331,10 +335,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/fttx/olts')} size="sm" tooltip={t('sidebar.fttx_olts', 'OLTs')}>
+                      <SidebarMenuButton asChild isActive={isActive('/fttx/olts')} size="sm" tooltip={t('sidebar.fttx_olts', 'OLTs & ONXs')}>
                         <Link href="/fttx/olts" className="flex items-center gap-2">
                           <NetworkIcon className={subIconSize + " text-muted-foreground"} />
-                          <span>{t('sidebar.fttx_olts', 'OLTs')}</span>
+                          <span>{t('sidebar.fttx_olts', 'OLTs & ONXs')}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -896,3 +900,4 @@ export default function RootLayout({
     </html>
   );
 }
+

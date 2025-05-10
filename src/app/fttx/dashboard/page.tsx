@@ -5,13 +5,12 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Network, Server, Wifi, Users, AlertCircle, CheckCircle, XCircle, Signal, SignalHigh, SignalMedium, SignalLow } from 'lucide-react';
+import { Network, Wifi, Users, AlertCircle, CheckCircle, XCircle, Signal, SignalHigh, SignalMedium, SignalLow } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import Link from 'next/link';
 
@@ -55,9 +54,7 @@ export default function FTTxDashboardPage() {
             <Network className={`${iconSize} text-primary`} />
             {t('fttx_dashboard.olt_summary_title', 'OLT Summary')}
           </CardTitle>
-          <CardDescription className="text-xs">
-            {t('fttx_dashboard.olt_summary_desc', 'Overview of your Optical Line Terminals.')}
-          </CardDescription>
+          {/* Removed CardDescription */}
         </CardHeader>
         <CardContent>
           {fttxDashboardData.olts.length > 0 ? (
@@ -104,9 +101,7 @@ export default function FTTxDashboardPage() {
               <Wifi className={`${iconSize} text-primary`} />
               {t('fttx_dashboard.onx_status_title', 'ONx Status Overview')}
             </CardTitle>
-             <CardDescription className="text-xs">
-              {t('fttx_dashboard.onx_status_desc', 'Summary of Optical Network Unit/Terminal statuses.')}
-            </CardDescription>
+             {/* Removed CardDescription */}
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -141,7 +136,7 @@ export default function FTTxDashboardPage() {
             </div>
              <div className="mt-4 text-right">
                <Button variant="link" size="sm" asChild className="text-xs">
-                  <Link href="/fttx/onxs">{t('fttx_dashboard.view_all_onxs_button', 'View All ONXs (Not Implemented)')}</Link>
+                  <Link href="/fttx/olts?tab=onxs">{t('fttx_dashboard.view_all_onxs_button', 'View All ONXs')}</Link>
               </Button>
             </div>
           </CardContent>
@@ -154,9 +149,7 @@ export default function FTTxDashboardPage() {
               <Signal className={`${iconSize} text-primary`} />
               {t('fttx_dashboard.onx_light_levels_title', 'ONx Light Levels')}
             </CardTitle>
-            <CardDescription className="text-xs">
-              {t('fttx_dashboard.onx_light_levels_desc', 'Distribution of ONx devices by optical signal strength.')}
-            </CardDescription>
+            {/* Removed CardDescription */}
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -181,3 +174,4 @@ export default function FTTxDashboardPage() {
     </div>
   );
 }
+

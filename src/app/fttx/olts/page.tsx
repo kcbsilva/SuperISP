@@ -2,6 +2,7 @@
 'use client';
 
 import * as React from 'react';
+import { useSearchParams } from 'next/navigation'; // Import useSearchParams
 import {
   Card,
   CardContent,
@@ -25,7 +26,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Import Tabs components
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; 
 
 interface Olt {
   id: string;
@@ -66,22 +67,18 @@ const placeholderOnxs: Onx[] = [
 export default function OltsAndOnxsPage() {
   const { t } = useLocale();
   const { toast } = useToast();
+  const searchParams = useSearchParams(); // Get search params
   const iconSize = "h-3 w-3";
   const menuIconSize = "h-2.5 w-2.5";
   const tabIconSize = "h-2.5 w-2.5";
-  const [activeTab, setActiveTab] = React.useState("olts");
+  
+  const initialTab = searchParams.get('tab') === 'onxs' ? 'onxs' : 'olts';
+  const [activeTab, setActiveTab] = React.useState(initialTab);
 
   const handleAddOlt = () => {
     toast({
       title: t('fttx_olts.add_olt_not_implemented_title', 'Add OLT (Not Implemented)'),
       description: t('fttx_olts.add_olt_not_implemented_desc_port', 'The functionality to add new OLTs (including management port) is not yet available.'),
-    });
-  };
-
-  const handleAddOnx = () => {
-    toast({
-        title: t('fttx_olts.add_onx_not_implemented_title', 'Add ONx (Not Implemented)'),
-        description: t('fttx_olts.add_onx_not_implemented_desc', 'The functionality to add new ONx devices is not yet available.'),
     });
   };
 
@@ -148,19 +145,15 @@ export default function OltsAndOnxsPage() {
                 <Button variant="default" className="bg-primary hover:bg-primary/90">
                     <RefreshCw className={`mr-2 ${iconSize}`} /> {t('fttx_olts.refresh_button', 'Refresh')}
                 </Button>
-                {activeTab === "olts" ? (
+                {activeTab === "olts" && ( // Only show Add OLT button if OLTs tab is active
                     <Button onClick={handleAddOlt} className="bg-green-600 hover:bg-green-700 text-white">
                         <PlusCircle className={`mr-2 ${iconSize}`} /> {t('fttx_olts.add_olt_button', 'Add OLT')}
-                    </Button>
-                ) : (
-                    <Button onClick={handleAddOnx} className="bg-green-600 hover:bg-green-700 text-white">
-                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('fttx_olts.add_onx_button', 'Add ONx')}
                     </Button>
                 )}
             </div>
         </div>
 
-        <Tabs defaultValue="olts" value={activeTab} onValueChange={setActiveTab}>
+        <Tabs defaultValue={initialTab} value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid grid-cols-2 w-auto h-auto mb-4">
                 <TabsTrigger value="olts" className="flex items-center gap-2">
                     <Network className={tabIconSize} />
@@ -328,3 +321,4 @@ export default function OltsAndOnxsPage() {
     </div>
   );
 }
+
