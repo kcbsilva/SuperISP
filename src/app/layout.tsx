@@ -24,7 +24,7 @@ import {
   Building, // Added for PoPs
   Cog, // Icon for Global Settings
   Plane, // Icon for PilotView
-  Bus, // Icon for TransitOS
+  Bus, // Icon for TransitOS - Placeholder for Vehicles for now
   Dna, // Icon for Zones (DNS)
   ListChecks, // Icon for Plans
   Wifi, // Icon for Internet Plan
@@ -48,7 +48,7 @@ import {
   LogOut, // For profile menu
   UserCircle, // For profile menu
   MonitorSmartphone, // For System Monitor
-  // Database icons removed as PostgreSQL is removed
+  Database, // for MySQL menu
 } from 'lucide-react';
 
 import './globals.css';
@@ -137,7 +137,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined' && theme) {
       const newFillColor = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         ? 'hsl(var(--accent))'
-        : 'hsl(var(--secondary))';
+        : 'hsl(var(--secondary))'; // Changed to secondary for light theme
       setLogoFillColor(newFillColor);
     }
   }, [theme]);
@@ -151,7 +151,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <Link
               href="/"
               className="flex items-center justify-center px-2 py-2"
-              style={{ width: '131px', height: '32px' }}
+              style={{ width: '131px', height: '32px' }} // Applied requested dimensions
             >
               <svg
                 width="100%"
@@ -408,7 +408,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/inventory/warehouses')} size="sm" tooltip={t('sidebar.inventory_warehouses', 'Warehouses')}>
-                        <Link href="#" className="flex items-center gap-2">
+                        <Link href="/inventory/warehouses" className="flex items-center gap-2">
                           <Warehouse className={subIconSize + " text-muted-foreground"} />
                           <span>{t('sidebar.inventory_warehouses', 'Warehouses')}</span>
                         </Link>
@@ -438,6 +438,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
+                     <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={isActive('/inventory/vehicles')} size="sm" tooltip={t('sidebar.inventory_vehicles', 'Vehicles')}>
+                          <Link href="#" className="flex items-center gap-2">
+                            <Bus className={subIconSize + " text-muted-foreground"} /> {/* Placeholder icon for Vehicles */}
+                            <span>{t('sidebar.inventory_vehicles', 'Vehicles')}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/inventory/categories')} size="sm" tooltip={t('sidebar.inventory_categories', 'Categories')}>
                         <Link href="#" className="flex items-center gap-2">
@@ -767,7 +775,53 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                            </Link>
                         </SidebarMenuButton>
                      </SidebarMenuItem>
-                    {/* PostgreSQL Menu Removed */}
+                    {/* MySQL Menu */}
+                    <SidebarMenuItem>
+                      <SidebarMenuSub>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <SidebarMenuSubTrigger
+                              size="sm"
+                              className="pl-3 pr-2 py-1.5"
+                              tooltip={t('sidebar.postgresql')}
+                            >
+                              <div className="flex items-center gap-2 cursor-pointer w-full">
+                                <Database className={subIconSize + " text-muted-foreground"} />
+                                <span className="truncate">{t('sidebar.postgresql')}</span>
+                                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                              </div>
+                            </SidebarMenuSubTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent side="right" align="center">{t('sidebar.postgresql')}</TooltipContent>
+                        </Tooltip>
+                        <SidebarMenuSubContent>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/mysql/databases')} size="sm" tooltip={t('sidebar.postgresql_databases')}>
+                              <Link href="/mysql/databases" className="flex items-center gap-2">
+                                <Database className={subIconSize + " text-muted-foreground"} />
+                                <span>{t('sidebar.postgresql_databases')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/mysql/tables')} size="sm" tooltip={t('sidebar.postgresql_tables')}>
+                              <Link href="/mysql/tables" className="flex items-center gap-2">
+                                <ListChecks className={subIconSize + " text-muted-foreground"} /> {/* Using ListChecks for tables */}
+                                <span>{t('sidebar.postgresql_tables')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/mysql/cli')} size="sm" tooltip={t('sidebar.postgresql_cli')}>
+                              <Link href="/mysql/cli" className="flex items-center gap-2">
+                                <Code className={subIconSize + " text-muted-foreground"} /> {/* Using Code for CLI */}
+                                <span>{t('sidebar.postgresql_cli')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        </SidebarMenuSubContent>
+                      </SidebarMenuSub>
+                    </SidebarMenuItem>
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
               </SidebarMenuItem>
@@ -856,3 +910,4 @@ export default function RootLayout({
     </html>
   );
 }
+

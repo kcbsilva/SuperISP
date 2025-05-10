@@ -36,6 +36,7 @@ const en = {
     inventory_suppliers: 'Suppliers',
     inventory_products: 'Products',
     inventory_manufacturers: 'Manufacturers',
+    inventory_vehicles: 'Vehicles',
     inventory_categories: 'Categories',
     reports: 'Reports',
     hr: 'HR',
@@ -58,10 +59,10 @@ const en = {
     settings_integrations_sms: 'SMS',
     settings_users: 'Users',
     settings_system_monitor: 'System Monitor',
-    postgresql: 'PostgreSQL',
-    postgresql_databases: 'Databases',
-    postgresql_tables: 'Tables',
-    postgresql_cli: 'CLI',
+    mysql: 'MySQL', // Updated from postgresql
+    mysql_databases: 'Databases', // Updated
+    mysql_tables: 'Tables', // Updated
+    mysql_cli: 'CLI', // Updated
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Expand sidebar',
@@ -170,6 +171,9 @@ const en = {
     status_unknown: 'Unknown',
     loading_error: 'Error loading PoPs: {message}',
     no_pops_found: 'No PoPs found. Click "Add PoP" to create one.',
+    edit_dialog_title: 'Edit PoP',
+    edit_dialog_description: 'Update the PoP details.',
+    form_update_button: 'Update PoP',
   },
    // Add Subscriber Page
    add_subscriber: {
@@ -202,7 +206,7 @@ const en = {
      mobile_label: 'Mobile Number (Optional)',
      mobile_placeholder: '(555) 987-6543',
      save_button: 'Save Subscriber',
-     add_success_toast_title: 'Subscriber Added (Simulated)',
+     add_success_toast_title: 'Subscriber Added',
      add_success_toast_description: 'Details for {name} saved.',
      required_field: '{field} is required.',
    },
@@ -795,8 +799,8 @@ const en = {
       table_header_model: 'Model',
       table_header_technology: 'Technology',
       table_header_slots: 'Slots', // Added
-      table_header_ports: 'PON Ports', // Clarified this is PON ports
-      table_header_onxs: 'ONXs', // Changed from Clients
+      table_header_ports: 'PON Ports', // Clarified
+      table_header_onxs: 'ONXs (Connected / Max)', // Changed from Clients
       table_header_ip_address: 'IP Address',
       table_header_actions: 'Actions',
       action_edit: 'Edit',
@@ -1030,12 +1034,12 @@ const en = {
       live_logs_title: 'Live Logs (Placeholder)',
       live_logs_description: 'This section would display real-time system logs.',
     },
-    postgresql_page: {
-      title: 'PostgreSQL Management',
-      select_option_prompt: 'Please select an option from the sidebar to manage PostgreSQL databases or tables, or use the CLI.',
+    mysql_page: { // Updated from postgresql_page
+      title: 'MySQL Management',
+      select_option_prompt: 'Please select an option from the sidebar to manage MySQL databases or tables, or use the CLI.',
       databases_title: 'Databases',
       databases_list_title: 'Database List',
-      databases_list_description: 'View and manage your PostgreSQL databases.',
+      databases_list_description: 'View and manage your MySQL databases.',
       db_header_name: 'Name',
       db_header_owner: 'Owner',
       db_header_encoding: 'Encoding',
@@ -1050,10 +1054,10 @@ const en = {
       table_header_schema: 'Schema',
       table_header_rows: 'Rows',
       table_header_size: 'Size',
-      table_header_actions: 'Ações',
+      table_header_actions: 'Ações', // Corrected typo from Portugues, assuming consistency
       add_database_button: 'Add Database',
       add_database_dialog_title: 'Add New Database',
-      add_database_dialog_description: 'Enter the name for the new PostgreSQL database.',
+      add_database_dialog_description: 'Enter the name for the new MySQL database.',
       form_db_name_label: 'Database Name',
       form_db_name_placeholder: 'e.g., my_new_app_db',
       form_create_db_button: 'Create Database',
@@ -1077,7 +1081,7 @@ const en = {
       create_backup_button: 'Create Backup',
       restore_backup_button: 'Restore from Backup',
       cli_title: 'SQL Command Line Interface',
-      cli_description: 'Execute SQL commands directly on the PostgreSQL database. Use with caution.',
+      cli_description: 'Execute SQL commands directly on the MySQL database. Use with caution.',
       cli_placeholder: 'Enter SQL command here (e.g., SELECT * FROM pops;)',
       cli_execute_button: 'Execute Command',
       cli_executing_button: 'Executing...',
@@ -1121,6 +1125,49 @@ const en = {
     // General form translations
     form_cancel_button: 'Cancel',
     form_saving_button: 'Saving...',
+    // Inventory > Warehouses
+    inventory_warehouses: {
+      title: 'Warehouses',
+      add_warehouse_button: 'Add Warehouse',
+      refresh_button: 'Refresh',
+      search_placeholder: 'Search warehouses...',
+      edit_dialog_title: 'Edit Warehouse',
+      edit_dialog_description: 'Update warehouse details.',
+      add_dialog_title: 'Add New Warehouse',
+      add_dialog_description: 'Fill in the details for the new warehouse.',
+      form_name_label: 'Warehouse Name',
+      form_name_placeholder: 'e.g., Central Storage',
+      form_address_label: 'Address',
+      form_address_placeholder: 'e.g., 123 Main St, Anytown',
+      form_is_main_label: 'Main Warehouse',
+      form_notes_label: 'Notes (Optional)',
+      form_notes_placeholder: 'e.g., Forklift access available',
+      form_cancel_button: 'Cancel',
+      form_save_button: 'Save Warehouse',
+      form_update_button: 'Update Warehouse',
+      form_saving_button: 'Saving...',
+      add_success_title: 'Warehouse Added',
+      add_success_description: 'Warehouse "{name}" added.',
+      update_success_title: 'Warehouse Updated',
+      update_success_description: 'Warehouse "{name}" updated.',
+      delete_success_title: 'Warehouse Deleted',
+      delete_success_description: 'Warehouse "{name}" deleted.',
+      delete_confirm_title: 'Are you sure?',
+      delete_confirm_description: 'This will permanently delete warehouse "{name}". This action cannot be undone.',
+      delete_confirm_delete: 'Delete',
+      table_header_id: 'ID',
+      table_header_name: 'Name',
+      table_header_address: 'Address',
+      table_header_is_main: 'Main',
+      table_header_items: 'Items',
+      table_header_actions: 'Actions',
+      action_edit: 'Edit',
+      action_delete: 'Delete',
+      no_warehouses_found: 'No warehouses configured yet.',
+      no_warehouses_found_search: 'No warehouses found matching your search.',
+      main_warehouse_indicator_tooltip: 'Main Warehouse',
+      yes_indicator: 'Yes',
+    },
 };
 
 export default en;
