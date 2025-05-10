@@ -55,21 +55,23 @@ interface Onx {
   manufacturer: string;
   model: string;
   assignedTo?: string; // Client Name
-  lightLevel?: string; // e.g., "-18.5 dBm"
+  lightLevelTx?: string; // e.g., "+2.5 dBm"
+  lightLevelRx?: string; // e.g., "-18.5 dBm" or "LOS"
+  fdhId?: string; // e.g., "FDH-01-A"
   status: 'Online' | 'Offline' | 'Provisioning' | 'Alarm';
 }
 
 const placeholderOnxs: Onx[] = [
-    { id: 'onx-001', serialNumber: 'FHTT1234ABCD', manufacturer: 'Fiberhome', model: 'AN5506-01-A1', assignedTo: 'Alice Wonderland', lightLevel: '-17.2 dBm', status: 'Online' },
-    { id: 'onx-002', serialNumber: 'HWTC8765EFGH', manufacturer: 'Huawei', model: 'HG8245H', assignedTo: 'Bob The Builder Inc.', lightLevel: '-22.5 dBm', status: 'Offline' },
-    { id: 'onx-003', serialNumber: 'ZTEXFEDC4321', manufacturer: 'ZTE', model: 'F601', lightLevel: '-19.0 dBm', status: 'Alarm'},
-    { id: 'onx-004', serialNumber: 'FHTT5678IJKL', manufacturer: 'Fiberhome', model: 'AN5506-04-FA', assignedTo: 'Charlie Brown', lightLevel: '-25.8 dBm', status: 'Online' },
-    { id: 'onx-005', serialNumber: 'NKIA9012UVWX', manufacturer: 'Nokia', model: 'G-140W-C', assignedTo: 'David Copperfield', lightLevel: '-16.0 dBm', status: 'Online' },
-    { id: 'onx-006', serialNumber: 'UBIQ3456QRST', manufacturer: 'Ubiquiti', model: 'UF-Nano', lightLevel: '-29.5 dBm', status: 'Offline' },
-    { id: 'onx-007', serialNumber: 'FHTT7890MNOP', manufacturer: 'Fiberhome', model: 'AN5506-02-B', assignedTo: 'Eve Adams', lightLevel: 'LOS', status: 'Alarm' },
-    { id: 'onx-008', serialNumber: 'HWTC1122YZAB', manufacturer: 'Huawei', model: 'EG8145V5', lightLevel: '-20.1 dBm', status: 'Online' },
-    { id: 'onx-009', serialNumber: 'ZTEX3344CDEF', manufacturer: 'ZTE', model: 'F670L', lightLevel: '-27.0 dBm', status: 'Online' },
-    { id: 'onx-010', serialNumber: 'NKIA5566GHIJ', manufacturer: 'Nokia', model: 'G-240W-A', lightLevel: '-18.8 dBm', status: 'Provisioning' },
+    { id: 'onx-001', serialNumber: 'FHTT1234ABCD', manufacturer: 'Fiberhome', model: 'AN5506-01-A1', assignedTo: 'Alice Wonderland', lightLevelTx: "+2.1 dBm", lightLevelRx: '-17.2 dBm', fdhId: 'FDH-01-A', status: 'Online' },
+    { id: 'onx-002', serialNumber: 'HWTC8765EFGH', manufacturer: 'Huawei', model: 'HG8245H', assignedTo: 'Bob The Builder Inc.', lightLevelTx: "+1.8 dBm", lightLevelRx: '-22.5 dBm', fdhId: 'FDH-02-B', status: 'Offline' },
+    { id: 'onx-003', serialNumber: 'ZTEXFEDC4321', manufacturer: 'ZTE', model: 'F601', lightLevelTx: "+2.5 dBm", lightLevelRx: '-19.0 dBm', fdhId: 'FDH-01-A', status: 'Alarm'},
+    { id: 'onx-004', serialNumber: 'FHTT5678IJKL', manufacturer: 'Fiberhome', model: 'AN5506-04-FA', assignedTo: 'Charlie Brown', lightLevelTx: "+2.0 dBm", lightLevelRx: '-25.8 dBm', fdhId: 'FDH-03-C', status: 'Online' },
+    { id: 'onx-005', serialNumber: 'NKIA9012UVWX', manufacturer: 'Nokia', model: 'G-140W-C', assignedTo: 'David Copperfield', lightLevelTx: "+3.0 dBm", lightLevelRx: '-16.0 dBm', fdhId: 'FDH-01-B', status: 'Online' },
+    { id: 'onx-006', serialNumber: 'UBIQ3456QRST', manufacturer: 'Ubiquiti', model: 'UF-Nano', lightLevelTx: "+1.5 dBm", lightLevelRx: '-29.5 dBm', fdhId: 'FDH-04-A', status: 'Offline' },
+    { id: 'onx-007', serialNumber: 'FHTT7890MNOP', manufacturer: 'Fiberhome', model: 'AN5506-02-B', assignedTo: 'Eve Adams', lightLevelTx: "N/A", lightLevelRx: 'LOS', fdhId: 'FDH-03-C', status: 'Alarm' },
+    { id: 'onx-008', serialNumber: 'HWTC1122YZAB', manufacturer: 'Huawei', model: 'EG8145V5', lightLevelTx: "+2.2 dBm", lightLevelRx: '-20.1 dBm', fdhId: 'FDH-02-A', status: 'Online' },
+    { id: 'onx-009', serialNumber: 'ZTEX3344CDEF', manufacturer: 'ZTE', model: 'F670L', lightLevelTx: "+1.9 dBm", lightLevelRx: '-27.0 dBm', fdhId: 'FDH-01-C', status: 'Online' },
+    { id: 'onx-010', serialNumber: 'NKIA5566GHIJ', manufacturer: 'Nokia', model: 'G-240W-A', lightLevelTx: "+2.8 dBm", lightLevelRx: '-18.8 dBm', fdhId: 'FDH-04-B', status: 'Provisioning' },
 ];
 
 const lightLevelRanges = [
@@ -79,13 +81,13 @@ const lightLevelRanges = [
   '-28dBm - LOS',
 ];
 
-const isLightLevelInRange = (lightLevelStr: string | undefined, rangeStr: string): boolean => {
-  if (!lightLevelStr) return false;
+const isLightLevelInRange = (lightLevelRxStr: string | undefined, rangeStr: string): boolean => {
+  if (!lightLevelRxStr) return false;
 
-  const numericLevel = parseFloat(lightLevelStr.replace(' dBm', ''));
+  const numericLevel = parseFloat(lightLevelRxStr.replace(' dBm', ''));
   
   if (rangeStr.includes('LOS')) {
-    return lightLevelStr === 'LOS' || (!isNaN(numericLevel) && numericLevel <= -28);
+    return lightLevelRxStr === 'LOS' || (!isNaN(numericLevel) && numericLevel <= -28);
   }
   
   if (isNaN(numericLevel)) return false;
@@ -193,7 +195,7 @@ export default function OltsAndOnxsPage() {
       } else {
         currentParams.delete('lightLevelFilter');
       }
-      router.replace(`/fttx/olts?${currentParams.toString()}`, { scroll: false });
+      router.replace(`/fttx/olts?tab=onxs&${currentParams.toString()}`, { scroll: false }); // Ensure tab=onxs is preserved
       return newFilters;
     });
   };
@@ -201,7 +203,7 @@ export default function OltsAndOnxsPage() {
   const filteredOnxs = React.useMemo(() => {
     if (lightLevelFilter.length === 0) return placeholderOnxs;
     return placeholderOnxs.filter(onx => 
-      lightLevelFilter.some(range => isLightLevelInRange(onx.lightLevel, range))
+      lightLevelFilter.some(range => isLightLevelInRange(onx.lightLevelRx, range))
     );
   }, [lightLevelFilter]);
 
@@ -247,7 +249,16 @@ export default function OltsAndOnxsPage() {
             </div>
         </div>
 
-        <Tabs defaultValue={initialTab} value={activeTab} onValueChange={setActiveTab}>
+        <Tabs defaultValue={initialTab} value={activeTab} onValueChange={(newTab) => {
+            setActiveTab(newTab);
+            const currentParams = new URLSearchParams(searchParams.toString());
+            currentParams.set('tab', newTab);
+            if (newTab === 'olts') { // Clear light level filter if switching to OLTs tab
+                currentParams.delete('lightLevelFilter');
+                setLightLevelFilter([]);
+            }
+            router.replace(`/fttx/olts?${currentParams.toString()}`, { scroll: false });
+        }}>
             <TabsList className="grid grid-cols-2 w-auto h-auto mb-4">
                 <TabsTrigger value="olts" className="flex items-center gap-2">
                     <Network className={tabIconSize} />
@@ -266,15 +277,15 @@ export default function OltsAndOnxsPage() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                <TableHead className="text-xs w-24">{t('fttx_olts.table_header_id', 'ID')}</TableHead>
-                                <TableHead className="text-xs">{t('fttx_olts.table_header_description', 'Description')}</TableHead>
-                                <TableHead className="text-xs">{t('fttx_olts.table_header_manufacturer', 'Manufacturer')}</TableHead>
-                                <TableHead className="text-xs">{t('fttx_olts.table_header_model', 'Model')}</TableHead>
-                                <TableHead className="text-xs">{t('fttx_olts.table_header_technology', 'Technology')}</TableHead>
-                                <TableHead className="text-xs text-center">{t('fttx_olts.table_header_ports', 'Ports')}</TableHead>
-                                <TableHead className="text-xs text-center">{t('fttx_olts.table_header_clients', 'Clients')}</TableHead>
-                                <TableHead className="text-xs">{t('fttx_olts.table_header_ip_address', 'IP Address')}</TableHead>
-                                <TableHead className="text-right w-32 text-xs">{t('fttx_olts.table_header_actions', 'Actions')}</TableHead>
+                                <TableHead className="text-xs font-semibold w-24">{t('fttx_olts.table_header_id', 'ID')}</TableHead>
+                                <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_description', 'Description')}</TableHead>
+                                <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_manufacturer', 'Manufacturer')}</TableHead>
+                                <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_model', 'Model')}</TableHead>
+                                <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_technology', 'Technology')}</TableHead>
+                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_ports', 'Ports')}</TableHead>
+                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_clients', 'Clients')}</TableHead>
+                                <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_ip_address', 'IP Address')}</TableHead>
+                                <TableHead className="text-right w-32 text-xs font-semibold">{t('fttx_olts.table_header_actions', 'Actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -355,13 +366,14 @@ export default function OltsAndOnxsPage() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="text-xs">{t('fttx_olts.onx_table_serial', 'Serial Number')}</TableHead>
-                                        <TableHead className="text-xs">{t('fttx_olts.onx_table_manufacturer', 'Manufacturer')}</TableHead>
-                                        <TableHead className="text-xs">{t('fttx_olts.onx_table_model', 'Model')}</TableHead>
-                                        <TableHead className="text-xs">{t('fttx_olts.onx_table_assigned_to', 'Assigned To')}</TableHead>
-                                        <TableHead className="text-xs">{t('fttx_olts.onx_table_light_level', 'Light Level')}</TableHead>
-                                        <TableHead className="text-xs">{t('fttx_olts.onx_table_status', 'Status')}</TableHead>
-                                        <TableHead className="text-right w-20 text-xs">{t('fttx_olts.onx_table_actions', 'Actions')}</TableHead>
+                                        <TableHead className="text-xs font-semibold">{t('fttx_olts.onx_table_serial', 'Serial Number')}</TableHead>
+                                        <TableHead className="text-xs font-semibold">{t('fttx_olts.onx_table_manufacturer', 'Manufacturer')}</TableHead>
+                                        <TableHead className="text-xs font-semibold">{t('fttx_olts.onx_table_model', 'Model')}</TableHead>
+                                        <TableHead className="text-xs font-semibold">{t('fttx_olts.onx_table_assigned_to', 'Assigned To')}</TableHead>
+                                        <TableHead className="text-xs font-semibold">{t('fttx_olts.onx_table_fdh_id', 'FDH ID')}</TableHead>
+                                        <TableHead className="text-xs font-semibold">{t('fttx_olts.onx_table_light_level_tx_rx', 'Light Level (TX/RX)')}</TableHead>
+                                        <TableHead className="text-xs font-semibold">{t('fttx_olts.onx_table_status', 'Status')}</TableHead>
+                                        <TableHead className="text-right w-20 text-xs font-semibold">{t('fttx_olts.onx_table_actions', 'Actions')}</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -372,7 +384,10 @@ export default function OltsAndOnxsPage() {
                                                 <TableCell className="text-muted-foreground text-xs">{onx.manufacturer}</TableCell>
                                                 <TableCell className="text-muted-foreground text-xs">{onx.model}</TableCell>
                                                 <TableCell className="font-medium text-xs">{onx.assignedTo || '-'}</TableCell>
-                                                <TableCell className="text-xs">{onx.lightLevel || '-'}</TableCell>
+                                                <TableCell className="text-xs text-muted-foreground">{onx.fdhId || '-'}</TableCell>
+                                                <TableCell className="text-xs">
+                                                    {onx.lightLevelTx || '-'} / {onx.lightLevelRx || '-'}
+                                                </TableCell>
                                                 <TableCell>
                                                     <Badge variant="outline" className={`text-xs ${getOnxStatusBadgeVariant(onx.status)} border-transparent`}>
                                                         {t(`fttx_olts.onx_status_${onx.status.toLowerCase()}` as any, onx.status)}
@@ -400,7 +415,7 @@ export default function OltsAndOnxsPage() {
                                         ))
                                     ) : (
                                         <TableRow>
-                                            <TableCell colSpan={7} className="text-center text-muted-foreground py-8 text-xs">
+                                            <TableCell colSpan={8} className="text-center text-muted-foreground py-8 text-xs">
                                                 {t('fttx_olts.no_onxs_found', 'No ONx devices found.')}
                                             </TableCell>
                                         </TableRow>
