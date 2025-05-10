@@ -62,7 +62,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/mysql/pops';
+import { getPops } from '@/services/postgresql/pops'; // Changed to PostgreSQL service
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
@@ -87,9 +87,9 @@ interface Vlan extends VlanFormData {
 }
 
 const placeholderVlans: Vlan[] = [
-  { id: 'vlan-1', vlanId: 10, name: 'Data VLAN - HQ', description: 'Main data network for headquarters', popId: 'sim-1', subnet: '192.168.10.0/24', createdAt: new Date(), isTagged: true, status: 'Active' },
-  { id: 'vlan-2', vlanId: 20, name: 'VoIP VLAN - Branch A', popId: 'sim-2', subnet: '10.10.20.0/25', createdAt: new Date(Date.now() - 86400000), isTagged: false, status: 'Active' },
-  { id: 'vlan-3', vlanId: 30, name: 'Guest WiFi', description: 'Isolated network for guests', popId: 'sim-1', subnet: '172.16.30.0/24', createdAt: new Date(Date.now() - 172800000), isTagged: true, status: 'Inactive' },
+  { id: 'vlan-1', vlanId: 10, name: 'Data VLAN - HQ', description: 'Main data network for headquarters', popId: '1', subnet: '192.168.10.0/24', createdAt: new Date(), isTagged: true, status: 'Active' }, // Assuming sim-1 is ID 1
+  { id: 'vlan-2', vlanId: 20, name: 'VoIP VLAN - Branch A', popId: '2', subnet: '10.10.20.0/25', createdAt: new Date(Date.now() - 86400000), isTagged: false, status: 'Active' }, // Assuming sim-2 is ID 2
+  { id: 'vlan-3', vlanId: 30, name: 'Guest WiFi', description: 'Isolated network for guests', popId: '1', subnet: '172.16.30.0/24', createdAt: new Date(Date.now() - 172800000), isTagged: true, status: 'Inactive' }, // Assuming sim-3 is ID 3
 ];
 
 const queryClient = new QueryClient();
@@ -372,7 +372,7 @@ function VlanManagementPage() {
                                  <AlertDialogHeader>
                                    <AlertDialogTitle>{t('vlan_page.delete_confirm_title', 'Are you sure?')}</AlertDialogTitle>
                                    <AlertDialogDescription className="text-xs">
-                                     {t('vlan_page.delete_confirm_description', 'This action cannot be undone. This will permanently delete VLAN {name} ({vlanId}).').replace('{name}', vlan.name).replace('{vlanId}', vlan.vlanId.toString())}
+                                     {t('vlan_page.delete_confirm_description', 'This action is irreversible. This will permanently delete VLAN {name} ({vlanId}).').replace('{name}', vlan.name).replace('{vlanId}', vlan.vlanId.toString())}
                                    </AlertDialogDescription>
                                  </AlertDialogHeader>
                                  <AlertDialogFooter>

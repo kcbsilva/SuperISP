@@ -154,10 +154,10 @@ const getSubscriberData = (id: string | string[]) => {
             canceledInvoices: [
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
-             pendingInvoices: [
+            pendingInvoices: [
                 { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
                 { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
-             ],
+            ],
             paymentPlans: [
                 { id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active' },
             ],
@@ -197,7 +197,7 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.idNumber = 'ID-ALICE-001';
         baseData.signupDate = new Date(2022, 0, 10);
         baseData.billing.balance = 0.00;
-         baseData.billing.pendingInvoices =  [
+        baseData.billing.pendingInvoices =  [
              { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
              { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
          ];
@@ -1337,3 +1337,4 @@ function SubscriberProfilePage() {
     </div>
   );
 }
+
