@@ -5,9 +5,6 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
   CardFooter
 } from "@/components/ui/card";
 import {
@@ -53,7 +50,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { PlusCircle, Filter, RefreshCw, ArrowUpDown, DollarSign, Edit, Trash2, Loader2, CalendarIcon } from 'lucide-react';
+import { PlusCircle, RefreshCw, ArrowUpDown, DollarSign, Edit, Trash2, Loader2, CalendarIcon } from 'lucide-react';
 import { useLocale, type Locale as AppLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
@@ -181,9 +178,33 @@ export default function CashBookPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-base font-semibold">{t('cash_book.title', 'Cash Book')}</h1> {/* Reduced heading size */}
-        <div className="flex items-center gap-2">
+      <div className="flex justify-between items-center gap-4">
+        <h1 className="text-base font-semibold">{t('cash_book.title', 'Cash Book')}</h1>
+
+        <div className="flex flex-1 items-center gap-4">
+            <div className="relative flex-1">
+              <DollarSign className={`absolute left-2.5 top-2.5 ${smallIconSize} text-muted-foreground`} />
+              <Input
+                type="search"
+                placeholder={t('cash_book.search_placeholder', 'Search by description, category, reference...')}
+                className="pl-8 w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <Select value={filterType} onValueChange={(value) => setFilterType(value as 'All' | 'Income' | 'Expense')}>
+                <SelectTrigger className="w-full sm:w-[180px] shrink-0">
+                    <SelectValue placeholder={t('cash_book.filter_type_placeholder', 'Filter by type')} />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="All">{t('cash_book.filter_type_all', 'All Types')}</SelectItem>
+                    <SelectItem value="Income">{t('cash_book.filter_type_income', 'Income')}</SelectItem>
+                    <SelectItem value="Expense">{t('cash_book.filter_type_expense', 'Expense')}</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
             <Button variant="default" className="bg-primary hover:bg-primary/90">
                 <RefreshCw className={`mr-2 ${iconSize}`} /> {t('cash_book.refresh_button', 'Refresh')}
             </Button>
@@ -324,35 +345,8 @@ export default function CashBookPage() {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <DollarSign className={`absolute left-2.5 top-2.5 ${smallIconSize} text-muted-foreground`} />
-          <Input
-            type="search"
-            placeholder={t('cash_book.search_placeholder', 'Search by description, category, reference...')}
-            className="pl-8 w-full"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <Select value={filterType} onValueChange={(value) => setFilterType(value as 'All' | 'Income' | 'Expense')}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder={t('cash_book.filter_type_placeholder', 'Filter by type')} />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="All">{t('cash_book.filter_type_all', 'All Types')}</SelectItem>
-                <SelectItem value="Income">{t('cash_book.filter_type_income', 'Income')}</SelectItem>
-                <SelectItem value="Expense">{t('cash_book.filter_type_expense', 'Expense')}</SelectItem>
-            </SelectContent>
-        </Select>
-      </div>
-
       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">{t('cash_book.table_title', 'Cash Book Entries')}</CardTitle> {/* Reduced title size */}
-          <CardDescription className="text-xs">{t('cash_book.table_description', 'View and manage your income and expense entries.')}</CardDescription> 
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6"> {/* Adjusted padding since CardHeader is removed */}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
