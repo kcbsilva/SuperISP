@@ -72,7 +72,7 @@ import * as z from 'zod';
 // import { enUS, fr, ptBR } from 'date-fns/locale'; // Not directly needed
 import { cn } from "@/lib/utils";
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/mysql/pops';
+import { getPops } from '@/services/postgresql/pops'; // Changed to PostgreSQL service
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -101,9 +101,9 @@ interface BillingDay extends BillingDayFormData {
 }
 
 const placeholderBillingDays: BillingDay[] = [
-  { id: 'bd-1', dayOfMonth: 1, status: true, permittedPopIds: ['sim-1'], activeContracts: 120 },
-  { id: 'bd-2', dayOfMonth: 15, status: true, permittedPopIds: ['sim-1', 'sim-2'], activeContracts: 75 },
-  { id: 'bd-3', dayOfMonth: 'Last Day', status: false, permittedPopIds: ['sim-3'], activeContracts: 0 },
+  { id: 'bd-1', dayOfMonth: 1, status: true, permittedPopIds: ['1'], activeContracts: 120 }, // Assuming sim-1 is ID 1
+  { id: 'bd-2', dayOfMonth: 15, status: true, permittedPopIds: ['1', '2'], activeContracts: 75 }, // Assuming sim-2 is ID 2
+  { id: 'bd-3', dayOfMonth: 'Last Day', status: false, permittedPopIds: ['3'], activeContracts: 0 }, // Assuming sim-3 is ID 3
 ];
 
 const queryClient = new QueryClient();

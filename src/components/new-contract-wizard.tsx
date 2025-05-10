@@ -49,7 +49,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/mysql/pops';
+import { getPops } from '@/services/postgresql/pops'; // Changed to PostgreSQL service
 import type { Pop } from '@/types/pops';
 import { useLocale } from '@/contexts/LocaleContext';
 // import { format } from 'date-fns'; // Not needed for select
@@ -113,17 +113,17 @@ interface Plan {
 
 // Placeholder Plan Data - In a real app, this would be fetched
 const placeholderPlans: Plan[] = [
-  { id: 'plan-int-fiber-100-popA', name: 'Fiber 100 Basic (PoP A)', popId: 'sim-1', technology: 'Fiber Optic', serviceType: 'Internet', price: 50 },
-  { id: 'plan-int-fiber-500-popA', name: 'Fiber 500 Pro (PoP A)', popId: 'sim-1', technology: 'Fiber Optic', serviceType: 'Internet', price: 80 },
-  { id: 'plan-int-radio-popA', name: 'Radio Connect (PoP A)', popId: 'sim-1', technology: 'Radio', serviceType: 'Internet', price: 40 },
-  { id: 'plan-int-utp-popA', name: 'UTP Business (PoP A)', popId: 'sim-1', technology: 'UTP', serviceType: 'Internet', price: 60 },
-  { id: 'plan-int-sat-popB', name: 'Satellite Remote (PoP B)', popId: 'sim-2', technology: 'Satellite', serviceType: 'Internet', price: 70 },
-  { id: 'plan-tv-basic-popA', name: 'Basic TV Package (PoP A)', popId: 'sim-1', serviceType: 'TV', price: 25 },
-  { id: 'plan-tv-premium-popB', name: 'Premium TV Channels (PoP B)', popId: 'sim-2', serviceType: 'TV', price: 45 },
-  { id: 'plan-phone-local-popA', name: 'Local Landline (PoP A)', popId: 'sim-1', serviceType: 'Phone', price: 15 },
-  { id: 'plan-mobile-5gb-popC', name: 'Mobile 5GB (PoP C)', popId: 'sim-3', serviceType: 'Mobile', price: 30 },
-  { id: 'plan-combo-inttv-popA', name: 'Internet + Basic TV (PoP A)', popId: 'sim-1', serviceType: 'Combo', price: 70 },
-  { id: 'plan-other-hosting-popA', name: 'Web Hosting Basic (PoP A)', popId: 'sim-1', serviceType: 'Other', price: 10 },
+  { id: 'plan-int-fiber-100-popA', name: 'Fiber 100 Basic (PoP A)', popId: '1', technology: 'Fiber Optic', serviceType: 'Internet', price: 50 }, // Assuming sim-1 is ID 1
+  { id: 'plan-int-fiber-500-popA', name: 'Fiber 500 Pro (PoP A)', popId: '1', technology: 'Fiber Optic', serviceType: 'Internet', price: 80 },
+  { id: 'plan-int-radio-popA', name: 'Radio Connect (PoP A)', popId: '1', technology: 'Radio', serviceType: 'Internet', price: 40 },
+  { id: 'plan-int-utp-popA', name: 'UTP Business (PoP A)', popId: '1', technology: 'UTP', serviceType: 'Internet', price: 60 },
+  { id: 'plan-int-sat-popB', name: 'Satellite Remote (PoP B)', popId: '2', technology: 'Satellite', serviceType: 'Internet', price: 70 }, // Assuming sim-2 is ID 2
+  { id: 'plan-tv-basic-popA', name: 'Basic TV Package (PoP A)', popId: '1', serviceType: 'TV', price: 25 },
+  { id: 'plan-tv-premium-popB', name: 'Premium TV Channels (PoP B)', popId: '2', serviceType: 'TV', price: 45 },
+  { id: 'plan-phone-local-popA', name: 'Local Landline (PoP A)', popId: '1', serviceType: 'Phone', price: 15 },
+  { id: 'plan-mobile-5gb-popC', name: 'Mobile 5GB (PoP C)', popId: '3', serviceType: 'Mobile', price: 30 }, // Assuming sim-3 is ID 3
+  { id: 'plan-combo-inttv-popA', name: 'Internet + Basic TV (PoP A)', popId: '1', serviceType: 'Combo', price: 70 },
+  { id: 'plan-other-hosting-popA', name: 'Web Hosting Basic (PoP A)', popId: '1', serviceType: 'Other', price: 10 },
 ];
 
 interface AddedService {
