@@ -303,9 +303,6 @@ export default function OltsAndOnxsPage() {
                                                             <DropdownMenuItem onClick={() => handleOnxAction(onx.id, 'view_details')}>
                                                                 {t('fttx_olts.onx_action_view_details', 'View Details')}
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => handleOnxAction(onx.id, 'provision')}>
-                                                                {t('fttx_olts.onx_action_provision', 'Provision')}
-                                                            </DropdownMenuItem>
                                                             <DropdownMenuItem onClick={() => handleOnxAction(onx.id, 'unprovision')} className="text-destructive">
                                                                 {t('fttx_olts.onx_action_unprovision', 'Unprovision')}
                                                             </DropdownMenuItem>
@@ -331,4 +328,3 @@ export default function OltsAndOnxsPage() {
     </div>
   );
 }
-
