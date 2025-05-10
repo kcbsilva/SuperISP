@@ -1,4 +1,6 @@
 // src/services/postgresql/subscribers.ts
+'use server';
+
 import { query } from '@/lib/postgresql/client';
 import type { Subscriber, SubscriberData } from '@/types/subscribers';
 

@@ -1,4 +1,6 @@
 // src/services/postgresql/pops.ts
+'use server';
+
 import { query } from '@/lib/postgresql/client';
 import type { Pop, PopData } from '@/types/pops';
 

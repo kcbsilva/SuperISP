@@ -1,4 +1,6 @@
 // src/lib/postgresql/client.ts
+'use server';
+
 import { Pool } from 'pg';
 
 let pool: Pool;
