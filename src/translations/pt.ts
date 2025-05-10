@@ -55,6 +55,7 @@ const pt = {
     settings_integrations_telegram: 'Telegram',
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
+    settings_users: 'Usuários', 
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Expandir barra lateral',
@@ -692,7 +693,7 @@ const pt = {
       table_header_nat_network: 'Rede NAT',
       table_header_type: 'Tipo',
       table_header_first_port: 'Primeira Porta',
-      table_header_num_ports: 'Nº de Portas',
+      table_header_num_ports: '# de Portas',
       table_header_protocol: 'Protocolo',
       table_header_status: 'Status',
       table_header_actions: 'Ações',
@@ -850,7 +851,7 @@ const pt = {
       no_plans_available: 'Nenhum plano disponível para os critérios selecionados.',
       select_technology_first: 'Selecione a tecnologia primeiro.',
       service_added_to_contract_title: 'Serviço Adicionado',
-      service_added_to_contract_desc: 'Plano {planName} adicionado ao contrato.',
+      service_added_to_contract_desc: '{planName} adicionado ao contrato.',
       error_finding_plan_title: 'Erro no Plano',
       error_finding_plan_desc: 'Não foi possível encontrar os detalhes do plano selecionado.',
       no_services_title: 'Nenhum Serviço',
@@ -903,7 +904,15 @@ const pt = {
       status_change_toast_title: 'Status Atualizado',
       status_change_toast_description: 'O status do dia de faturamento foi atualizado.',
     },
+     // Users Page (Settings)
+    settings_users: {
+      add_user_toast_title: 'Adicionar Usuário (Não Implementado)',
+      add_user_toast_desc: 'A funcionalidade para adicionar novos usuários ainda não foi implementada.',
+      add_user_button: 'Adicionar Usuário',
+      manage_users_title: 'Gerenciar Usuários',
+      manage_users_desc: 'Visualizar, adicionar e gerenciar usuários do sistema e suas permissões.',
+      no_users_placeholder: 'A funcionalidade de gerenciamento de usuários ainda não foi implementada. Esta seção exibirá uma lista de usuários e permitirá atribuições de função e configurações de permissão.',
+    },
 };
 
 export default pt;
-

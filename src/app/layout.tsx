@@ -1,11 +1,9 @@
 // src/app/layout.tsx
 'use client'; // Required for hooks and state
 
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
-import { useState, useEffect, type ReactNode } from 'react'; // Import useState and useEffect
-import Image from 'next/image'; // Import next/image
+import { useState, useEffect, type ReactNode } from 'react';
 // Import specific icons
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, ChevronDown, ChevronRight, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
@@ -51,7 +49,8 @@ import {
   UserCircle, // For profile menu
 } from 'lucide-react';
 
-import prolterLogoSrc from '@/app/assets/prolter-logo.svg'; // Import the SVG asset path
+// Removed: import prolterLogoSrc from '@/app/assets/prolter-logo.svg';
+// Removed: import Image from 'next/image'; // Not used for the inline SVG logo
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -78,18 +77,12 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
 import { Progress } from '@/components/ui/progress'; // Import Progress component
 import { LocaleProvider, useLocale } from '@/contexts/LocaleContext'; // Import LocaleProvider and useLocale
-import { ThemeProvider } from '@/components/theme-provider'; // Corrected import path
-import { useTheme } from 'next-themes'; // Import useTheme from next-themes
+import { ThemeProvider } from '@/components/theme-provider';
+import { useTheme } from 'next-themes';
 
 
 // Create a client
 const queryClient = new QueryClient();
-
-// Metadata can remain static or be dynamically generated if needed elsewhere
-// export const metadata: Metadata = {
-//   title: 'SuperISP',
-//   description: 'ISP Management Software',
-// };
 
 // Inner component that uses the locale context
 function AppLayout({ children }: { children: React.ReactNode }) {
@@ -98,7 +91,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const [progress, setProgress] = useState(0);
   const { t } = useLocale(); // Get translation function
   const { theme } = useTheme();
-  const [logoFillColor, setLogoFillColor] = useState('#14213D'); // Default to light theme color
+  const [logoFillColor, setLogoFillColor] = useState<string>('hsl(var(--secondary))'); // Default to light theme color (secondary)
+
 
   // Simulate loading progress on route change
   useEffect(() => {
@@ -142,8 +136,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     // Ensure theme is loaded and window is defined to avoid SSR issues with getComputedStyle
     if (typeof window !== 'undefined' && theme) {
       const newFillColor = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-        ? '#FCA311' // Accent color for dark theme
-        : '#14213D'; // Secondary color for light theme
+        ? 'hsl(var(--accent))' // Accent color for dark theme (#FCA311)
+        : 'hsl(var(--secondary))'; // Secondary color for light theme (#14213D)
       setLogoFillColor(newFillColor);
     }
   }, [theme]);
@@ -159,12 +153,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               href="/"
               className="flex items-center justify-center px-2 py-2"
             >
-              {/* Use an inline SVG or a component that allows direct style manipulation for fill */}
               <svg
                 width="131"
                 height="32"
                 viewBox="0 0 131 32"
-                fill="none"
+                // fill="none" // Removed redundant fill attribute
                 xmlns="http://www.w3.org/2000/svg"
                 style={{ fill: logoFillColor }} // Apply dynamic fill color here
               >
@@ -206,7 +199,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/subscribers/list" className="flex items-center gap-2">
                     <Users className={iconSize} />
                     <span className="truncate">{t('sidebar.subscribers')}</span>
-                    {/* Removed ChevronDown */}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -386,7 +378,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                    {/* Financial Configurations moved to Settings */}
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
               </SidebarMenuItem>
@@ -478,7 +469,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <TooltipContent side="right" align="center">{t('sidebar.hr', 'HR')}</TooltipContent>
                   </Tooltip>
                   <SidebarMenuSubContent>
-                    {/* Placeholder for HR submenu items */}
                      <SidebarMenuItem>
                         <SidebarMenuButton asChild isActive={isActive('/hr/employees')} size="sm" tooltip={t('sidebar.hr_employees', 'Employees')}>
                            <Link href="#" className="flex items-center gap-2">
@@ -751,6 +741,15 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </SidebarMenuSubContent>
                       </SidebarMenuSub>
                     </SidebarMenuItem>
+
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={isActive('/settings/users')} size="sm" tooltip={t('sidebar.settings_users', 'Users')}>
+                           <Link href="/settings/users" className="flex items-center gap-2">
+                             <Users className={subIconSize + " text-muted-foreground"} />
+                             <span>{t('sidebar.settings_users', 'Users')}</span>
+                           </Link>
+                        </SidebarMenuButton>
+                     </SidebarMenuItem>
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
               </SidebarMenuItem>
@@ -841,8 +840,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-
-
-
-

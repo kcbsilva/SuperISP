@@ -55,6 +55,7 @@ const fr = {
     settings_integrations_telegram: 'Telegram',
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
+    settings_users: 'Utilisateurs', // Added Users translation
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Agrandir la barre latérale',
@@ -905,7 +906,15 @@ const fr = {
     status_change_toast_title: 'Statut Mis à Jour',
     status_change_toast_description: 'Le statut du jour de facturation a été mis à jour.',
   },
+   // Users Page (Settings)
+  settings_users: {
+    add_user_toast_title: 'Ajouter un utilisateur (Non implémenté)',
+    add_user_toast_desc: 'La fonctionnalité pour ajouter de nouveaux utilisateurs n\'est pas encore implémentée.',
+    add_user_button: 'Ajouter un utilisateur',
+    manage_users_title: 'Gérer les utilisateurs',
+    manage_users_desc: 'Afficher, ajouter et gérer les utilisateurs du système et leurs autorisations.',
+    no_users_placeholder: 'La fonctionnalité de gestion des utilisateurs n\'est pas encore implémentée. Cette section affichera une liste des utilisateurs et permettra l\'attribution de rôles et les paramètres d\'autorisation.',
+  },
 };
 
 export default fr;
-
