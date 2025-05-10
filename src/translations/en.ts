@@ -730,7 +730,7 @@ const en = {
       export_linux: "Linux",
       export_mikrotik: "MikroTik",
     },
-    onx_templates: { // Changed from onu_templates
+    onx_templates: {
       title: 'ONx Templates',
       add_template_button: 'Add Template',
       refresh_button: 'Refresh',
@@ -777,9 +777,9 @@ const en = {
       success_condition_type_not_contains: 'Response DOES NOT CONTAIN',
       success_condition_text_label: 'The following text:',
       success_condition_text_placeholder: 'e.g., success, completed',
-      action_edit: 'Edit', // Added specific for ONx template actions
-      action_delete: 'Delete', // Added specific for ONx template actions
-      delete_confirm_delete: 'Delete', // Added specific for ONx template actions
+      action_edit: 'Edit',
+      action_delete: 'Delete',
+      delete_confirm_delete: 'Delete',
     },
     fttx_olts: {
       title: 'Optical Line Terminals (OLTs)',
@@ -832,6 +832,8 @@ const en = {
       onx_action_view_details: 'View Details',
       onx_action_provision: 'Provision',
       onx_action_unprovision: 'Unprovision',
+      filter_onx_button: 'Filter ONXs',
+      filter_by_light_level_label: 'Filter by Light Level',
     },
     new_contract_wizard: {
       title: 'New Contract Wizard',
@@ -951,7 +953,6 @@ const en = {
       status_change_toast_title: 'Status Updated',
       status_change_toast_description: 'The billing day status has been updated.',
     },
-     // Users Page (Settings)
     settings_users: {
       add_user_toast_title: 'Add User (Not Implemented)',
       add_user_toast_desc: 'Functionality to add new users is not yet implemented.',
@@ -1047,7 +1048,7 @@ const en = {
       table_header_schema: 'Schema',
       table_header_rows: 'Rows',
       table_header_size: 'Size',
-      table_header_actions: 'Actions',
+      table_header_actions: 'Ações',
       add_database_button: 'Add Database',
       add_database_dialog_title: 'Add New Database',
       add_database_dialog_description: 'Enter the name for the new PostgreSQL database.',
@@ -1110,7 +1111,7 @@ const en = {
       onxs_offline: "ONXs Offline",
       onxs_non_provisioned: "Non-Provisioned ONXs",
       view_all_olts_button: "View All OLTs",
-      view_all_onxs_button: "View All ONXs (Not Implemented)",
+      view_all_onxs_button: "View All ONXs",
       onx_light_levels_title: 'ONx Light Levels',
       onx_light_levels_desc: 'Distribution of ONx devices by optical signal strength.',
       onx_light_levels_onxs: 'ONXs',

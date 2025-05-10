@@ -29,9 +29,9 @@ const fttxDashboardData = {
   },
   onxLightLevels: [
     { range: '-15dBm - -19dBm', count: 152, color: 'text-green-600', icon: SignalHigh },
-    { range: '-19dBm - -24dBm', count: 10, color: 'text-yellow-600', icon: SignalMedium }, // Using yellow-600 for better visibility
-    { range: '-24dBm - -28dBm', count: 1, color: 'text-purple-600', icon: SignalLow }, // Using purple-600
-    { range: '-28dBm - LOS', count: 60, color: 'text-red-600', icon: SignalLow }, // Using SignalLow for LOS/very low signal
+    { range: '-19dBm - -24dBm', count: 10, color: 'text-yellow-600', icon: SignalMedium },
+    { range: '-24dBm - -28dBm', count: 1, color: 'text-purple-600', icon: SignalLow },
+    { range: '-28dBm - LOS', count: 60, color: 'text-red-600', icon: SignalLow },
   ],
 };
 
@@ -54,7 +54,6 @@ export default function FTTxDashboardPage() {
             <Network className={`${iconSize} text-primary`} />
             {t('fttx_dashboard.olt_summary_title', 'OLT Summary')}
           </CardTitle>
-          {/* Removed CardDescription */}
         </CardHeader>
         <CardContent>
           {fttxDashboardData.olts.length > 0 ? (
@@ -101,7 +100,6 @@ export default function FTTxDashboardPage() {
               <Wifi className={`${iconSize} text-primary`} />
               {t('fttx_dashboard.onx_status_title', 'ONx Status Overview')}
             </CardTitle>
-             {/* Removed CardDescription */}
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -149,14 +147,17 @@ export default function FTTxDashboardPage() {
               <Signal className={`${iconSize} text-primary`} />
               {t('fttx_dashboard.onx_light_levels_title', 'ONx Light Levels')}
             </CardTitle>
-            {/* Removed CardDescription */}
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {fttxDashboardData.onxLightLevels.map(level => {
                 const IconComponent = level.icon;
                 return (
-                  <div key={level.range} className="flex items-center justify-between p-2 border rounded-md">
+                  <Link
+                    key={level.range}
+                    href={`/fttx/olts?tab=onxs&lightLevelFilter=${encodeURIComponent(level.range)}`}
+                    className="flex items-center justify-between p-2 border rounded-md hover:bg-muted/50 transition-colors"
+                  >
                     <div className="flex items-center gap-2">
                       <IconComponent className={`${lightLevelIconSize} ${level.color}`} />
                       <span className="text-xs font-medium">{level.range}</span>
@@ -164,7 +165,7 @@ export default function FTTxDashboardPage() {
                     <span className={`text-xs font-semibold ${level.color}`}>
                       {level.count} {t('fttx_dashboard.onx_light_levels_onxs', 'ONXs')}
                     </span>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
@@ -174,4 +175,3 @@ export default function FTTxDashboardPage() {
     </div>
   );
 }
-

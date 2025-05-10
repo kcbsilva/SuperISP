@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams } from 'next/navigation'; // Import useSearchParams
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Edit, Trash2, RefreshCw, MoreVertical, ListPlus, ListChecks, Network, Users } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, RefreshCw, MoreVertical, ListPlus, ListChecks, Network, Users, Filter as FilterIcon } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -25,6 +25,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; 
 
@@ -61,19 +64,65 @@ const placeholderOnxs: Onx[] = [
     { id: 'onx-002', serialNumber: 'HWTC8765EFGH', manufacturer: 'Huawei', model: 'HG8245H', assignedTo: 'Bob The Builder Inc.', lightLevel: '-22.5 dBm', status: 'Offline' },
     { id: 'onx-003', serialNumber: 'ZTEXFEDC4321', manufacturer: 'ZTE', model: 'F601', lightLevel: '-19.0 dBm', status: 'Alarm'},
     { id: 'onx-004', serialNumber: 'FHTT5678IJKL', manufacturer: 'Fiberhome', model: 'AN5506-04-FA', assignedTo: 'Charlie Brown', lightLevel: '-25.8 dBm', status: 'Online' },
+    { id: 'onx-005', serialNumber: 'NKIA9012UVWX', manufacturer: 'Nokia', model: 'G-140W-C', assignedTo: 'David Copperfield', lightLevel: '-16.0 dBm', status: 'Online' },
+    { id: 'onx-006', serialNumber: 'UBIQ3456QRST', manufacturer: 'Ubiquiti', model: 'UF-Nano', lightLevel: '-29.5 dBm', status: 'Offline' },
+    { id: 'onx-007', serialNumber: 'FHTT7890MNOP', manufacturer: 'Fiberhome', model: 'AN5506-02-B', assignedTo: 'Eve Adams', lightLevel: 'LOS', status: 'Alarm' },
+    { id: 'onx-008', serialNumber: 'HWTC1122YZAB', manufacturer: 'Huawei', model: 'EG8145V5', lightLevel: '-20.1 dBm', status: 'Online' },
+    { id: 'onx-009', serialNumber: 'ZTEX3344CDEF', manufacturer: 'ZTE', model: 'F670L', lightLevel: '-27.0 dBm', status: 'Online' },
+    { id: 'onx-010', serialNumber: 'NKIA5566GHIJ', manufacturer: 'Nokia', model: 'G-240W-A', lightLevel: '-18.8 dBm', status: 'Provisioning' },
 ];
+
+const lightLevelRanges = [
+  '-15dBm - -19dBm',
+  '-19dBm - -24dBm',
+  '-24dBm - -28dBm',
+  '-28dBm - LOS',
+];
+
+const isLightLevelInRange = (lightLevelStr: string | undefined, rangeStr: string): boolean => {
+  if (!lightLevelStr) return false;
+
+  const numericLevel = parseFloat(lightLevelStr.replace(' dBm', ''));
+  
+  if (rangeStr.includes('LOS')) {
+    return lightLevelStr === 'LOS' || (!isNaN(numericLevel) && numericLevel <= -28);
+  }
+  
+  if (isNaN(numericLevel)) return false;
+
+  const parts = rangeStr.replace(/dBm/g, '').split(' - ');
+  if (parts.length !== 2) return false;
+
+  const min = parseFloat(parts[0]);
+  const max = parseFloat(parts[1]);
+
+  if (isNaN(min) || isNaN(max)) return false;
+  
+  return numericLevel >= min && numericLevel < max; // Use < max to avoid overlap for exact boundary values
+};
 
 
 export default function OltsAndOnxsPage() {
   const { t } = useLocale();
   const { toast } = useToast();
-  const searchParams = useSearchParams(); // Get search params
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const iconSize = "h-3 w-3";
   const menuIconSize = "h-2.5 w-2.5";
   const tabIconSize = "h-2.5 w-2.5";
   
   const initialTab = searchParams.get('tab') === 'onxs' ? 'onxs' : 'olts';
   const [activeTab, setActiveTab] = React.useState(initialTab);
+  const [lightLevelFilter, setLightLevelFilter] = React.useState<string[]>(
+    searchParams.get('lightLevelFilter') ? [decodeURIComponent(searchParams.get('lightLevelFilter')!)] : []
+  );
+
+  React.useEffect(() => {
+    const filterFromQuery = searchParams.get('lightLevelFilter');
+    if (filterFromQuery) {
+      setLightLevelFilter([decodeURIComponent(filterFromQuery)]);
+    }
+  }, [searchParams]);
 
   const handleAddOlt = () => {
     toast({
@@ -134,6 +183,28 @@ export default function OltsAndOnxsPage() {
     });
   }
 
+  const handleLightLevelFilterChange = (range: string, checked: boolean) => {
+    setLightLevelFilter(prev => {
+      const newFilters = checked ? [...prev, range] : prev.filter(r => r !== range);
+      // Update URL to reflect filter state, but don't reload page
+      const currentParams = new URLSearchParams(searchParams.toString());
+      if (newFilters.length > 0) {
+        currentParams.set('lightLevelFilter', encodeURIComponent(newFilters.join(','))); // Example for multiple, though UI is single select now
+      } else {
+        currentParams.delete('lightLevelFilter');
+      }
+      router.replace(`/fttx/olts?${currentParams.toString()}`, { scroll: false });
+      return newFilters;
+    });
+  };
+  
+  const filteredOnxs = React.useMemo(() => {
+    if (lightLevelFilter.length === 0) return placeholderOnxs;
+    return placeholderOnxs.filter(onx => 
+      lightLevelFilter.some(range => isLightLevelInRange(onx.lightLevel, range))
+    );
+  }, [lightLevelFilter]);
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -145,10 +216,33 @@ export default function OltsAndOnxsPage() {
                 <Button variant="default" className="bg-primary hover:bg-primary/90">
                     <RefreshCw className={`mr-2 ${iconSize}`} /> {t('fttx_olts.refresh_button', 'Refresh')}
                 </Button>
-                {activeTab === "olts" && ( // Only show Add OLT button if OLTs tab is active
+                {activeTab === "olts" && (
                     <Button onClick={handleAddOlt} className="bg-green-600 hover:bg-green-700 text-white">
                         <PlusCircle className={`mr-2 ${iconSize}`} /> {t('fttx_olts.add_olt_button', 'Add OLT')}
                     </Button>
+                )}
+                {activeTab === "onxs" && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline">
+                        <FilterIcon className={`mr-2 ${iconSize}`} />
+                        {t('fttx_olts.filter_onx_button', 'Filter ONXs')}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>{t('fttx_olts.filter_by_light_level_label', 'Filter by Light Level')}</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {lightLevelRanges.map(range => (
+                        <DropdownMenuCheckboxItem
+                          key={range}
+                          checked={lightLevelFilter.includes(range)}
+                          onCheckedChange={(checked) => handleLightLevelFilterChange(range, !!checked)}
+                        >
+                          {range}
+                        </DropdownMenuCheckboxItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
             </div>
         </div>
@@ -271,8 +365,8 @@ export default function OltsAndOnxsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {placeholderOnxs.length > 0 ? (
-                                        placeholderOnxs.map((onx) => (
+                                    {filteredOnxs.length > 0 ? (
+                                        filteredOnxs.map((onx) => (
                                             <TableRow key={onx.id}>
                                                 <TableCell className="font-mono text-muted-foreground text-xs">{onx.serialNumber}</TableCell>
                                                 <TableCell className="text-muted-foreground text-xs">{onx.manufacturer}</TableCell>
@@ -281,7 +375,7 @@ export default function OltsAndOnxsPage() {
                                                 <TableCell className="text-xs">{onx.lightLevel || '-'}</TableCell>
                                                 <TableCell>
                                                     <Badge variant="outline" className={`text-xs ${getOnxStatusBadgeVariant(onx.status)} border-transparent`}>
-                                                        {t(`fttx_olts.onx_status_${onx.status.toLowerCase()}`, onx.status)}
+                                                        {t(`fttx_olts.onx_status_${onx.status.toLowerCase()}` as any, onx.status)}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="text-right">
@@ -321,4 +415,3 @@ export default function OltsAndOnxsPage() {
     </div>
   );
 }
-

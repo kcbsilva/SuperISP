@@ -722,7 +722,7 @@ const fr = {
     export_linux: "Linux",
     export_mikrotik: "MikroTik",
   },
-  onx_templates: { // Changed from onu_templates
+  onx_templates: {
     title: 'Modèles ONx',
     add_template_button: 'Ajouter un Modèle',
     refresh_button: 'Actualiser',
@@ -824,6 +824,8 @@ const fr = {
     onx_action_view_details: 'Voir Détails',
     onx_action_provision: 'Provisionner',
     onx_action_unprovision: 'Déprovisionner',
+    filter_onx_button: 'Filtrer les ONXs',
+    filter_by_light_level_label: 'Filtrer par Niveau de Lumière',
   },
   new_contract_wizard: {
     title: 'Assistant Nouveau Contrat',
@@ -943,7 +945,6 @@ const fr = {
     status_change_toast_title: 'Statut Mis à Jour',
     status_change_toast_description: 'Le statut du jour de facturation a été mis à jour.',
   },
-   // Users Page (Settings)
   settings_users: {
     add_user_toast_title: 'Ajouter un utilisateur (Non implémenté)',
     add_user_toast_desc: 'La fonctionnalité pour ajouter de nouveaux utilisateurs n\'est pas encore implémentée.',
@@ -1102,7 +1103,7 @@ const fr = {
     onxs_offline: "ONXs hors ligne",
     onxs_non_provisioned: "ONXs non provisionnés",
     view_all_olts_button: "Voir tous les OLTs",
-    view_all_onxs_button: "Voir tous les ONXs (Non implémenté)",
+    view_all_onxs_button: "Voir tous les ONXs",
     onx_light_levels_title: 'Niveaux de Lumière ONx',
     onx_light_levels_desc: 'Distribution des appareils ONx par puissance du signal optique.',
     onx_light_levels_onxs: 'ONXs',
