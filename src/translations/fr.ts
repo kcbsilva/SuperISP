@@ -229,6 +229,10 @@ const fr = {
      status_suspended: 'Suspendu',
      status_planned: 'Prévu',
      status_canceled: 'Annulé',
+     stats_new_subscribers: 'Nouveaux Abonnés (Mois)',
+     stats_active_subscribers: 'Abonnés Actifs',
+     stats_suspended_subscribers: 'Abonnés Suspendus',
+     stats_total_subscribers: 'Total Abonnés',
    },
    subscriber_profile: {
      overview_tab: 'Aperçu',
@@ -463,7 +467,7 @@ const fr = {
         expense_category_desc: 'Répartition mensuelle des dépenses.',
         payment_status_title: 'Statut des Paiements',
         payment_status_desc: 'Aperçu des statuts de paiement des factures récentes.',
-        pie_chart_placeholder: 'Données du graphique circulaire non disponibili.',
+        pie_chart_placeholder: 'Données del grafico circolare non disponibili.',
       },
    },
    maps_page: {
@@ -1049,7 +1053,7 @@ const fr = {
     cli_command_success_generic: 'Commande "{command}" exécutée avec succès. Résultat : {details}',
     cli_command_success_no_output: 'Commande exécutée avec succès, mais aucune sortie spécifique n\'a été retournée.',
     cli_execution_success_title: 'Commande Exécutée',
-    cli_execution_success_toast_desc: 'Commande SQL traitée.',
+    cli_execution_success_toast_desc: 'SQL commande traitée.',
     cli_execution_success_no_output_toast_desc: 'Commande SQL traitée sans sortie spécifique.',
   },
   // General form translations
@@ -1058,3 +1062,4 @@ const fr = {
 };
 
 export default fr;
+

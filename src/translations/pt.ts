@@ -227,6 +227,10 @@ const pt = {
     status_suspended: 'Suspenso',
     status_planned: 'Planejado',
     status_canceled: 'Cancelado',
+    stats_new_subscribers: 'Novos Assinantes (Mês)',
+    stats_active_subscribers: 'Assinantes Ativos',
+    stats_suspended_subscribers: 'Assinantes Suspensos',
+    stats_total_subscribers: 'Total de Assinantes',
   },
   subscriber_profile: {
     overview_tab: 'Visão Geral',
@@ -614,7 +618,7 @@ const pt = {
       delete_confirm_title: 'Tem certeza?',
       delete_confirm_description: 'Esta ação não pode ser desfeita. Isso excluirá permanentemente a categoria "{categoryName}".',
       delete_confirm_cancel: 'Cancelar',
-      delete_confirm_delete: 'Excluir',
+      form_delete_button: 'Excluir',
       static_delete_error_title: 'Erro de Exclusão',
       static_delete_error_description: 'As categorias estáticas "Receita" e "Despesa" não podem ser excluídas.',
       static_edit_error_title: 'Erro de Edição',
@@ -655,14 +659,7 @@ const pt = {
       delete_confirm_title: 'Are you sure?',
       delete_confirm_description: 'This action is irreversible. This will permanently delete VLAN {name} ({vlanId}).',
       delete_confirm_cancel: 'Cancel',
-      delete_confirm_delete: 'Delete',
-      table_header_vlan_id: 'VLAN ID',
-      table_header_description: 'Description',
-      table_header_tagged: 'Tagged/Untagged',
-      table_header_status: 'Status',
-      table_header_actions: 'Actions',
-      action_edit: 'Edit',
-      action_delete: 'Delete',
+      form_delete_button: 'Delete',
       tagged: 'Tagged',
       untagged: 'Untagged',
       status_active: 'Active',
@@ -904,7 +901,7 @@ const pt = {
       delete_confirm_title: 'Tem certeza?',
       delete_confirm_description_day: 'This will permanently delete the billing day rule for "{dayOfMonth}".',
       delete_confirm_cancel: 'Cancelar',
-      delete_confirm_delete: 'Excluir',
+      form_delete_button: 'Excluir',
       status_active: 'Ativo',
       status_inactive: 'Inativo',
       toggle_status_aria_label: 'Alternar status do dia de faturamento',
@@ -1048,7 +1045,7 @@ const pt = {
       cli_command_success_no_output: 'Comando executado com sucesso, mas nenhuma saída específica foi retornada.',
       cli_execution_success_title: 'Comando Executado',
       cli_execution_success_toast_desc: 'SQL comando processado.',
-      cli_execution_success_no_output_toast_desc: 'Comando SQL processado sem saída específica.',
+      cli_execution_success_no_output_toast_desc: 'SQL comando processado sem saída específica.',
     },
     // General form translations
     form_cancel_button: 'Cancelar',
@@ -1056,3 +1053,4 @@ const pt = {
 };
 
 export default pt;
+

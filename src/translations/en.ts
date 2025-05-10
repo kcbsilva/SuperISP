@@ -235,6 +235,10 @@ const en = {
      status_suspended: 'Suspended',
      status_planned: 'Planned',
      status_canceled: 'Canceled',
+     stats_new_subscribers: 'New Subscribers (Month)',
+     stats_active_subscribers: 'Active Subscribers',
+     stats_suspended_subscribers: 'Suspended Subscribers',
+     stats_total_subscribers: 'Total Subscribers',
    },
    // Subscriber Profile Page
    subscriber_profile: {
@@ -1016,7 +1020,7 @@ const en = {
       table_header_schema: 'Schema',
       table_header_rows: 'Rows',
       table_header_size: 'Size',
-      table_header_actions: 'Actions',
+      table_header_actions: 'Ações',
       add_database_button: 'Add Database',
       add_database_dialog_title: 'Add New Database',
       add_database_dialog_description: 'Enter the name for the new PostgreSQL database.',
@@ -1066,3 +1070,4 @@ const en = {
 };
 
 export default en;
+

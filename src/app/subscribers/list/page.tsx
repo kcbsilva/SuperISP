@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; // Added CardHeader, CardTitle
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { User, Building, Search, Filter, RefreshCw, PlusCircle } from "lucide-react";
+import { User, Building, Search, Filter, RefreshCw, PlusCircle, Users, UserCheck, UserX, TrendingUp } from "lucide-react"; // Added more icons
 import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
@@ -28,8 +28,8 @@ import { useToast } from '@/hooks/use-toast';
 
 import { useRouter } from 'next/navigation';
 
-import { getSubscribers } from '@/services/postgresql/subscribers'; // Corrected import
-import type { Subscriber, SubscriberStatus } from '@/types/subscribers'; // Import Subscriber type
+import { getSubscribers } from '@/services/postgresql/subscribers';
+import type { Subscriber, SubscriberStatus } from '@/types/subscribers';
 
 type FilterState = {
     type: ('Residential' | 'Commercial')[];
@@ -50,6 +50,14 @@ const formatTaxId = (taxId: string | undefined | null): string => {
   return `${prefix}${maskedMiddle}${suffix}`;
 };
 
+// Placeholder data for counters
+const subscriberStats = {
+  newSubscribers: 25,
+  activeSubscribers: 1180,
+  suspendedSubscribers: 52,
+  totalSubscribers: 1257,
+};
+
 
 export default function ListSubscribersPage() {
     const { t } = useLocale();
@@ -60,16 +68,16 @@ export default function ListSubscribersPage() {
         status: [],
     });
     const [isLoading, setIsLoading] = React.useState(false);
-    const iconSize = "h-3 w-3"; // Reduced icon size
+    const iconSize = "h-3 w-3";
+    const statIconSize = "h-4 w-4 text-muted-foreground"; // For stat cards
 
-
-    const [subscribers, setSubscribers] = React.useState<Subscriber[]>([]); // Typed state
+    const [subscribers, setSubscribers] = React.useState<Subscriber[]>([]);
 
     React.useEffect(() => {
       const fetchSubscribers = async () => {
         setIsLoading(true);
         try {
-          const response = await getSubscribers(); // Corrected function call
+          const response = await getSubscribers();
           console.log('Subscribers response', response);
           setSubscribers(response);
         } catch (error) {
@@ -87,7 +95,7 @@ export default function ListSubscribersPage() {
     }, [toast]);
 
     const filteredSubscribers = React.useMemo(() => {
-        return subscribers.filter(sub => { // Use subscribers state
+        return subscribers.filter(sub => {
         const nameMatch = sub.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) || sub.companyName?.toLowerCase().includes(searchTerm.toLowerCase());
         const taxIdMatch = sub.taxId?.toLowerCase().includes(searchTerm.toLowerCase()) || sub.businessNumber?.toLowerCase().includes(searchTerm.toLowerCase());
         const phoneMatch = sub.phoneNumber.includes(searchTerm);
@@ -132,6 +140,47 @@ export default function ListSubscribersPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Subscriber Statistics Section */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-2">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_new_subscribers', 'New Subscribers (Month)')}</CardTitle>
+            <TrendingUp className={statIconSize} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg font-bold">{subscriberStats.newSubscribers.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_active_subscribers', 'Active Subscribers')}</CardTitle>
+            <UserCheck className={statIconSize} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg font-bold">{subscriberStats.activeSubscribers.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_suspended_subscribers', 'Suspended Subscribers')}</CardTitle>
+            <UserX className={statIconSize} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg font-bold">{subscriberStats.suspendedSubscribers.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_total_subscribers', 'Total Subscribers')}</CardTitle>
+            <Users className={statIconSize} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg font-bold">{subscriberStats.totalSubscribers.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-base font-semibold">{t('sidebar.subscribers')}</h1>
         
@@ -217,7 +266,18 @@ export default function ListSubscribersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredSubscribers.length > 0 ? (
+                {isLoading ? (
+                    Array.from({ length: 5 }).map((_, index) => (
+                        <TableRow key={`skeleton-${index}`}>
+                            <TableCell><div className="h-4 bg-muted rounded w-20"></div></TableCell>
+                            <TableCell><div className="h-4 bg-muted rounded w-8"></div></TableCell>
+                            <TableCell><div className="h-4 bg-muted rounded w-40"></div></TableCell>
+                            <TableCell><div className="h-4 bg-muted rounded w-24"></div></TableCell>
+                            <TableCell><div className="h-4 bg-muted rounded w-48"></div></TableCell>
+                            <TableCell><div className="h-4 bg-muted rounded w-28"></div></TableCell>
+                        </TableRow>
+                    ))
+                ) : filteredSubscribers.length > 0 ? (
                   filteredSubscribers.map((subscriber) => (
                     <TableRow key={subscriber.id}>
                       <TableCell className="font-mono text-muted-foreground text-xs">{subscriber.id}</TableCell> 
@@ -253,3 +313,4 @@ export default function ListSubscribersPage() {
     </div>
   );
 }
+
