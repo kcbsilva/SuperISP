@@ -29,7 +29,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"; // AlertDialogTrigger will be used if delete functionality is added
+  AlertDialogTrigger, // Ensure this is imported
+} from "@/components/ui/alert-dialog"; 
 import {
   Table,
   TableBody,
