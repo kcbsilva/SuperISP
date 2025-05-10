@@ -59,17 +59,17 @@ interface Onx {
   lightLevelTx?: string; // e.g., "+2.5 dBm"
   lightLevelRx?: string; // e.g., "-18.5 dBm" or "LOS"
   fdhId?: string; // e.g., "FDH-01-A"
-  status: 'Online' | 'Offline' | 'Provisioning' | 'Alarm';
+  status: 'Online' | 'Offline' | 'Provisioning';
 }
 
 const placeholderOnxs: Onx[] = [
     { id: 'onx-001', serialNumber: 'FHTT1234ABCD', manufacturer: 'Fiberhome', model: 'AN5506-01-A1', assignedTo: 'Alice Wonderland', lightLevelTx: "+2.1 dBm", lightLevelRx: '-17.2 dBm', fdhId: 'FDH-01-A', status: 'Online' },
     { id: 'onx-002', serialNumber: 'HWTC8765EFGH', manufacturer: 'Huawei', model: 'HG8245H', assignedTo: 'Bob The Builder Inc.', lightLevelTx: "+1.8 dBm", lightLevelRx: '-22.5 dBm', fdhId: 'FDH-02-B', status: 'Offline' },
-    { id: 'onx-003', serialNumber: 'ZTEXFEDC4321', manufacturer: 'ZTE', model: 'F601', lightLevelTx: "+2.5 dBm", lightLevelRx: '-19.0 dBm', fdhId: 'FDH-01-A', status: 'Alarm'},
+    { id: 'onx-003', serialNumber: 'ZTEXFEDC4321', manufacturer: 'ZTE', model: 'F601', lightLevelTx: "+2.5 dBm", lightLevelRx: '-19.0 dBm', fdhId: 'FDH-01-A', status: 'Offline'}, // Changed from Alarm to Offline
     { id: 'onx-004', serialNumber: 'FHTT5678IJKL', manufacturer: 'Fiberhome', model: 'AN5506-04-FA', assignedTo: 'Charlie Brown', lightLevelTx: "+2.0 dBm", lightLevelRx: '-25.8 dBm', fdhId: 'FDH-03-C', status: 'Online' },
     { id: 'onx-005', serialNumber: 'NKIA9012UVWX', manufacturer: 'Nokia', model: 'G-140W-C', assignedTo: 'David Copperfield', lightLevelTx: "+3.0 dBm", lightLevelRx: '-16.0 dBm', fdhId: 'FDH-01-B', status: 'Online' },
     { id: 'onx-006', serialNumber: 'UBIQ3456QRST', manufacturer: 'Ubiquiti', model: 'UF-Nano', lightLevelTx: "+1.5 dBm", lightLevelRx: '-29.5 dBm', fdhId: 'FDH-04-A', status: 'Offline' },
-    { id: 'onx-007', serialNumber: 'FHTT7890MNOP', manufacturer: 'Fiberhome', model: 'AN5506-02-B', assignedTo: 'Eve Adams', lightLevelTx: "N/A", lightLevelRx: 'LOS', fdhId: 'FDH-03-C', status: 'Alarm' },
+    { id: 'onx-007', serialNumber: 'FHTT7890MNOP', manufacturer: 'Fiberhome', model: 'AN5506-02-B', assignedTo: 'Eve Adams', lightLevelTx: "N/A", lightLevelRx: 'LOS', fdhId: 'FDH-03-C', status: 'Offline' }, // Changed from Alarm to Offline
     { id: 'onx-008', serialNumber: 'HWTC1122YZAB', manufacturer: 'Huawei', model: 'EG8145V5', lightLevelTx: "+2.2 dBm", lightLevelRx: '-20.1 dBm', fdhId: 'FDH-02-A', status: 'Online' },
     { id: 'onx-009', serialNumber: 'ZTEX3344CDEF', manufacturer: 'ZTE', model: 'F670L', lightLevelTx: "+1.9 dBm", lightLevelRx: '-27.0 dBm', fdhId: 'FDH-01-C', status: 'Online' },
     { id: 'onx-010', serialNumber: 'NKIA5566GHIJ', manufacturer: 'Nokia', model: 'G-240W-A', lightLevelTx: "+2.8 dBm", lightLevelRx: '-18.8 dBm', fdhId: 'FDH-04-B', status: 'Provisioning' },
@@ -81,6 +81,22 @@ const lightLevelRanges = [
   '-24dBm - -28dBm',
   '-28dBm - LOS',
 ];
+
+const MAX_ONX_PER_PON_GPON_XGSPON = 128;
+const MAX_ONX_PER_PON_EPON = 64; // Common value, can be adjusted
+
+const getMaxCapacityForOlt = (olt: Olt): number => {
+  switch (olt.technology) {
+    case 'GPON':
+    case 'XGS-PON':
+      return olt.ports * MAX_ONX_PER_PON_GPON_XGSPON;
+    case 'EPON':
+      return olt.ports * MAX_ONX_PER_PON_EPON;
+    default:
+      return olt.ports * MAX_ONX_PER_PON_GPON_XGSPON; // Default to GPON if unknown
+  }
+};
+
 
 const isLightLevelInRange = (lightLevelRxStr: string | undefined, rangeStr: string): boolean => {
   if (!lightLevelRxStr) return false;
@@ -174,7 +190,6 @@ export default function OltsAndOnxsPage() {
         case 'Online': return 'bg-green-100 text-green-800';
         case 'Offline': return 'bg-red-100 text-red-800';
         case 'Provisioning': return 'bg-blue-100 text-blue-800';
-        case 'Alarm': return 'bg-yellow-100 text-yellow-800';
         default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -285,7 +300,7 @@ export default function OltsAndOnxsPage() {
                                 <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_technology', 'Technology')}</TableHead>
                                 <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_slots', 'Slots')}</TableHead>
                                 <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_ports', 'PON Ports')}</TableHead>
-                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_onxs', 'ONXs')}</TableHead>
+                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_onxs', 'ONXs (Connected / Max)')}</TableHead>
                                 <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_ip_address', 'IP Address')}</TableHead>
                                 <TableHead className="text-right w-32 text-xs font-semibold">{t('fttx_olts.table_header_actions', 'Actions')}</TableHead>
                                 </TableRow>
@@ -305,7 +320,7 @@ export default function OltsAndOnxsPage() {
                                     </TableCell>
                                     <TableCell className="text-center text-xs">{olt.slots}</TableCell>
                                     <TableCell className="text-center text-xs">{olt.ports}</TableCell>
-                                    <TableCell className="text-center text-xs">{olt.clients}</TableCell>
+                                    <TableCell className="text-center text-xs">{olt.clients} / {getMaxCapacityForOlt(olt)}</TableCell>
                                     <TableCell className="font-mono text-muted-foreground text-xs">
                                         <a
                                             href={`http://${olt.ipAddress}:${olt.managementPort}`}
