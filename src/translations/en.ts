@@ -56,6 +56,7 @@ const en = {
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
     settings_users: 'Users',
+    settings_system_monitor: 'System Monitor', // Added
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Expand sidebar',
@@ -977,7 +978,19 @@ const en = {
       permission_group_settings: 'Settings',
       permission_group_pops: 'PoPs',
     },
+    system_monitor: { // Added
+      cpu_usage: 'CPU Usage',
+      ram_usage: 'RAM Usage',
+      ssd_usage: 'SSD Usage',
+      postgres_status: 'PostgreSQL Status',
+      refresh_button: 'Refresh Metrics',
+      refresh_toast_title: 'Refreshing Metrics',
+      refresh_toast_description: 'Fetching latest system status...',
+      postgres_connected: 'Connected',
+      postgres_disconnected: 'Disconnected - Check logs!',
+      live_logs_title: 'Live Logs (Placeholder)',
+      live_logs_description: 'This section would display real-time system logs.',
+    },
 };
 
 export default en;
-

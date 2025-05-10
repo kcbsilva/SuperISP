@@ -56,6 +56,7 @@ const fr = {
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
     settings_users: 'Utilisateurs', // Added Users translation
+    settings_system_monitor: 'Moniteur Système', // Added
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Agrandir la barre latérale',
@@ -969,7 +970,19 @@ const fr = {
     permission_group_settings: 'Paramètres',
     permission_group_pops: 'PoPs',
   },
+  system_monitor: { // Added
+    cpu_usage: 'Utilisation CPU',
+    ram_usage: 'Utilisation RAM',
+    ssd_usage: 'Utilisation SSD',
+    postgres_status: 'Statut PostgreSQL',
+    refresh_button: 'Actualiser Métriques',
+    refresh_toast_title: 'Actualisation des Métriques',
+    refresh_toast_description: 'Récupération du dernier statut système...',
+    postgres_connected: 'Connecté',
+    postgres_disconnected: 'Déconnecté - Vérifiez les logs !',
+    live_logs_title: 'Logs en Direct (Espace réservé)',
+    live_logs_description: 'Cette section afficherait les logs système en temps réel.',
+  },
 };
 
 export default fr;
-

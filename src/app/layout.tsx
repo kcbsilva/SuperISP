@@ -47,6 +47,7 @@ import {
   Info, // For changelog
   LogOut, // For logout
   UserCircle, // For profile menu
+  MonitorSmartphone, // For System Monitor
 } from 'lucide-react';
 
 // Removed: import prolterLogoSrc from '@/app/assets/prolter-logo.svg';
@@ -77,7 +78,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
 import { Progress } from '@/components/ui/progress'; // Import Progress component
 import { LocaleProvider, useLocale } from '@/contexts/LocaleContext'; // Import LocaleProvider and useLocale
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from 'next-themes'; // Corrected import
 import { useTheme } from 'next-themes';
 
 
@@ -688,6 +689,15 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
 
                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/settings/system-monitor')} size="sm" tooltip={t('sidebar.settings_system_monitor', 'System Monitor')}>
+                        <Link href="/settings/system-monitor" className="flex items-center gap-2">
+                          <MonitorSmartphone className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.settings_system_monitor', 'System Monitor')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+
+                    <SidebarMenuItem>
                       <SidebarMenuSub>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -819,7 +829,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>{/* Add suppressHydrationWarning */}
+    <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
       <body
         className={`antialiased`}
         suppressHydrationWarning /* Add suppressHydrationWarning */

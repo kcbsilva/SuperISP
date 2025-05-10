@@ -1,0 +1,138 @@
+// src/app/settings/system-monitor/page.tsx
+'use client';
+
+import * as React from 'react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Cpu, HardDrive, MemoryStick, Database, RefreshCw, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { useLocale } from '@/contexts/LocaleContext';
+import { useToast } from '@/hooks/use-toast';
+import { Progress } from '@/components/ui/progress';
+
+interface SystemMetric {
+  nameKey: string;
+  value: string | number;
+  unit?: string;
+  icon: React.ElementType;
+  status?: 'ok' | 'warning' | 'error' | 'fetching';
+  progress?: number; // Optional progress for CPU/RAM/SSD
+}
+
+export default function SystemMonitorPage() {
+  const { t } = useLocale();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [metrics, setMetrics] = React.useState<SystemMetric[]>([
+    { nameKey: 'system_monitor.cpu_usage', value: 'Fetching...', icon: Cpu, status: 'fetching', progress: 0 },
+    { nameKey: 'system_monitor.ram_usage', value: 'Fetching...', icon: MemoryStick, status: 'fetching', progress: 0 },
+    { nameKey: 'system_monitor.ssd_usage', value: 'Fetching...', icon: HardDrive, status: 'fetching', progress: 0 },
+    { nameKey: 'system_monitor.postgres_status', value: 'Fetching...', icon: Database, status: 'fetching' },
+  ]);
+
+  const iconSize = "h-5 w-5"; // Standard icon size
+  const smallIconSize = "h-3 w-3"; // For button icons
+
+  const fetchSystemMetrics = React.useCallback(async () => {
+    setIsLoading(true);
+    toast({
+      title: t('system_monitor.refresh_toast_title'),
+      description: t('system_monitor.refresh_toast_description'),
+    });
+
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    setMetrics([
+      { nameKey: 'system_monitor.cpu_usage', value: Math.floor(Math.random() * 100), unit: '%', icon: Cpu, status: 'ok', progress: Math.floor(Math.random() * 100) },
+      { nameKey: 'system_monitor.ram_usage', value: `${(Math.random() * 16).toFixed(1)} / 16`, unit: 'GB', icon: MemoryStick, status: 'ok', progress: Math.floor(Math.random() * 100) },
+      { nameKey: 'system_monitor.ssd_usage', value: `${(Math.random() * 500).toFixed(0)} / 512`, unit: 'GB', icon: HardDrive, status: 'ok', progress: Math.floor(Math.random() * 100) },
+      { nameKey: 'system_monitor.postgres_status', value: 'Connected', icon: Database, status: 'ok' },
+    ]);
+    setIsLoading(false);
+  }, [t, toast]);
+
+  React.useEffect(() => {
+    fetchSystemMetrics();
+  }, [fetchSystemMetrics]);
+
+  const getStatusIndicator = (status?: 'ok' | 'warning' | 'error' | 'fetching') => {
+    switch (status) {
+      case 'ok':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'warning':
+        return <XCircle className="h-4 w-4 text-yellow-500" />; // Placeholder, adjust as needed
+      case 'error':
+        return <XCircle className="h-4 w-4 text-red-500" />;
+      case 'fetching':
+        return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-base font-semibold">{t('sidebar.settings_system_monitor', 'System Monitor')}</h1>
+        <Button onClick={fetchSystemMetrics} disabled={isLoading}>
+          <RefreshCw className={`mr-2 ${smallIconSize} ${isLoading ? 'animate-spin' : ''}`} />
+          {t('system_monitor.refresh_button')}
+        </Button>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {metrics.map((metric) => {
+          const MetricIcon = metric.icon;
+          return (
+            <Card key={metric.nameKey}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {t(metric.nameKey)}
+                </CardTitle>
+                <MetricIcon className={`${iconSize} text-muted-foreground`} />
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                    <div className="text-2xl font-bold">
+                    {metric.value}
+                    {metric.unit && <span className="text-sm font-normal text-muted-foreground ml-1">{metric.unit}</span>}
+                    </div>
+                    {getStatusIndicator(metric.status)}
+                </div>
+                {metric.progress !== undefined && (
+                  <Progress value={metric.progress} className="mt-2 h-2" />
+                )}
+                 {metric.nameKey === 'system_monitor.postgres_status' && metric.status !== 'fetching' && (
+                    <p className={`text-xs mt-1 ${metric.status === 'ok' ? 'text-green-600' : 'text-red-600'}`}>
+                        {metric.status === 'ok' ? t('system_monitor.postgres_connected') : t('system_monitor.postgres_disconnected')}
+                    </p>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+       <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">{t('system_monitor.live_logs_title', 'Live Logs (Placeholder)')}</CardTitle>
+          <CardDescription className="text-xs">{t('system_monitor.live_logs_description', 'This section would display real-time system logs.')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 w-full bg-muted rounded-md p-4 overflow-y-auto">
+            <pre className="text-xs text-muted-foreground whitespace-pre-wrap">
+              {`[${new Date().toLocaleTimeString()}] System initialized.\n[${new Date().toLocaleTimeString()}] Monitoring services started...\n[${new Date().toLocaleTimeString()}] PostgreSQL connection OK.`}
+            </pre>
+          </div>
+        </CardContent>
+      </Card>
+
+    </div>
+  );
+}
