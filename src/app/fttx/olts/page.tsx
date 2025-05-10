@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Edit, Trash2, RefreshCw, MoreVertical, ListPlus, ListChecks, Network, Users, Filter as FilterIcon } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, RefreshCw, MoreVertical, ListPlus, ListChecks, Network, Users, Filter as FilterIcon, Columns3 } from 'lucide-react'; // Added Columns3 for Slots
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -37,16 +37,17 @@ interface Olt {
   manufacturer: string;
   model: string;
   technology: 'EPON' | 'GPON' | 'XGS-PON';
-  ports: number;
-  clients: number;
+  ports: number; // Number of PON ports
+  slots: number; // Number of physical card slots
+  clients: number; // Total connected ONXs
   ipAddress: string;
   managementPort: number;
 }
 
 const placeholderOlts: Olt[] = [
-  { id: 'olt-001', description: 'Central Office OLT', manufacturer: 'Huawei', model: 'MA5800-X17', technology: 'GPON', ports: 16, clients: 512, ipAddress: '10.0.1.5', managementPort: 80 },
-  { id: 'olt-002', description: 'North Hub OLT', manufacturer: 'Fiberhome', model: 'AN6000-17', technology: 'XGS-PON', ports: 32, clients: 1024, ipAddress: '10.0.2.5', managementPort: 443 },
-  { id: 'olt-003', description: 'South Branch OLT', manufacturer: 'ZTE', model: 'C600', technology: 'EPON', ports: 8, clients: 256, ipAddress: '10.0.3.5', managementPort: 8080 },
+  { id: 'olt-001', description: 'Central Office OLT', manufacturer: 'Huawei', model: 'MA5800-X17', technology: 'GPON', ports: 16, slots: 17, clients: 512, ipAddress: '10.0.1.5', managementPort: 80 },
+  { id: 'olt-002', description: 'North Hub OLT', manufacturer: 'Fiberhome', model: 'AN6000-17', technology: 'XGS-PON', ports: 32, slots: 17, clients: 1024, ipAddress: '10.0.2.5', managementPort: 443 },
+  { id: 'olt-003', description: 'South Branch OLT', manufacturer: 'ZTE', model: 'C600', technology: 'EPON', ports: 8, slots: 8, clients: 256, ipAddress: '10.0.3.5', managementPort: 8080 },
 ];
 
 interface Onx {
@@ -282,8 +283,9 @@ export default function OltsAndOnxsPage() {
                                 <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_manufacturer', 'Manufacturer')}</TableHead>
                                 <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_model', 'Model')}</TableHead>
                                 <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_technology', 'Technology')}</TableHead>
-                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_ports', 'Ports')}</TableHead>
-                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_clients', 'Clients')}</TableHead>
+                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_slots', 'Slots')}</TableHead>
+                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_ports', 'PON Ports')}</TableHead>
+                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_onxs', 'ONXs')}</TableHead>
                                 <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_ip_address', 'IP Address')}</TableHead>
                                 <TableHead className="text-right w-32 text-xs font-semibold">{t('fttx_olts.table_header_actions', 'Actions')}</TableHead>
                                 </TableRow>
@@ -301,6 +303,7 @@ export default function OltsAndOnxsPage() {
                                             {olt.technology}
                                         </Badge>
                                     </TableCell>
+                                    <TableCell className="text-center text-xs">{olt.slots}</TableCell>
                                     <TableCell className="text-center text-xs">{olt.ports}</TableCell>
                                     <TableCell className="text-center text-xs">{olt.clients}</TableCell>
                                     <TableCell className="font-mono text-muted-foreground text-xs">
@@ -347,7 +350,7 @@ export default function OltsAndOnxsPage() {
                                 ))
                                 ) : (
                                 <TableRow>
-                                    <TableCell colSpan={9} className="text-center text-muted-foreground py-8 text-xs">
+                                    <TableCell colSpan={10} className="text-center text-muted-foreground py-8 text-xs">
                                     {t('fttx_olts.no_olts_found', 'No OLTs registered yet. Click "Add OLT" to create one.')}
                                     </TableCell>
                                 </TableRow>

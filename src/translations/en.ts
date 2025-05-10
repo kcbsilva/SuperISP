@@ -489,7 +489,7 @@ const en = {
      add_element_button: 'Add Element',
      add_element_tooltip: 'Add a new network element to the map',
      add_cable_tooltip: 'Add Cable',
-     add_fosc_tooltip: 'Add FDH',
+     add_fosc_tooltip: 'Add FOSC',
      add_fdh_tooltip: 'Add FDH',
      add_poll_tooltip: 'Add Hydro Poll',
      add_tower_tooltip: 'Add Tower',
@@ -706,7 +706,7 @@ const en = {
       form_status_placeholder: 'Select status',
       form_status_active: 'Active',
       form_status_inactive: 'Inactive',
-      form_cancel_button: 'Cancelar',
+      form_cancel_button: 'Cancel',
       form_save_button: 'Save Rule',
       form_saving_button: 'Saving...',
       add_success_title: 'CGNAT Rule Added',
@@ -794,8 +794,9 @@ const en = {
       table_header_manufacturer: 'Manufacturer',
       table_header_model: 'Model',
       table_header_technology: 'Technology',
-      table_header_ports: 'Ports',
-      table_header_clients: 'Clients',
+      table_header_slots: 'Slots', // Added
+      table_header_ports: 'PON Ports', // Clarified this is PON ports
+      table_header_onxs: 'ONXs', // Changed from Clients
       table_header_ip_address: 'IP Address',
       table_header_actions: 'Actions',
       action_edit: 'Edit',

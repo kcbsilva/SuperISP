@@ -15,8 +15,8 @@ const fr = {
     maps: 'Cartes',
     maps_elements: 'Éléments',
     maps_elements_polls: 'Poteaux Hydro',
-    maps_elements_fdhs: 'FDHs',
-    maps_elements_foscs: 'FOSCs',
+    maps_elements_fdhs: 'CTOs', // Updated
+    maps_elements_foscs: 'CEOs', // Updated
     maps_elements_peds: 'PEDs',
     maps_elements_accessories: 'Accessoires',
     maps_elements_towers: 'Tours',
@@ -420,8 +420,8 @@ const fr = {
      auth_type_ipoe: 'IPoE',
      auth_type_ipxmac: 'IP x MAC',
      auth_type_staticip: 'IP Statique',
-     services_fdh_id: 'ID FDH',
-     services_fdh_port: 'Port FDH',
+     services_fdh_id: 'ID CTO', // Updated from FDH
+     services_fdh_port: 'Port CTO', // Updated from FDH
      services_ap_name: 'Nom AP',
      services_switch_id: 'ID Switch',
      services_pppoe_user: 'Util. PPPoE',
@@ -481,8 +481,8 @@ const fr = {
      add_element_button: 'Ajouter un élément',
      add_element_tooltip: 'Ajouter un nouvel élément réseau à la carte',
      add_cable_tooltip: 'Ajouter un câble',
-     add_fosc_tooltip: 'Ajouter un FDH',
-     add_fdh_tooltip: 'Ajouter un FDH',
+     add_fosc_tooltip: 'Ajouter une CEO', // Updated
+     add_fdh_tooltip: 'Ajouter une CTO', // Updated
      add_poll_tooltip: 'Ajouter un poteau Hydro',
      add_tower_tooltip: 'Ajouter une tour',
      add_pop_tooltip: 'Ajouter un PoP',
@@ -786,8 +786,9 @@ const fr = {
     table_header_manufacturer: 'Fabricant',
     table_header_model: 'Modèle',
     table_header_technology: 'Technologie',
-    table_header_ports: 'Ports',
-    table_header_clients: 'Clients',
+    table_header_slots: 'Plaques', // Added
+    table_header_ports: 'Ports PON', // Clarified
+    table_header_onxs: 'ONXs', // Changed from Clients
     table_header_ip_address: 'Adresse IP',
     table_header_actions: 'Actions',
     action_edit: 'Modifier',
@@ -812,7 +813,7 @@ const fr = {
     onx_table_manufacturer: 'Fabricant',
     onx_table_model: 'Modèle',
     onx_table_assigned_to: 'Attribué à',
-    onx_table_fdh_id: 'ID FDH',
+    onx_table_fdh_id: 'ID CTO', // Updated from FDH
     onx_table_light_level_tx_rx: 'Niveau de Lumière (TX/RX)',
     onx_table_status: 'Statut',
     onx_table_actions: 'Actions',
