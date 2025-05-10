@@ -143,38 +143,38 @@ export default function ListSubscribersPage() {
       {/* Subscriber Statistics Section */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-2">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> {/* Reduced padding */}
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_new_subscribers', 'New Subscribers (Month)')}</CardTitle>
             <TrendingUp className={statIconSize} />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-3 px-4"> {/* Reduced padding */}
             <div className="text-lg font-bold">{subscriberStats.newSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> {/* Reduced padding */}
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_active_subscribers', 'Active Subscribers')}</CardTitle>
             <UserCheck className={statIconSize} />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-3 px-4"> {/* Reduced padding */}
             <div className="text-lg font-bold">{subscriberStats.activeSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> {/* Reduced padding */}
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_suspended_subscribers', 'Suspended Subscribers')}</CardTitle>
             <UserX className={statIconSize} />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-3 px-4"> {/* Reduced padding */}
             <div className="text-lg font-bold">{subscriberStats.suspendedSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> {/* Reduced padding */}
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_total_subscribers', 'Total Subscribers')}</CardTitle>
             <Users className={statIconSize} />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-3 px-4"> {/* Reduced padding */}
             <div className="text-lg font-bold">{subscriberStats.totalSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
@@ -313,4 +313,3 @@ export default function ListSubscribersPage() {
     </div>
   );
 }
-
