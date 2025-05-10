@@ -152,7 +152,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               style={{ width: '131px', height: '32px' }}
             >
               <svg
-                width="100%" 
+                width="100%"
                 height="100%"
                 viewBox="0 0 131 32"
                 xmlns="http://www.w3.org/2000/svg"
@@ -322,6 +322,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <TooltipContent side="right" align="center">{t('sidebar.fttx', 'FTTx')}</TooltipContent>
                   </Tooltip>
                   <SidebarMenuSubContent>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/fttx/dashboard')} size="sm" tooltip={t('sidebar.fttx_dashboard', 'Dashboard')}>
+                        <Link href="/fttx/dashboard" className="flex items-center gap-2">
+                          <LayoutDashboard className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.fttx_dashboard', 'Dashboard')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/fttx/olts')} size="sm" tooltip={t('sidebar.fttx_olts', 'OLTs')}>
                         <Link href="/fttx/olts" className="flex items-center gap-2">
