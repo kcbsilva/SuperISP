@@ -57,6 +57,9 @@ const pt = {
     settings_integrations_sms: 'SMS',
     settings_users: 'Usuários', 
     settings_system_monitor: 'Monitor do Sistema', // Added
+    postgresql: 'PostgreSQL', // Added
+    postgresql_databases: 'Bancos de Dados', // Added
+    postgresql_tables: 'Tabelas', // Added
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Expandir barra lateral',
@@ -433,7 +436,7 @@ const pt = {
     network_uptime_title: 'Disponibilidade da Rede',
     network_uptime_change: '{prefix}{change}% em relação ao mês passado',
     open_tickets_title: 'Tickets de Suporte Abertos',
-    open_tickets_change: '{prefix}{change} desde a última hora',
+    open_tickets_change: '{prefix}{change} from last hour',
     subscriber_growth_title: 'Crescimento de Assinantes',
     subscriber_growth_desc: 'Novos assinantes mensais nos últimos 6 meses.',
     recent_activity_title: 'Atividade Recente',
@@ -483,9 +486,9 @@ const pt = {
     settings_plans: {
       internet_page_title: 'Planos de Internet',
       add_plan_button: 'Adicionar Plano de Internet',
-      existing_plans_title: 'Planos Existentes',
+      existing_plans_title: 'Existing Plans',
       existing_plans_description_internet: 'Gerencie seus planos de serviço de internet.',
-      no_plans_found_internet: 'Nenhum plano de internet configurado ainda. Clique em "Adicionar Plano de Internet" para criar um.',
+      no_plans_found_internet: 'Nenhum plano de internet configurado ainda. Clique em "Adicionar Plano de Internet" para criar um."',
       tv_page_title: 'Planos de TV',
       add_plan_button_tv: 'Adicionar Plano de TV',
       existing_plans_description_tv: 'Gerencie seus planos de serviço de TV.',
@@ -498,7 +501,7 @@ const pt = {
       add_plan_button_landline: 'Adicionar Plano de Telefone Fixo',
       existing_plans_description_landline: 'Gerencie seus planos de serviço de telefone fixo.',
       no_plans_found_landline: 'Nenhum plano de telefone fixo configurado ainda. Clique em "Adicionar Plano de Telefone Fixo" para criar um.',
-      combos_page_title: 'Planos Combo',
+      combos_page_title: 'Combo Plans',
       add_plan_button_combos: 'Adicionar Plano Combo',
       existing_plans_description_combos: 'Gerencie seus planos de serviço combo.',
       no_plans_found_combos: 'Nenhum plano combo configurado ainda. Clique em "Adicionar Plano Combo" para criar um.',
@@ -567,7 +570,7 @@ const pt = {
     entry_categories: {
       title: 'Categorias de Lançamento',
       add_category_button: 'Adicionar Categoria',
-      refresh_button: 'Atualizar',
+      refresh_button: 'Refresh',
       search_placeholder: 'Buscar categorias...',
       table_header_category_number: 'Nº Categoria',
       table_header_description: 'Descrição',
@@ -664,11 +667,11 @@ const pt = {
       no_vlans_found: 'Nenhuma VLAN configurada ainda. Clique em "Adicionar VLAN" para criar uma.',
     },
     cgnat_page: {
-      title: 'Configuração CGNAT',
+      title: 'CGNAT Configuration',
       add_button: 'Adicionar Regra CGNAT',
       refresh_button: 'Atualizar',
       add_dialog_title: 'Adicionar Nova Regra CGNAT',
-      add_dialog_description: 'Configurar uma nova regra de Carrier-Grade NAT.',
+      add_dialog_description: 'Configure uma nova regra de Carrier-Grade NAT.',
       form_network_out_label: 'Rede de Saída (IP Público)',
       form_nat_network_label: 'Rede NAT (Início da Faixa de IP Privado)',
       form_type_label: 'Tipo',
@@ -710,7 +713,7 @@ const pt = {
       export_mikrotik: "MikroTik",
     },
     onu_templates: {
-      title: 'Modelos ONU',
+      title: 'ONU Templates',
       add_template_button: 'Adicionar Modelo',
       refresh_button: 'Atualizar',
       form_title_add: 'Adicionar Novo Modelo ONU',
@@ -740,7 +743,7 @@ const pt = {
       error_add_description: 'Não foi possível adicionar o modelo ONU.',
       error_update_description: 'Não foi possível atualizar o modelo ONU.',
       error_delete_description: 'Não foi possível excluir o modelo ONU.',
-      table_header_name: 'Nome do Modelo',
+      table_header_name: 'Modelo',
       table_header_manufacturer: 'Fabricante',
       table_header_model: 'Modelo',
       table_header_actions: 'Ações',
@@ -981,6 +984,17 @@ const pt = {
       live_logs_title: 'Logs em Tempo Real (Placeholder)',
       live_logs_description: 'Esta seção exibiria os logs do sistema em tempo real.',
     },
+    postgresql_page: { // Added
+      title: 'Gerenciamento PostgreSQL',
+      databases_title: 'Bancos de Dados',
+      tables_title: 'Tabelas',
+      add_database_button: 'Adicionar Banco de Dados',
+      add_table_button: 'Adicionar Tabela',
+      view_data_button: 'Ver Dados',
+      no_databases_found: 'Nenhum banco de dados encontrado ou impossível conectar.',
+      no_tables_found: 'Nenhuma tabela encontrada no banco de dados selecionado.',
+    },
 };
 
 export default pt;
+

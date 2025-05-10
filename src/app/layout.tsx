@@ -48,6 +48,8 @@ import {
   LogOut, // For logout
   UserCircle, // For profile menu
   MonitorSmartphone, // For System Monitor
+  Database as DatabaseIcon, // For PostgreSQL
+  Table as TableIcon, // For PostgreSQL Tables
 } from 'lucide-react';
 
 // Removed: import prolterLogoSrc from '@/app/assets/prolter-logo.svg';
@@ -78,8 +80,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
 import { Progress } from '@/components/ui/progress'; // Import Progress component
 import { LocaleProvider, useLocale } from '@/contexts/LocaleContext'; // Import LocaleProvider and useLocale
-import { ThemeProvider } from 'next-themes'; // Corrected import
-import { useTheme } from 'next-themes';
+import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes'; // Corrected import for ThemeProvider and useTheme
 
 
 // Create a client
@@ -764,6 +765,43 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuSub>
               </SidebarMenuItem>
 
+              {/* PostgreSQL Menu */}
+              <SidebarMenuItem>
+                <SidebarMenuSub>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SidebarMenuSubTrigger tooltip={t('sidebar.postgresql', 'PostgreSQL')}>
+                        <div className="flex items-center gap-2 cursor-pointer">
+                          <DatabaseIcon className={iconSize}/>
+                          <span className="truncate">{t('sidebar.postgresql', 'PostgreSQL')}</span>
+                          <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                        </div>
+                      </SidebarMenuSubTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" align="center">{t('sidebar.postgresql', 'PostgreSQL')}</TooltipContent>
+                  </Tooltip>
+                  <SidebarMenuSubContent>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/postgresql/databases')} size="sm" tooltip={t('sidebar.postgresql_databases', 'Databases')}>
+                        <Link href="#" className="flex items-center gap-2">
+                          <DatabaseIcon className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.postgresql_databases', 'Databases')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/postgresql/tables')} size="sm" tooltip={t('sidebar.postgresql_tables', 'Tables')}>
+                        <Link href="#" className="flex items-center gap-2">
+                          <TableIcon className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.postgresql_tables', 'Tables')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     {/* Add more placeholder items for Add/Modify/Remove if needed */}
+                  </SidebarMenuSubContent>
+                </SidebarMenuSub>
+              </SidebarMenuItem>
+
               {/* Separator */}
               <SidebarSeparator className="my-2" />
 
@@ -834,7 +872,7 @@ export default function RootLayout({
         className={`antialiased`}
         suppressHydrationWarning /* Add suppressHydrationWarning */
       >
-        <ThemeProvider
+        <NextThemesProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
@@ -845,8 +883,9 @@ export default function RootLayout({
                 <AppLayout>{children}</AppLayout> {/* Use inner layout component */}
             </LocaleProvider>
           </QueryClientProvider>
-        </ThemeProvider>
+        </NextThemesProvider>
       </body>
     </html>
   );
 }
+

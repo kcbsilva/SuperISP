@@ -57,6 +57,9 @@ const en = {
     settings_integrations_sms: 'SMS',
     settings_users: 'Users',
     settings_system_monitor: 'System Monitor', // Added
+    postgresql: 'PostgreSQL', // Added
+    postgresql_databases: 'Databases', // Added
+    postgresql_tables: 'Tables', // Added
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Expand sidebar',
@@ -991,6 +994,18 @@ const en = {
       live_logs_title: 'Live Logs (Placeholder)',
       live_logs_description: 'This section would display real-time system logs.',
     },
+    postgresql_page: { // Added
+      title: 'PostgreSQL Management',
+      databases_title: 'Databases',
+      tables_title: 'Tables',
+      add_database_button: 'Add Database',
+      add_table_button: 'Add Table',
+      view_data_button: 'View Data',
+      no_databases_found: 'No databases found or unable to connect.',
+      no_tables_found: 'No tables found in the selected database.',
+      // Add more as needed
+    },
 };
 
 export default en;
+

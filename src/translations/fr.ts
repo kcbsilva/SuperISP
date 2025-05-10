@@ -57,6 +57,9 @@ const fr = {
     settings_integrations_sms: 'SMS',
     settings_users: 'Utilisateurs', // Added Users translation
     settings_system_monitor: 'Moniteur Système', // Added
+    postgresql: 'PostgreSQL', // Added
+    postgresql_databases: 'Bases de données', // Added
+    postgresql_tables: 'Tables', // Added
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Agrandir la barre latérale',
@@ -983,6 +986,17 @@ const fr = {
     live_logs_title: 'Logs en Direct (Espace réservé)',
     live_logs_description: 'Cette section afficherait les logs système en temps réel.',
   },
+  postgresql_page: { // Added
+    title: 'Gestion PostgreSQL',
+    databases_title: 'Bases de données',
+    tables_title: 'Tables',
+    add_database_button: 'Ajouter BDD',
+    add_table_button: 'Ajouter Table',
+    view_data_button: 'Voir Données',
+    no_databases_found: 'Aucune base de données trouvée ou connexion impossible.',
+    no_tables_found: 'Aucune table trouvée dans la base de données sélectionnée.',
+  },
 };
 
 export default fr;
+
