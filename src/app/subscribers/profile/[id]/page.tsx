@@ -44,9 +44,9 @@ import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/postgresql/pops'; // Changed to PostgreSQL service
-import type { Pop } from '@/types/pops';
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'; // Keep for other potential queries
+// import { getPops } from '@/services/postgresql/pops'; // Removed PostgreSQL import
+import type { Pop } from '@/types/pops'; // Keep type for placeholder
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
 import { format, type Locale as DateFnsLocale } from 'date-fns';
@@ -155,8 +155,8 @@ const getSubscriberData = (id: string | string[]) => {
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
             pendingInvoices: [
-                { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
-                { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
+                 { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
+                 { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
             ],
             paymentPlans: [
                 { id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active' },
@@ -185,7 +185,7 @@ const getSubscriberData = (id: string | string[]) => {
         ],
     };
 
-    if (id === 'sub-1') {
+    if (id === '1') { // Changed from sub-1 to 1 to match typical DB ID
         baseData.name = 'Alice Wonderland';
         baseData.address = '123 Fantasy Lane, Wonderland, WND 12345';
         baseData.pointOfReference = 'Next to the Mad Hatter Tea Party';
@@ -201,7 +201,7 @@ const getSubscriberData = (id: string | string[]) => {
              { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
              { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
          ];
-    } else if (id === 'sub-2') {
+    } else if (id === '2') { // Changed from sub-2 to 2
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
         baseData.companyName = 'Bob The Builder Inc.';
@@ -232,6 +232,12 @@ const getSubscriberData = (id: string | string[]) => {
 
     return baseData;
 };
+
+const placeholderPops: Pop[] = [
+    { id: '1', name: 'Central Hub', location: '123 Fiber Lane, Anytown', status: 'Active', createdAt: new Date() },
+    { id: '2', name: 'North Branch', location: '456 Network Rd, Anytown', status: 'Planned', createdAt: new Date(Date.now() - 86400000) },
+    { id: '3', name: 'West End POP', location: '789 Data Dr, Anytown', status: 'Inactive', createdAt: new Date(Date.now() - 172800000) },
+];
 
 const queryClient = new QueryClient();
 
@@ -318,10 +324,10 @@ function SubscriberProfilePage() {
   const tabIconSize = "h-2.5 w-2.5";
 
 
-  const { data: pops = [], isLoading: isLoadingPops, error: popsError } = useQuery<Pop[], Error>({
-    queryKey: ['pops'],
-    queryFn: getPops,
-  });
+  // Using placeholderPops directly as PostgreSQL service is removed
+  const pops: Pop[] = placeholderPops;
+  const isLoadingPops = false; // No longer loading from a service
+  const popsError = null; // No error state for placeholder data
 
   const addServiceForm = useForm<AddServiceFormData>({
     resolver: zodResolver(addServiceSchema),
@@ -1032,14 +1038,14 @@ function SubscriberProfilePage() {
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem onClick={() => handleBillingItemAction('print_pdf', inv)}>
                                                         <Printer className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_print_pdf')}
-                                                    </DropdownMenuItem>
+                                                    DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', inv)}>
                                                          <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </div>
-                                    </li>
+                                     </li>
                                 ))}
                             </ul>
                         ) : (
@@ -1337,4 +1343,3 @@ function SubscriberProfilePage() {
     </div>
   );
 }
-

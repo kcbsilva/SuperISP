@@ -29,13 +29,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-// Calendar and Popover for billing date are no longer needed as it's a select now
-// import { Calendar } from '@/components/ui/calendar';
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger,
-// } from '@/components/ui/popover';
 import {
   Table,
   TableBody,
@@ -48,17 +41,15 @@ import { CalendarIcon, Loader2, PlusCircle, Trash2, Check, Wifi, Tv, Phone as Ph
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/postgresql/pops'; // Changed to PostgreSQL service
-import type { Pop } from '@/types/pops';
+// import { useQuery } from '@tanstack/react-query'; // Removed PostgreSQL import
+// import { getPops } from '@/services/postgresql/pops'; // Removed PostgreSQL import
+import type { Pop } from '@/types/pops'; // Keep type for placeholder
 import { useLocale } from '@/contexts/LocaleContext';
-// import { format } from 'date-fns'; // Not needed for select
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 
 // Simulate fetching billing dates from financial configurations
-// In a real app, this would come from a service or shared state
 const placeholderBillingDaysFromConfig: { id: string; dayOfMonth: number | 'Last Day'; status: boolean }[] = [
   { id: 'bd-1', dayOfMonth: 1, status: true },
   { id: 'bd-2', dayOfMonth: 15, status: true },
@@ -74,7 +65,7 @@ const dayOfMonthSchema = z.union([
 
 // Main contract schema (Step 1)
 const contractStep1Schema = z.object({
-  billingDate: dayOfMonthSchema, // Changed from z.date
+  billingDate: dayOfMonthSchema,
   popId: z.string().min(1, "PoP selection is required."),
   hasInstallationFee: z.boolean().default(false),
   installationFee: z.coerce.number().min(0, "Installation fee cannot be negative.").optional(),
@@ -126,6 +117,14 @@ const placeholderPlans: Plan[] = [
   { id: 'plan-other-hosting-popA', name: 'Web Hosting Basic (PoP A)', popId: '1', serviceType: 'Other', price: 10 },
 ];
 
+// Placeholder PoP data
+const placeholderPops: Pop[] = [
+    { id: '1', name: 'Central Hub', location: '123 Fiber Lane, Anytown', status: 'Active', createdAt: new Date() },
+    { id: '2', name: 'North Branch', location: '456 Network Rd, Anytown', status: 'Planned', createdAt: new Date(Date.now() - 86400000) },
+    { id: '3', name: 'West End POP', location: '789 Data Dr, Anytown', status: 'Inactive', createdAt: new Date(Date.now() - 172800000) },
+];
+
+
 interface AddedService {
   id: string;
   serviceType: z.infer<typeof serviceTypeEnum>;
@@ -171,10 +170,8 @@ export function NewContractWizard({ isOpen, onClose, subscriberId }: NewContract
     },
   });
 
-  const { data: pops = [], isLoading: isLoadingPops } = useQuery<Pop[], Error>({
-    queryKey: ['pops'],
-    queryFn: getPops,
-  });
+  const pops: Pop[] = placeholderPops; // Use placeholder data
+  const isLoadingPops = false; // No longer loading
 
   const watchHasInstallationFee = mainForm.watch('hasInstallationFee');
   const watchSelectedPopId = mainForm.watch('popId');

@@ -45,12 +45,10 @@ import {
   Sun, // For theme toggle
   Moon, // For theme toggle
   Info, // For changelog
-  LogOut, // For logout
+  LogOut, // For profile menu
   UserCircle, // For profile menu
   MonitorSmartphone, // For System Monitor
-  Database as DatabaseIcon, // For PostgreSQL
-  Table as TableIcon, // For PostgreSQL Tables
-  TerminalSquare, // Added for PostgreSQL CLI
+  // Database icons removed as PostgreSQL is removed
 } from 'lucide-react';
 
 import './globals.css';
@@ -200,6 +198,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/subscribers/list" className="flex items-center gap-2">
                     <Users className={iconSize} />
                     <span className="truncate">{t('sidebar.subscribers')}</span>
+                    {/* Removed ChevronDown */}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -768,53 +767,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                            </Link>
                         </SidebarMenuButton>
                      </SidebarMenuItem>
-                     {/* PostgreSQL Menu - Moved under Settings */}
-                    <SidebarMenuItem>
-                        <SidebarMenuSub>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                            <SidebarMenuSubTrigger
-                                size="sm"
-                                className="pl-3 pr-2 py-1.5" // Consistent styling for sub-triggers
-                                tooltip={t('sidebar.postgresql', 'PostgreSQL')}
-                            >
-                                <div className="flex items-center gap-2 cursor-pointer w-full">
-                                <DatabaseIcon className={subIconSize + " text-muted-foreground"} />
-                                <span className="truncate">{t('sidebar.postgresql', 'PostgreSQL')}</span>
-                                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                                </div>
-                            </SidebarMenuSubTrigger>
-                            </TooltipTrigger>
-                            <TooltipContent side="right" align="center">{t('sidebar.postgresql', 'PostgreSQL')}</TooltipContent>
-                        </Tooltip>
-                        <SidebarMenuSubContent>
-                            <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/postgresql/databases')} size="sm" tooltip={t('sidebar.postgresql_databases', 'Databases')}>
-                                <Link href="/postgresql/databases" className="flex items-center gap-2">
-                                <DatabaseIcon className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.postgresql_databases', 'Databases')}</span>
-                                </Link>
-                            </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/postgresql/tables')} size="sm" tooltip={t('sidebar.postgresql_tables', 'Tables')}>
-                                <Link href="/postgresql/tables" className="flex items-center gap-2">
-                                <TableIcon className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.postgresql_tables', 'Tables')}</span>
-                                </Link>
-                            </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/postgresql/cli')} size="sm" tooltip={t('sidebar.postgresql_cli', 'CLI')}>
-                                <Link href="/postgresql/cli" className="flex items-center gap-2">
-                                <TerminalSquare className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.postgresql_cli', 'CLI')}</span>
-                                </Link>
-                            </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenuSubContent>
-                        </SidebarMenuSub>
-                    </SidebarMenuItem>
+                    {/* PostgreSQL Menu Removed */}
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
               </SidebarMenuItem>
@@ -903,5 +856,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-

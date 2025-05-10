@@ -28,8 +28,9 @@ import { useToast } from '@/hooks/use-toast';
 
 import { useRouter } from 'next/navigation';
 
-import { getSubscribers } from '@/services/postgresql/subscribers';
-import type { Subscriber, SubscriberStatus } from '@/types/subscribers';
+// import { getSubscribers } from '@/services/postgresql/subscribers'; // Removed PostgreSQL import
+import type { Subscriber, SubscriberStatus, SubscriberType } from '@/types/subscribers'; // Keep type for placeholder data structure
+import { Skeleton } from '@/components/ui/skeleton';
 
 type FilterState = {
     type: ('Residential' | 'Commercial')[];
@@ -58,6 +59,12 @@ const subscriberStats = {
   totalSubscribers: 1257,
 };
 
+const placeholderSubscribers: Subscriber[] = [
+    { id: 1, subscriberType: 'Residential', fullName: 'Alice Wonderland', address: '123 Fantasy Lane', phoneNumber: '555-1111', taxId: '123.456.789-00', status: 'Active', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'alice@example.com' },
+    { id: 2, subscriberType: 'Commercial', companyName: 'Bob The Builder Inc.', address: '456 Construction Ave', phoneNumber: '555-2222', businessNumber: '98.765.432/0001-00', status: 'Active', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'bob@example.com' },
+    { id: 3, subscriberType: 'Residential', fullName: 'Charlie Brown', address: '789 Peanut Street', phoneNumber: '555-3333', taxId: '111.222.333-44', status: 'Suspended', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'charlie@example.com' },
+];
+
 
 export default function ListSubscribersPage() {
     const { t } = useLocale();
@@ -67,32 +74,20 @@ export default function ListSubscribersPage() {
         type: [],
         status: [],
     });
-    const [isLoading, setIsLoading] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false); // Kept for simulating refresh
     const iconSize = "h-3 w-3";
     const statIconSize = "h-4 w-4 text-muted-foreground"; // For stat cards
 
-    const [subscribers, setSubscribers] = React.useState<Subscriber[]>([]);
+    const [subscribers, setSubscribers] = React.useState<Subscriber[]>(placeholderSubscribers);
 
+    // Simulating data fetching, remove if connecting to a real backend
     React.useEffect(() => {
-      const fetchSubscribers = async () => {
-        setIsLoading(true);
-        try {
-          const response = await getSubscribers();
-          console.log('Subscribers response', response);
-          setSubscribers(response);
-        } catch (error) {
-          console.error("Failed to fetch subscribers:", error);
-          toast({
-            title: "Error",
-            description: "Failed to fetch subscribers.",
-            variant: "destructive",
-          });
-        } finally {
-          setIsLoading(false);
-        }
-      }
-      fetchSubscribers();
-    }, [toast]);
+      setIsLoading(true);
+      setTimeout(() => {
+        setSubscribers(placeholderSubscribers);
+        setIsLoading(false);
+      }, 500); // Simulate network delay
+    }, []);
 
     const filteredSubscribers = React.useMemo(() => {
         return subscribers.filter(sub => {
@@ -122,20 +117,12 @@ export default function ListSubscribersPage() {
     const handleRefresh = async () => {
         setIsLoading(true);
         toast({ title: t('list_subscribers.refresh_start_toast') });
-        try {
-          const response = await getSubscribers();
-          setSubscribers(response);
-          toast({ title: t('list_subscribers.refresh_end_toast') });
-        } catch (error) {
-          console.error("Failed to refresh subscribers:", error);
-          toast({
-            title: "Error",
-            description: "Failed to refresh subscribers.",
-            variant: "destructive",
-          });
-        } finally {
-          setIsLoading(false);
-        }
+        // Simulate fetching data again
+        setTimeout(() => {
+            setSubscribers(placeholderSubscribers); // Reset to placeholder or fetch from your source
+            toast({ title: t('list_subscribers.refresh_end_toast') });
+            setIsLoading(false);
+        }, 1000);
     };
 
   return (
@@ -269,12 +256,12 @@ export default function ListSubscribersPage() {
                 {isLoading ? (
                     Array.from({ length: 5 }).map((_, index) => (
                         <TableRow key={`skeleton-${index}`}>
-                            <TableCell><div className="h-4 bg-muted rounded w-20"></div></TableCell>
-                            <TableCell><div className="h-4 bg-muted rounded w-8"></div></TableCell>
-                            <TableCell><div className="h-4 bg-muted rounded w-40"></div></TableCell>
-                            <TableCell><div className="h-4 bg-muted rounded w-24"></div></TableCell>
-                            <TableCell><div className="h-4 bg-muted rounded w-48"></div></TableCell>
-                            <TableCell><div className="h-4 bg-muted rounded w-28"></div></TableCell>
+                            <TableCell><Skeleton className="h-4 bg-muted rounded w-20" /></TableCell>
+                            <TableCell><Skeleton className="h-4 bg-muted rounded w-8" /></TableCell>
+                            <TableCell><Skeleton className="h-4 bg-muted rounded w-40" /></TableCell>
+                            <TableCell><Skeleton className="h-4 bg-muted rounded w-24" /></TableCell>
+                            <TableCell><Skeleton className="h-4 bg-muted rounded w-48" /></TableCell>
+                            <TableCell><Skeleton className="h-4 bg-muted rounded w-28" /></TableCell>
                         </TableRow>
                     ))
                 ) : filteredSubscribers.length > 0 ? (

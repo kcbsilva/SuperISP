@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label } from "@/components/ui/label"; // Keep Label for direct use if needed
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -36,6 +36,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
+// import { addSubscriber } from '@/services/postgresql/subscribers'; // Removed PostgreSQL import
 
 const subscriberSchema = z.object({
   subscriberType: z.enum(['Residential', 'Commercial'], {
@@ -98,7 +99,8 @@ export default function AddSubscriberPage() {
   const subscriberType = form.watch('subscriberType');
 
   const onSubmit = (data: SubscriberFormData) => {
-    console.log('Subscriber Data:', data);
+    // Simulate saving data locally or to mock storage
+    console.log('Subscriber Data (Simulated Save):', data);
     const name = data.subscriberType === 'Residential' ? data.fullName : data.companyName;
     toast({
       title: t('add_subscriber.add_success_toast_title'),
