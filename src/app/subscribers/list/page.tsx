@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { User, Building, Search, Filter, RefreshCw, PlusCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -27,15 +26,10 @@ import {
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 
-const placeholderSubscribers = [
-  { id: 'sub-1', name: 'Alice Wonderland', type: 'Residential', status: 'Active', taxId: '123.456.789-00', phone: '555-1111', address: '123 Fantasy Lane, Wonderland' },
-  { id: 'sub-2', name: 'Bob The Builder Inc.', type: 'Commercial', status: 'Active', taxId: '12.345.678/0001-99', phone: '555-2222', address: '456 Construction Ave, Builderville' },
-  { id: 'sub-3', name: 'Charlie Chaplin', type: 'Residential', status: 'Inactive', taxId: '987.654.321-00', phone: '555-3333', address: '789 Comedy Rd, Movietown' },
-  { id: 'sub-4', name: 'Diana Prince', type: 'Residential', status: 'Active', taxId: '001.002.003-44', phone: '555-4444', address: '1 Wonder Way, Themyscira' },
-  { id: 'sub-5', name: 'Evil Corp', type: 'Commercial', status: 'Suspended', taxId: '99.888.777/0002-11', phone: '555-6666', address: '666 Dark Alley, Badburg' },
-];
+import { useRouter } from 'next/navigation';
 
-type SubscriberStatus = "Active" | "Inactive" | "Suspended" | "Planned";
+import { getSubscribers } from '@/services/postgresql/subscribers'; // Corrected import
+import type { Subscriber, SubscriberStatus } from '@/types/subscribers'; // Import Subscriber type
 
 type FilterState = {
     type: ('Residential' | 'Commercial')[];
@@ -69,20 +63,43 @@ export default function ListSubscribersPage() {
     const iconSize = "h-3 w-3"; // Reduced icon size
 
 
+    const [subscribers, setSubscribers] = React.useState<Subscriber[]>([]); // Typed state
+
+    React.useEffect(() => {
+      const fetchSubscribers = async () => {
+        setIsLoading(true);
+        try {
+          const response = await getSubscribers(); // Corrected function call
+          console.log('Subscribers response', response);
+          setSubscribers(response);
+        } catch (error) {
+          console.error("Failed to fetch subscribers:", error);
+          toast({
+            title: "Error",
+            description: "Failed to fetch subscribers.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      }
+      fetchSubscribers();
+    }, [toast]);
+
     const filteredSubscribers = React.useMemo(() => {
-        return placeholderSubscribers.filter(sub => {
-        const nameMatch = sub.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const taxIdMatch = sub.taxId?.toLowerCase().includes(searchTerm.toLowerCase());
-        const phoneMatch = sub.phone.includes(searchTerm);
-        const idMatch = sub.id.toLowerCase().includes(searchTerm.toLowerCase());
+        return subscribers.filter(sub => { // Use subscribers state
+        const nameMatch = sub.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) || sub.companyName?.toLowerCase().includes(searchTerm.toLowerCase());
+        const taxIdMatch = sub.taxId?.toLowerCase().includes(searchTerm.toLowerCase()) || sub.businessNumber?.toLowerCase().includes(searchTerm.toLowerCase());
+        const phoneMatch = sub.phoneNumber.includes(searchTerm);
+        const idMatch = sub.id.toString().toLowerCase().includes(searchTerm.toLowerCase());
         const addressMatch = sub.address.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const typeMatch = filters.type.length === 0 || filters.type.includes(sub.type as 'Residential' | 'Commercial');
-        const statusMatch = filters.status.length === 0 || filters.status.includes(sub.status as SubscriberStatus); // Keep status filter logic for now
+        const typeMatch = filters.type.length === 0 || filters.type.includes(sub.subscriberType as 'Residential' | 'Commercial');
+        const statusMatch = filters.status.length === 0 || filters.status.includes(sub.status as SubscriberStatus);
 
         return (idMatch || nameMatch || taxIdMatch || phoneMatch || addressMatch) && typeMatch && statusMatch;
         });
-    }, [searchTerm, filters]);
+    }, [searchTerm, filters, subscribers]);
 
     const handleFilterChange = (category: keyof FilterState, value: string, checked: boolean) => {
         setFilters(prev => {
@@ -94,17 +111,24 @@ export default function ListSubscribersPage() {
         });
     };
 
-    const handleRefresh = () => {
+    const handleRefresh = async () => {
         setIsLoading(true);
         toast({ title: t('list_subscribers.refresh_start_toast') });
-        console.log('Refreshing subscriber list...');
-        setTimeout(() => {
-          setIsLoading(false);
-          console.log('Subscriber list refreshed.');
+        try {
+          const response = await getSubscribers();
+          setSubscribers(response);
           toast({ title: t('list_subscribers.refresh_end_toast') });
-        }, 1000);
+        } catch (error) {
+          console.error("Failed to refresh subscribers:", error);
+          toast({
+            title: "Error",
+            description: "Failed to refresh subscribers.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsLoading(false);
+        }
     };
-
 
   return (
     <div className="flex flex-col gap-6">
@@ -179,7 +203,7 @@ export default function ListSubscribersPage() {
 
 
       <Card>
-        <CardContent className="pt-0"> {/* Removed pt-6 */}
+        <CardContent className="pt-0"> 
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -198,7 +222,7 @@ export default function ListSubscribersPage() {
                     <TableRow key={subscriber.id}>
                       <TableCell className="font-mono text-muted-foreground text-xs">{subscriber.id}</TableCell> 
                       <TableCell>
-                        {subscriber.type === 'Residential' ? (
+                        {subscriber.subscriberType === 'Residential' ? (
                           <User className={`${iconSize} text-muted-foreground`} title={t('add_subscriber.type_residential')} />
                         ) : (
                           <Building className={`${iconSize} text-muted-foreground`} title={t('add_subscriber.type_commercial')} />
@@ -206,12 +230,12 @@ export default function ListSubscribersPage() {
                       </TableCell>
                       <TableCell className="font-medium text-xs"> 
                         <Link href={`/subscribers/profile/${subscriber.id}`} className="hover:underline text-primary">
-                          {subscriber.name}
+                          {subscriber.subscriberType === 'Residential' ? subscriber.fullName : subscriber.companyName}
                         </Link>
                       </TableCell>
-                      <TableCell className="text-muted-foreground text-xs">{formatTaxId(subscriber.taxId)}</TableCell> 
+                      <TableCell className="text-muted-foreground text-xs">{formatTaxId(subscriber.subscriberType === 'Residential' ? subscriber.taxId : subscriber.businessNumber)}</TableCell> 
                       <TableCell className="text-muted-foreground text-xs">{subscriber.address}</TableCell> 
-                      <TableCell className="text-muted-foreground text-xs">{subscriber.phone}</TableCell> 
+                      <TableCell className="text-muted-foreground text-xs">{subscriber.phoneNumber}</TableCell> 
                     </TableRow>
                   ))
                 ) : (

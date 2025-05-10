@@ -2,7 +2,7 @@
 'use server';
 
 import { query } from '@/lib/postgresql/client';
-import type { Subscriber, SubscriberData } from '@/types/subscribers';
+import type { Subscriber, SubscriberData, SubscriberType, SubscriberStatus } from '@/types/subscribers';
 
 const SUBSCRIBERS_TABLE_SCHEMA = `
   CREATE TABLE IF NOT EXISTS subscribers (
@@ -122,6 +122,7 @@ export const addSubscriber = async (subscriberData: SubscriberData): Promise<num
   try {
     const result = await query(sql, params);
     console.log("Subscriber added with ID (PostgreSQL): ", result.rows[0].id);
+    console.log("SQL result: ", result);
     return result.rows[0].id;
   } catch (e) {
     console.error("Error adding subscriber to PostgreSQL: ", e);
@@ -143,16 +144,31 @@ export const getSubscribers = async (): Promise<Subscriber[]> => {
   `;
   try {
     const result = await query(sql);
-    return result.rows.map((row: any) => ({
-      ...row,
+    console.log("Raw subscribers data from DB:", result.rows);
+    const subscribers = result.rows.map((row: any) => ({
+      id: row.id,
+      subscriberType: row.subscriber_type as SubscriberType,
+      fullName: row.full_name,
+      companyName: row.company_name,
       birthday: row.birthday ? new Date(row.birthday) : null,
       establishedDate: row.established_date ? new Date(row.established_date) : null,
+      address: row.address,
+      pointOfReference: row.point_of_reference,
+      email: row.email,
+      phoneNumber: row.phone_number,
+      mobileNumber: row.mobile_number,
+      taxId: row.tax_id,
+      businessNumber: row.business_number,
       signupDate: new Date(row.signup_date),
+      status: row.status as SubscriberStatus,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
     } as Subscriber));
+    console.log("Mapped subscribers data:", subscribers);
+    return subscribers;
   } catch (e) {
     console.error("Error getting subscribers from PostgreSQL: ", e);
+    console.error(e);
     throw new Error('Failed to fetch subscribers (PostgreSQL)');
   }
 };
@@ -176,10 +192,21 @@ export const getSubscriberById = async (id: number): Promise<Subscriber | null> 
     }
     const row = result.rows[0];
     return {
-      ...row,
+      id: row.id,
+      subscriberType: row.subscriber_type as SubscriberType,
+      fullName: row.full_name,
+      companyName: row.company_name,
       birthday: row.birthday ? new Date(row.birthday) : null,
       establishedDate: row.established_date ? new Date(row.established_date) : null,
+      address: row.address,
+      pointOfReference: row.point_of_reference,
+      email: row.email,
+      phoneNumber: row.phone_number,
+      mobileNumber: row.mobile_number,
+      taxId: row.tax_id,
+      businessNumber: row.business_number,
       signupDate: new Date(row.signup_date),
+      status: row.status as SubscriberStatus,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
     } as Subscriber;
