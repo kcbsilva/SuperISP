@@ -60,6 +60,7 @@ const fr = {
     postgresql: 'PostgreSQL', // Added
     postgresql_databases: 'Bases de données', // Added
     postgresql_tables: 'Tables', // Added
+    postgresql_cli: 'CLI', // Added
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Agrandir la barre latérale',

@@ -50,6 +50,7 @@ import {
   MonitorSmartphone, // For System Monitor
   Database as DatabaseIcon, // For PostgreSQL
   Table as TableIcon, // For PostgreSQL Tables
+  TerminalSquare, // Added for PostgreSQL CLI
 } from 'lucide-react';
 
 // Removed: import prolterLogoSrc from '@/app/assets/prolter-logo.svg';
@@ -795,6 +796,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         <Link href="/postgresql/tables" className="flex items-center gap-2">
                           <TableIcon className={subIconSize + " text-muted-foreground"} />
                           <span>{t('sidebar.postgresql_tables', 'Tables')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/postgresql/cli')} size="sm" tooltip={t('sidebar.postgresql_cli', 'CLI')}>
+                        <Link href="/postgresql/cli" className="flex items-center gap-2">
+                          <TerminalSquare className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.postgresql_cli', 'CLI')}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
