@@ -35,7 +35,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { createDatabase, getCurrentDatabaseInfo, type DatabaseInfo } from '@/services/postgresql/databases';
+import { createDatabase, getDatabases, type DatabaseInfo } from '@/services/postgresql/databases';
 import { useQuery, QueryClient, QueryClientProvider, useMutation, type QueryKey } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -48,7 +48,7 @@ type AddDatabaseFormData = z.infer<typeof addDatabaseSchema>;
 
 const queryClient = new QueryClient();
 
-const currentDatabaseQueryKey: QueryKey = ['currentDatabaseInfo'];
+const databasesQueryKey: QueryKey = ['databases'];
 
 
 function DatabasesPageComponent() {
@@ -57,9 +57,9 @@ function DatabasesPageComponent() {
   const [isAddDbDialogOpen, setIsAddDbDialogOpen] = React.useState(false);
   const iconSize = "h-3 w-3";
 
-  const { data: currentDatabase, isLoading: isLoadingCurrentDatabase, error: currentDatabaseError, refetch: refetchCurrentDatabase } = useQuery<DatabaseInfo | null, Error>({
-    queryKey: currentDatabaseQueryKey,
-    queryFn: getCurrentDatabaseInfo,
+  const { data: databases = [], isLoading: isLoadingDatabases, error: databasesError, refetch: refetchDatabases } = useQuery<DatabaseInfo[], Error>({
+    queryKey: databasesQueryKey,
+    queryFn: getDatabases,
   });
 
   const addDbForm = useForm<AddDatabaseFormData>({
@@ -72,8 +72,7 @@ function DatabasesPageComponent() {
   const addDatabaseMutation = useMutation<void, Error, string>({
     mutationFn: createDatabase,
     onSuccess: (_, dbName) => {
-      // Invalidate the current database query. If the added DB is the one in .env, it will show.
-      queryClient.invalidateQueries({ queryKey: currentDatabaseQueryKey });
+      queryClient.invalidateQueries({ queryKey: databasesQueryKey });
       toast({
         title: t('postgresql_page.add_db_success_toast_title', 'Database Created'),
         description: t('postgresql_page.add_db_success_toast_desc', 'Database "{dbName}" has been created.').replace('{dbName}', dbName),
@@ -111,7 +110,7 @@ function DatabasesPageComponent() {
   };
 
   const handleRefreshDatabases = () => {
-    refetchCurrentDatabase();
+    refetchDatabases();
     toast({
         title: t('postgresql_page.refreshing_databases_toast_title', 'Refreshing Databases...'),
         description: t('postgresql_page.refreshing_databases_toast_desc', 'Fetching the latest list of databases.'),
@@ -128,14 +127,14 @@ function DatabasesPageComponent() {
                 size="sm" 
                 variant="outline" 
                 onClick={handleRefreshDatabases}
-                disabled={isLoadingCurrentDatabase || addDatabaseMutation.isPending}
+                disabled={isLoadingDatabases || addDatabaseMutation.isPending}
             >
-              <RefreshCw className={`mr-2 ${iconSize} ${isLoadingCurrentDatabase ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`mr-2 ${iconSize} ${isLoadingDatabases ? 'animate-spin' : ''}`} />
               {t('postgresql_page.refresh_databases_button', 'Refresh')}
             </Button>
             <Dialog open={isAddDbDialogOpen} onOpenChange={setIsAddDbDialogOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" disabled={addDatabaseMutation.isPending || isLoadingCurrentDatabase}>
+                <Button size="sm" disabled={addDatabaseMutation.isPending || isLoadingDatabases}>
                   <PlusCircle className={`mr-2 ${iconSize}`} />
                   {t('postgresql_page.add_database_button', 'Add Database')}
                 </Button>
@@ -189,18 +188,20 @@ function DatabasesPageComponent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isLoadingCurrentDatabase ? (
+          {isLoadingDatabases ? (
             <div className="space-y-3">
               <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8 w-full" />
             </div>
-          ) : currentDatabaseError ? (
+          ) : databasesError ? (
              <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription className="text-xs">
-                    {t('postgresql_page.loading_databases_error', 'Error loading database information: {message}').replace('{message}', currentDatabaseError.message)}
+                    {t('postgresql_page.loading_databases_error', 'Error loading database information: {message}').replace('{message}', databasesError.message)}
                 </AlertDescription>
              </Alert>
-          ) : currentDatabase ? (
+          ) : databases.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-border">
                 <thead className="bg-muted/50">
@@ -223,30 +224,32 @@ function DatabasesPageComponent() {
                   </tr>
                 </thead>
                 <tbody className="bg-background divide-y divide-border">
-                    <tr key={currentDatabase.datname}>
+                  {databases.map((db) => (
+                    <tr key={db.datname}>
                       <td className="px-6 py-4 whitespace-nowrap text-xs font-medium text-foreground">
-                        {currentDatabase.datname}
+                        {db.datname}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
-                        {currentDatabase.datdba_owner || 'N/A'}
+                        {db.datdba_owner || 'N/A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
-                        {currentDatabase.encoding_name || 'N/A'}
+                        {db.encoding_name || 'N/A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
-                        {currentDatabase.size_pretty || 'N/A'}
+                        {db.size_pretty || 'N/A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditAction(currentDatabase.datname)}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditAction(db.datname)}>
                            <Edit className={iconSize} />
                            <span className="sr-only">{t('postgresql_page.edit_action', 'Edit')}</span>
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteAction(currentDatabase.datname)}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteAction(db.datname)}>
                            <Trash2 className={iconSize} />
                            <span className="sr-only">{t('postgresql_page.delete_action', 'Delete')}</span>
                         </Button>
                       </td>
                     </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -254,7 +257,7 @@ function DatabasesPageComponent() {
              <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription className="text-xs">
-                  {t('postgresql_page.no_databases_found', 'The database specified in your environment configuration (PGDATABASE) was not found or PGDATABASE is not set. Please check your .env file and ensure the database exists and is accessible.')}
+                  {t('postgresql_page.no_databases_found', 'No databases found or unable to connect. Please check your .env file and ensure the database server is accessible.')}
                 </AlertDescription>
              </Alert>
           )}
@@ -271,4 +274,3 @@ export default function DatabasesPageWrapper() {
     </QueryClientProvider>
   );
 }
-

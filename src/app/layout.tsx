@@ -50,7 +50,6 @@ import {
   MonitorSmartphone, // For System Monitor
   Database as DatabaseIcon, // For PostgreSQL
   Table as TableIcon, // For PostgreSQL Tables
-  Terminal, // Added for PostgreSQL CLI
 } from 'lucide-react';
 
 // Removed: import prolterLogoSrc from '@/app/assets/prolter-logo.svg';
@@ -202,6 +201,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/subscribers/list" className="flex items-center gap-2">
                     <Users className={iconSize} />
                     <span className="truncate">{t('sidebar.subscribers')}</span>
+                    {/* Removed ChevronDown */}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -798,14 +798,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/postgresql/cli')} size="sm" tooltip={t('sidebar.postgresql_cli', 'CLI')}>
-                        <Link href="/postgresql/cli" className="flex items-center gap-2">
-                          <Terminal className={subIconSize + " text-muted-foreground"} />
-                          <span>{t('sidebar.postgresql_cli', 'CLI')}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
               </SidebarMenuItem>
@@ -896,4 +888,3 @@ export default function RootLayout({
     </html>
   );
 }
-
