@@ -19,20 +19,24 @@ Table.displayName = "Table"
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+>(({ className, children, ...props }, ref) => ( // Explicitly destructure children
+  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props}>
+    {children} {/* Render children explicitly */}
+  </thead>
 ))
 TableHeader.displayName = "TableHeader"
 
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => ( // Explicitly destructure children
   <tbody
     ref={ref}
     className={cn("[&_tr:last-child]:border-0", className)}
     {...props}
-  />
+  >
+    {children} {/* Render children explicitly */}
+  </tbody>
 ))
 TableBody.displayName = "TableBody"
 
@@ -54,15 +58,17 @@ TableFooter.displayName = "TableFooter"
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => ( // Explicitly destructure children
   <tr
     ref={ref}
     className={cn(
       "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
       className
     )}
-    {...props}
-  />
+    {...props} // Pass other props (attributes)
+  >
+    {children} {/* Render children explicitly inside tr */}
+  </tr>
 ))
 TableRow.displayName = "TableRow"
 
