@@ -1014,8 +1014,17 @@ const en = {
       table_header_schema: 'Schema',
       table_header_rows: 'Rows',
       table_header_size: 'Size',
-      table_header_actions: 'Actions',
+      table_header_actions: 'Ações',
       add_database_button: 'Add Database',
+      add_database_dialog_title: 'Add New Database',
+      add_database_dialog_description: 'Enter the name for the new PostgreSQL database.',
+      form_db_name_label: 'Database Name',
+      form_db_name_placeholder: 'e.g., my_new_app_db',
+      form_create_db_button: 'Create Database',
+      add_db_success_toast_title: 'Database Created',
+      add_db_success_toast_desc: 'Database "{dbName}" has been created.',
+      add_db_error_toast_title: 'Error Creating Database',
+      add_db_error_toast_desc: 'Could not create the database.',
       add_table_button: 'Add Table',
       view_data_button: 'View Data',
       no_databases_found: 'No databases found or unable to connect.',
@@ -1041,6 +1050,9 @@ const en = {
       cli_execution_success_title: 'Command Executed',
       cli_execution_success_toast_desc: 'SQL command processed.',
     },
+    // General form translations
+    form_cancel_button: 'Cancel',
+    form_saving_button: 'Saving...',
 };
 
 export default en;

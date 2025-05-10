@@ -461,7 +461,7 @@ const fr = {
         expense_category_desc: 'Répartition mensuelle des dépenses.',
         payment_status_title: 'Statut des Paiements',
         payment_status_desc: 'Aperçu des statuts de paiement des factures récentes.',
-        pie_chart_placeholder: 'Données du graphique circulaire non disponibles.',
+        pie_chart_placeholder: 'Données du graphique circulaire non disponibili.',
       },
    },
    maps_page: {
@@ -876,7 +876,7 @@ const fr = {
     table_header_status: 'Statut',
     table_header_actions: 'Actions',
     table_header_active_contracts: 'Contrats Actifs',
-    action_delete: 'Supprimer',
+    action_delete: 'Delete',
     no_billing_days: 'Aucun jour de facturation configuré.',
     add_day_button: 'Ajouter Jour de Facturation',
     add_day_modal_title: 'Ajouter Nouveau Jour de Facturation',
@@ -1008,6 +1008,15 @@ const fr = {
     table_header_size: 'Taille',
     table_header_actions: 'Ações',
     add_database_button: 'Ajouter BDD',
+    add_database_dialog_title: 'Ajouter une Nouvelle Base de Données',
+    add_database_dialog_description: 'Entrez le nom de la nouvelle base de données PostgreSQL.',
+    form_db_name_label: 'Nom de la Base de Données',
+    form_db_name_placeholder: 'ex: ma_nouvelle_app_db',
+    form_create_db_button: 'Créer Base de Données',
+    add_db_success_toast_title: 'Base de Données Créée',
+    add_db_success_toast_desc: 'La base de données "{dbName}" a été créée.',
+    add_db_error_toast_title: 'Erreur Création Base de Données',
+    add_db_error_toast_desc: 'Impossible de créer la base de données.',
     add_table_button: 'Ajouter Table',
     view_data_button: 'Voir Données',
     no_databases_found: 'Aucune base de données trouvée ou connexion impossible.',
@@ -1033,6 +1042,9 @@ const fr = {
     cli_execution_success_title: 'Commande Exécutée',
     cli_execution_success_toast_desc: 'Commande SQL traitée.',
   },
+  // General form translations
+  form_cancel_button: 'Annuler',
+  form_saving_button: 'Enregistrement...',
 };
 
 export default fr;
