@@ -2,36 +2,63 @@
 import { query } from '@/lib/postgresql/client';
 import type { Pop, PopData } from '@/types/pops';
 
-/**
- * PostgreSQL Table Schema for 'pops':
- *
- * CREATE TABLE pops (
- *   id SERIAL PRIMARY KEY,
- *   name VARCHAR(255) NOT NULL,
- *   location VARCHAR(255) NOT NULL,
- *   status VARCHAR(50) DEFAULT 'Active',
- *   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
- *   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
- * );
- *
- * -- Optional: Trigger to update updated_at on row update
- * CREATE OR REPLACE FUNCTION update_updated_at_column()
- * RETURNS TRIGGER AS $$
- * BEGIN
- *    NEW.updated_at = NOW();
- *    RETURN NEW;
- * END;
- * $$ language 'plpgsql';
- *
- * CREATE TRIGGER update_pops_updated_at
- * BEFORE UPDATE ON pops
- * FOR EACH ROW
- * EXECUTE FUNCTION update_updated_at_column();
- *
- */
+const POPS_TABLE_SCHEMA = `
+  CREATE TABLE IF NOT EXISTS pops (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    status VARCHAR(50) DEFAULT 'Active',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+  );
+`;
+
+const UPDATE_POPS_TRIGGER_FUNCTION = `
+  CREATE OR REPLACE FUNCTION update_pops_updated_at_column()
+  RETURNS TRIGGER AS $$
+  BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+  END;
+  $$ language 'plpgsql';
+`;
+
+const UPDATE_POPS_TRIGGER = `
+  DO $$
+  BEGIN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_trigger
+      WHERE tgname = 'update_pops_updated_at' AND tgrelid = 'pops'::regclass
+    ) THEN
+      CREATE TRIGGER update_pops_updated_at
+      BEFORE UPDATE ON pops
+      FOR EACH ROW
+      EXECUTE FUNCTION update_pops_updated_at_column();
+    END IF;
+  END
+  $$;
+`;
+
+let popsTableEnsured = false;
+async function ensurePopsTable() {
+  if (!popsTableEnsured) {
+    try {
+      await query(POPS_TABLE_SCHEMA);
+      await query(UPDATE_POPS_TRIGGER_FUNCTION);
+      await query(UPDATE_POPS_TRIGGER);
+      console.log("'pops' table schema ensured.");
+      popsTableEnsured = true;
+    } catch (e) {
+      console.error("Error ensuring 'pops' table schema: ", e);
+      // Potentially throw e or handle as critical error
+    }
+  }
+}
 
 // Function to add a new PoP to PostgreSQL
 export const addPop = async (popData: PopData): Promise<number> => {
+  await ensurePopsTable();
   const sql = 'INSERT INTO pops (name, location, status) VALUES ($1, $2, $3) RETURNING id';
   const status = popData.status ?? 'Active';
   const params = [popData.name, popData.location, status];
@@ -47,6 +74,7 @@ export const addPop = async (popData: PopData): Promise<number> => {
 
 // Function to get all PoPs from PostgreSQL
 export const getPops = async (): Promise<Pop[]> => {
+  await ensurePopsTable();
   const sql = 'SELECT id, name, location, status, created_at, updated_at FROM pops ORDER BY created_at DESC';
   try {
     const result = await query(sql);
@@ -67,6 +95,7 @@ export const getPops = async (): Promise<Pop[]> => {
 
 // Function to delete a PoP from PostgreSQL
 export const deletePop = async (id: number | string): Promise<void> => {
+  await ensurePopsTable();
   const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
   if (isNaN(numericId)) {
     throw new Error('Invalid PoP ID for deletion.');
@@ -83,6 +112,7 @@ export const deletePop = async (id: number | string): Promise<void> => {
 
 // Function to update a PoP in PostgreSQL
 export const updatePop = async (id: number | string, data: Partial<PopData>): Promise<void> => {
+  await ensurePopsTable();
   const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
   if (isNaN(numericId)) {
     throw new Error('Invalid PoP ID for update.');
@@ -98,7 +128,8 @@ export const updatePop = async (id: number | string, data: Partial<PopData>): Pr
   const params = fields.map(field => data[field as keyof PopData]);
   params.push(numericId); // For WHERE id = $N
 
-  const sql = `UPDATE pops SET ${setClauses.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = $${params.length}`;
+  // updated_at is handled by the trigger, so we don't need to set it manually here.
+  const sql = `UPDATE pops SET ${setClauses.join(', ')} WHERE id = $${params.length}`;
 
   try {
     await query(sql, params);

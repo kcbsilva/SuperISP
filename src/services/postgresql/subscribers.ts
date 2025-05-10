@@ -1,11 +1,78 @@
 // src/services/postgresql/subscribers.ts
 import { query } from '@/lib/postgresql/client';
-import type { Subscriber, SubscriberData, SubscriberStatus } from '@/types/subscribers';
+import type { Subscriber, SubscriberData } from '@/types/subscribers';
+
+const SUBSCRIBERS_TABLE_SCHEMA = `
+  CREATE TABLE IF NOT EXISTS subscribers (
+    id SERIAL PRIMARY KEY,
+    subscriber_type VARCHAR(50) NOT NULL, -- Residential, Commercial
+    full_name VARCHAR(255),
+    company_name VARCHAR(255),
+    birthday DATE,
+    established_date DATE,
+    address TEXT NOT NULL,
+    point_of_reference TEXT,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    phone_number VARCHAR(50) NOT NULL,
+    mobile_number VARCHAR(50),
+    tax_id VARCHAR(100), -- CPF or other tax ID
+    business_number VARCHAR(100), -- CNPJ or other business ID
+    signup_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(50) DEFAULT 'Active', -- Active, Inactive, Suspended, Planned, Canceled
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+  );
+`;
+
+const UPDATE_SUBSCRIBERS_TRIGGER_FUNCTION = `
+  CREATE OR REPLACE FUNCTION update_subscribers_updated_at_column()
+  RETURNS TRIGGER AS $$
+  BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+  END;
+  $$ language 'plpgsql';
+`;
+
+const UPDATE_SUBSCRIBERS_TRIGGER = `
+  DO $$
+  BEGIN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_trigger
+      WHERE tgname = 'update_subscribers_updated_at' AND tgrelid = 'subscribers'::regclass
+    ) THEN
+      CREATE TRIGGER update_subscribers_updated_at
+      BEFORE UPDATE ON subscribers
+      FOR EACH ROW
+      EXECUTE FUNCTION update_subscribers_updated_at_column();
+    END IF;
+  END
+  $$;
+`;
+
+let subscribersTableEnsured = false;
+async function ensureSubscribersTable() {
+  if (!subscribersTableEnsured) {
+    try {
+      await query(SUBSCRIBERS_TABLE_SCHEMA);
+      await query(UPDATE_SUBSCRIBERS_TRIGGER_FUNCTION);
+      await query(UPDATE_SUBSCRIBERS_TRIGGER);
+      console.log("'subscribers' table schema ensured.");
+      subscribersTableEnsured = true;
+    } catch (e) {
+      console.error("Error ensuring 'subscribers' table schema: ", e);
+      // Potentially throw e or handle as critical error
+    }
+  }
+}
+
 
 /**
  * Adds a new subscriber to the PostgreSQL database.
  */
 export const addSubscriber = async (subscriberData: SubscriberData): Promise<number> => {
+  await ensureSubscribersTable();
   const {
     subscriberType,
     fullName,
@@ -64,6 +131,7 @@ export const addSubscriber = async (subscriberData: SubscriberData): Promise<num
  * Fetches all subscribers from the PostgreSQL database.
  */
 export const getSubscribers = async (): Promise<Subscriber[]> => {
+  await ensureSubscribersTable();
   const sql = `
     SELECT id, subscriber_type, full_name, company_name, birthday, established_date,
            address, point_of_reference, email, phone_number, mobile_number,
@@ -91,6 +159,7 @@ export const getSubscribers = async (): Promise<Subscriber[]> => {
  * Fetches a single subscriber by ID from the PostgreSQL database.
  */
 export const getSubscriberById = async (id: number): Promise<Subscriber | null> => {
+  await ensureSubscribersTable();
   const sql = `
     SELECT id, subscriber_type, full_name, company_name, birthday, established_date,
            address, point_of_reference, email, phone_number, mobile_number,
@@ -122,6 +191,7 @@ export const getSubscriberById = async (id: number): Promise<Subscriber | null> 
  * Updates an existing subscriber in the PostgreSQL database.
  */
 export const updateSubscriber = async (id: number, data: Partial<SubscriberData>): Promise<void> => {
+  await ensureSubscribersTable();
   const fields = Object.keys(data).filter(key => (data as any)[key] !== undefined);
   if (fields.length === 0) {
     console.warn("No fields provided for subscriber update.");
@@ -142,9 +212,10 @@ export const updateSubscriber = async (id: number, data: Partial<SubscriberData>
   });
   params.push(id); // For WHERE id = $N
 
+  // updated_at is handled by the trigger
   const sql = `
     UPDATE subscribers
-    SET ${setClauses.join(', ')}, updated_at = CURRENT_TIMESTAMP
+    SET ${setClauses.join(', ')}
     WHERE id = $${params.length};
   `;
 
@@ -161,6 +232,7 @@ export const updateSubscriber = async (id: number, data: Partial<SubscriberData>
  * Deletes a subscriber from the PostgreSQL database.
  */
 export const deleteSubscriber = async (id: number): Promise<void> => {
+  await ensureSubscribersTable();
   const sql = 'DELETE FROM subscribers WHERE id = $1;';
   try {
     await query(sql, [id]);
