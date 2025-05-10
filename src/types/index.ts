@@ -3,3 +3,4 @@
 // If needed later, it can be restored or redefined.
 
 // PoP types are now in src/types/pops.ts
+// OLT types are now in src/types/olts.ts
