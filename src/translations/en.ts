@@ -60,6 +60,7 @@ const en = {
     postgresql: 'PostgreSQL', // Added
     postgresql_databases: 'Databases', // Added
     postgresql_tables: 'Tables', // Added
+    postgresql_cli: 'CLI', // Added
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Expand sidebar',
@@ -936,9 +937,9 @@ const en = {
       no_templates_found: 'No user templates found.',
       add_new_template_button: 'Add New Template',
       add_template_modal_title: 'Add New User Template',
-      edit_template_modal_title: 'Edit User Template', // Added for editing
-      edit_template_modal_desc: 'Update the details and permissions for this template.', // Added for editing
-      add_template_modal_desc_permissions: 'Define the template details and assign permissions.', // Specific for adding with permissions
+      edit_template_modal_title: 'Edit User Template',
+      edit_template_modal_desc: 'Update the details and permissions for this template.',
+      add_template_modal_desc_permissions: 'Define the template details and assign permissions.',
       template_form_name_label: 'Template Name',
       template_form_name_placeholder: 'e.g., Sales Team',
       template_form_description_label: 'Description (Optional)',
@@ -948,11 +949,11 @@ const en = {
       form_cancel_button: 'Cancel',
       form_saving_button: 'Saving...',
       form_save_template_button: 'Save Template',
-      form_update_template_button: 'Update Template', // Added for editing
+      form_update_template_button: 'Update Template',
       add_template_success_title: 'Template Added',
       add_template_success_desc: 'User template "{name}" added.',
-      update_template_success_title: 'Template Updated', // Added for editing
-      update_template_success_desc: 'User template "{name}" updated.', // Added for editing
+      update_template_success_title: 'Template Updated',
+      update_template_success_desc: 'User template "{name}" updated.',
       close_button: 'Close',
       edit_template_toast_title: 'Edit Template (Not Implemented)',
       edit_template_toast_desc: 'Editing template "{name}" is not yet implemented.',
@@ -1026,6 +1027,19 @@ const en = {
       backup_restore_info: 'Backup and restore functionality is not yet implemented.',
       create_backup_button: 'Create Backup',
       restore_backup_button: 'Restore from Backup',
+      cli_title: 'SQL Command Line Interface',
+      cli_description: 'Execute SQL commands directly on the PostgreSQL database. Use with caution.',
+      cli_placeholder: 'Enter SQL command here (e.g., SELECT * FROM pops;)',
+      cli_execute_button: 'Execute Command',
+      cli_executing_button: 'Executing...',
+      cli_results_title: 'Results:',
+      cli_empty_command_title: 'Empty Command',
+      cli_empty_command_desc: 'Please enter an SQL command to execute.',
+      cli_simulated_error_desc: 'Simulated error executing command: Invalid syntax near "error".',
+      cli_execution_error_title: 'Execution Error',
+      cli_simulated_success_desc: 'Command executed successfully (Simulated).\nResult for: {command}',
+      cli_execution_success_title: 'Command Executed',
+      cli_execution_success_toast_desc: 'SQL command processed.',
     },
 };
 

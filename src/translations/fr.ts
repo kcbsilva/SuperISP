@@ -60,6 +60,7 @@ const fr = {
     postgresql: 'PostgreSQL', // Added
     postgresql_databases: 'Bases de données', // Added
     postgresql_tables: 'Tables', // Added
+    postgresql_cli: 'CLI', // Added
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Agrandir la barre latérale',
@@ -1005,7 +1006,7 @@ const fr = {
     table_header_schema: 'Schéma',
     table_header_rows: 'Lignes',
     table_header_size: 'Taille',
-    table_header_actions: 'Actions',
+    table_header_actions: 'Ações',
     add_database_button: 'Ajouter BDD',
     add_table_button: 'Ajouter Table',
     view_data_button: 'Voir Données',
@@ -1018,6 +1019,19 @@ const fr = {
     backup_restore_info: 'La fonctionnalité de sauvegarde et de restauration n\'est pas encore implémentée.',
     create_backup_button: 'Créer Sauvegarde',
     restore_backup_button: 'Restaurer depuis Sauvegarde',
+    cli_title: 'Interface de Ligne de Commande SQL',
+    cli_description: 'Exécutez des commandes SQL directement sur la base de données PostgreSQL. À utiliser avec prudence.',
+    cli_placeholder: 'Entrez la commande SQL ici (ex: SELECT * FROM pops;)',
+    cli_execute_button: 'Exécuter la Commande',
+    cli_executing_button: 'Exécution...',
+    cli_results_title: 'Résultats :',
+    cli_empty_command_title: 'Commande Vide',
+    cli_empty_command_desc: 'Veuillez entrer une commande SQL à exécuter.',
+    cli_simulated_error_desc: 'Erreur simulée lors de l\'exécution de la commande : Syntaxe invalide près de "error".',
+    cli_execution_error_title: 'Erreur d\'Exécution',
+    cli_simulated_success_desc: 'Commande exécutée avec succès (Simulé).\nRésultat pour : {command}',
+    cli_execution_success_title: 'Commande Exécutée',
+    cli_execution_success_toast_desc: 'Commande SQL traitée.',
   },
 };
 
