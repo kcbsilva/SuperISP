@@ -1042,9 +1042,13 @@ const fr = {
     cli_empty_command_desc: 'Veuillez entrer une commande SQL à exécuter.',
     cli_simulated_error_desc: 'Erreur simulée lors de l\'exécution de la commande : Syntaxe invalide près de "error".',
     cli_execution_error_title: 'Erreur d\'Exécution',
-    cli_simulated_success_desc: 'Commande exécutée avec succès (Simulé).\nRésultat pour : {command}',
+    cli_unexpected_error_desc: 'Une erreur inattendue s\'est produite.',
+    cli_command_success_no_rows: 'Commande "{command}" exécutée avec succès. Aucune ligne retournée.',
+    cli_command_success_generic: 'Commande "{command}" exécutée avec succès. Résultat : {details}',
+    cli_command_success_no_output: 'Commande exécutée avec succès, mais aucune sortie spécifique n\'a été retournée.',
     cli_execution_success_title: 'Commande Exécutée',
     cli_execution_success_toast_desc: 'Commande SQL traitée.',
+    cli_execution_success_no_output_toast_desc: 'Commande SQL traitée sans sortie spécifique.',
   },
   // General form translations
   form_cancel_button: 'Annuler',
@@ -1052,4 +1056,3 @@ const fr = {
 };
 
 export default fr;
-

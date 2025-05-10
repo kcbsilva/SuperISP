@@ -1014,7 +1014,7 @@ const en = {
       table_header_schema: 'Schema',
       table_header_rows: 'Rows',
       table_header_size: 'Size',
-      table_header_actions: 'Ações',
+      table_header_actions: 'Actions',
       add_database_button: 'Add Database',
       add_database_dialog_title: 'Add New Database',
       add_database_dialog_description: 'Enter the name for the new PostgreSQL database.',
@@ -1050,9 +1050,13 @@ const en = {
       cli_empty_command_desc: 'Please enter an SQL command to execute.',
       cli_simulated_error_desc: 'Simulated error executing command: Invalid syntax near "error".',
       cli_execution_error_title: 'Execution Error',
-      cli_simulated_success_desc: 'Command executed successfully (Simulated).\nResult for: {command}',
+      cli_unexpected_error_desc: 'An unexpected error occurred.',
+      cli_command_success_no_rows: 'Command "{command}" executed successfully. No rows returned.',
+      cli_command_success_generic: 'Command "{command}" executed successfully. Result: {details}',
+      cli_command_success_no_output: 'Command executed successfully, but no specific output was returned.',
       cli_execution_success_title: 'Command Executed',
       cli_execution_success_toast_desc: 'SQL command processed.',
+      cli_execution_success_no_output_toast_desc: 'SQL command processed with no specific output.',
     },
     // General form translations
     form_cancel_button: 'Cancel',
@@ -1060,4 +1064,3 @@ const en = {
 };
 
 export default en;
-

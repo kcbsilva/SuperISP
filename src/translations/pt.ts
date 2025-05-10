@@ -1040,9 +1040,13 @@ const pt = {
       cli_empty_command_desc: 'Por favor, digite um comando SQL para executar.',
       cli_simulated_error_desc: 'Erro simulado ao executar comando: Sintaxe inválida próxima a "error".',
       cli_execution_error_title: 'Erro de Execução',
-      cli_simulated_success_desc: 'Comando executado com sucesso (Simulado).\nResultado para: {command}',
+      cli_unexpected_error_desc: 'Um erro inesperado ocorreu.',
+      cli_command_success_no_rows: 'Comando "{command}" executado com sucesso. Nenhuma linha retornada.',
+      cli_command_success_generic: 'Comando "{command}" executado com sucesso. Resultado: {details}',
+      cli_command_success_no_output: 'Comando executado com sucesso, mas nenhuma saída específica foi retornada.',
       cli_execution_success_title: 'Comando Executado',
       cli_execution_success_toast_desc: 'SQL comando processado.',
+      cli_execution_success_no_output_toast_desc: 'Comando SQL processado sem saída específica.',
     },
     // General form translations
     form_cancel_button: 'Cancelar',
@@ -1050,4 +1054,3 @@ const pt = {
 };
 
 export default pt;
-
