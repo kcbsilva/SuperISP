@@ -8,6 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter, // Added CardFooter import
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Network, Server, Wifi, Users, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
