@@ -793,8 +793,8 @@ const en = {
       list_provisioned_onxs: 'List Provisioned ONXs',
       list_onxs_title_provisioned: 'List Provisioned ONXs (Not Implemented)',
       list_onxs_desc_provisioned: 'Listing provisioned ONXs for OLT {id} is not yet available.',
-      list_onxs_title_non_provisioned: 'List Non-Provisioned ONXs (Not Implemented)', // Corrected key
-      list_onxs_desc_non_provisioned: 'Listing non-provisioned ONXs for OLT {id} is not yet available.', // Corrected key
+      list_onxs_title_non_provisioned: 'List Non-Provisioned ONXs (Not Implemented)',
+      list_onxs_desc_non_provisioned: 'Listing non-provisioned ONXs for OLT {id} is not yet available.',
     },
     new_contract_wizard: {
       title: 'New Contract Wizard',
@@ -932,6 +932,9 @@ const en = {
       no_templates_found: 'No user templates found.',
       add_new_template_button: 'Add New Template',
       add_template_modal_title: 'Add New User Template',
+      edit_template_modal_title: 'Edit User Template', // Added for editing
+      edit_template_modal_desc: 'Update the details and permissions for this template.', // Added for editing
+      add_template_modal_desc_permissions: 'Define the template details and assign permissions.', // Specific for adding with permissions
       template_form_name_label: 'Template Name',
       template_form_name_placeholder: 'e.g., Sales Team',
       template_form_description_label: 'Description (Optional)',
@@ -941,8 +944,11 @@ const en = {
       form_cancel_button: 'Cancel',
       form_saving_button: 'Saving...',
       form_save_template_button: 'Save Template',
+      form_update_template_button: 'Update Template', // Added for editing
       add_template_success_title: 'Template Added',
       add_template_success_desc: 'User template "{name}" added.',
+      update_template_success_title: 'Template Updated', // Added for editing
+      update_template_success_desc: 'User template "{name}" updated.', // Added for editing
       close_button: 'Close',
       edit_template_toast_title: 'Edit Template (Not Implemented)',
       edit_template_toast_desc: 'Editing template "{name}" is not yet implemented.',
@@ -974,3 +980,4 @@ const en = {
 };
 
 export default en;
+

@@ -679,6 +679,7 @@ const pt = {
       form_protocol_label: 'Protocolo',
       form_protocol_placeholder: 'Selecione o protocolo',
       form_protocol_tcp: 'TCP',
+      form_protocol_udptcp: 'UDP/TCP',
       form_status_label: 'Status',
       form_status_placeholder: 'Selecione o status',
       form_status_active: 'Ativo',
@@ -921,6 +922,9 @@ const pt = {
       no_templates_found: 'Nenhum modelo de usuário encontrado.',
       add_new_template_button: 'Adicionar Novo Modelo',
       add_template_modal_title: 'Adicionar Novo Modelo de Usuário',
+      edit_template_modal_title: 'Editar Modelo de Usuário',
+      edit_template_modal_desc: 'Atualizar os detalhes e permissões para este modelo.',
+      add_template_modal_desc_permissions: 'Definir os detalhes do modelo e atribuir permissões.',
       template_form_name_label: 'Nome do Modelo',
       template_form_name_placeholder: 'ex: Equipe de Vendas',
       template_form_description_label: 'Descrição (Opcional)',
@@ -930,8 +934,11 @@ const pt = {
       form_cancel_button: 'Cancelar',
       form_saving_button: 'Salvando...',
       form_save_template_button: 'Salvar Modelo',
+      form_update_template_button: 'Atualizar Modelo',
       add_template_success_title: 'Modelo Adicionado',
       add_template_success_desc: 'Modelo de usuário "{name}" adicionado.',
+      update_template_success_title: 'Modelo Atualizado',
+      update_template_success_desc: 'Modelo de usuário "{name}" atualizado.',
       close_button: 'Fechar',
       edit_template_toast_title: 'Editar Modelo (Não Implementado)',
       edit_template_toast_desc: 'A edição do modelo "{name}" ainda não foi implementada.',
@@ -963,3 +970,4 @@ const pt = {
 };
 
 export default pt;
+

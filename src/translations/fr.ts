@@ -924,6 +924,9 @@ const fr = {
     no_templates_found: 'Aucun modèle utilisateur trouvé.',
     add_new_template_button: 'Ajouter Nouveau Modèle',
     add_template_modal_title: 'Ajouter Nouveau Modèle Utilisateur',
+    edit_template_modal_title: 'Modifier le Modèle Utilisateur',
+    edit_template_modal_desc: 'Mettre à jour les détails et permissions de ce modèle.',
+    add_template_modal_desc_permissions: 'Définir les détails du modèle et assigner les permissions.',
     template_form_name_label: 'Nom du Modèle',
     template_form_name_placeholder: 'ex: Équipe Commerciale',
     template_form_description_label: 'Description (Facultatif)',
@@ -933,8 +936,11 @@ const fr = {
     form_cancel_button: 'Annuler',
     form_saving_button: 'Enregistrement...',
     form_save_template_button: 'Enregistrer le Modèle',
+    form_update_template_button: 'Mettre à Jour le Modèle',
     add_template_success_title: 'Modèle Ajouté',
     add_template_success_desc: 'Le modèle utilisateur "{name}" a été ajouté.',
+    update_template_success_title: 'Modèle Mis à Jour',
+    update_template_success_desc: 'Le modèle utilisateur "{name}" a été mis à jour.',
     close_button: 'Fermer',
     edit_template_toast_title: 'Modifier Modèle (Non implémenté)',
     edit_template_toast_desc: 'La modification du modèle "{name}" n\'est pas encore implémentée.',
@@ -966,3 +972,4 @@ const fr = {
 };
 
 export default fr;
+

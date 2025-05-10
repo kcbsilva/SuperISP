@@ -62,17 +62,19 @@ const userTemplateSchema = z.object({
   templateName: z.string().min(1, "Template name is required."),
   description: z.string().optional(),
   defaultRole: z.string().optional(), // Placeholder for now, could be more complex
+  permissions: z.array(z.string()).optional().default([]), // Added permissions
 });
 type UserTemplateFormData = z.infer<typeof userTemplateSchema>;
 
 interface UserTemplate extends UserTemplateFormData {
   id: string;
+  permissions: string[]; // Ensure permissions is always an array
 }
 
 const placeholderUserTemplates: UserTemplate[] = [
-  { id: 'tpl-admin', templateName: 'Administrator', description: 'Full system access', defaultRole: 'Admin' },
-  { id: 'tpl-support', templateName: 'Support Agent', description: 'Access to tickets and subscriber management', defaultRole: 'Support' },
-  { id: 'tpl-tech', templateName: 'Technician', description: 'Access to service calls and network tools', defaultRole: 'Technician' },
+  { id: 'tpl-admin', templateName: 'Administrator', description: 'Full system access', defaultRole: 'Admin', permissions: ['subscribers_view', 'subscribers_add', 'subscribers_edit', 'subscribers_delete', 'network_view_olts', 'network_manage_olts', 'finances_view_reports', 'settings_manage_global', 'pops_view', 'pops_add', 'pops_edit', 'pops_delete'] },
+  { id: 'tpl-support', templateName: 'Support Agent', description: 'Access to tickets and subscriber management', defaultRole: 'Support', permissions: ['subscribers_view', 'subscribers_edit'] },
+  { id: 'tpl-tech', templateName: 'Technician', description: 'Access to service calls and network tools', defaultRole: 'Technician', permissions: ['network_view_olts'] },
 ];
 
 const allPermissions = [
@@ -88,7 +90,6 @@ const allPermissions = [
   { id: 'pops_add', labelKey: 'settings_users.permission_pops_add', group: 'PoPs' },
   { id: 'pops_edit', labelKey: 'settings_users.permission_pops_edit', group: 'PoPs' },
   { id: 'pops_delete', labelKey: 'settings_users.permission_pops_delete', group: 'PoPs' },
-  // Add more permissions here, grouped by functionality
 ];
 
 const permissionGroups = Array.from(new Set(allPermissions.map(p => p.group)));
@@ -99,20 +100,39 @@ export default function UsersPage() {
   const { toast } = useToast();
   const [isUserTemplatesModalOpen, setIsUserTemplatesModalOpen] = React.useState(false);
   const [isAddTemplateModalOpen, setIsAddTemplateModalOpen] = React.useState(false);
+  const [editingTemplate, setEditingTemplate] = React.useState<UserTemplate | null>(null);
   const [userTemplates, setUserTemplates] = React.useState<UserTemplate[]>(placeholderUserTemplates);
 
   const iconSize = "h-3 w-3";
 
-  const addTemplateForm = useForm<UserTemplateFormData>({
+  const templateForm = useForm<UserTemplateFormData>({ 
     resolver: zodResolver(userTemplateSchema),
     defaultValues: {
       templateName: '',
       description: '',
       defaultRole: '',
+      permissions: [],
     },
   });
 
-  const permissionsForm = useForm(); // Dummy form for permissions for now
+  React.useEffect(() => {
+    if (isAddTemplateModalOpen && editingTemplate) {
+      templateForm.reset({
+        templateName: editingTemplate.templateName,
+        description: editingTemplate.description || '',
+        defaultRole: editingTemplate.defaultRole || '',
+        permissions: editingTemplate.permissions || [],
+      });
+    } else if (isAddTemplateModalOpen && !editingTemplate) {
+      templateForm.reset({
+        templateName: '',
+        description: '',
+        defaultRole: '',
+        permissions: [],
+      });
+    }
+  }, [isAddTemplateModalOpen, editingTemplate, templateForm]);
+
 
   const handleAddUser = () => {
     toast({
@@ -121,26 +141,35 @@ export default function UsersPage() {
     });
   };
 
-  const handleAddTemplateSubmit = (data: UserTemplateFormData) => {
-    const newTemplate: UserTemplate = {
-      ...data,
-      id: `tpl-${Date.now()}`,
-    };
-    setUserTemplates(prev => [newTemplate, ...prev]);
-    toast({
-      title: t('settings_users.add_template_success_title'),
-      description: t('settings_users.add_template_success_desc', 'User template "{name}" added.').replace('{name}', data.templateName),
-    });
-    addTemplateForm.reset();
+  const handleTemplateSubmit = (data: UserTemplateFormData) => {
+    if (editingTemplate) {
+        // Update existing template
+        setUserTemplates(prev => prev.map(tpl => tpl.id === editingTemplate.id ? { ...tpl, ...data, permissions: data.permissions || [] } : tpl));
+        toast({
+            title: t('settings_users.update_template_success_title', 'Template Updated'),
+            description: t('settings_users.update_template_success_desc', 'User template "{name}" updated.').replace('{name}', data.templateName),
+        });
+    } else {
+        // Add new template
+        const newTemplate: UserTemplate = {
+            ...data,
+            id: `tpl-${Date.now()}`,
+            permissions: data.permissions || [],
+        };
+        setUserTemplates(prev => [newTemplate, ...prev]);
+        toast({
+            title: t('settings_users.add_template_success_title'),
+            description: t('settings_users.add_template_success_desc', 'User template "{name}" added.').replace('{name}', data.templateName),
+        });
+    }
+    templateForm.reset();
+    setEditingTemplate(null);
     setIsAddTemplateModalOpen(false);
   };
 
-  const handleEditTemplate = (templateId: string) => {
-    const template = userTemplates.find(t => t.id === templateId);
-    toast({
-      title: t('settings_users.edit_template_toast_title'),
-      description: t('settings_users.edit_template_toast_desc', 'Editing template "{name}" is not yet implemented.').replace('{name}', template?.templateName || 'N/A'),
-    });
+  const handleEditTemplate = (template: UserTemplate) => {
+    setEditingTemplate(template);
+    setIsAddTemplateModalOpen(true); 
   }
 
   const handleDeleteTemplate = (templateId: string) => {
@@ -157,59 +186,7 @@ export default function UsersPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-base font-semibold">{t('sidebar.settings_users', 'Users')}</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Permissions Column */}
-        <div className="md:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm flex items-center gap-2">
-                <ShieldCheck className={iconSize} />
-                {t('settings_users.permissions_title', 'Permissions')}
-              </CardTitle>
-              <CardDescription className="text-xs">
-                {t('settings_users.permissions_description', 'Define permissions for user roles and templates.')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[400px] pr-3"> {/* Adjust height as needed */}
-                <Form {...permissionsForm}>
-                  <form className="space-y-4">
-                    {permissionGroups.map(group => (
-                      <div key={group}>
-                        <h3 className="text-xs font-medium mb-2 text-primary">{t(`settings_users.permission_group_${group.toLowerCase().replace(/\s+/g, '_')}` as any, group)}</h3>
-                        <div className="space-y-2 pl-2">
-                          {allPermissions.filter(p => p.group === group).map(permission => (
-                            <FormField
-                              key={permission.id}
-                              control={permissionsForm.control}
-                              name={permission.id} // Use permission ID as field name
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                  <FormLabel className="text-xs font-normal">
-                                    {t(permission.labelKey, permission.labelKey.split('.').pop()?.replace(/_/g, ' ') || permission.id)}
-                                  </FormLabel>
-                                </FormItem>
-                              )}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </form>
-                </Form>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Users and Templates Column */}
-        <div className="md:col-span-2 flex flex-col gap-6">
+      <div className="flex flex-col gap-6">
           <div className="flex justify-end items-center gap-2">
             <Dialog open={isUserTemplatesModalOpen} onOpenChange={setIsUserTemplatesModalOpen}>
               <DialogTrigger asChild>
@@ -217,7 +194,7 @@ export default function UsersPage() {
                   <ListChecks className={`mr-2 ${iconSize}`} /> {t('settings_users.user_templates_button', 'User Templates')}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
+              <DialogContent className="sm:max-w-lg"> 
                 <DialogHeader>
                   <DialogTitle className="text-sm">{t('settings_users.user_templates_modal_title', 'User Templates')}</DialogTitle>
                   <DialogDescriptionComponent className="text-xs">{t('settings_users.user_templates_modal_desc', 'Manage predefined user templates.')}</DialogDescriptionComponent>
@@ -240,7 +217,7 @@ export default function UsersPage() {
                             <TableCell className="text-muted-foreground text-xs">{template.description || '-'}</TableCell>
                             <TableCell className="text-muted-foreground text-xs">{template.defaultRole || '-'}</TableCell>
                             <TableCell className="text-right">
-                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditTemplate(template.id)}>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditTemplate(template)}>
                                 <Edit className={iconSize} />
                               </Button>
                                <AlertDialog>
@@ -277,70 +254,9 @@ export default function UsersPage() {
                   )}
                 </div>
                 <DialogFooter className="mt-4">
-                  <Dialog open={isAddTemplateModalOpen} onOpenChange={setIsAddTemplateModalOpen}>
-                    <DialogTrigger asChild>
-                      <Button size="sm">
-                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('settings_users.add_new_template_button', 'Add New Template')}
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
-                      <DialogHeader>
-                        <DialogTitle className="text-sm">{t('settings_users.add_template_modal_title', 'Add New User Template')}</DialogTitle>
-                      </DialogHeader>
-                      <Form {...addTemplateForm}>
-                        <form onSubmit={addTemplateForm.handleSubmit(handleAddTemplateSubmit)} className="grid gap-4 py-4">
-                          <FormField
-                            control={addTemplateForm.control}
-                            name="templateName"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>{t('settings_users.template_form_name_label', 'Template Name')}</FormLabel>
-                                <FormControl>
-                                  <Input placeholder={t('settings_users.template_form_name_placeholder', 'e.g., Sales Team')} {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={addTemplateForm.control}
-                            name="description"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>{t('settings_users.template_form_description_label', 'Description (Optional)')}</FormLabel>
-                                <FormControl>
-                                  <Input placeholder={t('settings_users.template_form_description_placeholder', 'Brief description of the template')} {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={addTemplateForm.control}
-                            name="defaultRole"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>{t('settings_users.template_form_role_label', 'Default Role (Optional)')}</FormLabel>
-                                <FormControl>
-                                  <Input placeholder={t('settings_users.template_form_role_placeholder', 'e.g., Editor, Viewer')} {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button type="button" variant="outline" disabled={addTemplateForm.formState.isSubmitting}>{t('settings_users.form_cancel_button', 'Cancel')}</Button>
-                            </DialogClose>
-                            <Button type="submit" disabled={addTemplateForm.formState.isSubmitting}>
-                              {addTemplateForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                              {addTemplateForm.formState.isSubmitting ? t('settings_users.form_saving_button', 'Saving...') : t('settings_users.form_save_template_button', 'Save Template')}
-                            </Button>
-                          </DialogFooter>
-                        </form>
-                      </Form>
-                    </DialogContent>
-                  </Dialog>
+                  <Button size="sm" onClick={() => { setEditingTemplate(null); setIsAddTemplateModalOpen(true); setIsUserTemplatesModalOpen(false); }}>
+                    <PlusCircle className={`mr-2 ${iconSize}`} /> {t('settings_users.add_new_template_button', 'Add New Template')}
+                  </Button>
                    <DialogClose asChild>
                       <Button variant="outline">{t('settings_users.close_button', 'Close')}</Button>
                    </DialogClose>
@@ -365,7 +281,121 @@ export default function UsersPage() {
             </CardContent>
           </Card>
         </div>
-      </div>
+
+       {/* Add/Edit Template Dialog */}
+        <Dialog open={isAddTemplateModalOpen} onOpenChange={(isOpen) => {
+            setIsAddTemplateModalOpen(isOpen);
+            if (!isOpen) setEditingTemplate(null); 
+        }}>
+            <DialogContent className="sm:max-w-2xl"> 
+                <DialogHeader>
+                    <DialogTitle className="text-sm">{editingTemplate ? t('settings_users.edit_template_modal_title', 'Edit User Template') : t('settings_users.add_template_modal_title', 'Add New User Template')}</DialogTitle>
+                     <DialogDescriptionComponent className="text-xs">
+                        {editingTemplate ? t('settings_users.edit_template_modal_desc', 'Update the details and permissions for this template.') : t('settings_users.add_template_modal_desc_permissions', 'Define the template details and assign permissions.')}
+                    </DialogDescriptionComponent>
+                </DialogHeader>
+                <Form {...templateForm}>
+                    <form onSubmit={templateForm.handleSubmit(handleTemplateSubmit)} className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
+                        <div className="md:col-span-1 space-y-4">
+                            <FormField
+                                control={templateForm.control}
+                                name="templateName"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('settings_users.template_form_name_label', 'Template Name')}</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder={t('settings_users.template_form_name_placeholder', 'e.g., Sales Team')} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={templateForm.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('settings_users.template_form_description_label', 'Description (Optional)')}</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder={t('settings_users.template_form_description_placeholder', 'Brief description of the template')} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={templateForm.control}
+                                name="defaultRole"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('settings_users.template_form_role_label', 'Default Role (Optional)')}</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder={t('settings_users.template_form_role_placeholder', 'e.g., Editor, Viewer')} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="md:col-span-2">
+                             <FormLabel className="text-xs font-medium mb-2 block flex items-center gap-2">
+                                <ShieldCheck className={`${iconSize} text-primary`} />
+                                {t('settings_users.permissions_title', 'Permissions')}
+                            </FormLabel>
+                            <ScrollArea className="h-[300px] border rounded-md p-3 pr-1">
+                                {permissionGroups.map(group => (
+                                    <div key={group} className="mb-3">
+                                        <h3 className="text-xs font-semibold mb-1.5 text-muted-foreground">{t(`settings_users.permission_group_${group.toLowerCase().replace(/\s+/g, '_')}` as any, group)}</h3>
+                                        <div className="space-y-1.5 pl-2">
+                                            {allPermissions.filter(p => p.group === group).map(permission => (
+                                                <FormField
+                                                    key={permission.id}
+                                                    control={templateForm.control}
+                                                    name="permissions"
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    checked={field.value?.includes(permission.id)}
+                                                                    onCheckedChange={(checked) => {
+                                                                        return checked
+                                                                            ? field.onChange([...(field.value || []), permission.id])
+                                                                            : field.onChange(
+                                                                                (field.value || []).filter(
+                                                                                    (value) => value !== permission.id
+                                                                                )
+                                                                            );
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel className="text-xs font-normal">
+                                                                {t(permission.labelKey, permission.labelKey.split('.').pop()?.replace(/_/g, ' ') || permission.id)}
+                                                            </FormLabel>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </ScrollArea>
+                            <FormMessage>{templateForm.formState.errors.permissions?.message}</FormMessage>
+                        </div>
+                        
+                        <DialogFooter className="md:col-span-3">
+                            <DialogClose asChild>
+                                <Button type="button" variant="outline" disabled={templateForm.formState.isSubmitting}>{t('settings_users.form_cancel_button', 'Cancel')}</Button>
+                            </DialogClose>
+                            <Button type="submit" disabled={templateForm.formState.isSubmitting}>
+                                {templateForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
+                                {templateForm.formState.isSubmitting ? t('settings_users.form_saving_button', 'Saving...') : (editingTemplate ? t('settings_users.form_update_template_button', 'Update Template') : t('settings_users.form_save_template_button', 'Save Template'))}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
     </div>
   );
 }
