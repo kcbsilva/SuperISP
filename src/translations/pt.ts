@@ -185,6 +185,8 @@ const pt = {
     business_number_placeholder: 'ex: XX.XXX.XXX/XXXX-XX',
     address_label: 'Endereço *',
     address_placeholder: 'Rua Principal, 123, Cidade, Estado 12345-678',
+    point_of_reference_label: 'Ponto de Referência (Opcional)',
+    point_of_reference_placeholder: 'ex: Próximo à casa vermelha',
     email_label: 'Email *',
     email_placeholder: 'assinante@exemplo.com',
     phone_label: 'Telefone Fixo *',

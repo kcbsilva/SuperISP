@@ -130,17 +130,19 @@ export default function PostgreSQLCliPage() {
             {isLoading ? t('postgresql_page.cli_executing_button', 'Executing...') : t('postgresql_page.cli_execute_button', 'Execute Command')}
           </Button>
 
-          {result && (
+          {(result || error) && (
             <div className="mt-4">
               <h3 className="text-xs font-semibold mb-1">{t('postgresql_page.cli_results_title', 'Results:')}</h3>
-              <pre className="bg-muted p-3 rounded-md text-xs max-h-60 overflow-auto">{result}</pre>
+              {error && (
+                <Alert variant="destructive" className="mb-2">
+                   <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription className="text-xs whitespace-pre-wrap">{error}</AlertDescription>
+                </Alert>
+              )}
+              {result && (
+                <pre className="bg-muted p-3 rounded-md text-xs max-h-60 overflow-auto whitespace-pre-wrap">{result}</pre>
+              )}
             </div>
-          )}
-          {error && (
-            <Alert variant="destructive" className="mt-4">
-               <AlertTriangle className="h-4 w-4" />
-              <AlertDescription className="text-xs">{error}</AlertDescription>
-            </Alert>
           )}
         </CardContent>
       </Card>

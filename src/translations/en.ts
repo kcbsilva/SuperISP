@@ -192,6 +192,8 @@ const en = {
      business_number_placeholder: 'e.g., XX-XXXXXXX',
      address_label: 'Address *',
      address_placeholder: '123 Main St, Anytown, USA 12345',
+     point_of_reference_label: 'Point of Reference (Optional)',
+     point_of_reference_placeholder: 'e.g., Next to the red house',
      email_label: 'Email *',
      email_placeholder: 'subscriber@example.com',
      phone_label: 'Phone Number *',
