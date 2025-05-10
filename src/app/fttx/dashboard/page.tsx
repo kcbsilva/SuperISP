@@ -49,7 +49,7 @@ export default function FTTxDashboardPage() {
 
       {/* OLT Summary Section */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <Network className={`${iconSize} text-primary`} />
             {t('fttx_dashboard.olt_summary_title', 'OLT Summary')}
@@ -95,7 +95,7 @@ export default function FTTxDashboardPage() {
       {/* ONx Status Overview Section */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
               <Wifi className={`${iconSize} text-primary`} />
               {t('fttx_dashboard.onx_status_title', 'ONx Status Overview')}
@@ -142,7 +142,7 @@ export default function FTTxDashboardPage() {
 
         {/* ONx Light Levels Section */}
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
               <Signal className={`${iconSize} text-primary`} />
               {t('fttx_dashboard.onx_light_levels_title', 'ONx Light Levels')}
