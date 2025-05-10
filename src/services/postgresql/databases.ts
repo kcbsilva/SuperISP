@@ -56,3 +56,31 @@ export async function getDatabases(): Promise<DatabaseInfo[]> {
     throw new Error(`Failed to fetch database list. Reason: ${e.message}`);
   }
 }
+
+export async function getCurrentDatabaseInfo(): Promise<DatabaseInfo | null> {
+  const configuredDbName = process.env.PGDATABASE;
+
+  if (!configuredDbName) {
+    console.warn("PGDATABASE environment variable is not set. Cannot get current database info.");
+    // This case might also be handled if getDatabases() fails due to getPool() throwing an error
+    // because PGDATABASE is part of the connection details.
+    // However, explicitly checking here provides a clearer warning.
+    return null;
+  }
+
+  try {
+    const allDatabases = await getDatabases(); // This will attempt to connect using PGDATABASE
+    const currentDbInfo = allDatabases.find(db => db.datname === configuredDbName);
+
+    if (!currentDbInfo) {
+      console.warn(`Database "${configuredDbName}" specified in PGDATABASE was not found in the list of databases from the server, or it's a template database.`);
+      return null;
+    }
+    return currentDbInfo;
+  } catch (error) {
+    // This catch block will handle errors from getDatabases (e.g., connection issues)
+    console.error(`Error fetching info for current database "${configuredDbName}":`, error);
+    // Re-throw the error so useQuery can handle it and display an error state in the UI
+    throw error;
+  }
+}

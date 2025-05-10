@@ -1019,8 +1019,8 @@ const fr = {
     add_db_error_toast_desc: 'Impossible de créer la base de données.',
     add_table_button: 'Ajouter Table',
     view_data_button: 'Voir Données',
-    no_databases_found: 'Aucune base de données trouvée ou connexion impossible.',
-    loading_databases_error: 'Erreur de chargement des bases de données: {message}',
+    no_databases_found: 'La base de données spécifiée dans votre configuration d\'environnement (PGDATABASE) n\'a pas été trouvée ou PGDATABASE n\'est pas défini. Veuillez vérifier votre fichier .env et vous assurer que la base de données existe et est accessible.',
+    loading_databases_error: 'Erreur de chargement des informations de la base de données: {message}',
     refreshing_databases_toast_title: 'Actualisation des bases de données...',
     refreshing_databases_toast_desc: 'Récupération de la dernière liste de bases de données.',
     refresh_databases_button: 'Actualiser',
@@ -1052,3 +1052,4 @@ const fr = {
 };
 
 export default fr;
+

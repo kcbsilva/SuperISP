@@ -1027,8 +1027,8 @@ const en = {
       add_db_error_toast_desc: 'Could not create the database.',
       add_table_button: 'Add Table',
       view_data_button: 'View Data',
-      no_databases_found: 'No databases found or unable to connect.',
-      loading_databases_error: 'Error loading databases: {message}',
+      no_databases_found: 'The database specified in your environment configuration (PGDATABASE) was not found or PGDATABASE is not set. Please check your .env file and ensure the database exists and is accessible.',
+      loading_databases_error: 'Error loading database information: {message}',
       refreshing_databases_toast_title: 'Refreshing Databases...',
       refreshing_databases_toast_desc: 'Fetching the latest list of databases.',
       refresh_databases_button: 'Refresh',
@@ -1060,3 +1060,4 @@ const en = {
 };
 
 export default en;
+
