@@ -961,10 +961,15 @@ const en = {
       permission_network_manage_olts: 'Manage OLTs',
       permission_finances_view_reports: 'View Financial Reports',
       permission_settings_manage_global: 'Manage Global Settings',
+      permission_pops_view: 'View PoPs',
+      permission_pops_add: 'Add PoPs',
+      permission_pops_edit: 'Edit PoPs',
+      permission_pops_delete: 'Delete PoPs',
       permission_group_subscribers: 'Subscribers',
       permission_group_network: 'Network',
       permission_group_finances: 'Finances',
       permission_group_settings: 'Settings',
+      permission_group_pops: 'PoPs',
     },
 };
 

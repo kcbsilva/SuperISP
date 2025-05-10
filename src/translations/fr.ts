@@ -953,10 +953,15 @@ const fr = {
     permission_network_manage_olts: 'Gérer les OLTs',
     permission_finances_view_reports: 'Voir les Rapports Financiers',
     permission_settings_manage_global: 'Gérer les Paramètres Globaux',
+    permission_pops_view: 'Voir les PoPs',
+    permission_pops_add: 'Ajouter des PoPs',
+    permission_pops_edit: 'Modifier les PoPs',
+    permission_pops_delete: 'Supprimer les PoPs',
     permission_group_subscribers: 'Abonnés',
     permission_group_network: 'Réseau',
     permission_group_finances: 'Finances',
     permission_group_settings: 'Paramètres',
+    permission_group_pops: 'PoPs',
   },
 };
 

@@ -84,6 +84,10 @@ const allPermissions = [
   { id: 'network_manage_olts', labelKey: 'settings_users.permission_network_manage_olts', group: 'Network' },
   { id: 'finances_view_reports', labelKey: 'settings_users.permission_finances_view_reports', group: 'Finances' },
   { id: 'settings_manage_global', labelKey: 'settings_users.permission_settings_manage_global', group: 'Settings' },
+  { id: 'pops_view', labelKey: 'settings_users.permission_pops_view', group: 'PoPs' },
+  { id: 'pops_add', labelKey: 'settings_users.permission_pops_add', group: 'PoPs' },
+  { id: 'pops_edit', labelKey: 'settings_users.permission_pops_edit', group: 'PoPs' },
+  { id: 'pops_delete', labelKey: 'settings_users.permission_pops_delete', group: 'PoPs' },
   // Add more permissions here, grouped by functionality
 ];
 
@@ -172,7 +176,7 @@ export default function UsersPage() {
                   <form className="space-y-4">
                     {permissionGroups.map(group => (
                       <div key={group}>
-                        <h3 className="text-xs font-medium mb-2 text-primary">{t(`settings_users.permission_group_${group.toLowerCase()}` as any, group)}</h3>
+                        <h3 className="text-xs font-medium mb-2 text-primary">{t(`settings_users.permission_group_${group.toLowerCase().replace(/\s+/g, '_')}` as any, group)}</h3>
                         <div className="space-y-2 pl-2">
                           {allPermissions.filter(p => p.group === group).map(permission => (
                             <FormField
