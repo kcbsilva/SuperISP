@@ -22,45 +22,45 @@ const en = {
     maps_elements_towers: 'Towers',
     maps_elements_cables: 'Cables',
     maps_map: 'Map',
-    fttx: 'FTTx', // Added FTTx
-    fttx_olts: 'OLTs', // Added OLTs
-    fttx_onu_templates: 'ONU Templates', // Added ONU Templates
+    fttx: 'FTTx', 
+    fttx_olts: 'OLTs', 
+    fttx_onx_templates: 'ONx Templates', // Changed from onu_templates
     zones: 'Zones',
     finances: 'Finances',
     finances_cash_book: 'Cash Book',
-    finances_entry_categories: 'Entry Categories', // Added
+    finances_entry_categories: 'Entry Categories', 
     finances_config: 'Financial Configurations',
-    inventory: 'Inventory', // Added Inventory
+    inventory: 'Inventory', 
     inventory_warehouses: 'Warehouses',
     inventory_suppliers: 'Suppliers',
     inventory_products: 'Products',
     inventory_manufacturers: 'Manufacturers',
     inventory_categories: 'Categories',
     reports: 'Reports',
-    hr: 'HR', // Added HR
-    hr_employees: 'Employees', // Added HR Employees
+    hr: 'HR', 
+    hr_employees: 'Employees', 
     security: 'Security',
     settings: 'Settings',
     settings_global: 'Global Settings',
     settings_business: 'Business',
     settings_business_pops: 'PoPs (Place of Presence)',
-    settings_plans: 'Plans', // Added
-    settings_plans_internet: 'Internet', // Added
-    settings_plans_tv: 'TV', // Added
-    settings_plans_mobile: 'Mobile', // Added
-    settings_plans_landline: 'Landline', // Added
-    settings_plans_combos: 'Combos', // Added
+    settings_plans: 'Plans', 
+    settings_plans_internet: 'Internet', 
+    settings_plans_tv: 'TV', 
+    settings_plans_mobile: 'Mobile', 
+    settings_plans_landline: 'Landline', 
+    settings_plans_combos: 'Combos', 
     settings_integrations: 'Integrations',
     settings_integrations_whatsapp: 'WhatsApp',
     settings_integrations_telegram: 'Telegram',
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
     settings_users: 'Users',
-    settings_system_monitor: 'System Monitor', // Added
-    postgresql: 'PostgreSQL', // Added
-    postgresql_databases: 'Databases', // Added
-    postgresql_tables: 'Tables', // Added
-    postgresql_cli: 'CLI', // Added
+    settings_system_monitor: 'System Monitor', 
+    postgresql: 'PostgreSQL', 
+    postgresql_databases: 'Databases', 
+    postgresql_tables: 'Tables', 
+    postgresql_cli: 'CLI', 
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Expand sidebar',
@@ -243,7 +243,7 @@ const en = {
    // Subscriber Profile Page
    subscriber_profile: {
      overview_tab: 'Overview',
-     contracts_tab: 'Contracts', // Added translation
+     contracts_tab: 'Contracts', 
      services_tab: 'Services',
      billing_tab: 'Billing',
      service_calls_tab: 'Service Calls',
@@ -256,7 +256,7 @@ const en = {
      overview_type: 'Type',
      overview_status: 'Status',
      overview_address: 'Address',
-     overview_point_of_reference: 'Point of Reference', // Added translation
+     overview_point_of_reference: 'Point of Reference', 
      overview_email: 'Email',
      overview_phone: 'Phone',
      overview_landline: 'Landline',
@@ -276,9 +276,9 @@ const en = {
      edit_toast_description: 'Editing for {name} is not yet functional.',
      delete_toast_title: 'Delete Subscriber (Not Implemented)',
      delete_toast_description: 'Deletion for {name} is not yet functional.',
-     contracts_card_title: 'Contracts', // Added translation
-     contracts_card_description: 'Manage contracts associated with this subscriber.', // Added translation
-     contracts_none: 'No contracts found for this subscriber.', // Added translation
+     contracts_card_title: 'Contracts', 
+     contracts_card_description: 'Manage contracts associated with this subscriber.', 
+     contracts_none: 'No contracts found for this subscriber.', 
      new_contract_button: 'New Contract',
      contracts_filter_all: 'All',
      contracts_filter_active: 'Active',
@@ -489,7 +489,7 @@ const en = {
      add_element_tooltip: 'Add a new network element to the map',
      add_cable_tooltip: 'Add Cable',
      add_fosc_tooltip: 'Add FDH',
-     add_fdh_tooltip: 'Add FDH', // Added specific for FDH
+     add_fdh_tooltip: 'Add FDH', 
      add_poll_tooltip: 'Add Hydro Poll',
      add_tower_tooltip: 'Add Tower',
      add_pop_tooltip: 'Add PoP',
@@ -729,13 +729,13 @@ const en = {
       export_linux: "Linux",
       export_mikrotik: "MikroTik",
     },
-    onu_templates: {
-      title: 'ONU Templates',
+    onx_templates: { // Changed from onu_templates
+      title: 'ONx Templates',
       add_template_button: 'Add Template',
       refresh_button: 'Refresh',
-      form_title_add: 'Add New ONU Template',
-      form_title_edit: 'Edit ONU Template',
-      form_description: 'Configure provisioning scripts for ONUs.',
+      form_title_add: 'Add New ONx Template',
+      form_title_edit: 'Edit ONx Template',
+      form_description: 'Configure provisioning scripts for ONx devices.',
       form_template_name_label: 'Template Name',
       form_template_name_placeholder: 'e.g., Fiberhome Residential',
       form_manufacturer_label: 'Manufacturer',
@@ -751,20 +751,20 @@ const en = {
       form_update_button: 'Update Template',
       form_saving_button: 'Saving...',
       add_success_title: 'Template Added',
-      add_success_description: 'ONU template "{name}" has been added.',
+      add_success_description: 'ONx template "{name}" has been added.',
       update_success_title: 'Template Updated',
-      update_success_description: 'ONU template "{name}" has been updated.',
+      update_success_description: 'ONx template "{name}" has been updated.',
       delete_success_title: 'Template Deleted',
-      delete_success_description: 'ONU template "{name}" has been deleted.',
+      delete_success_description: 'ONx template "{name}" has been deleted.',
       error_title: 'Error',
-      error_add_description: 'Could not add ONU template.',
-      error_update_description: 'Could not update ONU template.',
-      error_delete_description: 'Could not delete ONU template.',
+      error_add_description: 'Could not add ONx template.',
+      error_update_description: 'Could not update ONx template.',
+      error_delete_description: 'Could not delete ONx template.',
       table_header_name: 'Template Name',
       table_header_manufacturer: 'Manufacturer',
       table_header_model: 'Model',
       table_header_actions: 'Actions',
-      no_templates_found: 'No ONU templates found. Click "Add Template" to create one.',
+      no_templates_found: 'No ONx templates found. Click "Add Template" to create one.',
       confirm_delete_title: 'Are you sure?',
       confirm_delete_description: 'This action is irreversible. This will permanently delete the template "{name}".',
       tab_provisioning: 'Provisioning Script',
@@ -776,6 +776,9 @@ const en = {
       success_condition_type_not_contains: 'Response DOES NOT CONTAIN',
       success_condition_text_label: 'The following text:',
       success_condition_text_placeholder: 'e.g., success, completed',
+      action_edit: 'Edit', // Added specific for ONx template actions
+      action_delete: 'Delete', // Added specific for ONx template actions
+      delete_confirm_delete: 'Delete', // Added specific for ONx template actions
     },
     fttx_olts: {
       title: 'Optical Line Terminals (OLTs)',
@@ -988,7 +991,7 @@ const en = {
       permission_group_settings: 'Settings',
       permission_group_pops: 'PoPs',
     },
-    system_monitor: { // Added
+    system_monitor: { 
       cpu_usage: 'CPU Usage',
       ram_usage: 'RAM Usage',
       ssd_usage: 'SSD Usage',
@@ -1001,7 +1004,7 @@ const en = {
       live_logs_title: 'Live Logs (Placeholder)',
       live_logs_description: 'This section would display real-time system logs.',
     },
-    postgresql_page: { // Added
+    postgresql_page: { 
       title: 'PostgreSQL Management',
       databases_title: 'Databases',
       databases_list_title: 'Database List',

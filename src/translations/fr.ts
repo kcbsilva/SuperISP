@@ -24,7 +24,7 @@ const fr = {
     maps_map: 'Carte',
     fttx: 'FTTx',
     fttx_olts: 'OLTs',
-    fttx_onu_templates: 'Modèles ONU',
+    fttx_onx_templates: 'Modèles ONx', // Changed
     zones: 'Zones',
     finances: 'Finances',
     finances_cash_book: 'Livre de caisse',
@@ -55,12 +55,12 @@ const fr = {
     settings_integrations_telegram: 'Telegram',
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
-    settings_users: 'Utilisateurs', // Added Users translation
-    settings_system_monitor: 'Moniteur Système', // Added
-    postgresql: 'PostgreSQL', // Added
-    postgresql_databases: 'Bases de données', // Added
-    postgresql_tables: 'Tables', // Added
-    postgresql_cli: 'CLI', // Added
+    settings_users: 'Utilisateurs', 
+    settings_system_monitor: 'Moniteur Système', 
+    postgresql: 'PostgreSQL', 
+    postgresql_databases: 'Bases de données', 
+    postgresql_tables: 'Tables', 
+    postgresql_cli: 'CLI', 
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Agrandir la barre latérale',
@@ -481,7 +481,7 @@ const fr = {
      add_element_tooltip: 'Ajouter un nouvel élément réseau à la carte',
      add_cable_tooltip: 'Ajouter un câble',
      add_fosc_tooltip: 'Ajouter un FDH',
-     add_fdh_tooltip: 'Ajouter un FDH', // Added specific for FDH
+     add_fdh_tooltip: 'Ajouter un FDH', 
      add_poll_tooltip: 'Ajouter un poteau Hydro',
      add_tower_tooltip: 'Ajouter une tour',
      add_pop_tooltip: 'Ajouter un PoP',
@@ -721,13 +721,13 @@ const fr = {
     export_linux: "Linux",
     export_mikrotik: "MikroTik",
   },
-  onu_templates: {
-    title: 'Modèles ONU',
+  onx_templates: { // Changed from onu_templates
+    title: 'Modèles ONx',
     add_template_button: 'Ajouter un Modèle',
     refresh_button: 'Actualiser',
-    form_title_add: 'Ajouter un Nouveau Modèle ONU',
-    form_title_edit: 'Modifier le Modèle ONU',
-    form_description: 'Configurer les scripts de provisionnement pour les ONU.',
+    form_title_add: 'Ajouter un Nouveau Modèle ONx',
+    form_title_edit: 'Modifier le Modèle ONx',
+    form_description: 'Configurer les scripts de provisionnement pour les appareils ONx.',
     form_template_name_label: 'Nom du Modèle',
     form_template_name_placeholder: 'ex: Fiberhome Résidentiel',
     form_manufacturer_label: 'Fabricant',
@@ -743,20 +743,20 @@ const fr = {
     form_update_button: 'Mettre à Jour le Modèle',
     form_saving_button: 'Enregistrement...',
     add_success_title: 'Modèle Ajouté',
-    add_success_description: 'Le modèle ONU "{name}" a été ajouté.',
+    add_success_description: 'Le modèle ONx "{name}" a été ajouté.',
     update_success_title: 'Modèle Mis à Jour',
-    update_success_description: 'Le modèle ONU "{name}" a été mis à jour.',
+    update_success_description: 'Le modèle ONx "{name}" a été mis à jour.',
     delete_success_title: 'Modèle Supprimé',
-    delete_success_description: 'Le modèle ONU "{name}" a été supprimé.',
+    delete_success_description: 'Le modèle ONx "{name}" a été supprimé.',
     error_title: 'Erreur',
-    error_add_description: 'Impossible d\'ajouter le modèle ONU.',
-    error_update_description: 'Impossible de mettre à jour le modèle ONU.',
-    error_delete_description: 'Impossible de supprimer le modèle ONU.',
+    error_add_description: 'Impossible d\'ajouter le modèle ONx.',
+    error_update_description: 'Impossible de mettre à jour le modèle ONx.',
+    error_delete_description: 'Impossible de supprimer le modèle ONx.',
     table_header_name: 'Nom du Modèle',
     table_header_manufacturer: 'Fabricant',
     table_header_model: 'Modèle',
     table_header_actions: 'Actions',
-    no_templates_found: 'Aucun modèle ONU trouvé. Cliquez sur "Ajouter un Modèle" pour en créer un.',
+    no_templates_found: 'Aucun modèle ONx trouvé. Cliquez sur "Ajouter un Modèle" pour en créer un.',
     confirm_delete_title: 'Êtes-vous sûr?',
     confirm_delete_description: 'Cette action est irréversible. Cela supprimera définitivement le modèle "{name}".',
     tab_provisioning: 'Script de Provisionnement',
@@ -768,6 +768,9 @@ const fr = {
     success_condition_type_not_contains: 'La réponse NE CONTIENT PAS',
     success_condition_text_label: 'Le texte suivant :',
     success_condition_text_placeholder: 'ex: success, completed',
+    action_edit: 'Modifier',
+    action_delete: 'Supprimer',
+    delete_confirm_delete: 'Supprimer',
   },
   fttx_olts: {
     title: 'Terminaux de Ligne Optique (OLT)',
@@ -980,7 +983,7 @@ const fr = {
     permission_group_settings: 'Paramètres',
     permission_group_pops: 'PoPs',
   },
-  system_monitor: { // Added
+  system_monitor: { 
     cpu_usage: 'Utilisation CPU',
     ram_usage: 'Utilisation RAM',
     ssd_usage: 'Utilisation SSD',
@@ -993,7 +996,7 @@ const fr = {
     live_logs_title: 'Logs en Direct (Espace réservé)',
     live_logs_description: 'Cette section afficherait les logs système en temps réel.',
   },
-  postgresql_page: { // Added
+  postgresql_page: { 
     title: 'Gestion PostgreSQL',
     databases_title: 'Bases de données',
     databases_list_title: 'Liste des Bases de Données',
@@ -1012,7 +1015,7 @@ const fr = {
     table_header_schema: 'Schéma',
     table_header_rows: 'Lignes',
     table_header_size: 'Taille',
-    table_header_actions: 'Actions',
+    table_header_actions: 'Ações',
     add_database_button: 'Ajouter BDD',
     add_database_dialog_title: 'Ajouter une Nouvelle Base de Données',
     add_database_dialog_description: 'Entrez le nom de la nouvelle base de données PostgreSQL.',

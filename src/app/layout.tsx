@@ -39,7 +39,7 @@ import {
   Factory, // Icon for Manufacturers
   Package as PackageIcon, // Icon for Products
   Truck, // Icon for Suppliers (using Truck as an example, can be changed)
-  FileText as FileTextIcon, // for ONU Templates
+  FileText as FileTextIcon, // for ONx Templates
   GitBranch, // for FTTx
   Network as NetworkIcon, // For OLTs (using a generic Network icon for now)
   Sun, // For theme toggle
@@ -52,9 +52,6 @@ import {
   Table as TableIcon, // For PostgreSQL Tables
   TerminalSquare, // Added for PostgreSQL CLI
 } from 'lucide-react';
-
-// Removed: import prolterLogoSrc from '@/app/assets/prolter-logo.svg';
-// Removed: import Image from 'next/image'; // Not used for the inline SVG logo
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -81,7 +78,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
 import { Progress } from '@/components/ui/progress'; // Import Progress component
 import { LocaleProvider, useLocale } from '@/contexts/LocaleContext'; // Import LocaleProvider and useLocale
-import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes'; // Corrected import for ThemeProvider and useTheme
+import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 
 
 // Create a client
@@ -94,7 +91,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const [progress, setProgress] = useState(0);
   const { t } = useLocale(); // Get translation function
   const { theme } = useTheme();
-  const [logoFillColor, setLogoFillColor] = useState<string>('hsl(var(--secondary))'); // Default to light theme color (secondary)
+  const [logoFillColor, setLogoFillColor] = useState<string>('hsl(var(--secondary))');
 
 
   // Simulate loading progress on route change
@@ -131,23 +128,20 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   // Check if the current route is the map page
   const isMapPage = pathname === '/maps/map';
 
-  const iconSize = "h-3 w-3"; // Reduced icon size for sidebar
-  const subIconSize = "h-2.5 w-2.5"; // Reduced icon size for submenu items
+  const iconSize = "h-3 w-3";
+  const subIconSize = "h-2.5 w-2.5";
 
   useEffect(() => {
-    // Update logo fill color based on theme
-    // Ensure theme is loaded and window is defined to avoid SSR issues with getComputedStyle
     if (typeof window !== 'undefined' && theme) {
       const newFillColor = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-        ? 'hsl(var(--accent))' // Accent color for dark theme (#FCA311)
-        : 'hsl(var(--secondary))'; // Secondary color for light theme (#14213D)
+        ? 'hsl(var(--accent))'
+        : 'hsl(var(--secondary))';
       setLogoFillColor(newFillColor);
     }
   }, [theme]);
 
 
   return (
-    // TooltipProvider needs to wrap the entire layout content where tooltips are used
     <TooltipProvider>
       <SidebarProvider side="left" collapsible='none'>
         <Sidebar>
@@ -155,14 +149,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <Link
               href="/"
               className="flex items-center justify-center px-2 py-2"
+              style={{ width: '131px', height: '32px' }}
             >
               <svg
-                width="131"
-                height="32"
+                width="100%" 
+                height="100%"
                 viewBox="0 0 131 32"
-                // fill="none" // Removed redundant fill attribute
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ fill: logoFillColor }} // Apply dynamic fill color here
+                style={{ fill: logoFillColor }}
               >
                 <path d="M21.0938 18.375H18.2188V27H15.25V18.375H12.375V15.875H15.25V11.6562C15.25 9.5625 16.3438 8.03125 18.5312 8.03125L21.25 8.0625V10.625H19.5C18.8125 10.625 18.2188 10.9688 18.2188 11.8438V15.875H21.2188L21.0938 18.375Z" />
                 <path d="M33.2812 20.0625C33.1875 20.0938 33.0938 20.0938 33 20.125C31.6562 20.7812 30.0938 21.125 28.3438 21.125C24.5312 21.125 22.1562 18.5312 22.1562 14.5312C22.1562 10.5312 24.5312 7.9375 28.3438 7.9375C30.0938 7.9375 31.6562 8.28125 33 8.9375C33.0938 8.96875 33.1875 8.96875 33.2812 9V11.4375C33.1875 11.4062 33.0938 11.4062 33 11.375C32.0312 10.9062 30.8438 10.5 29.5312 10.5C27.2812 10.5 26.0312 12.0312 26.0312 14.5312C26.0312 17.0312 27.2812 18.5625 29.5312 18.5625C30.8438 18.5625 32.0312 18.1562 33 17.6875C33.0938 17.6562 33.1875 17.6562 33.2812 17.625V20.0625Z" />
@@ -202,7 +196,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/subscribers/list" className="flex items-center gap-2">
                     <Users className={iconSize} />
                     <span className="truncate">{t('sidebar.subscribers')}</span>
-                    {/* Removed ChevronDown */}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -338,10 +331,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/fttx/onu-templates')} size="sm" tooltip={t('sidebar.fttx_onu_templates', 'ONU Templates')}>
-                        <Link href="/fttx/onu-templates" className="flex items-center gap-2">
+                      <SidebarMenuButton asChild isActive={isActive('/fttx/onx-templates')} size="sm" tooltip={t('sidebar.fttx_onx_templates', 'ONx Templates')}>
+                        <Link href="/fttx/onx-templates" className="flex items-center gap-2">
                           <FileTextIcon className={subIconSize + " text-muted-foreground"} />
-                          <span>{t('sidebar.fttx_onu_templates', 'ONU Templates')}</span>
+                          <span>{t('sidebar.fttx_onx_templates', 'ONx Templates')}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -464,7 +457,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <TooltipTrigger asChild>
                       <SidebarMenuSubTrigger tooltip={t('sidebar.hr', 'HR')}>
                         <div className="flex items-center gap-2 cursor-pointer">
-                          <Briefcase className={iconSize}/> {/* Using Briefcase icon for HR */}
+                          <Briefcase className={iconSize}/>
                           <span className="truncate">{t('sidebar.hr', 'HR')}</span>
                           <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                         </div>
@@ -838,7 +831,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/zones')} tooltip={t('sidebar.zones', 'Zones')}>
                   <Link href="#" className="flex items-center gap-2">
-                    <SiNextdns className={iconSize} /> {/* Using Dna icon for DNS */}
+                    <SiNextdns className={iconSize} />
                     <span>{t('sidebar.zones', 'Zones')}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -851,14 +844,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset noMargin={isMapPage}> {/* Pass noMargin prop */}
+        <SidebarInset noMargin={isMapPage}>
           <div className="fixed top-0 left-0 w-full z-50 h-1">
             {isLoading && <Progress value={progress} className="w-full h-1 rounded-none bg-transparent [&>*]:bg-accent" indicatorClassName="bg-accent" />}
           </div>
-          {/* Conditionally render the AppHeader */}
           {!isMapPage && <AppHeader />}
-          {/* Adjust padding for main content area */}
-          <div className={isMapPage ? 'p-0' : 'p-4 md:p-6 md:pl-5'}> {/* Reduced left padding for medium screens */}
+          <div className={isMapPage ? 'p-0' : 'p-4 md:p-6 md:pl-5'}>
               {children}
            </div>
            <Toaster />
@@ -876,10 +867,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning> {/* Add suppressHydrationWarning */}
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`antialiased`}
-        suppressHydrationWarning /* Add suppressHydrationWarning */
+        suppressHydrationWarning
       >
         <NextThemesProvider
           attribute="class"
@@ -888,8 +879,8 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryClientProvider client={queryClient}>
-            <LocaleProvider> {/* Wrap with LocaleProvider */}
-                <AppLayout>{children}</AppLayout> {/* Use inner layout component */}
+            <LocaleProvider>
+                <AppLayout>{children}</AppLayout>
             </LocaleProvider>
           </QueryClientProvider>
         </NextThemesProvider>

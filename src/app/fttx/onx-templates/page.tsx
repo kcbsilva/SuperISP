@@ -1,4 +1,4 @@
-// src/app/fttx/onu-templates/page.tsx
+// src/app/fttx/onx-templates/page.tsx
 'use client';
 
 import * as React from 'react';
@@ -57,16 +57,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Added Tabs
-import { PlusCircle, Edit, Trash2, Loader2, RefreshCw, FileText as FileTextIcon, FileX as FileXIcon, CheckCircle, XCircle } from 'lucide-react'; // Added more icons
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PlusCircle, Edit, Trash2, Loader2, RefreshCw, FileText as FileTextIcon, FileX as FileXIcon, CheckCircle, XCircle } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
-// Schema for ONU Template
-const onuTemplateSchema = z.object({
+// Schema for ONx Template
+const onxTemplateSchema = z.object({
   templateName: z.string().min(1, "Template name is required."),
   manufacturer: z.string().min(1, "Manufacturer is required."),
   model: z.string().min(1, "Model is required."),
@@ -76,14 +76,14 @@ const onuTemplateSchema = z.object({
   successConditionText: z.string().min(1, "Success condition text is required."),
 });
 
-type OnuTemplateFormData = z.infer<typeof onuTemplateSchema>;
+type OnxTemplateFormData = z.infer<typeof onxTemplateSchema>;
 
-interface OnuTemplate extends OnuTemplateFormData {
+interface OnxTemplate extends OnxTemplateFormData {
   id: string;
   createdAt: Date;
 }
 
-const placeholderTemplates: OnuTemplate[] = [
+const placeholderTemplates: OnxTemplate[] = [
   { id: 'tpl-1', templateName: 'Fiberhome GPON Residential', manufacturer: 'Fiberhome', model: 'AN5506-01-A1', provisioningScript: '# Sample Provisioning Script\ncd onu\nset whitelist phy_addr address {{onuSerial}} action add slot {{slot}} pon {{port}} onu {{onuId}} type {{model}}', unprovisioningScript: '# Sample Unprovisioning Script\ncd onu\ndelete whitelist phy_addr address {{onuSerial}}', successConditionType: 'responseContains', successConditionText: 'success', createdAt: new Date() },
   { id: 'tpl-2', templateName: 'Huawei EPON Business', manufacturer: 'Huawei', model: 'HG8245H', provisioningScript: '# Another Sample Provisioning Script\nconfig\ninterface gpon 0/{{slot}}\nonu add {{port}} {{onuId}} sn {{onuSerial}} type {{model}}\nquit', successConditionType: 'responseDoesNotContain', successConditionText: 'error', createdAt: new Date(Date.now() - 86400000) },
 ];
@@ -91,20 +91,20 @@ const placeholderTemplates: OnuTemplate[] = [
 const manufacturers = ["Fiberhome", "Huawei", "ZTE", "Nokia", "Ubiquiti"];
 
 
-export default function OnuTemplatesPage() {
+export default function OnxTemplatesPage() {
   const { t } = useLocale();
   const { toast } = useToast();
-  const [templates, setTemplates] = React.useState<OnuTemplate[]>(placeholderTemplates);
+  const [templates, setTemplates] = React.useState<OnxTemplate[]>(placeholderTemplates);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [editingTemplate, setEditingTemplate] = React.useState<OnuTemplate | null>(null);
-  const [templateToDelete, setTemplateToDelete] = React.useState<OnuTemplate | null>(null);
+  const [editingTemplate, setEditingTemplate] = React.useState<OnxTemplate | null>(null);
+  const [templateToDelete, setTemplateToDelete] = React.useState<OnxTemplate | null>(null);
 
   const iconSize = "h-3 w-3";
   const tabIconSize = "h-2.5 w-2.5";
 
 
-  const form = useForm<OnuTemplateFormData>({
-    resolver: zodResolver(onuTemplateSchema),
+  const form = useForm<OnxTemplateFormData>({
+    resolver: zodResolver(onxTemplateSchema),
     defaultValues: {
       templateName: '',
       manufacturer: '',
@@ -125,23 +125,23 @@ export default function OnuTemplatesPage() {
     }
   }, [editingTemplate, form]);
 
-  const handleFormSubmit = (data: OnuTemplateFormData) => {
+  const handleFormSubmit = (data: OnxTemplateFormData) => {
     if (editingTemplate) {
       setTemplates(prev => prev.map(tpl => tpl.id === editingTemplate.id ? { ...tpl, ...data } : tpl));
       toast({
-        title: t('onu_templates.update_success_title', 'Template Updated'),
-        description: t('onu_templates.update_success_description', 'ONU template "{name}" has been updated.').replace('{name}', data.templateName),
+        title: t('onx_templates.update_success_title', 'Template Updated'),
+        description: t('onx_templates.update_success_description', 'ONx template "{name}" has been updated.').replace('{name}', data.templateName),
       });
     } else {
-      const newTemplate: OnuTemplate = {
+      const newTemplate: OnxTemplate = {
         ...data,
         id: `tpl-${Date.now()}`,
         createdAt: new Date(),
       };
       setTemplates(prev => [newTemplate, ...prev]);
       toast({
-        title: t('onu_templates.add_success_title', 'Template Added'),
-        description: t('onu_templates.add_success_description', 'ONU template "{name}" has been added.').replace('{name}', data.templateName),
+        title: t('onx_templates.add_success_title', 'Template Added'),
+        description: t('onx_templates.add_success_description', 'ONx template "{name}" has been added.').replace('{name}', data.templateName),
       });
     }
     form.reset();
@@ -149,7 +149,7 @@ export default function OnuTemplatesPage() {
     setIsModalOpen(false);
   };
 
-  const handleEdit = (template: OnuTemplate) => {
+  const handleEdit = (template: OnxTemplate) => {
     setEditingTemplate(template);
   };
 
@@ -157,8 +157,8 @@ export default function OnuTemplatesPage() {
     if (templateToDelete) {
       setTemplates(prev => prev.filter(tpl => tpl.id !== templateToDelete.id));
       toast({
-        title: t('onu_templates.delete_success_title', 'Template Deleted'),
-        description: t('onu_templates.delete_success_description', 'ONU template "{name}" has been deleted.').replace('{name}', templateToDelete.templateName),
+        title: t('onx_templates.delete_success_title', 'Template Deleted'),
+        description: t('onx_templates.delete_success_description', 'ONx template "{name}" has been deleted.').replace('{name}', templateToDelete.templateName),
         variant: 'destructive',
       });
       setTemplateToDelete(null);
@@ -168,10 +168,10 @@ export default function OnuTemplatesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-base font-semibold">{t('onu_templates.title', 'ONU Templates')}</h1>
+        <h1 className="text-base font-semibold">{t('onx_templates.title', 'ONx Templates')}</h1>
         <div className="flex items-center gap-2">
             <Button variant="default" className="bg-primary hover:bg-primary/90">
-                <RefreshCw className={`mr-2 ${iconSize}`} /> {t('onu_templates.refresh_button', 'Refresh')}
+                <RefreshCw className={`mr-2 ${iconSize}`} /> {t('onx_templates.refresh_button', 'Refresh')}
             </Button>
              <Dialog open={isModalOpen} onOpenChange={(isOpen) => {
                  setIsModalOpen(isOpen);
@@ -179,13 +179,13 @@ export default function OnuTemplatesPage() {
              }}>
                 <DialogTrigger asChild>
                     <Button className="bg-green-600 hover:bg-green-700 text-white">
-                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('onu_templates.add_template_button', 'Add Template')}
+                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('onx_templates.add_template_button', 'Add Template')}
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
-                        <DialogTitle className="text-sm">{editingTemplate ? t('onu_templates.form_title_edit', 'Edit ONU Template') : t('onu_templates.form_title_add', 'Add New ONU Template')}</DialogTitle>
-                        <DialogDescription className="text-xs">{t('onu_templates.form_description', 'Configure provisioning scripts for ONUs.')}</DialogDescription>
+                        <DialogTitle className="text-sm">{editingTemplate ? t('onx_templates.form_title_edit', 'Edit ONx Template') : t('onx_templates.form_title_add', 'Add New ONx Template')}</DialogTitle>
+                        <DialogDescription className="text-xs">{t('onx_templates.form_description', 'Configure provisioning scripts for ONx devices.')}</DialogDescription>
                     </DialogHeader>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleFormSubmit)} className="grid gap-4 py-4">
@@ -194,9 +194,9 @@ export default function OnuTemplatesPage() {
                                 name="templateName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t('onu_templates.form_template_name_label', 'Template Name')}</FormLabel>
+                                        <FormLabel>{t('onx_templates.form_template_name_label', 'Template Name')}</FormLabel>
                                         <FormControl>
-                                            <Input placeholder={t('onu_templates.form_template_name_placeholder', 'e.g., Fiberhome Residential')} {...field} />
+                                            <Input placeholder={t('onx_templates.form_template_name_placeholder', 'e.g., Fiberhome Residential')} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -208,11 +208,11 @@ export default function OnuTemplatesPage() {
                                     name="manufacturer"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{t('onu_templates.form_manufacturer_label', 'Manufacturer')}</FormLabel>
+                                            <FormLabel>{t('onx_templates.form_manufacturer_label', 'Manufacturer')}</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder={t('onu_templates.form_manufacturer_placeholder', 'Select Manufacturer')} />
+                                                        <SelectValue placeholder={t('onx_templates.form_manufacturer_placeholder', 'Select Manufacturer')} />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
@@ -228,9 +228,9 @@ export default function OnuTemplatesPage() {
                                     name="model"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{t('onu_templates.form_model_label', 'Model')}</FormLabel>
+                                            <FormLabel>{t('onx_templates.form_model_label', 'Model')}</FormLabel>
                                             <FormControl>
-                                                <Input placeholder={t('onu_templates.form_model_placeholder', 'e.g., 5506-01-A1')} {...field} />
+                                                <Input placeholder={t('onx_templates.form_model_placeholder', 'e.g., 5506-01-A1')} {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -241,10 +241,10 @@ export default function OnuTemplatesPage() {
                             <Tabs defaultValue="provisioning">
                                 <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="provisioning">
-                                      <FileTextIcon className={`mr-1.5 ${tabIconSize}`} /> {t('onu_templates.tab_provisioning', 'Provisioning Script')}
+                                      <FileTextIcon className={`mr-1.5 ${tabIconSize}`} /> {t('onx_templates.tab_provisioning', 'Provisioning Script')}
                                     </TabsTrigger>
                                     <TabsTrigger value="unprovisioning">
-                                      <FileXIcon className={`mr-1.5 ${tabIconSize}`} /> {t('onu_templates.tab_unprovisioning', 'Unprovisioning Script')}
+                                      <FileXIcon className={`mr-1.5 ${tabIconSize}`} /> {t('onx_templates.tab_unprovisioning', 'Unprovisioning Script')}
                                     </TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="provisioning">
@@ -253,9 +253,8 @@ export default function OnuTemplatesPage() {
                                         name="provisioningScript"
                                         render={({ field }) => (
                                             <FormItem className="mt-4">
-                                                {/* <FormLabel>{t('onu_templates.form_script_label', 'Provisioning Script')}</FormLabel> */}
                                                 <FormControl>
-                                                    <Textarea placeholder={t('onu_templates.form_script_placeholder', 'Enter provisioning script template here...')} {...field} rows={10} className="font-mono text-xs"/>
+                                                    <Textarea placeholder={t('onx_templates.form_script_placeholder', 'Enter provisioning script template here...')} {...field} rows={10} className="font-mono text-xs"/>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -268,9 +267,8 @@ export default function OnuTemplatesPage() {
                                         name="unprovisioningScript"
                                         render={({ field }) => (
                                             <FormItem className="mt-4">
-                                                {/* <FormLabel>{t('onu_templates.form_unprovisioning_script_label', 'Unprovisioning Script (Optional)')}</FormLabel> */}
                                                 <FormControl>
-                                                    <Textarea placeholder={t('onu_templates.form_unprovisioning_script_placeholder', 'Enter unprovisioning script template here...')} {...field} rows={10} className="font-mono text-xs"/>
+                                                    <Textarea placeholder={t('onx_templates.form_unprovisioning_script_placeholder', 'Enter unprovisioning script template here...')} {...field} rows={10} className="font-mono text-xs"/>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -280,23 +278,23 @@ export default function OnuTemplatesPage() {
                             </Tabs>
                             
                             <Card className="mt-2 p-4">
-                                <FormLabel className="text-xs font-medium mb-2 block">{t('onu_templates.success_condition_label', 'Success Condition')}</FormLabel>
+                                <FormLabel className="text-xs font-medium mb-2 block">{t('onx_templates.success_condition_label', 'Success Condition')}</FormLabel>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                      <FormField
                                         control={form.control}
                                         name="successConditionType"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-xs">{t('onu_templates.success_condition_type_label', 'Consider successful if:')}</FormLabel>
+                                                <FormLabel className="text-xs">{t('onx_templates.success_condition_type_label', 'Consider successful if:')}</FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder={t('onu_templates.success_condition_type_placeholder', 'Select condition type')} />
+                                                            <SelectValue placeholder={t('onx_templates.success_condition_type_placeholder', 'Select condition type')} />
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
-                                                        <SelectItem value="responseContains">{t('onu_templates.success_condition_type_contains', 'Response CONTAINS')}</SelectItem>
-                                                        <SelectItem value="responseDoesNotContain">{t('onu_templates.success_condition_type_not_contains', 'Response DOES NOT CONTAIN')}</SelectItem>
+                                                        <SelectItem value="responseContains">{t('onx_templates.success_condition_type_contains', 'Response CONTAINS')}</SelectItem>
+                                                        <SelectItem value="responseDoesNotContain">{t('onx_templates.success_condition_type_not_contains', 'Response DOES NOT CONTAIN')}</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                                 <FormMessage />
@@ -308,9 +306,9 @@ export default function OnuTemplatesPage() {
                                         name="successConditionText"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-xs">{t('onu_templates.success_condition_text_label', 'The following text:')}</FormLabel>
+                                                <FormLabel className="text-xs">{t('onx_templates.success_condition_text_label', 'The following text:')}</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder={t('onu_templates.success_condition_text_placeholder', 'e.g., success, completed')} {...field} />
+                                                    <Input placeholder={t('onx_templates.success_condition_text_placeholder', 'e.g., success, completed')} {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -322,11 +320,11 @@ export default function OnuTemplatesPage() {
 
                             <DialogFooter className="mt-4">
                                 <DialogClose asChild>
-                                    <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>{t('onu_templates.form_cancel_button', 'Cancel')}</Button>
+                                    <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>{t('onx_templates.form_cancel_button', 'Cancel')}</Button>
                                 </DialogClose>
                                 <Button type="submit" disabled={form.formState.isSubmitting}>
                                     {form.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                                    {form.formState.isSubmitting ? t('onu_templates.form_saving_button', 'Saving...') : (editingTemplate ? t('onu_templates.form_update_button', 'Update Template') : t('onu_templates.form_save_button', 'Save Template'))}
+                                    {form.formState.isSubmitting ? t('onx_templates.form_saving_button', 'Saving...') : (editingTemplate ? t('onx_templates.form_update_button', 'Update Template') : t('onx_templates.form_save_button', 'Save Template'))}
                                 </Button>
                             </DialogFooter>
                         </form>
@@ -342,10 +340,10 @@ export default function OnuTemplatesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-xs">{t('onu_templates.table_header_name', 'Template Name')}</TableHead>
-                  <TableHead className="text-xs">{t('onu_templates.table_header_manufacturer', 'Manufacturer')}</TableHead>
-                  <TableHead className="text-xs">{t('onu_templates.table_header_model', 'Model')}</TableHead>
-                  <TableHead className="text-right w-28 text-xs">{t('onu_templates.table_header_actions', 'Actions')}</TableHead>
+                  <TableHead className="text-xs">{t('onx_templates.table_header_name', 'Template Name')}</TableHead>
+                  <TableHead className="text-xs">{t('onx_templates.table_header_manufacturer', 'Manufacturer')}</TableHead>
+                  <TableHead className="text-xs">{t('onx_templates.table_header_model', 'Model')}</TableHead>
+                  <TableHead className="text-right w-28 text-xs">{t('onx_templates.table_header_actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -358,24 +356,24 @@ export default function OnuTemplatesPage() {
                       <TableCell className="text-right">
                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEdit(template)}>
                                 <Edit className={iconSize} />
-                                <span className="sr-only">{t('entry_categories.action_edit', 'Edit')}</span>
+                                <span className="sr-only">{t('onx_templates.action_edit', 'Edit')}</span>
                             </Button>
                              <AlertDialog>
                                <AlertDialogTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10">
                                     <Trash2 className={iconSize} />
-                                    <span className="sr-only">{t('entry_categories.action_delete', 'Delete')}</span>
+                                    <span className="sr-only">{t('onx_templates.action_delete', 'Delete')}</span>
                                 </Button>
                                </AlertDialogTrigger>
                                <AlertDialogContent>
                                  <AlertDialogHeader>
-                                   <AlertDialogTitle>{t('onu_templates.confirm_delete_title', 'Are you sure?')}</AlertDialogTitle>
+                                   <AlertDialogTitle>{t('onx_templates.confirm_delete_title', 'Are you sure?')}</AlertDialogTitle>
                                    <AlertDialogDescription className="text-xs">
-                                     {t('onu_templates.confirm_delete_description', 'This action cannot be undone. This will permanently delete the template "{name}".').replace('{name}', template.templateName)}
+                                     {t('onx_templates.confirm_delete_description', 'This action cannot be undone. This will permanently delete the template "{name}".').replace('{name}', template.templateName)}
                                    </AlertDialogDescription>
                                  </AlertDialogHeader>
                                  <AlertDialogFooter>
-                                   <AlertDialogCancel onClick={() => setTemplateToDelete(null)}>{t('onu_templates.form_cancel_button', 'Cancel')}</AlertDialogCancel>
+                                   <AlertDialogCancel onClick={() => setTemplateToDelete(null)}>{t('onx_templates.form_cancel_button', 'Cancel')}</AlertDialogCancel>
                                    <AlertDialogAction
                                      className={buttonVariants({ variant: "destructive" })}
                                      onClick={() => {
@@ -383,7 +381,7 @@ export default function OnuTemplatesPage() {
                                        confirmDelete();
                                      }}
                                    >
-                                     {t('entry_categories.delete_confirm_delete', 'Delete')}
+                                     {t('onx_templates.delete_confirm_delete', 'Delete')}
                                    </AlertDialogAction>
                                  </AlertDialogFooter>
                                </AlertDialogContent>
@@ -394,7 +392,7 @@ export default function OnuTemplatesPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center text-muted-foreground py-8 text-xs">
-                      {t('onu_templates.no_templates_found', 'No ONU templates found. Click "Add Template" to create one.')}
+                      {t('onx_templates.no_templates_found', 'No ONx templates found. Click "Add Template" to create one.')}
                     </TableCell>
                   </TableRow>
                 )}
