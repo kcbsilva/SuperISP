@@ -783,7 +783,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/postgresql/databases')} size="sm" tooltip={t('sidebar.postgresql_databases', 'Databases')}>
-                        <Link href="#" className="flex items-center gap-2">
+                        <Link href="/postgresql/databases" className="flex items-center gap-2">
                           <DatabaseIcon className={subIconSize + " text-muted-foreground"} />
                           <span>{t('sidebar.postgresql_databases', 'Databases')}</span>
                         </Link>
@@ -791,7 +791,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/postgresql/tables')} size="sm" tooltip={t('sidebar.postgresql_tables', 'Tables')}>
-                        <Link href="#" className="flex items-center gap-2">
+                        <Link href="/postgresql/tables" className="flex items-center gap-2">
                           <TableIcon className={subIconSize + " text-muted-foreground"} />
                           <span>{t('sidebar.postgresql_tables', 'Tables')}</span>
                         </Link>
@@ -888,4 +888,3 @@ export default function RootLayout({
     </html>
   );
 }
-

@@ -997,15 +997,36 @@ const en = {
     postgresql_page: { // Added
       title: 'PostgreSQL Management',
       databases_title: 'Databases',
+      databases_list_title: 'Database List',
+      databases_list_description: 'View and manage your PostgreSQL databases.',
+      db_header_name: 'Name',
+      db_header_owner: 'Owner',
+      db_header_encoding: 'Encoding',
+      db_header_size: 'Size',
+      db_header_actions: 'Actions',
+      edit_action: 'Edit',
+      delete_action: 'Delete',
       tables_title: 'Tables',
+      tables_list_title: 'Table List',
+      tables_list_description: 'View and manage tables in the selected database.',
+      table_header_name: 'Name',
+      table_header_schema: 'Schema',
+      table_header_rows: 'Rows',
+      table_header_size: 'Size',
+      table_header_actions: 'Actions',
       add_database_button: 'Add Database',
       add_table_button: 'Add Table',
       view_data_button: 'View Data',
       no_databases_found: 'No databases found or unable to connect.',
       no_tables_found: 'No tables found in the selected database.',
-      // Add more as needed
+      select_database_placeholder: 'Select a Database',
+      select_database_prompt: 'Please select a database to view its tables.',
+      backup_restore_title: 'Backup & Restore',
+      backup_restore_description: 'Manage database backups and restore operations.',
+      backup_restore_info: 'Backup and restore functionality is not yet implemented.',
+      create_backup_button: 'Create Backup',
+      restore_backup_button: 'Restore from Backup',
     },
 };
 
 export default en;
-
