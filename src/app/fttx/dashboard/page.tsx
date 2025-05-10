@@ -49,7 +49,7 @@ export default function FTTxDashboardPage() {
 
       {/* OLT Summary Section */}
       <Card>
-        <CardHeader className="pb-2">
+        <CardHeader className="pt-3 pb-2"> {/* Adjusted padding */}
           <CardTitle className="text-sm flex items-center gap-2">
             <Network className={`${iconSize} text-primary`} />
             {t('fttx_dashboard.olt_summary_title', 'OLT Summary')}
@@ -60,7 +60,7 @@ export default function FTTxDashboardPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {fttxDashboardData.olts.map(olt => (
                 <Card key={olt.id} className="flex flex-col">
-                  <CardHeader className="pb-2">
+                  <CardHeader className="pt-3 pb-2"> {/* Adjusted padding */}
                     <CardTitle className="text-xs font-medium flex items-center justify-between">
                       {olt.name}
                       <span className={`flex items-center text-xs ${olt.status === 'Online' ? 'text-green-600' : 'text-red-600'}`}>
@@ -95,7 +95,7 @@ export default function FTTxDashboardPage() {
       {/* ONx Status Overview Section */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pt-3 pb-2"> {/* Adjusted padding */}
             <CardTitle className="text-sm flex items-center gap-2">
               <Wifi className={`${iconSize} text-primary`} />
               {t('fttx_dashboard.onx_status_title', 'ONx Status Overview')}
@@ -142,7 +142,7 @@ export default function FTTxDashboardPage() {
 
         {/* ONx Light Levels Section */}
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pt-3 pb-2"> {/* Adjusted padding */}
             <CardTitle className="text-sm flex items-center gap-2">
               <Signal className={`${iconSize} text-primary`} />
               {t('fttx_dashboard.onx_light_levels_title', 'ONx Light Levels')}
@@ -175,3 +175,4 @@ export default function FTTxDashboardPage() {
     </div>
   );
 }
+
