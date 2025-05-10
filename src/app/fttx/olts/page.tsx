@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Edit, Trash2, RefreshCw, MoreVertical, ListPlus, ListChecks, Network, Wifi, Users } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, RefreshCw, MoreVertical, ListPlus, ListChecks, Network, Users } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -69,6 +69,7 @@ export default function OltsAndOnxsPage() {
   const iconSize = "h-3 w-3";
   const menuIconSize = "h-2.5 w-2.5";
   const tabIconSize = "h-2.5 w-2.5";
+  const [activeTab, setActiveTab] = React.useState("olts");
 
   const handleAddOlt = () => {
     toast({
@@ -139,33 +140,39 @@ export default function OltsAndOnxsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-        <Tabs defaultValue="olts">
-            <div className="flex justify-between items-center mb-4">
-                 <TabsList className="grid grid-cols-2 w-auto h-auto">
-                    <TabsTrigger value="olts" className="flex items-center gap-2">
-                        <Network className={tabIconSize} />
-                        {t('fttx_olts.tabs_olts_title', 'Optical Line Terminals (OLTs)')}
-                    </TabsTrigger>
-                    <TabsTrigger value="onxs" className="flex items-center gap-2">
-                        <Users className={tabIconSize} />
-                        {t('fttx_olts.tabs_onxs_title', 'Optical Network X (ONU/ONT)')}
-                    </TabsTrigger>
-                </TabsList>
-                <div className="flex items-center gap-2">
-                    <Button variant="default" className="bg-primary hover:bg-primary/90">
-                        <RefreshCw className={`mr-2 ${iconSize}`} /> {t('fttx_olts.refresh_button', 'Refresh')}
-                    </Button>
-                    {/* Conditional Add button based on active tab could be implemented here if needed */}
-                </div>
-            </div>
-
-            <TabsContent value="olts">
-                <div className="flex justify-between items-center mb-4">
-                     <h1 className="text-base font-semibold">{t('fttx_olts.title', 'Optical Line Terminals (OLTs)')}</h1>
+        <div className="flex justify-between items-center">
+            <h1 className="text-base font-semibold">
+                {activeTab === 'olts' ? t('fttx_olts.title', 'Optical Line Terminals (OLTs)') : t('fttx_olts.onxs_page_title', 'Optical Network Units/Terminals (ONx)')}
+            </h1>
+            <div className="flex items-center gap-2">
+                <Button variant="default" className="bg-primary hover:bg-primary/90">
+                    <RefreshCw className={`mr-2 ${iconSize}`} /> {t('fttx_olts.refresh_button', 'Refresh')}
+                </Button>
+                {activeTab === "olts" ? (
                     <Button onClick={handleAddOlt} className="bg-green-600 hover:bg-green-700 text-white">
                         <PlusCircle className={`mr-2 ${iconSize}`} /> {t('fttx_olts.add_olt_button', 'Add OLT')}
                     </Button>
-                </div>
+                ) : (
+                    <Button onClick={handleAddOnx} className="bg-green-600 hover:bg-green-700 text-white">
+                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('fttx_olts.add_onx_button', 'Add ONx')}
+                    </Button>
+                )}
+            </div>
+        </div>
+
+        <Tabs defaultValue="olts" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-2 w-auto h-auto mb-4">
+                <TabsTrigger value="olts" className="flex items-center gap-2">
+                    <Network className={tabIconSize} />
+                    {t('fttx_olts.tabs_olts_title', 'Optical Line Terminals (OLTs)')}
+                </TabsTrigger>
+                <TabsTrigger value="onxs" className="flex items-center gap-2">
+                    <Users className={tabIconSize} />
+                    {t('fttx_olts.tabs_onxs_title', 'Optical Network X (ONU/ONT)')}
+                </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="olts">
                 <Card>
                     <CardContent className="pt-6">
                         <div className="overflow-x-auto">
@@ -255,12 +262,6 @@ export default function OltsAndOnxsPage() {
             </TabsContent>
 
             <TabsContent value="onxs">
-                <div className="flex justify-between items-center mb-4">
-                    <h1 className="text-base font-semibold">{t('fttx_olts.onxs_page_title', 'Optical Network Units/Terminals (ONx)')}</h1>
-                    <Button onClick={handleAddOnx} className="bg-green-600 hover:bg-green-700 text-white">
-                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('fttx_olts.add_onx_button', 'Add ONx')}
-                    </Button>
-                </div>
                 <Card>
                     <CardContent className="pt-6">
                          <div className="overflow-x-auto">
@@ -330,3 +331,4 @@ export default function OltsAndOnxsPage() {
     </div>
   );
 }
+
