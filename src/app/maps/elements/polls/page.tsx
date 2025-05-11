@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card"; // Removed CardTitle
 import { Button } from '@/components/ui/button';
 import { Power, PlusCircle, Edit, Trash2 } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -24,7 +24,7 @@ interface HydroPoll {
   address: string;
   gpsCoordinates: string;
   transformer: 'Yes' | 'No';
-  project?: string; // Added project field
+  project?: string;
 }
 
 // Placeholder data - replace with actual data fetching
@@ -56,10 +56,7 @@ export default function HydroPollsPage() {
       </div>
 
       <Card>
-        <CardHeader className="pb-2 pt-4">
-            <CardTitle className="text-sm">{t('maps_elements.list_title_polls', 'Hydro Polls List')}</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6"> {/* Adjusted padding since CardHeader/Title removed */}
            {placeholderPolls.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
@@ -67,7 +64,7 @@ export default function HydroPollsPage() {
                   <TableRow>
                     <TableHead className="text-xs">ID</TableHead>
                     <TableHead className="text-xs">Description</TableHead>
-                    <TableHead className="text-xs">Project</TableHead> {/* Added Project Header */}
+                    <TableHead className="text-xs">{t('maps_elements.table_header_project', 'Project')}</TableHead>
                     <TableHead className="text-xs">Height</TableHead>
                     <TableHead className="text-xs">Type</TableHead>
                     <TableHead className="text-xs">Address</TableHead>
@@ -81,13 +78,12 @@ export default function HydroPollsPage() {
                     <TableRow key={poll.id}>
                       <TableCell className="font-mono text-muted-foreground text-xs">{poll.id}</TableCell>
                       <TableCell className="text-xs">{poll.description}</TableCell>
-                      <TableCell className="text-xs">{poll.project || '-'}</TableCell> {/* Display Project */}
+                      <TableCell className="text-xs">{poll.project || '-'}</TableCell>
                       <TableCell className="text-xs">{poll.height}</TableCell>
                       <TableCell className="text-xs">{poll.type}</TableCell>
                       <TableCell className="text-xs">{poll.address}</TableCell>
                       <TableCell className="text-xs">{poll.gpsCoordinates}</TableCell>
                       <TableCell className="text-xs">
-                        {/* Reversed color logic for transformer badge */}
                         <Badge variant={poll.transformer === 'Yes' ? 'destructive' : 'default'} className={`text-xs ${poll.transformer === 'Yes' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                           {poll.transformer}
                         </Badge>
