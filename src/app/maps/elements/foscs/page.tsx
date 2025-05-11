@@ -63,7 +63,7 @@ interface Fosc {
   type: 'Aerial' | 'Underground';
   trays: string;
   project?: string;
-  cableCount: string;
+  cableCount: string; // Format "current/max"
   status: 'Active' | 'Inactive' | 'Planned';
   brand: string;
 }
@@ -139,7 +139,7 @@ export default function FoscsPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-base font-semibold flex items-center gap-2">
             <Warehouse className={`${iconSize} text-primary`} />
-            {t('sidebar.maps_elements_foscs', 'FOSCs')}
+            {t('sidebar.maps_elements_foscs', 'FOSCs (CEOs)')}
         </h1>
         <Dialog open={isAddTemplateModalOpen} onOpenChange={setIsAddTemplateModalOpen}>
             <DialogTrigger asChild>
@@ -147,13 +147,13 @@ export default function FoscsPage() {
                     <FileTextIcon className={`mr-2 ${iconSize}`} /> {t('maps_elements.fosc_template_button', 'FOSC Templates')}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-3xl">
+            <DialogContent className="sm:max-w-3xl"> {/* Increased width for better layout */}
                 <DialogHeader>
                     <DialogTitle className="text-sm">{t('maps_elements.fosc_manage_templates_title', 'Manage FOSC Templates')}</DialogTitle>
                 </DialogHeader>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
-                    <div className="md:col-span-2">
-                        <h3 className="text-sm font-semibold mb-3">{t('maps_elements.fosc_new_template_heading', 'New Template')}</h3>
+                    <div className="md:col-span-2 border border-border rounded-md p-4"> {/* Added border and padding */}
+                        <h3 className="text-sm font-semibold mb-3 text-left">{t('maps_elements.fosc_new_template_heading', 'New Template')}</h3>
                         <Form {...templateForm}>
                             <form onSubmit={templateForm.handleSubmit(handleAddTemplateSubmit)} className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
