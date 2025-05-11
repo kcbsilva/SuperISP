@@ -530,29 +530,31 @@ const en = {
      geocode_error_title: 'Geocode Error',
      geocode_error_desc: 'Could not find location coordinates.',
    },
-   maps_elements: { // Added new section for map elements page
-    filter_button: 'Filter by Type',
-    add_element_button: 'Add Element',
-    list_title: 'All Network Elements',
-    table_header_type: 'Type',
-    table_header_name: 'Name / ID',
-    table_header_location: 'Location / Route',
-    table_header_status: 'Status',
-    table_header_last_inspected: 'Last Inspected',
-    table_header_actions: 'Actions',
-    action_details: 'View Details',
-    type_poll: 'Hydro Poll',
-    type_fdh: 'FDH',
-    type_fosc: 'FOSC',
-    type_ped: 'PED',
-    type_accessory: 'Accessory',
-    type_tower: 'Tower',
-    type_cable: 'Cable',
-    status_operational: 'Operational',
-    status_planned: 'Planned',
-    status_maintenance: 'Maintenance',
-    status_faulty: 'Faulty',
-    no_elements_found: 'No map elements found for the selected filter.',
+   maps_elements: {
+    add_element_button: 'Add Element', // Generic button text
+    select_type_title: 'Select Element Type',
+    select_type_description: 'Please select a specific map element type from the sidebar to view or manage its items.',
+    // Polls
+    list_title_polls: 'Hydro Polls List',
+    no_polls_found: 'No hydro polls found. Click "Add Poll" to create one.',
+    // FDHs
+    list_title_fdhs: 'FDH List',
+    no_fdhs_found: 'No FDHs found. Click "Add FDH" to create one.',
+    // FOSCs
+    list_title_foscs: 'FOSC List',
+    no_foscs_found: 'No FOSCs found. Click "Add FOSC" to create one.',
+    // PEDs
+    list_title_peds: 'PED List',
+    no_peds_found: 'No PEDs found. Click "Add PED" to create one.',
+    // Accessories
+    list_title_accessories: 'Accessory List',
+    no_accessories_found: 'No accessories found. Click "Add Accessory" to create one.',
+    // Towers
+    list_title_towers: 'Tower List',
+    no_towers_found: 'No towers found. Click "Add Tower" to create one.',
+    // Cables
+    list_title_cables: 'Cable List',
+    no_cables_found: 'No cables found. Click "Add Cable" to create one.',
   },
     settings_plans: {
       internet_page_title: 'Internet Plans',
@@ -1048,7 +1050,7 @@ const en = {
       db_header_owner: 'Owner',
       db_header_encoding: 'Encoding',
       db_header_size: 'Size',
-      db_header_actions: 'Actions',
+      db_header_actions: 'Ações',
       edit_action: 'Edit',
       delete_action: 'Delete',
       tables_title: 'Tables',

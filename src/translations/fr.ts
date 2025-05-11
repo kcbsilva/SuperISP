@@ -522,29 +522,31 @@ const fr = {
      geocode_error_title: 'Erreur de géocodage',
      geocode_error_desc: 'Impossible de trouver les coordonnées de l\'emplacement.',
    },
-   maps_elements: { // Added new section for map elements page
-    filter_button: 'Filtrer par Type',
-    add_element_button: 'Ajouter Élément',
-    list_title: 'Tous les Éléments Réseau',
-    table_header_type: 'Type',
-    table_header_name: 'Nom / ID',
-    table_header_location: 'Emplacement / Route',
-    table_header_status: 'Statut',
-    table_header_last_inspected: 'Dernière Inspection',
-    table_header_actions: 'Actions',
-    action_details: 'Voir Détails',
-    type_poll: 'Poteau Hydro',
-    type_fdh: 'CTO',
-    type_fosc: 'CEO',
-    type_ped: 'PED',
-    type_accessory: 'Accessoire',
-    type_tower: 'Tour',
-    type_cable: 'Câble',
-    status_operational: 'Opérationnel',
-    status_planned: 'Planifié',
-    status_maintenance: 'Maintenance',
-    status_faulty: 'Défectueux',
-    no_elements_found: 'Aucun élément de carte trouvé pour le filtre sélectionné.',
+   maps_elements: {
+    add_element_button: 'Ajouter Élément', // Generic button text
+    select_type_title: 'Sélectionner le Type d\'Élément',
+    select_type_description: 'Veuillez sélectionner un type d\'élément de carte spécifique dans la barre latérale pour afficher ou gérer ses items.',
+    // Polls
+    list_title_polls: 'Liste des Poteaux Hydro',
+    no_polls_found: 'Aucun poteau hydro trouvé. Cliquez sur "Ajouter Poteau" pour en créer un.',
+    // FDHs
+    list_title_fdhs: 'Liste des CTOs',
+    no_fdhs_found: 'Aucune CTO trouvée. Cliquez sur "Ajouter CTO" pour en créer une.',
+    // FOSCs
+    list_title_foscs: 'Liste des CEOs',
+    no_foscs_found: 'Aucune CEO trouvée. Cliquez sur "Ajouter CEO" pour en créer une.',
+    // PEDs
+    list_title_peds: 'Liste des PEDs',
+    no_peds_found: 'Aucun PED trouvé. Cliquez sur "Ajouter PED" pour en créer un.',
+    // Accessories
+    list_title_accessories: 'Liste des Accessoires',
+    no_accessories_found: 'Aucun accessoire trouvé. Cliquez sur "Ajouter Accessoire" pour en créer un.',
+    // Towers
+    list_title_towers: 'Liste des Tours',
+    no_towers_found: 'Aucune tour trouvée. Cliquez sur "Ajouter Tour" pour en créer une.',
+    // Cables
+    list_title_cables: 'Liste des Câbles',
+    no_cables_found: 'Aucun câble trouvé. Cliquez sur "Ajouter Câble" pour en créer un.',
   },
    settings_plans: {
     internet_page_title: 'Forfaits Internet',

@@ -520,29 +520,31 @@ const pt = {
      geocode_error_title: 'Erro de Geocodificação',
      geocode_error_desc: 'Não foi possível encontrar as coordenadas do local.',
    },
-   maps_elements: { // Added new section for map elements page
-    filter_button: 'Filtrar por Tipo',
-    add_element_button: 'Adicionar Elemento',
-    list_title: 'Todos os Elementos de Rede',
-    table_header_type: 'Tipo',
-    table_header_name: 'Nome / ID',
-    table_header_location: 'Localização / Rota',
-    table_header_status: 'Status',
-    table_header_last_inspected: 'Última Inspeção',
-    table_header_actions: 'Ações',
-    action_details: 'Ver Detalhes',
-    type_poll: 'Poste Hidro',
-    type_fdh: 'CTO',
-    type_fosc: 'CEO',
-    type_ped: 'PED',
-    type_accessory: 'Acessório',
-    type_tower: 'Torre',
-    type_cable: 'Cabo',
-    status_operational: 'Operacional',
-    status_planned: 'Planejado',
-    status_maintenance: 'Manutenção',
-    status_faulty: 'Defeituoso',
-    no_elements_found: 'Nenhum elemento de mapa encontrado para o filtro selecionado.',
+   maps_elements: {
+    add_element_button: 'Adicionar Elemento', // Generic button text
+    select_type_title: 'Selecionar Tipo de Elemento',
+    select_type_description: 'Por favor, selecione um tipo de elemento de mapa específico na barra lateral para visualizar ou gerenciar seus itens.',
+    // Polls
+    list_title_polls: 'Lista de Postes Hidro',
+    no_polls_found: 'Nenhum poste hidro encontrado. Clique em "Adicionar Poste" para criar um.',
+    // FDHs
+    list_title_fdhs: 'Lista de CTOs',
+    no_fdhs_found: 'Nenhuma CTO encontrada. Clique em "Adicionar CTO" para criar uma.',
+    // FOSCs
+    list_title_foscs: 'Lista de CEOs',
+    no_foscs_found: 'Nenhuma CEO encontrada. Clique em "Adicionar CEO" para criar uma.',
+    // PEDs
+    list_title_peds: 'Lista de PEDs',
+    no_peds_found: 'Nenhum PED encontrado. Clique em "Adicionar PED" para criar um.',
+    // Accessories
+    list_title_accessories: 'Lista de Acessórios',
+    no_accessories_found: 'Nenhum acessório encontrado. Clique em "Adicionar Acessório" para criar um.',
+    // Towers
+    list_title_towers: 'Lista de Torres',
+    no_towers_found: 'Nenhuma torre encontrada. Clique em "Adicionar Torre" para criar um.',
+    // Cables
+    list_title_cables: 'Lista de Cabos',
+    no_cables_found: 'Nenhum cabo encontrado. Clique em "Adicionar Cabo" para criar um.',
   },
     settings_plans: {
       internet_page_title: 'Planos de Internet',
@@ -623,7 +625,7 @@ const pt = {
       form_save_button: 'Salvar Lançamento',
       form_saving_button: 'Salvando...',
       add_entry_success_title: 'Lançamento Adicionado',
-      add_entry_success_description: 'Lançamento do tipo {type} "{description}" adicionado.',
+      add_success_description: 'Lançamento do tipo {type} "{description}" adicionado.',
       total_income_label: 'Total de Receitas',
       total_expenses_label: 'Total de Despesas',
       net_balance_label: 'Saldo Líquido',

@@ -46,11 +46,11 @@ import {
   LogOut, // For profile menu
   UserCircle, // For profile menu
   Database, // for MySQL menu
+  Bus, // Icon for Vehicles
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
 import { SiReactrouter } from "react-icons/si";
-import { Bus } from 'lucide-react';
 
 
 import './globals.css';
@@ -247,10 +247,58 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </Tooltip>
                         <SidebarMenuSubContent>
                            <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements')} size="sm" tooltip={t('sidebar.maps_elements_polls')}>
-                              <Link href="/maps/elements" className="flex items-center gap-2">
-                                <ListFilter className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.maps_elements')}</span>
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/polls')} size="sm" tooltip={t('sidebar.maps_elements_polls')}>
+                              <Link href="/maps/elements/polls" className="flex items-center gap-2">
+                                <Power className={subIconSize + " text-muted-foreground"} />
+                                <span>{t('sidebar.maps_elements_polls')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                           <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/fdhs')} size="sm" tooltip={t('sidebar.maps_elements_fdhs')}>
+                              <Link href="/maps/elements/fdhs" className="flex items-center gap-2">
+                                <Box className={subIconSize + " text-muted-foreground"} />
+                                <span>{t('sidebar.maps_elements_fdhs')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                           <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/foscs')} size="sm" tooltip={t('sidebar.maps_elements_foscs')}>
+                              <Link href="/maps/elements/foscs" className="flex items-center gap-2">
+                                <Warehouse className={subIconSize + " text-muted-foreground"} />
+                                <span>{t('sidebar.maps_elements_foscs')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                           <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/peds')} size="sm" tooltip={t('sidebar.maps_elements_peds')}>
+                              <Link href="/maps/elements/peds" className="flex items-center gap-2">
+                                <Box className={subIconSize + " text-muted-foreground"} />
+                                <span>{t('sidebar.maps_elements_peds')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                           <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/accessories')} size="sm" tooltip={t('sidebar.maps_elements_accessories')}>
+                              <Link href="/maps/elements/accessories" className="flex items-center gap-2">
+                                <Puzzle className={subIconSize + " text-muted-foreground"} />
+                                <span>{t('sidebar.maps_elements_accessories')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                           <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/towers')} size="sm" tooltip={t('sidebar.maps_elements_towers')}>
+                              <Link href="/maps/elements/towers" className="flex items-center gap-2">
+                                <TowerControl className={subIconSize + " text-muted-foreground"} />
+                                <span>{t('sidebar.maps_elements_towers')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                           <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/cables')} size="sm" tooltip={t('sidebar.maps_elements_cables')}>
+                              <Link href="/maps/elements/cables" className="flex items-center gap-2">
+                                <Cable className={subIconSize + " text-muted-foreground"} />
+                                <span>{t('sidebar.maps_elements_cables')}</span>
                               </Link>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
@@ -337,6 +385,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <span>{t('sidebar.finances_entry_categories')}</span>
                         </Link>
                       </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                       <SidebarMenuButton asChild isActive={isActive('/settings/finances/configurations')} size="sm" tooltip={t('sidebar.finances_config')}>
+                         <Link href="/settings/finances/configurations" className="flex items-center gap-2">
+                           <SlidersHorizontal className={subIconSize + " text-muted-foreground"} />
+                           <span>{t('sidebar.finances_config')}</span>
+                         </Link>
+                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
@@ -757,7 +813,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </SidebarMenuItem>
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/mysql/tables')} size="sm" tooltip={t('sidebar.mysql_tables')}>
-                              <Link href="/mysql/tables" className="flex items-center gap-2">
+                              <Link href="#" className="flex items-center gap-2">
                                 <ListChecks className={subIconSize + " text-muted-foreground"} /> {/* Using ListChecks for tables */}
                                 <span>{t('sidebar.mysql_tables')}</span>
                               </Link>
