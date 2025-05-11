@@ -785,7 +785,7 @@ const en = {
       action_delete: 'Delete',
       delete_confirm_delete: 'Delete',
     },
-    fttx_olts: {
+     fttx_olts: {
       title: 'Optical Line Terminals (OLTs)',
       tabs_olts_title: 'Optical Line Terminals (OLTs)',
       tabs_onxs_title: 'Optical Network X (ONU/ONT)',
@@ -1174,4 +1174,5 @@ const en = {
 };
 
 export default en;
+
 
