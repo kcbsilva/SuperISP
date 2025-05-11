@@ -528,7 +528,7 @@ function SubscriberProfilePage() {
       title: `Billing Action: ${action}`,
       description: `Action '${action}' for item ${itemId || ''} is not yet implemented.`,
     });
-  }
+  };
 
   const handleUpdateLogin = (service: SubscriberService) => {
     setCurrentServiceForLoginUpdate(service);
@@ -606,7 +606,7 @@ function SubscriberProfilePage() {
             <span>{t('subscriber_profile.billing_tab')}</span>
             {pendingInvoiceCount > 0 && (
               <span className={cn(
-                "absolute -top-2 right-0 flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold text-white",
+                "absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold text-white", // Adjusted positioning
                 {
                   'bg-yellow-500': pendingInvoiceUrgency === 'yellow',
                   'bg-red-600': pendingInvoiceUrgency === 'red',
@@ -1094,7 +1094,6 @@ function SubscriberProfilePage() {
                 </Form>
             </DialogContent>
         </Dialog>
-
     </div>
   );
 }
