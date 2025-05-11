@@ -24,12 +24,13 @@ interface HydroPoll {
   address: string;
   gpsCoordinates: string;
   transformer: 'Yes' | 'No';
+  project?: string; // Added project field
 }
 
 // Placeholder data - replace with actual data fetching
 const placeholderPolls: HydroPoll[] = [
-  { id: 'poll-001', description: 'Main Street - Corner Oak', height: '12m', type: 'Circular', address: '123 Main St, Anytown', gpsCoordinates: '40.7128° N, 74.0060° W', transformer: 'Yes' },
-  { id: 'poll-002', description: 'Park Entrance', height: '10m', type: 'Square', address: '456 Park Ave, Anytown', gpsCoordinates: '40.7135° N, 74.0055° W', transformer: 'No' },
+  { id: 'poll-001', description: 'Main Street - Corner Oak', height: '12m', type: 'Circular', address: '123 Main St, Anytown', gpsCoordinates: '40.7128° N, 74.0060° W', transformer: 'Yes', project: 'Downtown Expansion' },
+  { id: 'poll-002', description: 'Park Entrance', height: '10m', type: 'Square', address: '456 Park Ave, Anytown', gpsCoordinates: '40.7135° N, 74.0055° W', transformer: 'No', project: 'City Beautification' },
 ];
 
 
@@ -66,6 +67,7 @@ export default function HydroPollsPage() {
                   <TableRow>
                     <TableHead className="text-xs">ID</TableHead>
                     <TableHead className="text-xs">Description</TableHead>
+                    <TableHead className="text-xs">Project</TableHead> {/* Added Project Header */}
                     <TableHead className="text-xs">Height</TableHead>
                     <TableHead className="text-xs">Type</TableHead>
                     <TableHead className="text-xs">Address</TableHead>
@@ -79,12 +81,14 @@ export default function HydroPollsPage() {
                     <TableRow key={poll.id}>
                       <TableCell className="font-mono text-muted-foreground text-xs">{poll.id}</TableCell>
                       <TableCell className="text-xs">{poll.description}</TableCell>
+                      <TableCell className="text-xs">{poll.project || '-'}</TableCell> {/* Display Project */}
                       <TableCell className="text-xs">{poll.height}</TableCell>
                       <TableCell className="text-xs">{poll.type}</TableCell>
                       <TableCell className="text-xs">{poll.address}</TableCell>
                       <TableCell className="text-xs">{poll.gpsCoordinates}</TableCell>
                       <TableCell className="text-xs">
-                        <Badge variant={poll.transformer === 'Yes' ? 'default' : 'secondary'} className={poll.transformer === 'Yes' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                        {/* Reversed color logic for transformer badge */}
+                        <Badge variant={poll.transformer === 'Yes' ? 'destructive' : 'default'} className={`text-xs ${poll.transformer === 'Yes' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                           {poll.transformer}
                         </Badge>
                       </TableCell>
@@ -113,3 +117,4 @@ export default function HydroPollsPage() {
     </div>
   );
 }
+

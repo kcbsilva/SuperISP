@@ -15,18 +15,18 @@ const fr = {
     maps: 'Cartes',
     maps_elements: 'Éléments',
     maps_elements_polls: 'Poteaux Hydro',
-    maps_elements_fdhs: 'CTOs', // Updated
-    maps_elements_foscs: 'CEOs', // Updated
+    maps_elements_fdhs: 'CTOs', 
+    maps_elements_foscs: 'CEOs', 
     maps_elements_peds: 'PEDs',
     maps_elements_accessories: 'Accessoires',
     maps_elements_towers: 'Tours',
     maps_elements_cables: 'Câbles',
     maps_map: 'Carte',
-    maps_projects: 'Projets', // Added
+    maps_projects: 'Projets', 
     fttx: 'FTTx',
-    fttx_dashboard: 'Tableau de bord', // Added
-    fttx_olts: 'OLTs & ONXs', // Changed
-    fttx_onx_templates: 'Modèles ONx', // Changed
+    fttx_dashboard: 'Tableau de bord', 
+    fttx_olts: 'OLTs & ONXs', 
+    fttx_onx_templates: 'Modèles ONx', 
     zones: 'Zones',
     finances: 'Finances',
     finances_cash_book: 'Livre de caisse',
@@ -60,10 +60,10 @@ const fr = {
     settings_integrations_sms: 'SMS',
     settings_users: 'Utilisateurs',
     settings_system_monitor: 'Moniteur Système',
-    mysql: 'MySQL', // Updated
-    mysql_databases: 'Bases de données', // Updated
-    mysql_tables: 'Tables', // Updated
-    mysql_cli: 'CLI', // Updated
+    mysql: 'MySQL', 
+    mysql_databases: 'Bases de données', 
+    mysql_tables: 'Tables', 
+    mysql_cli: 'CLI', 
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Agrandir la barre latérale',
@@ -450,8 +450,8 @@ const fr = {
      auth_type_ipoe: 'IPoE',
      auth_type_ipxmac: 'IP x MAC',
      auth_type_staticip: 'IP Statique',
-     services_fdh_id: 'ID CTO', // Updated from FDH
-     services_fdh_port: 'Port CTO', // Updated from FDH
+     services_fdh_id: 'ID CTO', 
+     services_fdh_port: 'Port CTO', 
      services_ap_name: 'Nom AP',
      services_switch_id: 'ID Switch',
      services_pppoe_user: 'Util. PPPoE',
@@ -511,8 +511,8 @@ const fr = {
      add_element_button: 'Ajouter un élément',
      add_element_tooltip: 'Ajouter un nouvel élément réseau à la carte',
      add_cable_tooltip: 'Ajouter un câble',
-     add_fosc_tooltip: 'Ajouter une CEO', // Updated
-     add_fdh_tooltip: 'Ajouter une CTO', // Updated
+     add_fosc_tooltip: 'Ajouter une CEO', 
+     add_fdh_tooltip: 'Ajouter une CTO', 
      add_poll_tooltip: 'Ajouter un poteau Hydro',
      add_tower_tooltip: 'Ajouter une tour',
      add_pop_tooltip: 'Ajouter un PoP',
@@ -524,35 +524,28 @@ const fr = {
      geocode_error_desc: 'Impossible de trouver les coordonnées de l\'emplacement.',
    },
    maps_elements: {
-    add_element_button: 'Ajouter Élément', // Generic button text
+    add_element_button: 'Ajouter Élément', 
     select_type_title: 'Sélectionner le Type d\'Élément',
     select_type_description: 'Veuillez sélectionner un type d\'élément de carte spécifique dans la barre latérale pour afficher ou gérer ses items.',
-    // Polls
     list_title_polls: 'Liste des Poteaux Hydro',
     no_polls_found: 'Aucun poteau hydro trouvé. Cliquez sur "Ajouter Poteau" pour en créer un.',
-    // FDHs
     list_title_fdhs: 'Liste des CTOs',
     no_fdhs_found: 'Aucune CTO trouvée. Cliquez sur "Ajouter CTO" pour en créer une.',
-    // FOSCs
     list_title_foscs: 'Liste des CEOs',
     no_foscs_found: 'Aucune CEO trouvée. Cliquez sur "Ajouter CEO" pour en créer une.',
-    // PEDs
     list_title_peds: 'Liste des PEDs',
     no_peds_found: 'Aucun PED trouvé. Cliquez sur "Ajouter PED" pour en créer un.',
-    // Accessories
     list_title_accessories: 'Liste des Accessoires',
     no_accessories_found: 'Aucun accessoire trouvé. Cliquez sur "Ajouter Accessoire" pour en créer un.',
-    // Towers
     list_title_towers: 'Liste des Tours',
     no_towers_found: 'Aucune tour trouvée. Cliquez sur "Ajouter Tour" pour en créer une.',
-    // Cables
     list_title_cables: 'Liste des Câbles',
     no_cables_found: 'Aucun câble trouvé. Cliquez sur "Ajouter Câble" pour en créer un.',
-    // Projects (Added)
     projects_page_title: 'Projets Cartographiques',
     add_project_button: 'Ajouter Projet',
     list_title_projects: 'Liste des Projets',
     no_projects_found: 'Aucun projet trouvé. Cliquez sur "Ajouter Projet" pour en créer un.',
+    table_header_project: 'Projet', // Added
   },
    settings_plans: {
     internet_page_title: 'Forfaits Internet',
@@ -683,6 +676,10 @@ const fr = {
     delete_confirm_description: 'Cette action est irréversible. Cela supprimera définitivement la catégorie "{categoryName}".',
     delete_confirm_cancel: 'Annuler',
     form_delete_button: 'Delete',
+    static_edit_error_title: 'Edit Error',
+    static_edit_error_description: 'Static categories "Income" and "Expense" cannot have their name or type changed.',
+    static_delete_error_title: 'Delete Error',
+    static_delete_error_description: 'Static categories "Income" and "Expense" cannot be deleted.',
     permissions_title: 'Permissions',
     permissions_description: 'Define permissions for user roles and templates.',
     permission_subscribers_view: 'View Subscribers',
@@ -707,15 +704,15 @@ const fr = {
     cpu_usage: 'Utilisation CPU',
     ram_usage: 'Utilisation RAM',
     ssd_usage: 'Utilisation SSD',
-    postgres_status: 'Statut PostgreSQL', // Should be MySQL
-    mysql_status: 'Statut MySQL', // Added
+    postgres_status: 'Statut PostgreSQL', 
+    mysql_status: 'Statut MySQL', 
     refresh_button: 'Actualiser Métriques',
     refresh_toast_title: 'Actualisation des Métriques',
     refresh_toast_description: 'Récupération du dernier statut système...',
-    postgres_connected: 'Connecté', // Should be MySQL
-    postgres_disconnected: 'Déconnecté - Vérifiez les logs !', // Should be MySQL
-    mysql_connected: 'Connecté', // Added
-    mysql_disconnected: 'Déconnecté - Vérifiez les logs !', // Added
+    postgres_connected: 'Connecté', 
+    postgres_disconnected: 'Déconnecté - Vérifiez les logs !', 
+    mysql_connected: 'Connecté', 
+    mysql_disconnected: 'Déconnecté - Vérifiez les logs !', 
     live_logs_title: 'Logs en Direct (Espace réservé)',
     live_logs_description: 'Cette section afficherait les logs système en temps réel.',
   },
@@ -856,4 +853,3 @@ const fr = {
 };
 
 export default fr;
-

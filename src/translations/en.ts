@@ -22,11 +22,11 @@ const en = {
     maps_elements_towers: 'Towers',
     maps_elements_cables: 'Cables',
     maps_map: 'Map',
-    maps_projects: 'Projects', // Added
+    maps_projects: 'Projects', 
     fttx: 'FTTx',
-    fttx_dashboard: 'Dashboard', // Added
-    fttx_olts: 'OLTs & ONXs', // Changed to reflect new combined page
-    fttx_onx_templates: 'ONx Templates', // Changed from onu_templates
+    fttx_dashboard: 'Dashboard', 
+    fttx_olts: 'OLTs & ONXs', 
+    fttx_onx_templates: 'ONx Templates', 
     zones: 'Zones',
     finances: 'Finances',
     finances_cash_book: 'Cash Book',
@@ -60,10 +60,10 @@ const en = {
     settings_integrations_sms: 'SMS',
     settings_users: 'Users',
     settings_system_monitor: 'System Monitor',
-    mysql: 'MySQL', // Updated from postgresql
-    mysql_databases: 'Databases', // Updated
-    mysql_tables: 'Tables', // Updated
-    mysql_cli: 'CLI', // Updated
+    mysql: 'MySQL', 
+    mysql_databases: 'Databases', 
+    mysql_tables: 'Tables', 
+    mysql_cli: 'CLI', 
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Expand sidebar',
@@ -355,26 +355,26 @@ const en = {
      billing_next_date: 'Next Bill Date',
      billing_not_available: 'N/A',
      billing_view_invoices_button: 'View Invoices',
-     billing_actions_button: 'Actions', // Added for dropdown
+     billing_actions_button: 'Actions', 
      billing_make_invoice_button: 'Create Invoice',
      billing_make_payment_plan_button: 'Make Payment Plan',
-     billing_make_promise_to_pay_button: 'Promise to Pay', // Added
+     billing_make_promise_to_pay_button: 'Promise to Pay', 
      billing_make_invoice_button_toast_title: 'Create Invoice (Simulated)',
      billing_make_invoice_button_toast_desc: 'Functionality to create a new invoice is not yet implemented.',
      billing_make_payment_plan_button_toast_title: 'Create Payment Plan (Simulated)',
      billing_make_payment_plan_button_toast_desc: 'Creating payment plan for selected invoices: {ids}',
      billing_no_invoice_selected_title: 'No Invoice Selected',
      billing_no_invoice_selected_desc: 'Please select at least one pending invoice to create a payment plan.',
-     promise_to_pay_no_invoice_selected_desc: 'Please select at least one pending invoice to make a promise to pay.', // Added
-     promise_to_pay_modal_title: 'Register Promise to Pay', // Added
-     promise_to_pay_modal_desc: 'Set a date and amount for the payment promise.', // Added
-     promise_to_pay_date_label: 'Promise Date', // Added
-     promise_to_pay_date_placeholder: 'Select promise date', // Added
-     promise_to_pay_amount_label: 'Promise Amount', // Added
-     promise_to_pay_cancel_button: 'Cancel', // Added
-     promise_to_pay_save_button: 'Save Promise', // Added
-     promise_to_pay_success_title: 'Promise Registered', // Added
-     promise_to_pay_success_desc: 'Promise to pay registered for {amount} until {date}.', // Added
+     promise_to_pay_no_invoice_selected_desc: 'Please select at least one pending invoice to make a promise to pay.', 
+     promise_to_pay_modal_title: 'Register Promise to Pay', 
+     promise_to_pay_modal_desc: 'Set a date and amount for the payment promise.', 
+     promise_to_pay_date_label: 'Promise Date', 
+     promise_to_pay_date_placeholder: 'Select promise date', 
+     promise_to_pay_amount_label: 'Promise Amount', 
+     promise_to_pay_cancel_button: 'Cancel', 
+     promise_to_pay_save_button: 'Save Promise', 
+     promise_to_pay_success_title: 'Promise Registered', 
+     promise_to_pay_success_desc: 'Promise to pay registered for {amount} until {date}.', 
      billing_all_invoices: 'All Items',
      billing_pending_invoices: 'Pending Invoices',
      billing_paid_invoices: 'Paid Invoices',
@@ -458,8 +458,8 @@ const en = {
     auth_type_ipoe: 'IPoE',
     auth_type_ipxmac: 'IP x MAC',
     auth_type_staticip: 'Static IP',
-    services_fdh_id: 'FDH ID',
-    services_fdh_port: 'FDH Port',
+    services_fdh_id: 'FDH ID', 
+    services_fdh_port: 'FDH Port', 
     services_ap_name: 'AP Name',
     services_switch_id: 'Switch ID',
     services_pppoe_user: 'PPPoE User',
@@ -519,8 +519,8 @@ const en = {
      add_element_button: 'Add Element',
      add_element_tooltip: 'Add a new network element to the map',
      add_cable_tooltip: 'Add Cable',
-     add_fosc_tooltip: 'Add FOSC',
-     add_fdh_tooltip: 'Add FDH',
+     add_fosc_tooltip: 'Add FOSC', 
+     add_fdh_tooltip: 'Add FDH', 
      add_poll_tooltip: 'Add Hydro Poll',
      add_tower_tooltip: 'Add Tower',
      add_pop_tooltip: 'Add PoP',
@@ -532,35 +532,28 @@ const en = {
      geocode_error_desc: 'Could not find location coordinates.',
    },
    maps_elements: {
-    add_element_button: 'Add Element', // Generic button text
+    add_element_button: 'Add Element', 
     select_type_title: 'Select Element Type',
     select_type_description: 'Please select a specific map element type from the sidebar to view or manage its items.',
-    // Polls
     list_title_polls: 'Hydro Polls List',
     no_polls_found: 'No hydro polls found. Click "Add Poll" to create one.',
-    // FDHs
     list_title_fdhs: 'FDH List',
     no_fdhs_found: 'No FDHs found. Click "Add FDH" to create one.',
-    // FOSCs
     list_title_foscs: 'FOSC List',
     no_foscs_found: 'No FOSCs found. Click "Add FOSC" to create one.',
-    // PEDs
     list_title_peds: 'PED List',
     no_peds_found: 'No PEDs found. Click "Add PED" to create one.',
-    // Accessories
     list_title_accessories: 'Accessory List',
     no_accessories_found: 'No accessories found. Click "Add Accessory" to create one.',
-    // Towers
     list_title_towers: 'Tower List',
     no_towers_found: 'No towers found. Click "Add Tower" to create one.',
-    // Cables
     list_title_cables: 'Cable List',
     no_cables_found: 'No cables found. Click "Add Cable" to create one.',
-    // Projects (Added)
     projects_page_title: 'Map Projects',
     add_project_button: 'Add Project',
     list_title_projects: 'Project List',
     no_projects_found: 'No projects found. Click "Add Project" to create one.',
+    table_header_project: 'Project', // Added
   },
     settings_plans: {
       internet_page_title: 'Internet Plans',
@@ -691,6 +684,10 @@ const en = {
       delete_confirm_description: 'This action cannot be undone. This will permanently delete the category "{categoryName}".',
       delete_confirm_cancel: 'Cancel',
       form_delete_button: 'Delete',
+      static_edit_error_title: 'Edit Error',
+      static_edit_error_description: 'Static categories "Income" and "Expense" cannot have their name or type changed.',
+      static_delete_error_title: 'Delete Error',
+      static_delete_error_description: 'Static categories "Income" and "Expense" cannot be deleted.',
       permissions_title: 'Permissions',
       permissions_description: 'Define permissions for user roles and templates.',
       permission_subscribers_view: 'View Subscribers',
@@ -715,15 +712,15 @@ const en = {
       cpu_usage: 'CPU Usage',
       ram_usage: 'RAM Usage',
       ssd_usage: 'SSD Usage',
-      postgres_status: 'PostgreSQL Status', // Should be MySQL
-      mysql_status: 'MySQL Status', // Added
+      postgres_status: 'PostgreSQL Status', 
+      mysql_status: 'MySQL Status', 
       refresh_button: 'Refresh Metrics',
       refresh_toast_title: 'Refreshing Metrics',
       refresh_toast_description: 'Fetching latest system status...',
-      postgres_connected: 'Connected', // Should be MySQL
-      postgres_disconnected: 'Disconnected - Check logs!', // Should be MySQL
-      mysql_connected: 'Connected', // Added
-      mysql_disconnected: 'Disconnected - Check logs!', // Added
+      postgres_connected: 'Connected', 
+      postgres_disconnected: 'Disconnected - Check logs!', 
+      mysql_connected: 'Connected', 
+      mysql_disconnected: 'Disconnected - Check logs!', 
       live_logs_title: 'Live Logs (Placeholder)',
       live_logs_description: 'This section would display real-time system logs.',
     },
@@ -864,4 +861,3 @@ const en = {
 };
 
 export default en;
-

@@ -15,18 +15,18 @@ const pt = {
     maps: 'Mapas',
     maps_elements: 'Elementos',
     maps_elements_polls: 'Postes Hidro',
-    maps_elements_fdhs: 'CTOs', // Updated
-    maps_elements_foscs: 'CEOs', // Updated
+    maps_elements_fdhs: 'CTOs', 
+    maps_elements_foscs: 'CEOs', 
     maps_elements_peds: 'PEDs',
     maps_elements_accessories: 'Acessórios',
     maps_elements_towers: 'Torres',
     maps_elements_cables: 'Cabos',
     maps_map: 'Mapa',
-    maps_projects: 'Projetos', // Added
+    maps_projects: 'Projetos', 
     fttx: 'FTTx',
-    fttx_dashboard: 'Painel', // Added
-    fttx_olts: 'OLTs & ONXs', // Changed
-    fttx_onx_templates: 'Modelos ONx', // Changed
+    fttx_dashboard: 'Painel', 
+    fttx_olts: 'OLTs & ONXs', 
+    fttx_onx_templates: 'Modelos ONx', 
     zones: 'Zonas',
     finances: 'Finanças',
     finances_cash_book: 'Livro Caixa',
@@ -60,10 +60,10 @@ const pt = {
     settings_integrations_sms: 'SMS',
     settings_users: 'Usuários',
     settings_system_monitor: 'Monitor do Sistema',
-    mysql: 'MySQL', // Updated
-    mysql_databases: 'Bancos de Dados', // Updated
-    mysql_tables: 'Tabelas', // Updated
-    mysql_cli: 'CLI', // Updated
+    mysql: 'MySQL', 
+    mysql_databases: 'Bancos de Dados', 
+    mysql_tables: 'Tabelas', 
+    mysql_cli: 'CLI', 
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     expand_sidebar: 'Expandir barra lateral',
@@ -449,8 +449,8 @@ const pt = {
     auth_type_ipoe: 'IPoE',
     auth_type_ipxmac: 'IP x MAC',
     auth_type_staticip: 'Static IP',
-    services_fdh_id: 'ID CTO', // Updated from FDH
-    services_fdh_port: 'Porta CTO', // Updated from FDH
+    services_fdh_id: 'ID CTO', 
+    services_fdh_port: 'Porta CTO', 
     services_ap_name: 'Nome AP',
     services_switch_id: 'Switch ID',
     services_pppoe_user: 'Usuário PPPoE',
@@ -509,8 +509,8 @@ const pt = {
      add_element_button: 'Adicionar Elemento',
      add_element_tooltip: 'Adicionar um novo elemento de rede ao mapa',
      add_cable_tooltip: 'Adicionar Cabo',
-     add_fosc_tooltip: 'Adicionar CEO', // Updated
-     add_fdh_tooltip: 'Adicionar CTO', // Updated
+     add_fosc_tooltip: 'Adicionar CEO', 
+     add_fdh_tooltip: 'Adicionar CTO', 
      add_poll_tooltip: 'Adicionar Poste Hidro',
      add_tower_tooltip: 'Adicionar Torre',
      add_pop_tooltip: 'Adicionar PoP',
@@ -522,35 +522,28 @@ const pt = {
      geocode_error_desc: 'Não foi possível encontrar as coordenadas do local.',
    },
    maps_elements: {
-    add_element_button: 'Adicionar Elemento', // Generic button text
+    add_element_button: 'Adicionar Elemento', 
     select_type_title: 'Selecionar Tipo de Elemento',
     select_type_description: 'Por favor, selecione um tipo de elemento de mapa específico na barra lateral para visualizar ou gerenciar seus itens.',
-    // Polls
     list_title_polls: 'Lista de Postes Hidro',
     no_polls_found: 'Nenhum poste hidro encontrado. Clique em "Adicionar Poste" para criar um.',
-    // FDHs
     list_title_fdhs: 'Lista de CTOs',
     no_fdhs_found: 'Nenhuma CTO encontrada. Clique em "Adicionar CTO" para criar uma.',
-    // FOSCs
     list_title_foscs: 'Lista de CEOs',
     no_foscs_found: 'Nenhuma CEO encontrada. Clique em "Adicionar CEO" para criar uma.',
-    // PEDs
     list_title_peds: 'Lista de PEDs',
     no_peds_found: 'Nenhum PED encontrado. Clique em "Adicionar PED" para criar um.',
-    // Accessories
     list_title_accessories: 'Lista de Acessórios',
     no_accessories_found: 'Nenhum acessório encontrado. Clique em "Adicionar Acessório" para criar um.',
-    // Towers
     list_title_towers: 'Lista de Torres',
     no_towers_found: 'Nenhuma torre encontrada. Clique em "Adicionar Torre" para criar um.',
-    // Cables
     list_title_cables: 'Lista de Cabos',
     no_cables_found: 'Nenhum cabo encontrado. Clique em "Adicionar Cabo" para criar um.',
-    // Projects (Added)
     projects_page_title: 'Projetos de Mapa',
     add_project_button: 'Adicionar Projeto',
     list_title_projects: 'Lista de Projetos',
     no_projects_found: 'Nenhum projeto encontrado. Clique em "Adicionar Projeto" para criar um.',
+    table_header_project: 'Projeto', // Added
   },
     settings_plans: {
       internet_page_title: 'Planos de Internet',
@@ -681,6 +674,10 @@ const pt = {
       delete_confirm_description: 'Esta ação não pode ser desfeita. Isso excluirá permanentemente a categoria "{categoryName}".',
       delete_confirm_cancel: 'Cancelar',
       form_delete_button: 'Delete',
+      static_edit_error_title: 'Edit Error',
+      static_edit_error_description: 'Static categories "Income" and "Expense" cannot have their name or type changed.',
+      static_delete_error_title: 'Delete Error',
+      static_delete_error_description: 'Static categories "Income" and "Expense" cannot be deleted.',
       permissions_title: 'Permissions',
       permissions_description: 'Define permissions for user roles and templates.',
       permission_subscribers_view: 'View Subscribers',
@@ -705,13 +702,15 @@ const pt = {
       cpu_usage: 'CPU Usage',
       ram_usage: 'RAM Usage',
       ssd_usage: 'SSD Usage',
-      postgres_status: 'PostgreSQL Status', // Should be MySQL
-      mysql_status: 'Status MySQL', // Added
+      postgres_status: 'PostgreSQL Status', 
+      mysql_status: 'Status MySQL', 
       refresh_button: 'Refresh Metrics',
       refresh_toast_title: 'Refreshing Metrics',
       refresh_toast_description: 'Fetching latest system status...',
-      postgres_connected: 'Connected', // Should be MySQL
-      postgres_disconnected: 'Disconnected - Check logs!', // Added
+      postgres_connected: 'Connected', 
+      postgres_disconnected: 'Disconnected - Check logs!', 
+      mysql_connected: 'Conectado',
+      mysql_disconnected: 'Desconectado - Verifique os logs!',
       live_logs_title: 'Live Logs (Placeholder)',
       live_logs_description: 'This section would display real-time system logs.',
     },
@@ -852,4 +851,3 @@ const pt = {
 };
 
 export default pt;
-
