@@ -553,6 +553,19 @@ const fr = {
     project_table_header_actions: 'Actions',
     action_edit_project: 'Modifier Projet',
     action_delete_project: 'Supprimer Projet',
+    // FDH Table
+    fdh_table_header_gps: 'Coordonnées GPS',
+    fdh_table_header_type: 'Type',
+    fdh_type_aerial: 'Aérien',
+    fdh_type_underground: 'Souterrain',
+    fdh_table_header_ports: 'Ports',
+    fdh_table_header_pon: 'PON',
+    fdh_table_header_status: 'Statut',
+    fdh_status_active: 'Actif',
+    fdh_status_inactive: 'Inactif',
+    fdh_table_header_brand: 'Marque',
+    action_edit_fdh: 'Modifier CTO',
+    action_delete_fdh: 'Supprimer CTO',
   },
    settings_plans: {
     internet_page_title: 'Forfaits Internet',
@@ -864,8 +877,8 @@ const fr = {
     filter_by_light_level_label: 'Filtrer par Niveau de Lumière',
   },
   // General form translations
-  form_cancel_button: 'Annuler',
-  form_saving_button: 'Enregistrement...',
+  form_cancel_button: 'Cancel',
+  form_saving_button: 'Saving...',
   // Inventory > Warehouses
   inventory_warehouses: {
     title: 'Entrepôts',
