@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Warehouse, Edit, Trash2, PlusCircle, FileText as FileTextIcon, Loader2 } from 'lucide-react';
+import { Warehouse, Edit, Trash2, PlusCircle, FileText as FileTextIcon, Loader2, FilePlus2 } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -153,7 +153,10 @@ export default function FoscsPage() {
                 </DialogHeader>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
                     <div className="md:col-span-2 border border-border rounded-md p-4"> {/* Added border and padding */}
-                        <h3 className="text-sm font-semibold mb-3 text-left">{t('maps_elements.fosc_new_template_heading', 'New Template')}</h3>
+                        <h3 className="text-sm font-semibold mb-3 text-left flex items-center gap-2">
+                            <FilePlus2 className={`${iconSize} text-primary`} /> {/* Icon Added */}
+                            {t('maps_elements.fosc_new_template_heading', 'New Template')}
+                        </h3>
                         <Form {...templateForm}>
                             <form onSubmit={templateForm.handleSubmit(handleAddTemplateSubmit)} className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
@@ -324,3 +327,4 @@ export default function FoscsPage() {
     </div>
   );
 }
+
