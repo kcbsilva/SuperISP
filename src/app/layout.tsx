@@ -24,8 +24,6 @@ import {
   Building, // Added for PoPs
   Cog, // Icon for Global Settings
   Plane, // Icon for PilotView
-  Bus, // Icon for TransitOS - Placeholder for Vehicles for now
-  Dna, // Icon for Zones (DNS)
   ListChecks, // Icon for Plans
   Wifi, // Icon for Internet Plan
   Tv, // Icon for TV Plan
@@ -49,6 +47,11 @@ import {
   UserCircle, // For profile menu
   Database, // for MySQL menu
 } from 'lucide-react';
+import { SiNextdns } from "react-icons/si";
+import { TbDeviceImacStar } from "react-icons/tb";
+import { SiReactrouter } from "react-icons/si";
+import { Bus } from 'lucide-react';
+
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -67,9 +70,7 @@ import {
   SidebarMenuSubContent,
   SidebarSeparator, // Import Separator
 } from '@/components/ui/sidebar';
-import { SiNextdns } from "react-icons/si";
-import { TbDeviceImacStar } from "react-icons/tb";
-import { SiReactrouter } from "react-icons/si";
+
 import { AppHeader } from '@/components/app-header';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'; // Import Tooltip components
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
@@ -218,7 +219,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <TooltipContent side="right" align="center">{t('sidebar.maps')}</TooltipContent>
                   </Tooltip>
                   <SidebarMenuSubContent>
-                    <SidebarMenuItem>
+                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/maps/map')} size="sm" tooltip={t('sidebar.maps_map')}>
                         <Link href="/maps/map" className="flex items-center gap-2">
                           <Globe className={subIconSize + " text-muted-foreground"} />
@@ -245,59 +246,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <TooltipContent side="right" align="center">{t('sidebar.maps_elements')}</TooltipContent>
                         </Tooltip>
                         <SidebarMenuSubContent>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/polls')} size="sm" tooltip={t('sidebar.maps_elements_polls')}>
-                              <Link href="#" className="flex items-center gap-2">
-                                <Power className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.maps_elements_polls')}</span>
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/fdhs')} size="sm" tooltip={t('sidebar.maps_elements_fdhs')}>
-                              <Link href="#" className="flex items-center gap-2">
-                                <Box className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.maps_elements_fdhs')}</span>
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/foscs')} size="sm" tooltip={t('sidebar.maps_elements_foscs')}>
-                              <Link href="#" className="flex items-center gap-2">
-                                <Warehouse className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.maps_elements_foscs')}</span>
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/peds')} size="sm" tooltip={t('sidebar.maps_elements_peds')}>
-                              <Link href="#" className="flex items-center gap-2">
-                                <Box className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.maps_elements_peds')}</span>
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/accessories')} size="sm" tooltip={t('sidebar.maps_elements_accessories')}>
-                              <Link href="#" className="flex items-center gap-2">
-                                <Puzzle className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.maps_elements_accessories')}</span>
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/towers')} size="sm" tooltip={t('sidebar.maps_elements_towers')}>
-                              <Link href="#" className="flex items-center gap-2">
-                                <TowerControl className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.maps_elements_towers')}</span>
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/cables')} size="sm" tooltip={t('sidebar.maps_elements_cables')}>
-                              <Link href="#" className="flex items-center gap-2">
-                                <Cable className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.maps_elements_cables')}</span>
+                           <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements')} size="sm" tooltip={t('sidebar.maps_elements_polls')}>
+                              <Link href="/maps/elements" className="flex items-center gap-2">
+                                <ListFilter className={subIconSize + " text-muted-foreground"} />
+                                <span>{t('sidebar.maps_elements')}</span>
                               </Link>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
