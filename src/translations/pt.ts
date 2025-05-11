@@ -345,6 +345,7 @@ const pt = {
     billing_next_date: 'Próxima Data de Fatura',
     billing_not_available: 'N/D',
     billing_view_invoices_button: 'Ver Faturas',
+    billing_actions_button: 'Ações', // Added for dropdown
     billing_make_invoice_button: 'Gerar Fatura',
     billing_make_payment_plan_button: 'Criar Plano de Pagamento',
     billing_make_invoice_button_toast_title: 'Gerar Fatura (Simulado)',
@@ -428,7 +429,7 @@ const pt = {
     auth_type_pppoe: 'PPPoE',
     auth_type_ipoe: 'IPoE',
     auth_type_ipxmac: 'IP x MAC',
-    auth_type_staticip: 'IP Estático',
+    auth_type_staticip: 'Static IP',
     services_fdh_id: 'ID CTO', // Updated from FDH
     services_fdh_port: 'Porta CTO', // Updated from FDH
     services_ap_name: 'Nome AP',
@@ -1170,4 +1171,3 @@ const pt = {
 };
 
 export default pt;
-

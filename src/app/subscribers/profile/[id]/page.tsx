@@ -61,6 +61,7 @@ import {
   Split,
   Settings as SettingsIcon,
   Loader2,
+  ChevronDown, // Added for Actions dropdown
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -86,7 +87,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -163,7 +163,7 @@ const getSubscriberData = (id: string | string[] | undefined): Subscriber | null
     baseData.mobileNumber = '555-1010';
     baseData.birthday = new Date(1985, 3, 15);
     baseData.taxId = '123.456.789-00';
-    (baseData as any).idNumber = 'ID-ALICE-001'; // Assuming idNumber might exist based on previous context
+    (baseData as any).idNumber = 'ID-ALICE-001'; 
     baseData.signupDate = new Date(2022, 0, 10);
     baseData.status = 'Active';
     baseData.services = [
@@ -651,14 +651,21 @@ function SubscriberProfilePage() {
                     </TabsList>
                 </Tabs>
                  <div className="flex items-center gap-2 ml-4 shrink-0">
-                     <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleMakeInvoice}>
-                        <FilePlus2 className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_make_invoice_button')}
-                    </Button>
-                    {activeBillingTab === 'Pending' && (
-                         <Button size="sm" variant="outline" onClick={handleMakePaymentPlan} disabled={selectedPendingInvoices.length === 0}>
-                            <CalendarClock className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_make_payment_plan_button')}
-                        </Button>
-                    )}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button size="sm" variant="outline">
+                                {t('subscriber_profile.billing_actions_button', 'Actions')} <ChevronDown className={`ml-2 ${iconSize}`} />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={handleMakeInvoice}>
+                                <FilePlus2 className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_make_invoice_button')}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleMakePaymentPlan} disabled={selectedPendingInvoices.length === 0 && activeBillingTab === 'Pending'}>
+                                <CalendarClock className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_make_payment_plan_button')}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                  </div>
             </div>
             <Card>

@@ -347,6 +347,7 @@ const fr = {
      billing_next_date: 'Prochaine date de facturation',
      billing_not_available: 'N/A',
      billing_view_invoices_button: 'Voir les factures',
+     billing_actions_button: 'Actions', // Added for dropdown
      billing_make_invoice_button: 'Créer une Facture',
      billing_make_payment_plan_button: 'Créer Plan de Paiement',
      billing_make_invoice_button_toast_title: 'Créer Facture (Simulé)',
@@ -1096,8 +1097,8 @@ const fr = {
     cli_command_success_generic: 'Commande "{command}" exécutée avec succès. Résultat : {details}',
     cli_command_success_no_output: 'Commande exécutée avec succès, mais aucune sortie spécifique n\'a été retournée.',
     cli_execution_success_title: 'Commande Exécutée',
-    cli_execution_success_toast_desc: 'Commande SQL traitée.',
-    cli_execution_success_no_output_toast_desc: 'Commande SQL traitée sans sortie spécifique.',
+    cli_execution_success_toast_desc: 'SQL command processed.',
+    cli_execution_success_no_output_toast_desc: 'SQL command processed with no specific output.',
   },
   fttx_dashboard: {
     title: "Tableau de bord FTTx",
@@ -1172,4 +1173,3 @@ const fr = {
 };
 
 export default fr;
-

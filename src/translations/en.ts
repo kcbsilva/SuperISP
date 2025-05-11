@@ -354,6 +354,7 @@ const en = {
      billing_next_date: 'Next Bill Date',
      billing_not_available: 'N/A',
      billing_view_invoices_button: 'View Invoices',
+     billing_actions_button: 'Actions', // Added for dropdown
      billing_make_invoice_button: 'Create Invoice',
      billing_make_payment_plan_button: 'Make Payment Plan',
      billing_make_invoice_button_toast_title: 'Create Invoice (Simulated)',
@@ -1180,4 +1181,3 @@ const en = {
 };
 
 export default en;
-
