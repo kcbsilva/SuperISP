@@ -47,6 +47,8 @@ import {
   UserCircle, // For profile menu
   Database, // for MySQL menu
   Bus, // Icon for Vehicles
+  BriefcaseBusiness, // Icon for HR Menu (Corrected)
+  FileCode, // Icon for Projects
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -305,6 +307,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </SidebarMenuSubContent>
                       </SidebarMenuSub>
                     </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/maps/projects')} size="sm" tooltip={t('sidebar.maps_projects', 'Projects')}>
+                        <Link href="#" className="flex items-center gap-2"> {/* Ensure correct href */}
+                          <FileCode className={subIconSize + " text-muted-foreground"} /> {/* Icon for Projects */}
+                          <span>{t('sidebar.maps_projects', 'Projects')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
               </SidebarMenuItem>
@@ -484,7 +494,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <TooltipTrigger asChild>
                       <SidebarMenuSubTrigger tooltip={t('sidebar.hr', 'HR')}>
                         <div className="flex items-center gap-2 cursor-pointer">
-                          <Briefcase className={iconSize}/>
+                          <BriefcaseBusiness className={iconSize}/>
                           <span className="truncate">{t('sidebar.hr', 'HR')}</span>
                           <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                         </div>
@@ -918,3 +928,4 @@ export default function RootLayout({
     </html>
   );
 }
+

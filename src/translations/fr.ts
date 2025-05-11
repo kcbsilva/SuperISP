@@ -22,6 +22,7 @@ const fr = {
     maps_elements_towers: 'Tours',
     maps_elements_cables: 'Câbles',
     maps_map: 'Carte',
+    maps_projects: 'Projets', // Added
     fttx: 'FTTx',
     fttx_dashboard: 'Tableau de bord', // Added
     fttx_olts: 'OLTs & ONXs', // Changed
@@ -367,7 +368,7 @@ const fr = {
      promise_to_pay_save_button: 'Enregistrer la Promesse',
      promise_to_pay_success_title: 'Promesse Enregistrée',
      promise_to_pay_success_desc: 'Promesse de paiement enregistrée pour {amount} jusqu\'au {date}.',
-     billing_all_invoices: 'Tous les Articles',
+     billing_all_invoices: 'Tous les Items',
      billing_pending_invoices: 'Factures en attente',
      billing_paid_invoices: 'Factures Payées',
      billing_canceled_invoices: 'Factures annulées',
@@ -547,6 +548,11 @@ const fr = {
     // Cables
     list_title_cables: 'Liste des Câbles',
     no_cables_found: 'Aucun câble trouvé. Cliquez sur "Ajouter Câble" pour en créer un.',
+    // Projects (Added)
+    projects_page_title: 'Projets Cartographiques',
+    add_project_button: 'Ajouter Projet',
+    list_title_projects: 'Liste des Projets',
+    no_projects_found: 'Aucun projet trouvé. Cliquez sur "Ajouter Projet" pour en créer un.',
   },
    settings_plans: {
     internet_page_title: 'Forfaits Internet',
@@ -850,3 +856,4 @@ const fr = {
 };
 
 export default fr;
+

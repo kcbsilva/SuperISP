@@ -22,6 +22,7 @@ const pt = {
     maps_elements_towers: 'Torres',
     maps_elements_cables: 'Cabos',
     maps_map: 'Mapa',
+    maps_projects: 'Projetos', // Added
     fttx: 'FTTx',
     fttx_dashboard: 'Painel', // Added
     fttx_olts: 'OLTs & ONXs', // Changed
@@ -545,6 +546,11 @@ const pt = {
     // Cables
     list_title_cables: 'Lista de Cabos',
     no_cables_found: 'Nenhum cabo encontrado. Clique em "Adicionar Cabo" para criar um.',
+    // Projects (Added)
+    projects_page_title: 'Projetos de Mapa',
+    add_project_button: 'Adicionar Projeto',
+    list_title_projects: 'Lista de Projetos',
+    no_projects_found: 'Nenhum projeto encontrado. Clique em "Adicionar Projeto" para criar um.',
   },
     settings_plans: {
       internet_page_title: 'Planos de Internet',
@@ -846,3 +852,4 @@ const pt = {
 };
 
 export default pt;
+
