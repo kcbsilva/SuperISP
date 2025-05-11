@@ -60,7 +60,7 @@ import {
   Share2,
   Split,
   Settings as SettingsIcon,
-  Loader2, // Added Loader2
+  Loader2,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -98,7 +98,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useForm } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
@@ -171,10 +171,10 @@ const getSubscriberData = (id: string | string[] | undefined): Subscriber | null
       { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: 'pop-1', status: 'Active' },
     ];
     baseData.billing.balance = 0.00;
-    baseData.billing.pendingInvoices = [
-        { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
-        { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
-     ];
+    baseData.billing.pendingInvoices =  [
+             { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
+             { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
+         ];
   } else if (id === 'sub-2' || id === '2') {
     baseData.id = 2;
     baseData.subscriberType = 'Commercial';
@@ -194,11 +194,11 @@ const getSubscriberData = (id: string | string[] | undefined): Subscriber | null
     baseData.billing.balance = 150.75;
     baseData.billing.nextBillDate = '2024-09-01';
     baseData.billing.pendingInvoices = [
-        { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
-        { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
-    ];
+                { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
+                { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
+            ];
     baseData.billing.paymentPlans = [
-        { id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active' },
+                { id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active' },
     ];
     baseData.billing.promisesToPay = [
         {id: 'ptp-1', promiseDate: '2024-08-10', amount: 50.00, status: 'Pending'},
@@ -447,7 +447,6 @@ function SubscriberProfilePage() {
     }
   };
 
-
   return (
     <div className="flex flex-col gap-6">
       <Card>
@@ -499,7 +498,7 @@ function SubscriberProfilePage() {
                     <OverviewDetailItem icon={CalendarDays} labelKey="subscriber_profile.overview_established_date" value={subscriber.establishedDate} />
                   )}
                   <OverviewDetailItem icon={Fingerprint} labelKey={subscriber.subscriberType === 'Residential' ? 'subscriber_profile.overview_tax_id' : 'subscriber_profile.overview_business_number'} value={subscriber.subscriberType === 'Residential' ? subscriber.taxId : subscriber.businessNumber} />
-                  <OverviewDetailItem icon={Fingerprint} labelKey="subscriber_profile.overview_id_number" value={(subscriber as any).idNumber} /> {/* Assuming idNumber exists */}
+                  <OverviewDetailItem icon={Fingerprint} labelKey="subscriber_profile.overview_id_number" value={(subscriber as any).idNumber} />
                   <OverviewDetailItem icon={CalendarDays} labelKey="subscriber_profile.overview_signup_date" value={subscriber.signupDate} />
                 </div>
               </OverviewSection>
@@ -869,4 +868,3 @@ function SubscriberProfilePage() {
     </div>
   );
 }
-
