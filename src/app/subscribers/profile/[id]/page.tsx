@@ -182,7 +182,7 @@ const getSubscriberData = (id: string | string[] | undefined) => {
             canceledInvoices: [
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
-             pendingInvoices: [
+            pendingInvoices: [
                 { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
                 { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
             ],
@@ -213,7 +213,7 @@ const getSubscriberData = (id: string | string[] | undefined) => {
         ],
     };
 
-    if (id === '1') {
+    if (id === 'sub-1') {
         baseData.name = 'Alice Wonderland';
         baseData.address = '123 Fantasy Lane, Wonderland, WND 12345';
         baseData.pointOfReference = 'Next to the Mad Hatter Tea Party';
@@ -225,11 +225,11 @@ const getSubscriberData = (id: string | string[] | undefined) => {
         baseData.idNumber = 'ID-ALICE-001';
         baseData.signupDate = new Date(2022, 0, 10);
         baseData.billing.balance = 0.00;
-        baseData.billing.pendingInvoices =  [
+         baseData.billing.pendingInvoices =  [
              { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
              { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
          ];
-    } else if (id === '2') {
+    } else if (id === 'sub-2') {
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
         baseData.companyName = 'Bob The Builder Inc.';
@@ -353,7 +353,6 @@ function SubscriberProfilePage() {
 
   const pops: Pop[] = placeholderPops;
   const isLoadingPops = false;
-  const popsError = null;
 
   const addServiceForm = useForm<AddServiceFormData>({
     resolver: zodResolver(addServiceSchema),
@@ -734,21 +733,20 @@ function SubscriberProfilePage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>{t('subscriber_profile.add_service_pop_label')}</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingPops || !!popsError}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingPops}>
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder={isLoadingPops ? t('subscriber_profile.add_service_pop_loading') : popsError ? t('subscriber_profile.add_service_pop_error') : t('subscriber_profile.add_service_pop_placeholder')} />
+                                  <SelectValue placeholder={isLoadingPops ? t('subscriber_profile.add_service_pop_loading') : t('subscriber_profile.add_service_pop_placeholder')} />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {!isLoadingPops && !popsError && pops.map((pop) => (
+                                {!isLoadingPops && pops.map((pop) => (
                                   <SelectItem key={pop.id.toString()} value={pop.id.toString()}>
                                     {pop.name} ({pop.location})
                                   </SelectItem>
                                 ))}
                                  {isLoadingPops && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_loading')}</div>}
-                                 {popsError && <div className="p-2 text-center text-destructive text-xs">{t('subscriber_profile.add_service_pop_error')}</div>}
-                                 {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_none')}</div>}
+                                 {!isLoadingPops && pops.length === 0 && <div className="p-2 text-center text-muted-foreground text-xs">{t('subscriber_profile.add_service_pop_none')}</div>}
                               </SelectContent>
                             </Select>
                             <FormMessage />
