@@ -47,10 +47,10 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
+  AlertDialogDescription as AlertDialogDescriptionComponent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle as AlertDialogTitleComponent,
 } from "@/components/ui/alert-dialog";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -140,85 +140,88 @@ export default function FoscsPage() {
                     <FileTextIcon className={`mr-2 ${iconSize}`} /> {t('maps_elements.fosc_template_button', 'FOSC Templates')}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-lg"> {/* Changed to sm:max-w-lg for wider modal */}
                 <DialogHeader>
-                    <DialogTitle className="text-sm">{t('maps_elements.fosc_template_modal_title', 'Add New FOSC Template')}</DialogTitle>
-                    <DialogDescription className="text-xs">{t('maps_elements.fosc_template_modal_desc', 'Define a new template for FOSC types.')}</DialogDescription>
+                    {/* DialogTitle and DialogDescription removed as per request */}
                 </DialogHeader>
                 <Form {...templateForm}>
                     <form onSubmit={templateForm.handleSubmit(handleAddTemplateSubmit)} className="grid gap-4 py-4">
-                        <FormField
-                            control={templateForm.control}
-                            name="manufacturer"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('maps_elements.fosc_template_form_manufacturer_label', 'Manufacturer')}</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={templateForm.control}
+                                name="manufacturer"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('maps_elements.fosc_template_form_manufacturer_label', 'Manufacturer')}</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder={t('maps_elements.fosc_template_form_manufacturer_placeholder', 'Select Manufacturer')} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {placeholderManufacturers.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={templateForm.control}
+                                name="model"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('maps_elements.fosc_template_form_model_label', 'Model')}</FormLabel>
                                         <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder={t('maps_elements.fosc_template_form_manufacturer_placeholder', 'Select Manufacturer')} />
-                                            </SelectTrigger>
+                                            <Input placeholder={t('maps_elements.fosc_template_form_model_placeholder', 'e.g., FOSC 450 D6')} {...field} />
                                         </FormControl>
-                                        <SelectContent>
-                                            {placeholderManufacturers.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={templateForm.control}
-                            name="model"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('maps_elements.fosc_template_form_model_label', 'Model')}</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder={t('maps_elements.fosc_template_form_model_placeholder', 'e.g., FOSC 450 D6')} {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={templateForm.control}
-                            name="maxTrayCapacity"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('maps_elements.fosc_template_form_max_trays_label', 'Max Tray Capacity')}</FormLabel>
-                                    <FormControl>
-                                        <Input type="number" placeholder="e.g., 12" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={templateForm.control}
-                            name="maxCableInserts"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('maps_elements.fosc_template_form_max_cables_label', 'Max Cable Inserts')}</FormLabel>
-                                    <FormControl>
-                                        <Input type="number" placeholder="e.g., 6" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={templateForm.control}
-                            name="maxSpliceCounts"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('maps_elements.fosc_template_form_max_splices_label', 'Max Splice Counts')}</FormLabel>
-                                    <FormControl>
-                                        <Input type="number" placeholder="e.g., 288" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                            <FormField
+                                control={templateForm.control}
+                                name="maxTrayCapacity"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('maps_elements.fosc_template_form_max_trays_label', 'Max Tray Capacity')}</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" placeholder="e.g., 12" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={templateForm.control}
+                                name="maxCableInserts"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('maps_elements.fosc_template_form_max_cables_label', 'Max Cable Inserts')}</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" placeholder="e.g., 6" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={templateForm.control}
+                                name="maxSpliceCounts"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('maps_elements.fosc_template_form_max_splices_label', 'Max Splice Counts')}</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" placeholder="e.g., 288" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <DialogFooter>
                             <DialogClose asChild>
                                 <Button type="button" variant="outline" disabled={templateForm.formState.isSubmitting}>{t('maps_elements.fosc_template_form_cancel_button', 'Cancel')}</Button>
@@ -292,3 +295,4 @@ export default function FoscsPage() {
     </div>
   );
 }
+
