@@ -357,12 +357,23 @@ const en = {
      billing_actions_button: 'Actions', // Added for dropdown
      billing_make_invoice_button: 'Create Invoice',
      billing_make_payment_plan_button: 'Make Payment Plan',
+     billing_make_promise_to_pay_button: 'Promise to Pay', // Added
      billing_make_invoice_button_toast_title: 'Create Invoice (Simulated)',
      billing_make_invoice_button_toast_desc: 'Functionality to create a new invoice is not yet implemented.',
      billing_make_payment_plan_button_toast_title: 'Create Payment Plan (Simulated)',
      billing_make_payment_plan_button_toast_desc: 'Creating payment plan for selected invoices: {ids}',
      billing_no_invoice_selected_title: 'No Invoice Selected',
      billing_no_invoice_selected_desc: 'Please select at least one pending invoice to create a payment plan.',
+     promise_to_pay_no_invoice_selected_desc: 'Please select at least one pending invoice to make a promise to pay.', // Added
+     promise_to_pay_modal_title: 'Register Promise to Pay', // Added
+     promise_to_pay_modal_desc: 'Set a date and amount for the payment promise.', // Added
+     promise_to_pay_date_label: 'Promise Date', // Added
+     promise_to_pay_date_placeholder: 'Select promise date', // Added
+     promise_to_pay_amount_label: 'Promise Amount', // Added
+     promise_to_pay_cancel_button: 'Cancel', // Added
+     promise_to_pay_save_button: 'Save Promise', // Added
+     promise_to_pay_success_title: 'Promise Registered', // Added
+     promise_to_pay_success_desc: 'Promise to pay registered for {amount} until {date}.', // Added
      billing_all_invoices: 'All Items',
      billing_pending_invoices: 'Pending Invoices',
      billing_paid_invoices: 'Paid Invoices',
@@ -1044,7 +1055,7 @@ const en = {
       live_logs_title: 'Live Logs (Placeholder)',
       live_logs_description: 'This section would display real-time system logs.',
     },
-    mysql_page: { 
+    mysql_page: {
       title: 'MySQL Management',
       select_option_prompt: 'Please select an option from the sidebar to manage MySQL databases or tables, or use the CLI.',
       databases_title: 'Databases',
