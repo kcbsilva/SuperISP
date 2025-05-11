@@ -23,7 +23,7 @@ export default function MapElementsIndexPage() {
         <CardHeader className="pb-2 pt-4">
             <CardTitle className="text-sm">{t('maps_elements.select_type_title', 'Select Element Type')}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent> {/* Removed pt-6, CardHeader already provides padding */}
             <p className="text-center text-muted-foreground py-8 text-xs">
               {t('maps_elements.select_type_description', 'Please select a specific map element type from the sidebar to view or manage its items.')}
             </p>
