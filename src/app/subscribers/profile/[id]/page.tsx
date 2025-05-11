@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark, FilePlus2, Printer, Send, FilePlus, GitFork, Power, Box, Warehouse, Puzzle, TowerControl, Globe } from 'lucide-react';
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark, FilePlus2, Printer, Send, FilePlus, GitFork, Power, Box, Warehouse, Puzzle, TowerControl, Globe, FileSignature } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -183,8 +183,8 @@ const getSubscriberData = (id: string | string[] | undefined) => {
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
             pendingInvoices: [
-                { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
-                { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
+                 { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
+                 { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
             ],
             paymentPlans: [
                 { id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active' },
@@ -225,10 +225,10 @@ const getSubscriberData = (id: string | string[] | undefined) => {
         baseData.idNumber = 'ID-ALICE-001';
         baseData.signupDate = new Date(2022, 0, 10);
         baseData.billing.balance = 0.00;
-         baseData.billing.pendingInvoices =  [
+        baseData.billing.pendingInvoices =  [
              { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
              { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
-         ];
+        ];
     } else if (id === 'sub-2') { // Bob The Builder Inc.
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
@@ -538,7 +538,7 @@ function SubscriberProfilePage() {
   // The main return of the component
   return (
     <div className="flex flex-col gap-6">
-      <Card>
+      <Card> 
         <CardHeader>
           <div className="flex items-center gap-4">
             {subscriber.type === 'Residential' ? (
