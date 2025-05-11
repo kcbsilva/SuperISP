@@ -4,14 +4,14 @@
 import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark, FilePlus2, Printer, Send, FileSignature, FilePlus } from 'lucide-react';
+import { User, Building, Server as ServerIcon, DollarSign, Wrench, Package, Edit, Trash2, PlusCircle, Loader2, FileText, ClipboardList, History as HistoryIcon, Filter, CheckCircle, XCircle, Clock, Combine, Home, Phone, Mail, Fingerprint, CalendarDays, Briefcase, MapPinIcon, MoreVertical, CalendarClock, Handshake, Wifi, Tv, Smartphone, PhoneCall, ListFilter as ListFilterIcon, BadgeDollarSign, CircleDollarSign, FileWarning, Network, Cable, Satellite, KeyRound, Eraser, KeySquare, Calendar as CalendarIconLucide, LineChart, Landmark, FilePlus2, Printer, Send, FileSignature, FilePlus, GitFork, Power, Box, Warehouse, Puzzle, TowerControl, Globe } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  DialogDescription as DialogDescriptionComponent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -64,7 +64,6 @@ import {
 import { NewContractWizard } from '@/components/new-contract-wizard';
 
 
-// Validation Schema for the Add Service form
 const addServiceSchema = z.object({
   serviceType: z.enum(['Internet', 'TV', 'Phone', 'Mobile', 'Combo', 'Other'], {
     required_error: 'Service type is required',
@@ -74,7 +73,6 @@ const addServiceSchema = z.object({
 
 type AddServiceFormData = z.infer<typeof addServiceSchema>;
 
-// Validation Schema for Update Login form
 const updateLoginSchema = z.object({
   pppoeUsername: z.string().min(1, "PPPoE Username is required."),
   pppoePassword: z.string().min(1, "PPPoE Password is required."),
@@ -82,26 +80,20 @@ const updateLoginSchema = z.object({
 type UpdateLoginFormData = z.infer<typeof updateLoginSchema>;
 
 
-// Types for service filtering
 type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile' | 'Combo';
-// Types for inventory filtering
 type InventoryFilter = 'All' | 'Lent' | 'Sold';
-// Types for billing filtering
 type BillingFilter = 'All' | 'Pending' | 'Paid' | 'Canceled' | 'PaymentPlan' | 'PromiseToPay';
-// Types for contract filtering
 type ContractStatusFilter = 'All' | 'Active' | 'Inactive';
 
 
-// Placeholder data
 const getSubscriberData = (id: string | string[] | undefined) => {
     if (id === undefined) {
-        // Handle the case where id is undefined, perhaps return a default object or throw an error
         console.error("Subscriber ID is undefined in getSubscriberData");
         return {
             id: 'undefined-id',
             name: 'Error: Undefined Subscriber',
-            type: 'Residential',
-            status: 'Inactive',
+            type: 'Residential' as 'Residential' | 'Commercial',
+            status: 'Inactive' as 'Active' | 'Inactive' | 'Suspended' | 'Planned' | 'Canceled',
             address: 'N/A',
             pointOfReference: 'N/A',
             email: 'error@example.com',
@@ -112,23 +104,23 @@ const getSubscriberData = (id: string | string[] | undefined) => {
             idNumber: 'N/A',
             signupDate: new Date(),
             companyName: '',
-            establishedDate: null,
+            establishedDate: null as Date | null,
             businessNumber: '',
-            services: [],
+            services: [] as any[],
             billing: {
                 balance: 0,
                 nextBillDate: '',
-                pastInvoices: [],
-                canceledInvoices: [],
-                pendingInvoices: [],
-                paymentPlans: [],
-                promisesToPay: []
+                pastInvoices: [] as any[],
+                canceledInvoices: [] as any[],
+                pendingInvoices: [] as any[],
+                paymentPlans: [] as any[],
+                promisesToPay: [] as any[]
             },
-            serviceCalls: [],
-            inventory: [],
-            documents: [],
-            notes: [],
-            history: [],
+            serviceCalls: [] as any[],
+            inventory: [] as any[],
+            documents: [] as any[],
+            notes: [] as any[],
+            history: [] as any[],
         };
     }
     console.log("Fetching data for subscriber ID:", id);
@@ -155,25 +147,25 @@ const getSubscriberData = (id: string | string[] | undefined) => {
                 technology: 'Fiber', downloadSpeed: '100 Mbps', uploadSpeed: '50 Mbps',
                 ipAddress: '203.0.113.10', onlineStatus: 'Online', authenticationType: 'PPPoE',
                 fdhId: 'FDH-Central-01', fdhPort: 'A3', pppoeUsername: 'user1@isp.com', pppoePassword: 'password123',
-                xponSn: 'GPON12345678', macAddress: null, 
+                xponSn: 'GPON12345678', macAddress: null,
              },
              {
                 id: 'svc-7', type: 'Internet', plan: 'Radio Basic 20', popId: '2', status: 'Active',
                 technology: 'Radio', downloadSpeed: '20 Mbps', uploadSpeed: '5 Mbps',
                 ipAddress: '203.0.113.11', onlineStatus: 'Offline', authenticationType: 'IPxMAC',
-                apName: 'AP-North-Sector', macAddress: '00:1A:2B:3C:4D:5F', xponSn: null, 
+                apName: 'AP-North-Sector', macAddress: '00:1A:2B:3C:4D:5F', xponSn: null,
              },
               {
                 id: 'svc-8', type: 'Internet', plan: 'UTP Office 50', popId: '1', status: 'Suspended',
                 technology: 'UTP', downloadSpeed: '50 Mbps', uploadSpeed: '50 Mbps',
                 ipAddress: '203.0.113.12', onlineStatus: 'Offline', authenticationType: 'StaticIP',
-                switchId: 'Switch-CORE-01-Port23', macAddress: '11:22:33:AA:BB:CC', xponSn: null, 
+                switchId: 'Switch-CORE-01-Port23', macAddress: '11:22:33:AA:BB:CC', xponSn: null,
              },
              {
                 id: 'svc-9', type: 'Internet', plan: 'Satellite Remote 10', popId: '3', status: 'Canceled',
                 technology: 'Satellite', downloadSpeed: '10 Mbps', uploadSpeed: '1 Mbps',
                 ipAddress: '203.0.113.14', onlineStatus: 'Offline', authenticationType: 'IPoE',
-                ipoeUsername: 'sat_user_001', ipoePassword: 'securepassword', macAddress: 'DD:EE:FF:77:88:99', xponSn: null, 
+                ipoeUsername: 'sat_user_001', ipoePassword: 'securepassword', macAddress: 'DD:EE:FF:77:88:99', xponSn: null,
              },
             { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: '1', status: 'Active' },
             { id: 'svc-4', type: 'Landline', plan: 'Unlimited Local', popId: '1', status: 'Active' },
@@ -221,7 +213,7 @@ const getSubscriberData = (id: string | string[] | undefined) => {
         ],
     };
 
-    if (id === 'sub-1') { // Corresponds to ID 1 from the list page example
+    if (id === '1') {
         baseData.name = 'Alice Wonderland';
         baseData.address = '123 Fantasy Lane, Wonderland, WND 12345';
         baseData.pointOfReference = 'Next to the Mad Hatter Tea Party';
@@ -233,11 +225,11 @@ const getSubscriberData = (id: string | string[] | undefined) => {
         baseData.idNumber = 'ID-ALICE-001';
         baseData.signupDate = new Date(2022, 0, 10);
         baseData.billing.balance = 0.00;
-        baseData.billing.pendingInvoices = [
+        baseData.billing.pendingInvoices =  [
              { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
              { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
          ];
-    } else if (id === 'sub-2') { // Corresponds to ID 2 from the list page example
+    } else if (id === '2') {
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
         baseData.companyName = 'Bob The Builder Inc.';
@@ -257,7 +249,7 @@ const getSubscriberData = (id: string | string[] | undefined) => {
                 id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: '2', status: 'Active',
                 technology: 'Fiber', downloadSpeed: '1 Gbps', uploadSpeed: '500 Mbps',
                 ipAddress: '203.0.113.20', onlineStatus: 'Online', authenticationType: 'StaticIP',
-                fdhId: 'FDH-Commercial-01', fdhPort: 'B1', xponSn: 'GPON98765432', macAddress: null, 
+                fdhId: 'FDH-Commercial-01', fdhPort: 'B1', xponSn: 'GPON98765432', macAddress: null,
              }
         ];
         baseData.billing.balance = 150.75;
@@ -269,7 +261,6 @@ const getSubscriberData = (id: string | string[] | undefined) => {
     return baseData;
 };
 
-// Placeholder PoP data - this should be fetched or provided differently in a real app
 const placeholderPops: Pop[] = [
     { id: '1', name: 'Central Hub', location: '123 Fiber Lane, Anytown', status: 'Active', createdAt: new Date() },
     { id: '2', name: 'North Branch', location: '456 Network Rd, Anytown', status: 'Planned', createdAt: new Date(Date.now() - 86400000) },
@@ -332,7 +323,7 @@ const ServiceDetailItem: React.FC<{ label: string; value?: string | null; childr
 };
 
 const getTechnologyIcon = (technology?: string) => {
-    const iconSize = "h-4 w-4 text-primary"; 
+    const iconSize = "h-4 w-4 text-primary";
     switch (technology?.toLowerCase()) {
         case 'fiber': return <Network className={iconSize} data-ai-hint="fiber optic" />;
         case 'radio': return <Wifi className={iconSize} data-ai-hint="radio signal" />;
@@ -390,7 +381,10 @@ function SubscriberProfilePage() {
   }, [selectedServiceForLoginUpdate, updateLoginForm]);
 
 
-  const subscriber = React.useMemo(() => getSubscriberData(subscriberId), [subscriberId]);
+  const subscriber = React.useMemo(() => {
+    if (!subscriberId) return null;
+    return getSubscriberData(subscriberId);
+  }, [subscriberId]);
 
   const hasOutstandingBalance = React.useMemo(() =>
     (subscriber?.billing?.balance ?? 0) > 0 || (subscriber?.billing?.pendingInvoices?.length ?? 0) > 0,
@@ -400,7 +394,7 @@ function SubscriberProfilePage() {
     console.log("Edit subscriber:", subscriberId);
     toast({
       title: t('subscriber_profile.edit_toast_title'),
-      description: t('subscriber_profile.edit_toast_description', 'Editing for {name} is not yet functional.').replace('{name}', subscriber.name)
+      description: t('subscriber_profile.edit_toast_description', 'Editing for {name} is not yet functional.').replace('{name}', subscriber?.name || 'N/A')
     });
   };
 
@@ -408,7 +402,7 @@ function SubscriberProfilePage() {
     console.log("Delete subscriber:", subscriberId);
     toast({
       title: t('subscriber_profile.delete_toast_title'),
-      description: t('subscriber_profile.delete_toast_description', 'Deletion for {name} is not yet functional.').replace('{name}', subscriber.name),
+      description: t('subscriber_profile.delete_toast_description', 'Deletion for {name} is not yet functional.').replace('{name}', subscriber?.name || 'N/A'),
       variant: "destructive"
     });
   };
@@ -421,7 +415,7 @@ function SubscriberProfilePage() {
       title: t('subscriber_profile.add_service_success_toast_title'),
       description: t('subscriber_profile.add_service_success_toast_description', '{serviceType} service added for {name}.')
         .replace('{serviceType}', data.serviceType)
-        .replace('{name}', subscriber.name),
+        .replace('{name}', subscriber?.name || 'N/A'),
     });
   };
 
@@ -703,9 +697,9 @@ function SubscriberProfilePage() {
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
                     <DialogTitle className="text-sm">{t('subscriber_profile.add_service_dialog_title')}</DialogTitle>
-                    <DialogDescription className="text-xs">
+                    <DialogDescriptionComponent className="text-xs">
                       {t('subscriber_profile.add_service_dialog_description')}
-                    </DialogDescription>
+                    </DialogDescriptionComponent>
                   </DialogHeader>
                   <Form {...addServiceForm}>
                     <form onSubmit={addServiceForm.handleSubmit(handleAddServiceSubmit)} className="grid gap-4 py-4">
@@ -1312,7 +1306,6 @@ function SubscriberProfilePage() {
 
       </Tabs>
 
-      {/* Update Login Dialog */}
       <Dialog open={isUpdateLoginDialogOpen} onOpenChange={(isOpen) => {
           setIsUpdateLoginDialogOpen(isOpen);
           if (!isOpen) setSelectedServiceForLoginUpdate(null);
@@ -1320,10 +1313,10 @@ function SubscriberProfilePage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-sm">{t('subscriber_profile.update_login_dialog_title')}</DialogTitle>
-            <DialogDescription className="text-xs">
+            <DialogDescriptionComponent className="text-xs">
               {t('subscriber_profile.update_login_dialog_description', 'Update PPPoE login credentials for service {serviceId}.')
                 .replace('{serviceId}', selectedServiceForLoginUpdate?.id || '')}
-            </DialogDescription>
+            </DialogDescriptionComponent>
           </DialogHeader>
           <Form {...updateLoginForm}>
             <form onSubmit={updateLoginForm.handleSubmit(handleUpdateLoginSubmit)} className="grid gap-4 py-4">
@@ -1371,7 +1364,6 @@ function SubscriberProfilePage() {
         </DialogContent>
       </Dialog>
 
-      {/* New Contract Wizard Dialog */}
       {isNewContractWizardOpen && (
         <NewContractWizard
           isOpen={isNewContractWizardOpen}
