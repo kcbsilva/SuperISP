@@ -19,7 +19,6 @@ import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
-  DialogDescription as DialogDescriptionComponent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -47,10 +46,10 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription, // Kept for consistency, renamed DialogDescription above
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle as AlertDialogTitleComponent, // Renamed to avoid conflict
+  AlertDialogTitle as AlertDialogTitleComponent,
 } from "@/components/ui/alert-dialog";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -64,7 +63,7 @@ interface Fosc {
   type: 'Aerial' | 'Underground';
   trays: string;
   project?: string;
-  cableCount: string; // Changed from cable to cableCount "current/max"
+  cableCount: string;
   status: 'Active' | 'Inactive' | 'Planned';
   brand: string;
 }
@@ -75,7 +74,6 @@ const placeholderFoscs: Fosc[] = [
   { id: 'fosc-003', gpsCoordinates: '40.7128° N, 74.0060° W', type: 'Aerial', trays: '2/4', project: 'NYC Soho Link', cableCount: '1/2', status: 'Planned', brand: 'Corning' },
 ];
 
-// Schema for FOSC Template
 const foscTemplateSchema = z.object({
   manufacturer: z.string().min(1, "Manufacturer is required."),
   model: z.string().min(1, "Model is required."),
@@ -91,7 +89,6 @@ interface FoscTemplate extends FoscTemplateFormData {
 
 const placeholderManufacturers = ["TE Connectivity", "Furukawa", "Corning", "CommScope", "Prysmian"];
 
-// Placeholder for existing FOSC templates to be displayed in the modal's side panel
 const placeholderExistingFoscTemplates: FoscTemplate[] = [
   { id: 'tpl-fosc-1', manufacturer: 'Corning', model: 'SCF-6C', maxTrayCapacity: 6, maxCableInserts: 4, maxSpliceCounts: 72 },
   { id: 'tpl-fosc-2', manufacturer: 'TE Connectivity', model: 'FOSC 450 D6', maxTrayCapacity: 12, maxCableInserts: 6, maxSpliceCounts: 288 },
@@ -127,9 +124,8 @@ export default function FoscsPage() {
 
   const handleAddTemplateSubmit = (data: FoscTemplateFormData) => {
     console.log("New FOSC Template Data:", data);
-    // Simulate adding to a list of templates or API call
     const newTemplate: FoscTemplate = { ...data, id: `tpl-fosc-${Date.now()}`};
-    placeholderExistingFoscTemplates.push(newTemplate); // Add to the placeholder list for now
+    placeholderExistingFoscTemplates.push(newTemplate);
     toast({
       title: t('maps_elements.fosc_template_add_success_title', 'FOSC Template Added'),
       description: t('maps_elements.fosc_template_add_success_desc', 'Template for {model} by {manufacturer} added.').replace('{model}', data.model).replace('{manufacturer}', data.manufacturer),
@@ -151,14 +147,13 @@ export default function FoscsPage() {
                     <FileTextIcon className={`mr-2 ${iconSize}`} /> {t('maps_elements.fosc_template_button', 'FOSC Templates')}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-3xl"> {/* Increased width for two columns */}
+            <DialogContent className="sm:max-w-3xl">
                 <DialogHeader>
-                    <DialogTitle className="text-sm">{t('maps_elements.fosc_template_modal_title', 'Add New FOSC Template')}</DialogTitle>
-                    <DialogDescriptionComponent className="text-xs">{t('maps_elements.fosc_template_modal_desc', 'Define a new template for FOSC types.')}</DialogDescriptionComponent>
+                    <DialogTitle className="text-sm">{t('maps_elements.fosc_manage_templates_title', 'Manage FOSC Templates')}</DialogTitle>
                 </DialogHeader>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
-                    {/* Column 1: Form (takes 2/3 of width) */}
                     <div className="md:col-span-2">
+                        <h3 className="text-sm font-semibold mb-3">{t('maps_elements.fosc_new_template_heading', 'New Template')}</h3>
                         <Form {...templateForm}>
                             <form onSubmit={templateForm.handleSubmit(handleAddTemplateSubmit)} className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
@@ -249,7 +244,6 @@ export default function FoscsPage() {
                             </form>
                         </Form>
                     </div>
-                    {/* Column 2: List of Existing Templates */}
                     <div className="md:col-span-1">
                         <h3 className="text-xs font-semibold mb-2 text-muted-foreground">{t('maps_elements.existing_fosc_templates_list_title', 'Existing Templates')}</h3>
                         <ScrollArea className="h-[300px] border rounded-md p-2 bg-muted/50">
