@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Warehouse, Edit, Trash2, PlusCircle, FileText as FileTextIcon, Loader2, FilePlus2 } from 'lucide-react';
+import { Warehouse, Edit, Trash2, PlusCircle, FileText as FileTextIcon, Loader2, FilePlus2, List } from 'lucide-react'; // Added List icon
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -152,11 +152,11 @@ export default function FoscsPage() {
                     <DialogTitle className="text-sm">{t('maps_elements.fosc_manage_templates_title', 'Manage FOSC Templates')}</DialogTitle>
                 </DialogHeader>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
-                    <div className="md:col-span-2 border border-border rounded-md p-4"> {/* Added border and padding */}
-                        <h3 className="text-sm font-semibold mb-3 text-left flex items-center gap-2">
-                            <FilePlus2 className={`${iconSize} text-primary`} /> {/* Icon Added */}
+                    <fieldset className="md:col-span-2 border border-border rounded-md p-4 pt-2 space-y-4">
+                       <legend className="text-sm font-semibold px-2 flex items-center gap-2">
+                            <FilePlus2 className={`${iconSize} text-primary`} />
                             {t('maps_elements.fosc_new_template_heading', 'New Template')}
-                        </h3>
+                        </legend>
                         <Form {...templateForm}>
                             <form onSubmit={templateForm.handleSubmit(handleAddTemplateSubmit)} className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
@@ -246,10 +246,13 @@ export default function FoscsPage() {
                                 </DialogFooter>
                             </form>
                         </Form>
-                    </div>
-                    <div className="md:col-span-1">
-                        <h3 className="text-xs font-semibold mb-2 text-muted-foreground">{t('maps_elements.existing_fosc_templates_list_title', 'Existing Templates')}</h3>
-                        <ScrollArea className="h-[300px] border rounded-md p-2 bg-muted/50">
+                    </fieldset>
+                    <fieldset className="md:col-span-1 border border-border rounded-md p-4 pt-2 space-y-2">
+                        <legend className="text-sm font-semibold px-2 flex items-center gap-2">
+                            <List className={`${iconSize} text-primary`} />
+                            {t('maps_elements.existing_fosc_templates_list_title', 'Existing Templates')}
+                        </legend>
+                        <ScrollArea className="h-[260px] bg-muted/50 rounded-md p-2">
                             {placeholderExistingFoscTemplates.length > 0 ? (
                                 placeholderExistingFoscTemplates.map(template => (
                                 <div key={template.id} className="text-xs p-1.5 border-b last:border-b-0 hover:bg-background rounded-sm cursor-default">
@@ -263,7 +266,7 @@ export default function FoscsPage() {
                                 <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.no_existing_fosc_templates', 'No existing templates.')}</p>
                             )}
                         </ScrollArea>
-                    </div>
+                    </fieldset>
                 </div>
             </DialogContent>
         </Dialog>
