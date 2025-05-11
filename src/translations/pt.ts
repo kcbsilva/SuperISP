@@ -862,9 +862,9 @@ const pt = {
       payment_method_pix: 'Pix',
       payment_method_boleto: 'Boleto',
       billing_type_label: 'Billing Type *',
-      billing_type_placeholder: 'Selecione o tipo de faturamento',
-      billing_type_prepaid: 'Pré-pago',
-      billing_type_postpaid: 'Pós-pago',
+      billing_type_placeholder: 'Select billing type',
+      billing_type_prepaid: 'Prepaid',
+      billing_type_postpaid: 'Postpaid',
       monthly_fee_category_info: 'Categoria da Mensalidade:',
       income_category_monthly: 'Assinaturas Mensais',
       contract_term_label: 'Prazo do Contrato (Meses) *',
@@ -1015,16 +1015,19 @@ const pt = {
       cpu_usage: 'CPU Usage',
       ram_usage: 'RAM Usage',
       ssd_usage: 'SSD Usage',
-      postgres_status: 'PostgreSQL Status',
+      postgres_status: 'PostgreSQL Status', // Should be MySQL
+      mysql_status: 'MySQL Status', // Added
       refresh_button: 'Refresh Metrics',
       refresh_toast_title: 'Refreshing Metrics',
       refresh_toast_description: 'Fetching latest system status...',
-      postgres_connected: 'Connected',
-      postgres_disconnected: 'Disconnected - Check logs!',
+      postgres_connected: 'Connected', // Should be MySQL
+      postgres_disconnected: 'Disconnected - Check logs!', // Should be MySQL
+      mysql_connected: 'Conectado', // Added
+      mysql_disconnected: 'Desconectado - Verifique os logs!', // Added
       live_logs_title: 'Live Logs (Placeholder)',
       live_logs_description: 'This section would display real-time system logs.',
     },
-    mysql_page: { // Updated from postgresql_page
+    mysql_page: { 
       title: 'Gerenciamento MySQL',
       select_option_prompt: 'Por favor, selecione uma opção na barra lateral para gerenciar bancos de dados ou tabelas MySQL, ou use o CLI.',
       databases_title: 'Bancos de Dados',
@@ -1044,7 +1047,7 @@ const pt = {
       table_header_schema: 'Esquema',
       table_header_rows: 'Linhas',
       table_header_size: 'Tamanho',
-      table_header_actions: 'Ações', // Corrected typo
+      table_header_actions: 'Ações',
       add_database_button: 'Adicionar Banco de Dados',
       add_database_dialog_title: 'Adicionar Novo Banco de Dados',
       add_database_dialog_description: 'Insira o nome para o novo banco de dados MySQL.',

@@ -72,7 +72,7 @@ import * as z from 'zod';
 // import { enUS, fr, ptBR } from 'date-fns/locale'; // Not directly needed
 import { cn } from "@/lib/utils";
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/postgresql/pops'; // Changed to PostgreSQL service
+import { getPops } from '@/services/mysql/pops'; // Changed to MySQL service
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 

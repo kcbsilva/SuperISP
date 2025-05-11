@@ -1025,16 +1025,19 @@ const en = {
       cpu_usage: 'CPU Usage',
       ram_usage: 'RAM Usage',
       ssd_usage: 'SSD Usage',
-      postgres_status: 'PostgreSQL Status',
+      postgres_status: 'PostgreSQL Status', // Should be MySQL
+      mysql_status: 'MySQL Status', // Added
       refresh_button: 'Refresh Metrics',
       refresh_toast_title: 'Refreshing Metrics',
       refresh_toast_description: 'Fetching latest system status...',
-      postgres_connected: 'Connected',
-      postgres_disconnected: 'Disconnected - Check logs!',
+      postgres_connected: 'Connected', // Should be MySQL
+      postgres_disconnected: 'Disconnected - Check logs!', // Should be MySQL
+      mysql_connected: 'Connected', // Added
+      mysql_disconnected: 'Disconnected - Check logs!', // Added
       live_logs_title: 'Live Logs (Placeholder)',
       live_logs_description: 'This section would display real-time system logs.',
     },
-    mysql_page: { // Updated from postgresql_page
+    mysql_page: { 
       title: 'MySQL Management',
       select_option_prompt: 'Please select an option from the sidebar to manage MySQL databases or tables, or use the CLI.',
       databases_title: 'Databases',
@@ -1054,7 +1057,7 @@ const en = {
       table_header_schema: 'Schema',
       table_header_rows: 'Rows',
       table_header_size: 'Size',
-      table_header_actions: 'Ações', // Corrected typo from Portugues, assuming consistency
+      table_header_actions: 'Actions',
       add_database_button: 'Add Database',
       add_database_dialog_title: 'Add New Database',
       add_database_dialog_description: 'Enter the name for the new MySQL database.',
@@ -1171,3 +1174,4 @@ const en = {
 };
 
 export default en;
+

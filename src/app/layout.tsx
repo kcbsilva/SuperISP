@@ -783,39 +783,39 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                             <SidebarMenuSubTrigger
                               size="sm"
                               className="pl-3 pr-2 py-1.5"
-                              tooltip={t('sidebar.postgresql')}
+                              tooltip={t('sidebar.mysql')}
                             >
                               <div className="flex items-center gap-2 cursor-pointer w-full">
                                 <Database className={subIconSize + " text-muted-foreground"} />
-                                <span className="truncate">{t('sidebar.postgresql')}</span>
+                                <span className="truncate">{t('sidebar.mysql')}</span>
                                 <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                               </div>
                             </SidebarMenuSubTrigger>
                           </TooltipTrigger>
-                          <TooltipContent side="right" align="center">{t('sidebar.postgresql')}</TooltipContent>
+                          <TooltipContent side="right" align="center">{t('sidebar.mysql')}</TooltipContent>
                         </Tooltip>
                         <SidebarMenuSubContent>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/mysql/databases')} size="sm" tooltip={t('sidebar.postgresql_databases')}>
+                            <SidebarMenuButton asChild isActive={isActive('/mysql/databases')} size="sm" tooltip={t('sidebar.mysql_databases')}>
                               <Link href="/mysql/databases" className="flex items-center gap-2">
                                 <Database className={subIconSize + " text-muted-foreground"} />
-                                <span>{t('sidebar.postgresql_databases')}</span>
+                                <span>{t('sidebar.mysql_databases')}</span>
                               </Link>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/mysql/tables')} size="sm" tooltip={t('sidebar.postgresql_tables')}>
+                            <SidebarMenuButton asChild isActive={isActive('/mysql/tables')} size="sm" tooltip={t('sidebar.mysql_tables')}>
                               <Link href="/mysql/tables" className="flex items-center gap-2">
                                 <ListChecks className={subIconSize + " text-muted-foreground"} /> {/* Using ListChecks for tables */}
-                                <span>{t('sidebar.postgresql_tables')}</span>
+                                <span>{t('sidebar.mysql_tables')}</span>
                               </Link>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/mysql/cli')} size="sm" tooltip={t('sidebar.postgresql_cli')}>
+                            <SidebarMenuButton asChild isActive={isActive('/mysql/cli')} size="sm" tooltip={t('sidebar.mysql_cli')}>
                               <Link href="/mysql/cli" className="flex items-center gap-2">
                                 <Code className={subIconSize + " text-muted-foreground"} /> {/* Using Code for CLI */}
-                                <span>{t('sidebar.postgresql_cli')}</span>
+                                <span>{t('sidebar.mysql_cli')}</span>
                               </Link>
                             </SidebarMenuButton>
                           </SidebarMenuItem>

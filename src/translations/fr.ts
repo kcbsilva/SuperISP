@@ -1017,16 +1017,19 @@ const fr = {
     cpu_usage: 'Utilisation CPU',
     ram_usage: 'Utilisation RAM',
     ssd_usage: 'Utilisation SSD',
-    postgres_status: 'Statut PostgreSQL',
+    postgres_status: 'Statut PostgreSQL', // Should be MySQL
+    mysql_status: 'Statut MySQL', // Added
     refresh_button: 'Actualiser Métriques',
     refresh_toast_title: 'Actualisation des Métriques',
     refresh_toast_description: 'Récupération du dernier statut système...',
-    postgres_connected: 'Connecté',
-    postgres_disconnected: 'Déconnecté - Vérifiez les logs !',
+    postgres_connected: 'Connecté', // Should be MySQL
+    postgres_disconnected: 'Déconnecté - Vérifiez les logs !', // Should be MySQL
+    mysql_connected: 'Connecté', // Added
+    mysql_disconnected: 'Déconnecté - Vérifiez les logs !', // Added
     live_logs_title: 'Logs en Direct (Espace réservé)',
     live_logs_description: 'Cette section afficherait les logs système en temps réel.',
   },
-  mysql_page: { // Updated from postgresql_page
+  mysql_page: { 
     title: 'Gestion MySQL',
     select_option_prompt: 'Veuillez sélectionner une option dans la barre latérale pour gérer les bases de données ou les tables MySQL, ou utiliser le CLI.',
     databases_title: 'Bases de données',
