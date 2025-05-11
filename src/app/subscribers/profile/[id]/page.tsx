@@ -66,6 +66,8 @@ import {
   CreditCard, // Added for Receive Payment
   Receipt, // Added for Detailed Invoice
   FileX, // Added for Remove Payment
+  Hourglass, // Added for In Progress service call
+  List, // Added for All service call
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -239,6 +241,8 @@ type ServiceTypeFilter = 'All' | 'Internet' | 'TV' | 'Landline' | 'Mobile' | 'Co
 type InventoryFilter = 'All' | 'Lent' | 'Sold';
 type BillingFilter = 'All' | 'Pending' | 'Paid' | 'Canceled' | 'PaymentPlan' | 'PromiseToPay';
 type ContractStatusFilter = 'All' | 'Active' | 'Inactive';
+type ServiceCallStatusFilter = 'All' | 'Pending' | 'InProgress' | 'Resolved';
+
 
 const promiseToPaySchema = z.object({
     promiseDate: z.date({ required_error: "Promise date is required." }),
@@ -328,6 +332,7 @@ function SubscriberProfilePage() {
   const [activeInventoryTab, setActiveInventoryTab] = React.useState<InventoryFilter>('All');
   const [activeBillingTab, setActiveBillingTab] = React.useState<BillingFilter>('Pending');
   const [activeContractTab, setActiveContractTab] = React.useState<ContractStatusFilter>('Active');
+  const [activeServiceCallTab, setActiveServiceCallTab] = React.useState<ServiceCallStatusFilter>('All');
   const [isUpdateLoginDialogOpen, setIsUpdateLoginDialogOpen] = React.useState(false);
   const [currentServiceForLoginUpdate, setCurrentServiceForLoginUpdate] = React.useState<SubscriberService | null>(null);
   const [selectedPendingInvoices, setSelectedPendingInvoices] = React.useState<string[]>([]);
@@ -821,8 +826,18 @@ function SubscriberProfilePage() {
 
         <TabsContent value="service-calls">
           <div className="flex flex-col gap-4">
-            <div className="flex justify-end">
-              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white"><PlusCircle className={`mr-2 ${iconSize}`} />{t('subscriber_profile.service_calls_new_button')}</Button>
+            <div className="flex justify-between items-center">
+                <Tabs defaultValue="All" value={activeServiceCallTab} onValueChange={(value) => setActiveServiceCallTab(value as ServiceCallStatusFilter)} className="w-full">
+                    <TabsList className="grid w-full grid-cols-4 h-auto">
+                        <TabsTrigger value="All"><List className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.service_calls_filter_all')}</TabsTrigger>
+                        <TabsTrigger value="Pending"><Clock className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.service_calls_filter_pending')}</TabsTrigger>
+                        <TabsTrigger value="InProgress"><Hourglass className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.service_calls_filter_in_progress')}</TabsTrigger>
+                        <TabsTrigger value="Resolved"><CheckCircle className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.service_calls_filter_resolved')}</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white ml-4 shrink-0">
+                    <PlusCircle className={`mr-2 ${iconSize}`} />{t('subscriber_profile.service_calls_new_button')}
+                </Button>
             </div>
             <Card>
               <CardContent className="pt-6">
