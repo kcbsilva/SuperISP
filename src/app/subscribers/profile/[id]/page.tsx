@@ -47,6 +47,19 @@ import {
   Briefcase,
   MapPinIcon,
   Landmark,
+  Cable,
+  Power,
+  Box,
+  Warehouse,
+  Puzzle,
+  TowerControl,
+  Globe,
+  GitFork,
+  Code,
+  Router as RouterIcon, // Renamed to avoid conflict with NextRouter
+  Share2,
+  Split,
+  Settings as SettingsIcon,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -105,84 +118,94 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { NewContractWizard } from '@/components/new-contract-wizard';
-import type { Subscriber } from '@/types/subscribers'; // Assuming this type exists
+import type { Subscriber, SubscriberService, BillingDetails, Invoice, PaymentPlan, PromiseToPay, ServiceCall, InventoryItem, Document, Note, HistoryEntry } from '@/types/subscribers'; // Assuming this type exists
 
 // Placeholder data functions (replace with actual data fetching)
 const getSubscriberData = (id: string | string[] | undefined): Subscriber | null => {
   if (!id) return null;
   // Simulate fetching data
+  const baseData: Subscriber = {
+    id: 0,
+    subscriberType: 'Residential',
+    address: '',
+    email: '',
+    phoneNumber: '',
+    signupDate: new Date(),
+    status: 'Active',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    services: [],
+    billing: {
+      balance: 0,
+      nextBillDate: '',
+      pastInvoices: [],
+      pendingInvoices: [],
+      canceledInvoices: [],
+      paymentPlans: [],
+      promisesToPay: [],
+    },
+    serviceCalls: [],
+    inventory: [],
+    documents: [],
+    notes: [],
+    history: [],
+  };
+
   if (id === 'sub-1' || id === '1') {
-    return {
-      id: 1,
-      subscriberType: 'Residential',
-      fullName: 'Alice Wonderland',
-      address: '123 Fantasy Lane, Wonderland, WND 12345',
-      pointOfReference: 'Next to the Mad Hatter Tea Party',
-      email: 'alice@example.com',
-      phoneNumber: '555-1111',
-      mobileNumber: '555-1010',
-      birthday: new Date(1985, 3, 15),
-      taxId: '123.456.789-00',
-      signupDate: new Date(2022, 0, 10),
-      status: 'Active',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      services: [
-        { id: 'svc-1', type: 'Internet', plan: 'Fiber 100', popId: 'pop-1', status: 'Active', technology: 'Fiber', downloadSpeed: '100 Mbps', uploadSpeed: '50 Mbps', ipAddress: '203.0.113.10', onlineStatus: 'Online', authenticationType: 'PPPoE', pppoeUsername: 'alice@isp.com', pppoePassword: 'password', xponSn: 'HWTC12345678' },
-        { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: 'pop-1', status: 'Active' },
-      ],
-      billing: {
-        balance: 0.00,
-        nextBillDate: '2024-09-15',
-        pastInvoices: [{ id: 'inv-001', date: '2024-07-15', amount: 50.00, status: 'Paid' }],
-        pendingInvoices: [{ id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' }],
-        canceledInvoices: [],
-        paymentPlans: [],
-        promisesToPay: [],
-      },
-      serviceCalls: [],
-      inventory: [],
-      documents: [],
-      notes: [],
-      history: [],
-    };
+    baseData.id = 1;
+    baseData.subscriberType = 'Residential';
+    baseData.fullName = 'Alice Wonderland';
+    baseData.address = '123 Fantasy Lane, Wonderland, WND 12345';
+    baseData.pointOfReference = 'Next to the Mad Hatter Tea Party';
+    baseData.email = 'alice@example.com';
+    baseData.phoneNumber = '555-1111';
+    baseData.mobileNumber = '555-1010';
+    baseData.birthday = new Date(1985, 3, 15);
+    baseData.taxId = '123.456.789-00';
+    (baseData as any).idNumber = 'ID-ALICE-001'; // Assuming idNumber might exist based on previous context
+    baseData.signupDate = new Date(2022, 0, 10);
+    baseData.status = 'Active';
+    baseData.services = [
+      { id: 'svc-1', type: 'Internet', plan: 'Fiber 100', popId: 'pop-1', status: 'Active', technology: 'Fiber', downloadSpeed: '100 Mbps', uploadSpeed: '50 Mbps', ipAddress: '203.0.113.10', onlineStatus: 'Online', authenticationType: 'PPPoE', pppoeUsername: 'alice@isp.com', pppoePassword: 'password', xponSn: 'HWTC12345678' },
+      { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: 'pop-1', status: 'Active' },
+    ];
+    baseData.billing.balance = 0.00;
+    baseData.billing.pendingInvoices =  [
+        { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
+        { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
+     ];
+  } else if (id === 'sub-2' || id === '2') {
+    baseData.id = 2;
+    baseData.subscriberType = 'Commercial';
+    baseData.companyName = 'Bob The Builder Inc.';
+    baseData.address = '456 Construction Ave, Builderville, BLD 67890';
+    baseData.pointOfReference = 'Yellow crane visible from the street';
+    baseData.email = 'bob@example.com';
+    baseData.phoneNumber = '555-2222';
+    baseData.mobileNumber = '555-2020';
+    baseData.establishedDate = new Date(2005, 7, 20);
+    baseData.businessNumber = '98.765.432/0001-00';
+    baseData.signupDate = new Date(2021, 5, 1);
+    baseData.status = 'Active';
+    baseData.services = [
+      { id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: 'pop-2', status: 'Active', technology: 'Fiber', downloadSpeed: '1 Gbps', uploadSpeed: '500 Mbps', ipAddress: '203.0.113.20', onlineStatus: 'Online', authenticationType: 'StaticIP', xponSn: 'FHTT98765432' }
+    ];
+    baseData.billing.balance = 150.75;
+    baseData.billing.nextBillDate = '2024-09-01';
+    baseData.billing.pendingInvoices = [
+        { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
+        { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
+    ];
+    baseData.billing.paymentPlans = [
+        { id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active' },
+    ];
+    baseData.billing.promisesToPay = [
+        {id: 'ptp-1', promiseDate: '2024-08-10', amount: 50.00, status: 'Pending'},
+    ];
+  } else {
+    return null;
   }
-  if (id === 'sub-2' || id === '2') {
-    return {
-        id: 2,
-        subscriberType: 'Commercial',
-        companyName: 'Bob The Builder Inc.',
-        address: '456 Construction Ave, Builderville, BLD 67890',
-        pointOfReference: 'Yellow crane visible from the street',
-        email: 'bob@example.com',
-        phoneNumber: '555-2222',
-        mobileNumber: '555-2020',
-        establishedDate: new Date(2005, 7, 20),
-        businessNumber: '98.765.432/0001-00',
-        signupDate: new Date(2021, 5, 1),
-        status: 'Active',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        services: [
-          { id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: 'pop-2', status: 'Active', technology: 'Fiber', downloadSpeed: '1 Gbps', uploadSpeed: '500 Mbps', ipAddress: '203.0.113.20', onlineStatus: 'Online', authenticationType: 'StaticIP', xponSn: 'FHTT98765432' }
-        ],
-        billing: {
-          balance: 150.75,
-          nextBillDate: '2024-09-01',
-          pastInvoices: [],
-          pendingInvoices: [{ id: 'inv-p02', contractId: 'SVC-BIZ-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 150.75, wallet: 'Company Account', status: 'Due' }],
-          canceledInvoices: [],
-          paymentPlans: [],
-          promisesToPay: [],
-        },
-        serviceCalls: [],
-        inventory: [],
-        documents: [],
-        notes: [],
-        history: [],
-    };
-  }
-  return null;
+  return baseData;
 };
 
 const placeholderPops: Pop[] = [
@@ -233,6 +256,35 @@ const OverviewSection: React.FC<{ titleKey: string, icon: React.ElementType, chi
   );
 };
 
+const ServiceDetailItem: React.FC<{ label: string, value?: string | null, children?: React.ReactNode, className?: string }> = ({ label, value, children, className }) => {
+  const { t } = useLocale();
+  if (!value && !children) return null;
+  return (
+    <div className={cn("text-xs", className)}>
+      <span className="text-muted-foreground">{t(label, label)}: </span>
+      {children || <span className="font-medium">{value || t('subscriber_profile.not_available')}</span>}
+    </div>
+  );
+};
+
+const getTechnologyIcon = (technology?: string) => {
+    const iconSize = "h-4 w-4 text-primary"; // Standardized icon size for technology
+    if (!technology) return <ServerIcon className={iconSize} />; // Default if no technology
+
+    switch (technology.toLowerCase()) {
+        case 'fiber':
+        case 'fiber optic':
+            return <Cable className={iconSize} />;
+        case 'radio':
+            return <Wifi className={iconSize} />;
+        case 'utp':
+            return <RouterIcon className={iconSize} />;
+        case 'satellite':
+            return <Globe className={iconSize} />;
+        default:
+            return <ServerIcon className={iconSize} />;
+    }
+};
 
 export default function SubscriberProfilePageWrapper() {
   return (
@@ -255,6 +307,9 @@ function SubscriberProfilePage() {
   const [activeInventoryTab, setActiveInventoryTab] = React.useState<InventoryFilter>('All');
   const [activeBillingTab, setActiveBillingTab] = React.useState<BillingFilter>('Pending');
   const [activeContractTab, setActiveContractTab] = React.useState<ContractStatusFilter>('Active');
+  const [isUpdateLoginDialogOpen, setIsUpdateLoginDialogOpen] = React.useState(false);
+  const [currentServiceForLoginUpdate, setCurrentServiceForLoginUpdate] = React.useState<SubscriberService | null>(null);
+
 
   const iconSize = "h-3 w-3";
   const tabIconSize = "h-2.5 w-2.5";
@@ -268,6 +323,20 @@ function SubscriberProfilePage() {
     (subscriber?.billing?.balance ?? 0) > 0 || (subscriber?.billing?.pendingInvoices?.length ?? 0) > 0,
     [subscriber?.billing]
   );
+
+  const pppoeForm = useForm<{ pppoeUsername?: string; pppoePassword?: string }>({
+    defaultValues: { pppoeUsername: '', pppoePassword: '' },
+  });
+
+  React.useEffect(() => {
+    if (currentServiceForLoginUpdate && currentServiceForLoginUpdate.authenticationType === 'PPPoE') {
+      pppoeForm.reset({
+        pppoeUsername: currentServiceForLoginUpdate.pppoeUsername || '',
+        pppoePassword: currentServiceForLoginUpdate.pppoePassword || '',
+      });
+    }
+  }, [currentServiceForLoginUpdate, pppoeForm]);
+
 
   if (!subscriber) {
     return (
@@ -301,6 +370,47 @@ function SubscriberProfilePage() {
       description: t('subscriber_profile.billing_make_invoice_button_toast_desc'),
     });
   };
+
+  const handleServiceAction = (action: string, serviceId?: string) => {
+    toast({
+        title: `Service Action: ${action}`,
+        description: `Action '${action}' for service ${serviceId || ''} is not yet implemented.`,
+    });
+  };
+
+  const handleUpdateLogin = (service: SubscriberService) => {
+    setCurrentServiceForLoginUpdate(service);
+    setIsUpdateLoginDialogOpen(true);
+  };
+
+  const onPppoeFormSubmit = (data: { pppoeUsername?: string; pppoePassword?: string }) => {
+    console.log("Updating PPPoE credentials for service:", currentServiceForLoginUpdate?.id, "with data:", data);
+    // Here you would call an API to update the credentials
+    toast({
+        title: t('subscriber_profile.update_login_success_toast_title'),
+        description: t('subscriber_profile.update_login_success_toast_description'),
+    });
+    setIsUpdateLoginDialogOpen(false);
+    setCurrentServiceForLoginUpdate(null);
+  };
+
+  const filteredBillingItems = React.useMemo(() => {
+    const allItems: (Invoice | PaymentPlan | PromiseToPay)[] = [
+      ...(subscriber.billing.pendingInvoices || []).map(inv => ({ ...inv, itemType: 'invoice' as const })),
+      ...(subscriber.billing.pastInvoices || []).map(inv => ({ ...inv, itemType: 'invoice' as const })),
+      ...(subscriber.billing.canceledInvoices || []).map(inv => ({ ...inv, itemType: 'invoice' as const })),
+      ...(subscriber.billing.paymentPlans || []).map(pp => ({ ...pp, itemType: 'paymentPlan' as const })),
+      ...(subscriber.billing.promisesToPay || []).map(ptp => ({ ...ptp, itemType: 'promiseToPay' as const })),
+    ];
+
+    if (activeBillingTab === 'All') return allItems;
+    if (activeBillingTab === 'Pending') return allItems.filter(item => item.itemType === 'invoice' && item.status === 'Due');
+    if (activeBillingTab === 'Paid') return allItems.filter(item => item.itemType === 'invoice' && item.status === 'Paid');
+    if (activeBillingTab === 'Canceled') return allItems.filter(item => item.itemType === 'invoice' && item.status === 'Canceled');
+    if (activeBillingTab === 'PaymentPlan') return allItems.filter(item => item.itemType === 'paymentPlan' && item.status === 'Active');
+    if (activeBillingTab === 'PromiseToPay') return allItems.filter(item => item.itemType === 'promiseToPay' && item.status === 'Pending');
+    return [];
+  }, [subscriber.billing, activeBillingTab]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -419,13 +529,78 @@ function SubscriberProfilePage() {
                     <PlusCircle className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.add_service_button')}
                 </Button>
              </div>
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.services_none')}</p>
-              </CardContent>
-            </Card>
+             {subscriber.services && subscriber.services.filter(s => activeServiceTab === 'All' || s.type === activeServiceTab).length > 0 ? (
+                 subscriber.services.filter(s => activeServiceTab === 'All' || s.type === activeServiceTab).map(service => (
+                    <Card key={service.id}>
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <div className="flex items-center gap-2">
+                                {getTechnologyIcon(service.technology)}
+                                <CardTitle className="text-sm">{service.plan}</CardTitle>
+                                <Badge variant={service.status === 'Active' ? 'default' : 'secondary'} className={cn(service.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'text-xs')}>{service.status}</Badge>
+                            </div>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                                        <MoreVertical className={iconSize} />
+                                        <span className="sr-only">{t('subscriber_profile.service_actions_sr')}</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => handleServiceAction('sign_contract', service.id)}>{t('subscriber_profile.service_action_sign')}</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleServiceAction('cancel_contract', service.id)}>{t('subscriber_profile.service_action_cancel')}</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service.id)}>{t('subscriber_profile.service_action_transfer_contract')}</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={() => handleServiceAction('print_service_contract', service.id)}>{t('subscriber_profile.service_action_print_service_contract')}</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleServiceAction('print_responsibility_term', service.id)}>{t('subscriber_profile.service_action_print_responsibility_term')}</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleServiceAction('print_cancelation_term', service.id)}>{t('subscriber_profile.service_action_print_cancelation_term')}</DropdownMenuItem>
+                                    {service.type === 'Internet' && (
+                                        <>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem onClick={() => handleServiceAction('clear_mac', service.id)}>{t('subscriber_profile.service_action_clear_mac')}</DropdownMenuItem>
+                                        {service.authenticationType === 'PPPoE' && <DropdownMenuItem onClick={() => handleUpdateLogin(service)}>{t('subscriber_profile.service_action_update_login')}</DropdownMenuItem>}
+                                        <DropdownMenuItem onClick={() => handleServiceAction('change_billing_date', service.id)}>{t('subscriber_profile.service_action_change_billing_date')}</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleServiceAction('monitor_traffic', service.id)}>{t('subscriber_profile.service_action_monitor_traffic')}</DropdownMenuItem>
+                                        </>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-2">
+                             <ServiceDetailItem label="subscriber_profile.services_type_internet" value={t(`subscriber_profile.services_type_${service.type.toLowerCase()}` as any, service.type)} />
+                            {service.type === 'Internet' && (
+                                <>
+                                    <ServiceDetailItem label="subscriber_profile.services_technology" value={service.technology} />
+                                    <ServiceDetailItem label="subscriber_profile.services_data_rate" value={`${service.downloadSpeed} / ${service.uploadSpeed}`} />
+                                    <ServiceDetailItem label="subscriber_profile.services_ip_address" value={service.ipAddress} />
+                                    <ServiceDetailItem label="subscriber_profile.services_online_status">
+                                        <Badge variant={service.onlineStatus === 'Online' ? 'default' : 'secondary'} className={cn(service.onlineStatus === 'Online' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'text-xs')}>{service.onlineStatus}</Badge>
+                                    </ServiceDetailItem>
+                                    <ServiceDetailItem label="subscriber_profile.services_auth_type" value={service.authenticationType} />
+                                    {service.authenticationType === 'PPPoE' && (
+                                        <>
+                                            <ServiceDetailItem label="subscriber_profile.services_pppoe_user" value={service.pppoeUsername} />
+                                            <ServiceDetailItem label="subscriber_profile.services_pppoe_pass" value="********" />
+                                        </>
+                                    )}
+                                     {service.technology === 'Fiber' && service.xponSn && <ServiceDetailItem label="subscriber_profile.services_xpon_sn" value={service.xponSn}/> }
+                                     {service.technology !== 'Fiber' && service.macAddress && <ServiceDetailItem label="subscriber_profile.services_mac_address" value={service.macAddress}/> }
+
+                                </>
+                            )}
+                            <ServiceDetailItem label="subscriber_profile.services_pop_label" value={placeholderPops.find(p => p.id === service.popId)?.name || 'Unknown PoP'}/>
+                        </CardContent>
+                    </Card>
+                ))
+            ) : (
+                <Card>
+                    <CardContent className="pt-6">
+                        <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.services_none_filtered')}</p>
+                    </CardContent>
+                </Card>
+            )}
           </div>
         </TabsContent>
+
 
         <TabsContent value="billing">
           <div className="flex flex-col gap-4">
@@ -446,7 +621,66 @@ function SubscriberProfilePage() {
             </div>
             <Card>
               <CardContent className="pt-6">
-                <p className="text-xs text-muted-foreground text-center py-4">{t('subscriber_profile.billing_no_invoices')}</p>
+                 {filteredBillingItems.length > 0 ? (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-10"><Checkbox aria-label={t('subscriber_profile.billing_header_select')} /></TableHead>
+                                <TableHead>{t('subscriber_profile.billing_header_contract_id')}</TableHead>
+                                <TableHead>{t('subscriber_profile.billing_header_date_made')}</TableHead>
+                                <TableHead>{t('subscriber_profile.billing_header_due_date')}</TableHead>
+                                <TableHead className="text-right">{t('subscriber_profile.billing_header_value')}</TableHead>
+                                <TableHead>{t('subscriber_profile.billing_header_wallet')}</TableHead>
+                                <TableHead className="text-right">{t('subscriber_profile.billing_header_actions')}</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredBillingItems.map(item => (
+                                <TableRow key={item.id}>
+                                    <TableCell><Checkbox aria-labelledby={`select-invoice-${item.id}`} /></TableCell>
+                                    <TableCell className="text-xs">{(item as Invoice).contractId || '-'}</TableCell>
+                                    <TableCell className="text-xs">
+                                        {item.itemType === 'invoice' && (item as Invoice).dateMade ? format(new Date((item as Invoice).dateMade), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
+                                         item.itemType === 'paymentPlan' && (item as PaymentPlan).startDate ? format(new Date((item as PaymentPlan).startDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
+                                         '-'}
+                                    </TableCell>
+                                    <TableCell className="text-xs">
+                                        {item.itemType === 'invoice' && (item as Invoice).dueDate ? format(new Date((item as Invoice).dueDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
+                                         item.itemType === 'promiseToPay' && (item as PromiseToPay).promiseDate ? format(new Date((item as PromiseToPay).promiseDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
+                                         '-'}
+                                    </TableCell>
+                                    <TableCell className="text-xs text-right">
+                                        {item.itemType === 'invoice' ? (item as Invoice).value.toFixed(2) :
+                                         item.itemType === 'paymentPlan' ? `${(item as PaymentPlan).installments}x ${(item as PaymentPlan).installmentAmount.toFixed(2)}` :
+                                         item.itemType === 'promiseToPay' ? (item as PromiseToPay).amount.toFixed(2) :
+                                         '-'}
+                                    </TableCell>
+                                    <TableCell className="text-xs">{(item as Invoice).wallet || '-'}</TableCell>
+                                    <TableCell className="text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-7 w-7"><MoreVertical className={iconSize} /></Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem onClick={() => handleServiceAction('print_pdf', item.id)}><Printer className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_action_print_pdf')}</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleServiceAction('send_email', item.id)}><Send className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_action_send_email')}</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                 ) : (
+                    <p className="text-xs text-muted-foreground text-center py-4">
+                        {activeBillingTab === 'All' && t('subscriber_profile.billing_no_invoices')}
+                        {activeBillingTab === 'Pending' && t('subscriber_profile.billing_no_pending_invoices')}
+                        {activeBillingTab === 'Paid' && t('subscriber_profile.billing_no_paid_invoices')}
+                        {activeBillingTab === 'Canceled' && t('subscriber_profile.billing_no_canceled_invoices')}
+                        {activeBillingTab === 'PaymentPlan' && t('subscriber_profile.billing_no_payment_plans')}
+                        {activeBillingTab === 'PromiseToPay' && t('subscriber_profile.billing_no_promises_to_pay')}
+                    </p>
+                 )}
               </CardContent>
             </Card>
           </div>
@@ -529,6 +763,51 @@ function SubscriberProfilePage() {
           subscriberId={subscriber.id.toString()}
         />
       )}
+      <Dialog open={isUpdateLoginDialogOpen} onOpenChange={setIsUpdateLoginDialogOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle className="text-sm">{t('subscriber_profile.update_login_dialog_title')}</DialogTitle>
+                    <DialogDescriptionComponent className="text-xs">
+                        {t('subscriber_profile.update_login_dialog_description', 'Update PPPoE login credentials for service {serviceId}.').replace('{serviceId}', currentServiceForLoginUpdate?.id || '')}
+                    </DialogDescriptionComponent>
+                </DialogHeader>
+                <Form {...pppoeForm}>
+                    <form onSubmit={pppoeForm.handleSubmit(onPppoeFormSubmit)} className="space-y-4">
+                        <FormField
+                            control={pppoeForm.control}
+                            name="pppoeUsername"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{t('subscriber_profile.services_pppoe_user')}</FormLabel>
+                                    <FormControl><Input {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={pppoeForm.control}
+                            name="pppoePassword"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{t('subscriber_profile.services_pppoe_pass')}</FormLabel>
+                                    <FormControl><Input type="password" {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <DialogFooter>
+                            <DialogClose asChild><Button type="button" variant="outline">{t('subscriber_profile.update_login_cancel_button')}</Button></DialogClose>
+                            <Button type="submit" disabled={pppoeForm.formState.isSubmitting}>
+                                {pppoeForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {t('subscriber_profile.update_login_save_button')}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+
     </div>
   );
 }
+
