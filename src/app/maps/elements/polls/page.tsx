@@ -2,9 +2,9 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardHeader } from "@/components/ui/card"; // Removed CardTitle
+import { Card, CardContent } from "@/components/ui/card"; // Removed CardHeader
 import { Button } from '@/components/ui/button';
-import { Power, PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { Power, Edit, Trash2, FileText as FileTextIcon } from 'lucide-react'; // Removed PlusCircle, Added FileTextIcon
 import { useLocale } from '@/contexts/LocaleContext';
 import {
   Table,
@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast'; // Added useToast
 
 interface HydroPoll {
   id: string;
@@ -36,11 +37,14 @@ const placeholderPolls: HydroPoll[] = [
 
 export default function HydroPollsPage() {
   const { t } = useLocale();
+  const { toast } = useToast(); // Added toast
   const iconSize = "h-3 w-3";
 
-  const handleAddPoll = () => {
-    console.log('Add new hydro poll clicked');
-    // Implement dialog or navigation to add form
+  const handleOpenTemplatesModal = () => {
+    toast({
+      title: t('maps_elements.template_modal_not_implemented_title', 'Template Management (Not Implemented)'),
+      description: t('maps_elements.poll_template_modal_not_implemented_desc', 'Managing templates for Hydro Polls is not yet available.'),
+    });
   };
 
   return (
@@ -50,13 +54,13 @@ export default function HydroPollsPage() {
             <Power className={`${iconSize} text-primary`} />
             {t('sidebar.maps_elements_polls', 'Hydro Polls')}
         </h1>
-        <Button onClick={handleAddPoll} className="bg-green-600 hover:bg-green-700 text-white" size="sm">
-            <PlusCircle className={`mr-2 ${iconSize}`} /> {t('maps_elements.add_element_button', 'Add Poll')}
+        <Button size="sm" variant="outline" onClick={handleOpenTemplatesModal}>
+            <FileTextIcon className={`mr-2 ${iconSize}`} /> {t('maps_elements.poll_template_button', 'Poll Templates')}
         </Button>
       </div>
 
       <Card>
-        <CardContent className="pt-6"> {/* Adjusted padding since CardHeader/Title removed */}
+        <CardContent className="pt-6">
            {placeholderPolls.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
@@ -105,7 +109,7 @@ export default function HydroPollsPage() {
             </div>
           ) : (
             <p className="text-center text-muted-foreground py-8 text-xs">
-              {t('maps_elements.no_polls_found', 'No hydro polls found. Click "Add Poll" to create one.')}
+              {t('maps_elements.no_polls_found', 'No hydro polls found. They are typically added via the map interface.')}
             </p>
           )}
         </CardContent>
@@ -113,4 +117,3 @@ export default function HydroPollsPage() {
     </div>
   );
 }
-

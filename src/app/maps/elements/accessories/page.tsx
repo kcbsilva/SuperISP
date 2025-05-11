@@ -4,12 +4,21 @@
 import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Puzzle, PlusCircle } from 'lucide-react';
+import { Puzzle, FileText as FileTextIcon } from 'lucide-react'; // Removed PlusCircle, Added FileTextIcon
 import { useLocale } from '@/contexts/LocaleContext';
+import { useToast } from '@/hooks/use-toast'; // Added useToast
 
 export default function AccessoriesPage() {
   const { t } = useLocale();
+  const { toast } = useToast(); // Added toast
   const iconSize = "h-3 w-3";
+
+  const handleOpenTemplatesModal = () => {
+    toast({
+      title: t('maps_elements.template_modal_not_implemented_title', 'Template Management (Not Implemented)'),
+      description: t('maps_elements.accessory_template_modal_not_implemented_desc', 'Managing templates for Accessories is not yet available.'),
+    });
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -18,8 +27,8 @@ export default function AccessoriesPage() {
             <Puzzle className={`${iconSize} text-primary`} />
             {t('sidebar.maps_elements_accessories', 'Accessories')}
         </h1>
-        <Button className="bg-green-600 hover:bg-green-700 text-white" size="sm">
-            <PlusCircle className={`mr-2 ${iconSize}`} /> {t('maps_elements.add_element_button', 'Add Accessory')}
+        <Button size="sm" variant="outline" onClick={handleOpenTemplatesModal}>
+            <FileTextIcon className={`mr-2 ${iconSize}`} /> {t('maps_elements.accessory_template_button', 'Accessory Templates')}
         </Button>
       </div>
 
@@ -29,7 +38,7 @@ export default function AccessoriesPage() {
         </CardHeader>
         <CardContent>
             <p className="text-center text-muted-foreground py-8 text-xs">
-              {t('maps_elements.no_accessories_found', 'No accessories found. Click "Add Accessory" to create one.')}
+              {t('maps_elements.no_accessories_found', 'No accessories found. They are typically added via the map interface.')}
             </p>
         </CardContent>
       </Card>

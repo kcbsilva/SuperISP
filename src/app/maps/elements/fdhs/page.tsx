@@ -2,9 +2,9 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardHeader } from "@/components/ui/card"; // Removed CardTitle
+import { Card, CardContent } from "@/components/ui/card"; // Removed CardHeader and CardTitle
 import { Button } from '@/components/ui/button';
-import { Box, PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { Box, Edit, Trash2, FileText as FileTextIcon } from 'lucide-react'; // Added FileTextIcon
 import { useLocale } from '@/contexts/LocaleContext';
 import {
   Table,
@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast'; // Added useToast
 
 interface Fdh {
   id: string;
@@ -37,12 +38,18 @@ const placeholderFdhs: Fdh[] = [
 
 export default function FdhsPage() {
   const { t } = useLocale();
+  const { toast } = useToast(); // Added toast
   const iconSize = "h-3 w-3";
-
-  // Removed handleAddFdh as the button is removed
 
   const getStatusBadgeVariant = (status: Fdh['status']) => {
     return status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+  };
+
+  const handleOpenTemplatesModal = () => {
+    toast({
+      title: t('maps_elements.template_modal_not_implemented_title', 'Template Management (Not Implemented)'),
+      description: t('maps_elements.fdh_template_modal_not_implemented_desc', 'Managing templates for FDHs is not yet available.'),
+    });
   };
 
   return (
@@ -52,12 +59,13 @@ export default function FdhsPage() {
             <Box className={`${iconSize} text-primary`} />
             {t('sidebar.maps_elements_fdhs', 'FDHs')}
         </h1>
-        {/* "Add FDH" button removed */}
+        <Button size="sm" variant="outline" onClick={handleOpenTemplatesModal}>
+            <FileTextIcon className={`mr-2 ${iconSize}`} /> {t('maps_elements.fdh_template_button', 'FDH Templates')}
+        </Button>
       </div>
 
       <Card>
-        {/* CardHeader and CardTitle removed to eliminate "FDH List" */}
-        <CardContent className="pt-6"> {/* Added pt-6 to CardContent since CardHeader is removed */}
+        <CardContent className="pt-6">
            {placeholderFdhs.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
@@ -106,7 +114,7 @@ export default function FdhsPage() {
             </div>
           ) : (
             <p className="text-center text-muted-foreground py-8 text-xs">
-              {t('maps_elements.no_fdhs_found', 'No FDHs found. Click "Add FDH" to create one.')}
+              {t('maps_elements.no_fdhs_found', 'No FDHs found. They are typically added via the map interface.')}
             </p>
           )}
         </CardContent>
