@@ -19,7 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  DialogDescription as DialogDescriptionComponent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -47,14 +47,15 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription as AlertDialogDescriptionComponent,
+  AlertDialogDescription, // Kept for consistency, renamed DialogDescription above
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle as AlertDialogTitleComponent,
+  AlertDialogTitle as AlertDialogTitleComponent, // Renamed to avoid conflict
 } from "@/components/ui/alert-dialog";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 interface Fosc {
@@ -88,8 +89,15 @@ interface FoscTemplate extends FoscTemplateFormData {
   id: string;
 }
 
-// Placeholder manufacturers - replace with actual data fetching if available
 const placeholderManufacturers = ["TE Connectivity", "Furukawa", "Corning", "CommScope", "Prysmian"];
+
+// Placeholder for existing FOSC templates to be displayed in the modal's side panel
+const placeholderExistingFoscTemplates: FoscTemplate[] = [
+  { id: 'tpl-fosc-1', manufacturer: 'Corning', model: 'SCF-6C', maxTrayCapacity: 6, maxCableInserts: 4, maxSpliceCounts: 72 },
+  { id: 'tpl-fosc-2', manufacturer: 'TE Connectivity', model: 'FOSC 450 D6', maxTrayCapacity: 12, maxCableInserts: 6, maxSpliceCounts: 288 },
+  { id: 'tpl-fosc-3', manufacturer: 'Furukawa', model: 'FITEL S123M12', maxTrayCapacity: 4, maxCableInserts: 2, maxSpliceCounts: 48 },
+];
+
 
 export default function FoscsPage() {
   const { t } = useLocale();
@@ -119,6 +127,9 @@ export default function FoscsPage() {
 
   const handleAddTemplateSubmit = (data: FoscTemplateFormData) => {
     console.log("New FOSC Template Data:", data);
+    // Simulate adding to a list of templates or API call
+    const newTemplate: FoscTemplate = { ...data, id: `tpl-fosc-${Date.now()}`};
+    placeholderExistingFoscTemplates.push(newTemplate); // Add to the placeholder list for now
     toast({
       title: t('maps_elements.fosc_template_add_success_title', 'FOSC Template Added'),
       description: t('maps_elements.fosc_template_add_success_desc', 'Template for {model} by {manufacturer} added.').replace('{model}', data.model).replace('{manufacturer}', data.manufacturer),
@@ -140,99 +151,123 @@ export default function FoscsPage() {
                     <FileTextIcon className={`mr-2 ${iconSize}`} /> {t('maps_elements.fosc_template_button', 'FOSC Templates')}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-lg"> {/* Changed to sm:max-w-lg for wider modal */}
+            <DialogContent className="sm:max-w-3xl"> {/* Increased width for two columns */}
                 <DialogHeader>
-                    {/* DialogTitle and DialogDescription removed as per request */}
+                    <DialogTitle className="text-sm">{t('maps_elements.fosc_template_modal_title', 'Add New FOSC Template')}</DialogTitle>
+                    <DialogDescriptionComponent className="text-xs">{t('maps_elements.fosc_template_modal_desc', 'Define a new template for FOSC types.')}</DialogDescriptionComponent>
                 </DialogHeader>
-                <Form {...templateForm}>
-                    <form onSubmit={templateForm.handleSubmit(handleAddTemplateSubmit)} className="grid gap-4 py-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <FormField
-                                control={templateForm.control}
-                                name="manufacturer"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('maps_elements.fosc_template_form_manufacturer_label', 'Manufacturer')}</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder={t('maps_elements.fosc_template_form_manufacturer_placeholder', 'Select Manufacturer')} />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {placeholderManufacturers.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={templateForm.control}
-                                name="model"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('maps_elements.fosc_template_form_model_label', 'Model')}</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder={t('maps_elements.fosc_template_form_model_placeholder', 'e.g., FOSC 450 D6')} {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className="grid grid-cols-3 gap-4">
-                            <FormField
-                                control={templateForm.control}
-                                name="maxTrayCapacity"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('maps_elements.fosc_template_form_max_trays_label', 'Max Tray Capacity')}</FormLabel>
-                                        <FormControl>
-                                            <Input type="number" placeholder="e.g., 12" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={templateForm.control}
-                                name="maxCableInserts"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('maps_elements.fosc_template_form_max_cables_label', 'Max Cable Inserts')}</FormLabel>
-                                        <FormControl>
-                                            <Input type="number" placeholder="e.g., 6" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={templateForm.control}
-                                name="maxSpliceCounts"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('maps_elements.fosc_template_form_max_splices_label', 'Max Splice Counts')}</FormLabel>
-                                        <FormControl>
-                                            <Input type="number" placeholder="e.g., 288" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button type="button" variant="outline" disabled={templateForm.formState.isSubmitting}>{t('maps_elements.fosc_template_form_cancel_button', 'Cancel')}</Button>
-                            </DialogClose>
-                            <Button type="submit" disabled={templateForm.formState.isSubmitting}>
-                                {templateForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                                {t('maps_elements.fosc_template_form_save_button', 'Save Template')}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
+                    {/* Column 1: Form (takes 2/3 of width) */}
+                    <div className="md:col-span-2">
+                        <Form {...templateForm}>
+                            <form onSubmit={templateForm.handleSubmit(handleAddTemplateSubmit)} className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <FormField
+                                        control={templateForm.control}
+                                        name="manufacturer"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>{t('maps_elements.fosc_template_form_manufacturer_label', 'Manufacturer')}</FormLabel>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder={t('maps_elements.fosc_template_form_manufacturer_placeholder', 'Select Manufacturer')} />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {placeholderManufacturers.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={templateForm.control}
+                                        name="model"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>{t('maps_elements.fosc_template_form_model_label', 'Model')}</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder={t('maps_elements.fosc_template_form_model_placeholder', 'e.g., FOSC 450 D6')} {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-3 gap-4">
+                                    <FormField
+                                        control={templateForm.control}
+                                        name="maxTrayCapacity"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>{t('maps_elements.fosc_template_form_max_trays_label', 'Max Tray Capacity')}</FormLabel>
+                                                <FormControl>
+                                                    <Input type="number" placeholder="e.g., 12" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={templateForm.control}
+                                        name="maxCableInserts"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>{t('maps_elements.fosc_template_form_max_cables_label', 'Max Cable Inserts')}</FormLabel>
+                                                <FormControl>
+                                                    <Input type="number" placeholder="e.g., 6" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={templateForm.control}
+                                        name="maxSpliceCounts"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>{t('maps_elements.fosc_template_form_max_splices_label', 'Max Splice Counts')}</FormLabel>
+                                                <FormControl>
+                                                    <Input type="number" placeholder="e.g., 288" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <DialogFooter className="pt-4">
+                                    <DialogClose asChild>
+                                        <Button type="button" variant="outline" disabled={templateForm.formState.isSubmitting}>{t('maps_elements.fosc_template_form_cancel_button', 'Cancel')}</Button>
+                                    </DialogClose>
+                                    <Button type="submit" disabled={templateForm.formState.isSubmitting}>
+                                        {templateForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
+                                        {t('maps_elements.fosc_template_form_save_button', 'Save Template')}
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </Form>
+                    </div>
+                    {/* Column 2: List of Existing Templates */}
+                    <div className="md:col-span-1">
+                        <h3 className="text-xs font-semibold mb-2 text-muted-foreground">{t('maps_elements.existing_fosc_templates_list_title', 'Existing Templates')}</h3>
+                        <ScrollArea className="h-[300px] border rounded-md p-2 bg-muted/50">
+                            {placeholderExistingFoscTemplates.length > 0 ? (
+                                placeholderExistingFoscTemplates.map(template => (
+                                <div key={template.id} className="text-xs p-1.5 border-b last:border-b-0 hover:bg-background rounded-sm cursor-default">
+                                    <div className="font-medium">{template.manufacturer} - {template.model}</div>
+                                    <div className="text-muted-foreground">
+                                    {t('maps_elements.fosc_template_info_trays')}: {template.maxTrayCapacity}, {t('maps_elements.fosc_template_info_cables')}: {template.maxCableInserts}, {t('maps_elements.fosc_template_info_splices')}: {template.maxSpliceCounts}
+                                    </div>
+                                </div>
+                                ))
+                            ) : (
+                                <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.no_existing_fosc_templates', 'No existing templates.')}</p>
+                            )}
+                        </ScrollArea>
+                    </div>
+                </div>
             </DialogContent>
         </Dialog>
       </div>
@@ -249,7 +284,7 @@ export default function FoscsPage() {
                     <TableHead className="text-xs">{t('maps_elements.fosc_table_header_type', 'Type')}</TableHead>
                     <TableHead className="text-xs text-center">{t('maps_elements.fosc_table_header_trays', 'Trays (Used/Max)')}</TableHead>
                     <TableHead className="text-xs">{t('maps_elements.table_header_project', 'Project')}</TableHead>
-                    <TableHead className="text-xs text-center">{t('maps_elements.fosc_table_header_cable_count', 'Cable Count (In/Out)')}</TableHead> {/* Updated header */}
+                    <TableHead className="text-xs text-center">{t('maps_elements.fosc_table_header_cable_count', 'Cable Count (In/Out)')}</TableHead>
                     <TableHead className="text-xs">{t('maps_elements.fosc_table_header_status', 'Status')}</TableHead>
                     <TableHead className="text-xs">{t('maps_elements.fosc_table_header_brand', 'Brand')}</TableHead>
                     <TableHead className="text-xs text-right">{t('maps_elements.project_table_header_actions', 'Actions')}</TableHead>
@@ -263,7 +298,7 @@ export default function FoscsPage() {
                       <TableCell className="text-xs">{t(`maps_elements.fosc_type_${fosc.type.toLowerCase()}` as any, fosc.type)}</TableCell>
                       <TableCell className="text-xs text-center">{fosc.trays}</TableCell>
                       <TableCell className="text-xs">{fosc.project || '-'}</TableCell>
-                      <TableCell className="text-xs text-center">{fosc.cableCount}</TableCell> {/* Display cableCount */}
+                      <TableCell className="text-xs text-center">{fosc.cableCount}</TableCell>
                       <TableCell className="text-xs">
                         <Badge variant="outline" className={`text-xs ${getStatusBadgeVariant(fosc.status)} border-transparent`}>
                           {t(`maps_elements.fosc_status_${fosc.status.toLowerCase()}` as any, fosc.status)}
@@ -295,4 +330,3 @@ export default function FoscsPage() {
     </div>
   );
 }
-
