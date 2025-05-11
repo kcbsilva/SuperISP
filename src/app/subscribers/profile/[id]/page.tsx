@@ -155,25 +155,25 @@ const getSubscriberData = (id: string | string[] | undefined) => {
                 technology: 'Fiber', downloadSpeed: '100 Mbps', uploadSpeed: '50 Mbps',
                 ipAddress: '203.0.113.10', onlineStatus: 'Online', authenticationType: 'PPPoE',
                 fdhId: 'FDH-Central-01', fdhPort: 'A3', pppoeUsername: 'user1@isp.com', pppoePassword: 'password123',
-                xponSn: 'GPON12345678', macAddress: null, // Added macAddress
+                xponSn: 'GPON12345678', macAddress: null, 
              },
              {
                 id: 'svc-7', type: 'Internet', plan: 'Radio Basic 20', popId: '2', status: 'Active',
                 technology: 'Radio', downloadSpeed: '20 Mbps', uploadSpeed: '5 Mbps',
                 ipAddress: '203.0.113.11', onlineStatus: 'Offline', authenticationType: 'IPxMAC',
-                apName: 'AP-North-Sector', macAddress: '00:1A:2B:3C:4D:5F', xponSn: null, // Added xponSn
+                apName: 'AP-North-Sector', macAddress: '00:1A:2B:3C:4D:5F', xponSn: null, 
              },
               {
                 id: 'svc-8', type: 'Internet', plan: 'UTP Office 50', popId: '1', status: 'Suspended',
                 technology: 'UTP', downloadSpeed: '50 Mbps', uploadSpeed: '50 Mbps',
                 ipAddress: '203.0.113.12', onlineStatus: 'Offline', authenticationType: 'StaticIP',
-                switchId: 'Switch-CORE-01-Port23', macAddress: '11:22:33:AA:BB:CC', xponSn: null, // Added xponSn
+                switchId: 'Switch-CORE-01-Port23', macAddress: '11:22:33:AA:BB:CC', xponSn: null, 
              },
              {
                 id: 'svc-9', type: 'Internet', plan: 'Satellite Remote 10', popId: '3', status: 'Canceled',
                 technology: 'Satellite', downloadSpeed: '10 Mbps', uploadSpeed: '1 Mbps',
                 ipAddress: '203.0.113.14', onlineStatus: 'Offline', authenticationType: 'IPoE',
-                ipoeUsername: 'sat_user_001', ipoePassword: 'securepassword', macAddress: 'DD:EE:FF:77:88:99', xponSn: null, // Added xponSn
+                ipoeUsername: 'sat_user_001', ipoePassword: 'securepassword', macAddress: 'DD:EE:FF:77:88:99', xponSn: null, 
              },
             { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: '1', status: 'Active' },
             { id: 'svc-4', type: 'Landline', plan: 'Unlimited Local', popId: '1', status: 'Active' },
@@ -190,7 +190,7 @@ const getSubscriberData = (id: string | string[] | undefined) => {
             canceledInvoices: [
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
-            pendingInvoices: [
+             pendingInvoices: [
                 { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
                 { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
             ],
@@ -221,7 +221,7 @@ const getSubscriberData = (id: string | string[] | undefined) => {
         ],
     };
 
-    if (id === '1') { // Simulating Alice Wonderland
+    if (id === 'sub-1') { // Corresponds to ID 1 from the list page example
         baseData.name = 'Alice Wonderland';
         baseData.address = '123 Fantasy Lane, Wonderland, WND 12345';
         baseData.pointOfReference = 'Next to the Mad Hatter Tea Party';
@@ -233,11 +233,11 @@ const getSubscriberData = (id: string | string[] | undefined) => {
         baseData.idNumber = 'ID-ALICE-001';
         baseData.signupDate = new Date(2022, 0, 10);
         baseData.billing.balance = 0.00;
-        baseData.billing.pendingInvoices =  [
+        baseData.billing.pendingInvoices = [
              { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
              { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
          ];
-    } else if (id === '2') { // Simulating Bob The Builder Inc.
+    } else if (id === 'sub-2') { // Corresponds to ID 2 from the list page example
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
         baseData.companyName = 'Bob The Builder Inc.';
@@ -257,7 +257,7 @@ const getSubscriberData = (id: string | string[] | undefined) => {
                 id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: '2', status: 'Active',
                 technology: 'Fiber', downloadSpeed: '1 Gbps', uploadSpeed: '500 Mbps',
                 ipAddress: '203.0.113.20', onlineStatus: 'Online', authenticationType: 'StaticIP',
-                fdhId: 'FDH-Commercial-01', fdhPort: 'B1', xponSn: 'GPON98765432', macAddress: null, // Added macAddress
+                fdhId: 'FDH-Commercial-01', fdhPort: 'B1', xponSn: 'GPON98765432', macAddress: null, 
              }
         ];
         baseData.billing.balance = 150.75;
@@ -332,7 +332,7 @@ const ServiceDetailItem: React.FC<{ label: string; value?: string | null; childr
 };
 
 const getTechnologyIcon = (technology?: string) => {
-    const iconSize = "h-4 w-4 text-primary"; // Standardized icon size for technology
+    const iconSize = "h-4 w-4 text-primary"; 
     switch (technology?.toLowerCase()) {
         case 'fiber': return <Network className={iconSize} data-ai-hint="fiber optic" />;
         case 'radio': return <Wifi className={iconSize} data-ai-hint="radio signal" />;
@@ -360,7 +360,6 @@ function SubscriberProfilePage() {
   const tabIconSize = "h-2.5 w-2.5";
 
 
-  // Using placeholderPops directly as PostgreSQL service is removed
   const pops: Pop[] = placeholderPops;
   const isLoadingPops = false;
   const popsError = null;
@@ -469,7 +468,6 @@ function SubscriberProfilePage() {
     }
   };
 
-  // Function to open the new contract wizard
   const handleOpenNewContractWizard = () => {
     setIsNewContractWizardOpen(true);
   };
