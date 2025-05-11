@@ -36,7 +36,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
-// import { addSubscriber } from '@/services/postgresql/subscribers'; // Removed PostgreSQL import
+import { addSubscriber } from '@/services/mysql/subscribers'; // Updated import
 
 const subscriberSchema = z.object({
   subscriberType: z.enum(['Residential', 'Commercial'], {

@@ -62,7 +62,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/postgresql/pops'; // Changed to PostgreSQL service
+import { getPops } from '@/services/mysql/pops'; // Changed to MySQL service
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
@@ -330,7 +330,7 @@ function VlanManagementPage() {
                 <Skeleton className="h-8 w-full" />
              </div>
           ) : vlans.length > 0 ? (
-            <div className="overflow-x-auto"> {/* Removed pt-6, table will be closer to card top */}
+            <div className="overflow-x-auto pt-6"> {/* Added pt-6 here */}
               <Table>
                 <TableHeader>
                   <TableRow>
