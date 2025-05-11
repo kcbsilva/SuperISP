@@ -8,7 +8,7 @@ import { useState, useEffect, type ReactNode } from 'react';
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, ChevronDown, ChevronRight, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
   Code, // Added for IPv4/6
-  Router, // Added for Devices
+  Router as RouterIcon, // Added for Devices, aliased
   Share2, // Added for CGNAT
   Server as ServerIcon, // Added for RADIUS & Services, aliased to avoid conflict
   Split, // Added for VLAN
@@ -41,13 +41,12 @@ import {
   Truck, // Icon for Suppliers (using Truck as an example, can be changed)
   FileText as FileTextIcon, // for ONx Templates
   GitBranch, // for FTTx
-  Network as NetworkIcon, // For OLTs (using a generic Network icon for now)
+  Network, // For OLTs (using a generic Network icon for now) & Network Menu
   Sun, // For theme toggle
   Moon, // For theme toggle
   Info, // For changelog
   LogOut, // For profile menu
   UserCircle, // For profile menu
-  MonitorSmartphone, // For System Monitor
   Database, // for MySQL menu
 } from 'lucide-react';
 
@@ -75,7 +74,7 @@ import { AppHeader } from '@/components/app-header';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'; // Import Tooltip components
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import react-query client provider
 import { Progress } from '@/components/ui/progress'; // Import Progress component
-import { LocaleProvider, useLocale } from '@/contexts/LocaleContext'; // Import LocaleProvider and useLocale
+import { LocaleProvider, useLocale, type Locale as AppLocale } from '@/contexts/LocaleContext'; // Import LocaleProvider and useLocale
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 
 
@@ -123,7 +122,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const isActive = (href: string) => {
     const cleanHref = href.split('?')[0]; // Ignore query params for active check
     const cleanPathname = pathname.split('?')[0];
-    return cleanPathname === cleanHref || (cleanHref !== '/' && cleanPathname.startsWith(cleanHref));
+    return cleanPathname === href || (cleanHref !== '/' && cleanPathname.startsWith(cleanHref));
   };
 
 
@@ -137,7 +136,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined' && theme) {
       const newFillColor = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         ? 'hsl(var(--accent))'
-        : 'hsl(var(--secondary))'; // Changed to secondary for light theme
+        : 'hsl(var(--secondary))';
       setLogoFillColor(newFillColor);
     }
   }, [theme]);
@@ -151,7 +150,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <Link
               href="/"
               className="flex items-center justify-center px-2 py-2"
-              style={{ width: '131px', height: '32px' }} // Applied requested dimensions
+              style={{ width: '131px', height: '32px' }}
             >
               <svg
                 width="100%"
@@ -198,7 +197,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/subscribers/list" className="flex items-center gap-2">
                     <Users className={iconSize} />
                     <span className="truncate">{t('sidebar.subscribers')}</span>
-                    {/* Removed ChevronDown */}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -336,7 +334,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/fttx/olts')} size="sm" tooltip={t('sidebar.fttx_olts', 'OLTs & ONXs')}>
                         <Link href="/fttx/olts" className="flex items-center gap-2">
-                          <NetworkIcon className={subIconSize + " text-muted-foreground"} />
+                          <Network className={subIconSize + " text-muted-foreground"} />
                           <span>{t('sidebar.fttx_olts', 'OLTs & ONXs')}</span>
                         </Link>
                       </SidebarMenuButton>
@@ -441,7 +439,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                      <SidebarMenuItem>
                         <SidebarMenuButton asChild isActive={isActive('/inventory/vehicles')} size="sm" tooltip={t('sidebar.inventory_vehicles', 'Vehicles')}>
                           <Link href="#" className="flex items-center gap-2">
-                            <Bus className={subIconSize + " text-muted-foreground"} /> {/* Placeholder icon for Vehicles */}
+                            <Bus className={subIconSize + " text-muted-foreground"} />
                             <span>{t('sidebar.inventory_vehicles', 'Vehicles')}</span>
                           </Link>
                         </SidebarMenuButton>
@@ -630,7 +628,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                               tooltip={t('sidebar.network')}
                             >
                               <div className="flex items-center gap-2 cursor-pointer w-full">
-                                <NetworkIcon className={subIconSize + " text-muted-foreground"} />
+                                <Network className={subIconSize + " text-muted-foreground"} />
                                 <span className="truncate">{t('sidebar.network')}</span>
                                 <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                               </div>
@@ -650,7 +648,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <SidebarMenuItem>
                             <SidebarMenuButton asChild isActive={isActive('/settings/network/devices')} size="sm" tooltip={t('sidebar.network_devices')}>
                               <Link href="#" className="flex items-center gap-2">
-                                <Router className={subIconSize + " text-muted-foreground"} />
+                                <RouterIcon className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.network_devices')}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -706,7 +704,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild isActive={isActive('/settings/system-monitor')} size="sm" tooltip={t('sidebar.settings_system_monitor', 'System Monitor')}>
                         <Link href="/settings/system-monitor" className="flex items-center gap-2">
-                          <MonitorSmartphone className={subIconSize + " text-muted-foreground"} />
+                          <RouterIcon className={subIconSize + " text-muted-foreground"} /> {/* Changed to RouterIcon */}
                           <span>{t('sidebar.settings_system_monitor', 'System Monitor')}</span>
                         </Link>
                       </SidebarMenuButton>
