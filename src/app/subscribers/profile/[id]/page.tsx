@@ -88,6 +88,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuTrigger, // Added missing import
 } from '@/components/ui/dropdown-menu';
 import {
   Form,
@@ -446,14 +447,14 @@ function SubscriberProfilePage() {
         setSelectedPendingInvoices([]);
     }
   };
-
+  // The main return of the component
   return (
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
           <div className="flex items-center gap-4">
             {subscriber.subscriberType === 'Residential' ? (
-              <User className="h-4 w-4 text-muted-foreground" />
+              <User className="h-4 w-4 text-muted-foreground" /> 
             ) : (
               <Building className="h-4 w-4 text-muted-foreground" />
             )}
