@@ -44,9 +44,8 @@ import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'; // Keep for other potential queries
-// import { getPops } from '@/services/postgresql/pops'; // Removed PostgreSQL import
-import type { Pop } from '@/types/pops'; // Keep type for placeholder
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
 import { format, type Locale as DateFnsLocale } from 'date-fns';
@@ -94,13 +93,50 @@ type ContractStatusFilter = 'All' | 'Active' | 'Inactive';
 
 
 // Placeholder data
-const getSubscriberData = (id: string | string[]) => {
+const getSubscriberData = (id: string | string[] | undefined) => {
+    if (id === undefined) {
+        // Handle the case where id is undefined, perhaps return a default object or throw an error
+        console.error("Subscriber ID is undefined in getSubscriberData");
+        return {
+            id: 'undefined-id',
+            name: 'Error: Undefined Subscriber',
+            type: 'Residential',
+            status: 'Inactive',
+            address: 'N/A',
+            pointOfReference: 'N/A',
+            email: 'error@example.com',
+            phone: 'N/A',
+            landline: 'N/A',
+            birthday: new Date(),
+            taxId: 'N/A',
+            idNumber: 'N/A',
+            signupDate: new Date(),
+            companyName: '',
+            establishedDate: null,
+            businessNumber: '',
+            services: [],
+            billing: {
+                balance: 0,
+                nextBillDate: '',
+                pastInvoices: [],
+                canceledInvoices: [],
+                pendingInvoices: [],
+                paymentPlans: [],
+                promisesToPay: []
+            },
+            serviceCalls: [],
+            inventory: [],
+            documents: [],
+            notes: [],
+            history: [],
+        };
+    }
     console.log("Fetching data for subscriber ID:", id);
     const baseData = {
         id: id.toString(),
         name: `Subscriber ${id}`,
-        type: 'Residential',
-        status: 'Active',
+        type: 'Residential' as 'Residential' | 'Commercial',
+        status: 'Active' as 'Active' | 'Inactive' | 'Suspended' | 'Planned' | 'Canceled',
         address: '123 Placeholder St, Anytown, USA 12345',
         pointOfReference: 'Near the old oak tree',
         email: `subscriber${id}@example.com`,
@@ -115,34 +151,34 @@ const getSubscriberData = (id: string | string[]) => {
         businessNumber: '',
         services: [
              {
-                id: 'svc-1', type: 'Internet', plan: 'Fiber 100', popId: '1', status: 'Active', // Assuming sim-1 is ID 1
+                id: 'svc-1', type: 'Internet', plan: 'Fiber 100', popId: '1', status: 'Active',
                 technology: 'Fiber', downloadSpeed: '100 Mbps', uploadSpeed: '50 Mbps',
                 ipAddress: '203.0.113.10', onlineStatus: 'Online', authenticationType: 'PPPoE',
                 fdhId: 'FDH-Central-01', fdhPort: 'A3', pppoeUsername: 'user1@isp.com', pppoePassword: 'password123',
-                xponSn: 'GPON12345678',
+                xponSn: 'GPON12345678', macAddress: null, // Added macAddress
              },
              {
-                id: 'svc-7', type: 'Internet', plan: 'Radio Basic 20', popId: '2', status: 'Active', // Assuming sim-2 is ID 2
+                id: 'svc-7', type: 'Internet', plan: 'Radio Basic 20', popId: '2', status: 'Active',
                 technology: 'Radio', downloadSpeed: '20 Mbps', uploadSpeed: '5 Mbps',
                 ipAddress: '203.0.113.11', onlineStatus: 'Offline', authenticationType: 'IPxMAC',
-                apName: 'AP-North-Sector', macAddress: '00:1A:2B:3C:4D:5F',
+                apName: 'AP-North-Sector', macAddress: '00:1A:2B:3C:4D:5F', xponSn: null, // Added xponSn
              },
               {
-                id: 'svc-8', type: 'Internet', plan: 'UTP Office 50', popId: '1', status: 'Suspended', // Assuming sim-1 is ID 1
+                id: 'svc-8', type: 'Internet', plan: 'UTP Office 50', popId: '1', status: 'Suspended',
                 technology: 'UTP', downloadSpeed: '50 Mbps', uploadSpeed: '50 Mbps',
                 ipAddress: '203.0.113.12', onlineStatus: 'Offline', authenticationType: 'StaticIP',
-                switchId: 'Switch-CORE-01-Port23', macAddress: '11:22:33:AA:BB:CC',
+                switchId: 'Switch-CORE-01-Port23', macAddress: '11:22:33:AA:BB:CC', xponSn: null, // Added xponSn
              },
              {
-                id: 'svc-9', type: 'Internet', plan: 'Satellite Remote 10', popId: '3', status: 'Canceled', // Assuming sim-3 is ID 3
+                id: 'svc-9', type: 'Internet', plan: 'Satellite Remote 10', popId: '3', status: 'Canceled',
                 technology: 'Satellite', downloadSpeed: '10 Mbps', uploadSpeed: '1 Mbps',
                 ipAddress: '203.0.113.14', onlineStatus: 'Offline', authenticationType: 'IPoE',
-                ipoeUsername: 'sat_user_001', ipoePassword: 'securepassword', macAddress: 'DD:EE:FF:77:88:99',
+                ipoeUsername: 'sat_user_001', ipoePassword: 'securepassword', macAddress: 'DD:EE:FF:77:88:99', xponSn: null, // Added xponSn
              },
-            { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: '1', status: 'Active' }, // Assuming sim-1 is ID 1
-            { id: 'svc-4', type: 'Landline', plan: 'Unlimited Local', popId: '1', status: 'Active' }, // Assuming sim-1 is ID 1
-            { id: 'svc-5', type: 'Mobile', plan: '5GB Data Plan', popId: '1', status: 'Inactive' }, // Assuming sim-1 is ID 1
-            { id: 'svc-6', type: 'Combo', plan: 'Internet + TV Basic', popId: '1', status: 'Active' }, // Assuming sim-1 is ID 1
+            { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: '1', status: 'Active' },
+            { id: 'svc-4', type: 'Landline', plan: 'Unlimited Local', popId: '1', status: 'Active' },
+            { id: 'svc-5', type: 'Mobile', plan: '5GB Data Plan', popId: '1', status: 'Inactive' },
+            { id: 'svc-6', type: 'Combo', plan: 'Internet + TV Basic', popId: '1', status: 'Active' },
         ],
         billing: {
             balance: 175.25,
@@ -155,8 +191,8 @@ const getSubscriberData = (id: string | string[]) => {
                 { id: 'inv-c01', date: '2024-05-20', amount: 25.00, reason: 'Service change', status: 'Canceled' },
             ],
             pendingInvoices: [
-                 { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
-                 { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
+                { id: 'inv-p01', contractId: 'SVC-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-15', value: 75.00, wallet: 'Main Bank', status: 'Due' },
+                { id: 'inv-p02', contractId: 'SVC-TV-002', dateMade: '2024-08-05', dueDate: '2024-08-20', value: 25.25, wallet: 'Credit Card', status: 'Due' },
             ],
             paymentPlans: [
                 { id: 'pp-1', startDate: '2024-07-01', installments: 3, installmentAmount: 25.00, status: 'Active' },
@@ -185,7 +221,7 @@ const getSubscriberData = (id: string | string[]) => {
         ],
     };
 
-    if (id === '1') { // Changed from sub-1 to 1 to match typical DB ID
+    if (id === '1') { // Simulating Alice Wonderland
         baseData.name = 'Alice Wonderland';
         baseData.address = '123 Fantasy Lane, Wonderland, WND 12345';
         baseData.pointOfReference = 'Next to the Mad Hatter Tea Party';
@@ -201,7 +237,7 @@ const getSubscriberData = (id: string | string[]) => {
              { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
              { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
          ];
-    } else if (id === '2') { // Changed from sub-2 to 2
+    } else if (id === '2') { // Simulating Bob The Builder Inc.
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
         baseData.companyName = 'Bob The Builder Inc.';
@@ -218,10 +254,10 @@ const getSubscriberData = (id: string | string[]) => {
         baseData.taxId = '';
         baseData.services = [
              {
-                id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: '2', status: 'Active', // Assuming sim-2 is ID 2
+                id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: '2', status: 'Active',
                 technology: 'Fiber', downloadSpeed: '1 Gbps', uploadSpeed: '500 Mbps',
                 ipAddress: '203.0.113.20', onlineStatus: 'Online', authenticationType: 'StaticIP',
-                fdhId: 'FDH-Commercial-01', fdhPort: 'B1', xponSn: 'GPON98765432',
+                fdhId: 'FDH-Commercial-01', fdhPort: 'B1', xponSn: 'GPON98765432', macAddress: null, // Added macAddress
              }
         ];
         baseData.billing.balance = 150.75;
@@ -233,11 +269,13 @@ const getSubscriberData = (id: string | string[]) => {
     return baseData;
 };
 
+// Placeholder PoP data - this should be fetched or provided differently in a real app
 const placeholderPops: Pop[] = [
     { id: '1', name: 'Central Hub', location: '123 Fiber Lane, Anytown', status: 'Active', createdAt: new Date() },
     { id: '2', name: 'North Branch', location: '456 Network Rd, Anytown', status: 'Planned', createdAt: new Date(Date.now() - 86400000) },
     { id: '3', name: 'West End POP', location: '789 Data Dr, Anytown', status: 'Inactive', createdAt: new Date(Date.now() - 172800000) },
 ];
+
 
 const queryClient = new QueryClient();
 
@@ -270,7 +308,6 @@ const OverviewDetailItem: React.FC<{icon: React.ElementType, label: string, valu
     </div>
   );
 };
-
 const OverviewSection: React.FC<{title: string, icon: React.ElementType, children: React.ReactNode}> = ({title, icon: Icon, children}) => {
     const iconSize = "h-3 w-3";
     return (
@@ -283,7 +320,6 @@ const OverviewSection: React.FC<{title: string, icon: React.ElementType, childre
         </fieldset>
     );
 };
-
 const ServiceDetailItem: React.FC<{ label: string; value?: string | null; children?: React.ReactNode; className?: string }> = ({ label, value, children, className }) => {
   const { t } = useLocale();
   if (!value && !children) return null;
@@ -326,8 +362,8 @@ function SubscriberProfilePage() {
 
   // Using placeholderPops directly as PostgreSQL service is removed
   const pops: Pop[] = placeholderPops;
-  const isLoadingPops = false; // No longer loading from a service
-  const popsError = null; // No error state for placeholder data
+  const isLoadingPops = false;
+  const popsError = null;
 
   const addServiceForm = useForm<AddServiceFormData>({
     resolver: zodResolver(addServiceSchema),
@@ -409,8 +445,10 @@ function SubscriberProfilePage() {
   };
 
   const handleBillingItemAction = (action: 'print_pdf' | 'send_email', item: any) => {
+    const translationKey = `subscriber_profile.billing_action_${action}`;
+    const translatedAction = t(translationKey as any, action.replace(/_/g, ' '));
     toast({
-        title: `${t(`subscriber_profile.billing_action_${action}` as any, action.replace(/_/g, ' '))} (Simulated)`,
+        title: `${translatedAction} (Simulated)`,
         description: `Action for item ${item.id} is not yet implemented.`,
     });
   };
@@ -422,13 +460,16 @@ function SubscriberProfilePage() {
         setSelectedServiceForLoginUpdate(service);
         setIsUpdateLoginDialogOpen(true);
     } else {
+        const translationKey = `subscriber_profile.service_action_${action}`;
+        const translatedAction = t(translationKey as any, action.replace(/_/g, ' '));
         toast({
-            title: `${t(`subscriber_profile.service_action_${action}` as any, action.replace(/_/g, ' '))} (Simulated)`,
+            title: `${translatedAction} (Simulated)`,
             description: `Action for service ${service.id} is not yet implemented.`,
         });
     }
   };
 
+  // Function to open the new contract wizard
   const handleOpenNewContractWizard = () => {
     setIsNewContractWizardOpen(true);
   };
@@ -502,7 +543,7 @@ function SubscriberProfilePage() {
         </div>
     );
   }
-
+  // The main return of the component
   return (
     <div className="flex flex-col gap-6">
       <Card>
@@ -810,14 +851,14 @@ function SubscriberProfilePage() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
+                                                     <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service)}>
+                                                        {t('subscriber_profile.service_action_transfer_contract', 'Transfer Contract')}
+                                                    </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleServiceAction('sign', service)}>
                                                         {t('subscriber_profile.service_action_sign', 'Sign Contract')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleServiceAction('cancel', service)} className="text-destructive">
                                                         {t('subscriber_profile.service_action_cancel', 'Cancel Contract')}
-                                                    </DropdownMenuItem>
-                                                     <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service)}>
-                                                        {t('subscriber_profile.service_action_transfer_contract', 'Transfer Contract')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuItem onClick={() => handleServiceAction('print_service_contract', service)}>
@@ -913,7 +954,7 @@ function SubscriberProfilePage() {
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', item)}>
                                                          <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
-                                                    </DropdownMenuItem>
+                                                    </DropdownMenuContent>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </div>
@@ -964,7 +1005,7 @@ function SubscriberProfilePage() {
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', inv)}>
                                                              <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
-                                                        </DropdownMenuItem>
+                                                        </DropdownMenuContent>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </TableCell>
@@ -1003,7 +1044,7 @@ function SubscriberProfilePage() {
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', inv)}>
                                                          <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
-                                                    </DropdownMenuItem>
+                                                    </DropdownMenuContent>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </div>
@@ -1038,10 +1079,10 @@ function SubscriberProfilePage() {
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem onClick={() => handleBillingItemAction('print_pdf', inv)}>
                                                         <Printer className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_print_pdf')}
-                                                    DropdownMenuItem>
+                                                    </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', inv)}>
                                                          <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
-                                                    </DropdownMenuItem>
+                                                    </DropdownMenuContent>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </div>
@@ -1075,7 +1116,7 @@ function SubscriberProfilePage() {
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', plan)}>
                                                          <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
-                                                    </DropdownMenuItem>
+                                                    </DropdownMenuContent>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                          </div>
@@ -1109,7 +1150,7 @@ function SubscriberProfilePage() {
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleBillingItemAction('send_email', promise)}>
                                                          <Send className={`mr-2 ${iconSize} h-3 w-3`} /> {t('subscriber_profile.billing_action_send_email')}
-                                                    </DropdownMenuItem>
+                                                    </DropdownMenuContent>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                          </div>
@@ -1337,7 +1378,7 @@ function SubscriberProfilePage() {
         <NewContractWizard
           isOpen={isNewContractWizardOpen}
           onClose={() => setIsNewContractWizardOpen(false)}
-          subscriberId={subscriber.id}
+          subscriberId={subscriber.id.toString()}
         />
       )}
     </div>
