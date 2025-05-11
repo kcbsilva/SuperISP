@@ -60,6 +60,7 @@ import {
   Share2,
   Split,
   Settings as SettingsIcon,
+  Loader2, // Added Loader2
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -97,7 +98,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
+import { useForm } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
@@ -170,7 +171,7 @@ const getSubscriberData = (id: string | string[] | undefined): Subscriber | null
       { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: 'pop-1', status: 'Active' },
     ];
     baseData.billing.balance = 0.00;
-    baseData.billing.pendingInvoices =  [
+    baseData.billing.pendingInvoices = [
         { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
         { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
      ];
@@ -309,6 +310,7 @@ function SubscriberProfilePage() {
   const [activeContractTab, setActiveContractTab] = React.useState<ContractStatusFilter>('Active');
   const [isUpdateLoginDialogOpen, setIsUpdateLoginDialogOpen] = React.useState(false);
   const [currentServiceForLoginUpdate, setCurrentServiceForLoginUpdate] = React.useState<SubscriberService | null>(null);
+  const [selectedPendingInvoices, setSelectedPendingInvoices] = React.useState<string[]>([]);
 
 
   const iconSize = "h-3 w-3";
@@ -320,7 +322,7 @@ function SubscriberProfilePage() {
   }, [subscriberId]);
 
   const hasOutstandingBalance = React.useMemo(() =>
-    (subscriber?.billing?.balance ?? 0) > 0 || (subscriber?.billing?.pendingInvoices?.length ?? 0) > 0,
+    (subscriber?.billing?.balance ?? 0) > 0 || (subscriber?.billing?.pendingInvoices?.filter(inv => inv.status === 'Due').length ?? 0) > 0,
     [subscriber?.billing]
   );
 
@@ -371,6 +373,24 @@ function SubscriberProfilePage() {
     });
   };
 
+  const handleMakePaymentPlan = () => {
+    if (selectedPendingInvoices.length === 0) {
+        toast({
+            title: t('subscriber_profile.billing_no_invoice_selected_title'),
+            description: t('subscriber_profile.billing_no_invoice_selected_desc'),
+            variant: 'destructive',
+        });
+        return;
+    }
+    toast({
+      title: t('subscriber_profile.billing_make_payment_plan_button_toast_title'),
+      description: t('subscriber_profile.billing_make_payment_plan_button_toast_desc', 'Creating payment plan for selected invoices: {ids}').replace('{ids}', selectedPendingInvoices.join(', ')),
+    });
+    // Reset selection after action
+    setSelectedPendingInvoices([]);
+  };
+
+
   const handleServiceAction = (action: string, serviceId?: string) => {
     toast({
         title: `Service Action: ${action}`,
@@ -411,6 +431,22 @@ function SubscriberProfilePage() {
     if (activeBillingTab === 'PromiseToPay') return allItems.filter(item => item.itemType === 'promiseToPay' && item.status === 'Pending');
     return [];
   }, [subscriber.billing, activeBillingTab]);
+  
+  const handleSelectPendingInvoice = (invoiceId: string, checked: boolean) => {
+    setSelectedPendingInvoices(prev =>
+      checked ? [...prev, invoiceId] : prev.filter(id => id !== invoiceId)
+    );
+  };
+
+  const isAllPendingSelected = subscriber.billing.pendingInvoices.length > 0 && selectedPendingInvoices.length === subscriber.billing.pendingInvoices.length;
+  const handleSelectAllPending = (checked: boolean) => {
+    if (checked) {
+        setSelectedPendingInvoices(subscriber.billing.pendingInvoices.map(inv => inv.id));
+    } else {
+        setSelectedPendingInvoices([]);
+    }
+  };
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -615,9 +651,16 @@ function SubscriberProfilePage() {
                     <TabsTrigger value="PromiseToPay"><Handshake className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.billing_filter_promise_to_pay')}</TabsTrigger>
                     </TabsList>
                 </Tabs>
-                 <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white ml-4 shrink-0" onClick={handleMakeInvoice}>
-                    <FilePlus2 className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_make_invoice_button')}
-                </Button>
+                 <div className="flex items-center gap-2 ml-4 shrink-0">
+                     <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleMakeInvoice}>
+                        <FilePlus2 className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_make_invoice_button')}
+                    </Button>
+                    {activeBillingTab === 'Pending' && (
+                         <Button size="sm" variant="outline" onClick={handleMakePaymentPlan} disabled={selectedPendingInvoices.length === 0}>
+                            <CalendarClock className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_make_payment_plan_button')}
+                        </Button>
+                    )}
+                 </div>
             </div>
             <Card>
               <CardContent className="pt-6">
@@ -625,7 +668,15 @@ function SubscriberProfilePage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-10"><Checkbox aria-label={t('subscriber_profile.billing_header_select')} /></TableHead>
+                                <TableHead className="w-10">
+                                 {activeBillingTab === 'Pending' && (
+                                     <Checkbox
+                                         checked={isAllPendingSelected}
+                                         onCheckedChange={handleSelectAllPending}
+                                         aria-label={t('subscriber_profile.billing_header_select_all')}
+                                     />
+                                 )}
+                                </TableHead>
                                 <TableHead>{t('subscriber_profile.billing_header_contract_id')}</TableHead>
                                 <TableHead>{t('subscriber_profile.billing_header_date_made')}</TableHead>
                                 <TableHead>{t('subscriber_profile.billing_header_due_date')}</TableHead>
@@ -637,7 +688,15 @@ function SubscriberProfilePage() {
                         <TableBody>
                             {filteredBillingItems.map(item => (
                                 <TableRow key={item.id}>
-                                    <TableCell><Checkbox aria-labelledby={`select-invoice-${item.id}`} /></TableCell>
+                                    <TableCell>
+                                     {item.itemType === 'invoice' && item.status === 'Due' && activeBillingTab === 'Pending' && (
+                                        <Checkbox
+                                            checked={selectedPendingInvoices.includes(item.id)}
+                                            onCheckedChange={(checked) => handleSelectPendingInvoice(item.id, !!checked)}
+                                            aria-labelledby={`select-invoice-${item.id}`}
+                                        />
+                                      )}
+                                    </TableCell>
                                     <TableCell className="text-xs">{(item as Invoice).contractId || '-'}</TableCell>
                                     <TableCell className="text-xs">
                                         {item.itemType === 'invoice' && (item as Invoice).dateMade ? format(new Date((item as Invoice).dateMade), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
