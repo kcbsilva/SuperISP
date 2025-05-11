@@ -19,9 +19,9 @@ Table.displayName = "Table"
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, children, ...props }, ref) => ( // Explicitly destructure children
+>(({ className, children, ...props }, ref) => (
   <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props}>
-    {children} {/* Render children explicitly */}
+    {children}
   </thead>
 ))
 TableHeader.displayName = "TableHeader"
@@ -29,13 +29,13 @@ TableHeader.displayName = "TableHeader"
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, children, ...props }, ref) => ( // Explicitly destructure children
+>(({ className, children, ...props }, ref) => (
   <tbody
     ref={ref}
     className={cn("[&_tr:last-child]:border-0", className)}
     {...props}
   >
-    {children} {/* Render children explicitly */}
+    {children}
   </tbody>
 ))
 TableBody.displayName = "TableBody"
@@ -58,18 +58,26 @@ TableFooter.displayName = "TableFooter"
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
->(({ className, children, ...props }, ref) => ( // Explicitly destructure children
-  <tr
-    ref={ref}
-    className={cn(
-      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
-      className
-    )}
-    {...props} // Pass other props (attributes)
-  >
-    {children} {/* Render children explicitly inside tr */}
-  </tr>
-))
+>(({ className, children, ...props }, ref) => {
+  // Filter children to ensure only valid React elements are rendered.
+  // This helps prevent issues with whitespace or other non-element nodes.
+  const validChildren = React.Children.toArray(children).filter(child =>
+    React.isValidElement(child)
+  );
+
+  return (
+    <tr
+      ref={ref}
+      className={cn(
+        "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        className
+      )}
+      {...props}
+    >
+      {validChildren}
+    </tr>
+  );
+});
 TableRow.displayName = "TableRow"
 
 const TableHead = React.forwardRef<
@@ -79,7 +87,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-10 px-2 text-left align-middle text-xs font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0", // Adjusted padding and height
+      "h-10 px-2 text-left align-middle text-xs font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
       className
     )}
     {...props}
@@ -93,7 +101,7 @@ const TableCell = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn("p-2 align-middle text-xs [&:has([role=checkbox])]:pr-0", className)} // Adjusted padding and text size
+    className={cn("p-2 align-middle text-xs [&:has([role=checkbox])]:pr-0", className)}
     {...props}
   />
 ))
