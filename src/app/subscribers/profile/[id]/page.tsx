@@ -184,8 +184,8 @@ const getSubscriberData = (id: string | string[] | undefined): Subscriber | null
     ];
     baseData.billing.balance = 0.00;
     baseData.billing.pendingInvoices =  [
-      { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
-      { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
+        { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
+        { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
      ];
     baseData.billing.promisesToPay = [
       { id: 'ptp-alice-01', promiseDate: '2024-08-25', amount: 50.00, status: 'Pending' },
@@ -401,16 +401,17 @@ function SubscriberProfilePage() {
         }
     }
 
-    if (!isAnyOverdueOrDueToday && count > 0) {
+    if (!isAnyOverdueOrDueToday && count > 0) { // Invoices are pending but none are due/overdue yet
         return { pendingInvoiceCount: count, pendingInvoiceUrgency: 'none' as 'none' | 'yellow' | 'red' };
     }
-
+    
     let urgency: 'none' | 'yellow' | 'red' = 'none';
-    if (maxLateness > 3) {
+    if (maxLateness > 3) { // More than 3 days past due
         urgency = 'red';
     } else if (maxLateness >= 0) { // Due today or up to 3 days past due
         urgency = 'yellow';
     }
+    // If maxLateness is still -Infinity (meaning no invoices were due/overdue), urgency remains 'none'
 
     return { pendingInvoiceCount: count, pendingInvoiceUrgency: urgency };
   }, [subscriber?.billing?.pendingInvoices]);
@@ -581,7 +582,7 @@ function SubscriberProfilePage() {
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-3"> {/* Increased gap for badge */}
+          <div className="flex items-center gap-3">
             {subscriber.subscriberType === 'Residential' ? (
               <User className="h-4 w-4 text-muted-foreground" />
             ) : (
@@ -600,16 +601,16 @@ function SubscriberProfilePage() {
           <TabsTrigger value="overview"><User className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.overview_tab')}</TabsTrigger>
           <TabsTrigger value="contracts"><FileSignature className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_tab')}</TabsTrigger>
           <TabsTrigger value="services"><ServerIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_tab')}</TabsTrigger>
-          <TabsTrigger value="billing" className="relative flex items-center justify-center"> {/* Added relative for bubble positioning */}
+          <TabsTrigger value="billing" className="relative flex items-center justify-center">
             <DollarSign className={`mr-1.5 ${tabIconSize}`} />
             <span>{t('subscriber_profile.billing_tab')}</span>
-            {pendingInvoiceCount > 0 && ( // Bubble will only show if count > 0
+            {pendingInvoiceCount > 0 && (
               <span className={cn(
-                "absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold text-white", // Adjusted top and right for "half in, half out"
+                "absolute -top-2 right-0 flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold text-white",
                 {
                   'bg-yellow-500': pendingInvoiceUrgency === 'yellow',
                   'bg-red-600': pendingInvoiceUrgency === 'red',
-                  'bg-primary': pendingInvoiceUrgency === 'none' // Default to primary if not urgent but count > 0
+                  'bg-primary': pendingInvoiceUrgency === 'none'
                 }
               )}>
                 {pendingInvoiceCount}
@@ -1097,4 +1098,3 @@ function SubscriberProfilePage() {
     </div>
   );
 }
-
