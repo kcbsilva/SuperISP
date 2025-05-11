@@ -39,10 +39,7 @@ export default function FdhsPage() {
   const { t } = useLocale();
   const iconSize = "h-3 w-3";
 
-  const handleAddFdh = () => {
-    console.log('Add new FDH clicked');
-    // Implement dialog or navigation to add form
-  };
+  // Removed handleAddFdh as the button is removed
 
   const getStatusBadgeVariant = (status: Fdh['status']) => {
     return status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
@@ -55,9 +52,7 @@ export default function FdhsPage() {
             <Box className={`${iconSize} text-primary`} />
             {t('sidebar.maps_elements_fdhs', 'FDHs')}
         </h1>
-        <Button onClick={handleAddFdh} className="bg-green-600 hover:bg-green-700 text-white" size="sm">
-            <PlusCircle className={`mr-2 ${iconSize}`} /> {t('maps_elements.add_element_button', 'Add FDH')}
-        </Button>
+        {/* "Add FDH" button removed */}
       </div>
 
       <Card>
@@ -119,4 +114,3 @@ export default function FdhsPage() {
     </div>
   );
 }
-
