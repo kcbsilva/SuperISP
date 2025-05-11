@@ -28,7 +28,7 @@ import {
   Tv,
   PhoneCall,
   Smartphone,
-  Combine,
+  Combine as CombineIcon,
   ListFilter as ListFilterIcon,
   CheckCircle,
   XCircle,
@@ -201,8 +201,8 @@ const getSubscriberData = (id: string | string[] | undefined): Subscriber | null
     baseData.mobileNumber = '555-2020';
     baseData.establishedDate = new Date(2005, 7, 20);
     baseData.businessNumber = '98.765.432/0001-00';
+    baseData.status = 'Suspended';
     baseData.signupDate = new Date(2021, 5, 1);
-    baseData.status = 'Active';
     baseData.services = [
       { id: 'svc-3', type: 'Internet', plan: 'Business Fiber 1G', popId: 'pop-2', status: 'Active', technology: 'Fiber', downloadSpeed: '1 Gbps', uploadSpeed: '500 Mbps', ipAddress: '203.0.113.20', onlineStatus: 'Online', authenticationType: 'StaticIP', xponSn: 'FHTT98765432' }
     ];
@@ -310,6 +310,22 @@ const getTechnologyIcon = (technology?: string) => {
       return <ServerIcon className={iconSize} />;
   }
 };
+
+const getStatusBadgeVariant = (status: SubscriberStatus | undefined) => {
+    switch (status) {
+        case 'Active':
+            return 'bg-green-100 text-green-800';
+        case 'Suspended':
+            return 'bg-yellow-100 text-yellow-800';
+        case 'Inactive':
+        case 'Canceled':
+        case 'Planned':
+            return 'bg-gray-100 text-gray-800';
+        default:
+            return 'bg-secondary text-secondary-foreground';
+    }
+};
+
 
 export default function SubscriberProfilePageWrapper() {
   return (
@@ -517,15 +533,16 @@ function SubscriberProfilePage() {
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3"> {/* Increased gap for badge */}
             {subscriber.subscriberType === 'Residential' ? (
               <User className="h-4 w-4 text-muted-foreground" />
             ) : (
               <Building className="h-4 w-4 text-muted-foreground" />
             )}
-            <div>
-              <CardTitle className="text-base">{subscriber.subscriberType === 'Residential' ? subscriber.fullName : subscriber.companyName} (ID: {subscriber.id})</CardTitle>
-            </div>
+            <CardTitle className="text-base">{subscriber.subscriberType === 'Residential' ? subscriber.fullName : subscriber.companyName} (ID: {subscriber.id})</CardTitle>
+            <Badge variant={subscriber.status === 'Active' ? 'default' : subscriber.status === 'Suspended' ? 'destructive' : 'secondary'} className={cn("text-xs ml-2", getStatusBadgeVariant(subscriber.status))}>
+                {t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)}
+            </Badge>
           </div>
         </CardHeader>
       </Card>
@@ -623,7 +640,7 @@ function SubscriberProfilePage() {
                   <TabsTrigger value="TV"><Tv className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_tv')}</TabsTrigger>
                   <TabsTrigger value="Landline"><PhoneCall className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_landline')}</TabsTrigger>
                   <TabsTrigger value="Mobile"><Smartphone className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_mobile')}</TabsTrigger>
-                  <TabsTrigger value="Combo"><Combine className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_combo')}</TabsTrigger>
+                  <TabsTrigger value="Combo"><CombineIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_filter_combo')}</TabsTrigger>
                 </TabsList>
               </Tabs>
               <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white ml-4 shrink-0" onClick={() => setIsAddServiceDialogOpen(true)}>
