@@ -70,7 +70,7 @@ import {
   List, // Added for All service call
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
@@ -118,7 +118,7 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
-import { format, type Locale as DateFnsLocale } from 'date-fns';
+import { format, type Locale as DateFnsLocale, parseISO } from 'date-fns';
 import { fr as frLocale, ptBR as ptBRLocale, enUS as enUSLocale } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -132,7 +132,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { NewContractWizard } from '@/components/new-contract-wizard';
-import type { Subscriber, SubscriberService, BillingDetails, Invoice, PaymentPlan, PromiseToPay, ServiceCall, InventoryItem, Document, Note, HistoryEntry } from '@/types/subscribers';
+import type { Subscriber, SubscriberService, BillingDetails, Invoice, PaymentPlan, PromiseToPay, ServiceCall, InventoryItem, Document, Note, HistoryEntry, SubscriberStatus, ServiceStatus } from '@/types/subscribers';
 
 // Placeholder data functions (replace with actual data fetching)
 const getSubscriberData = (id: string | string[] | undefined): Subscriber | null => {
@@ -311,7 +311,7 @@ const getTechnologyIcon = (technology?: string) => {
   }
 };
 
-const getStatusBadgeVariant = (status: SubscriberStatus | undefined) => {
+const getStatusBadgeVariant = (status: SubscriberStatus | ServiceStatus | undefined) => {
     switch (status) {
         case 'Active':
             return 'bg-green-100 text-green-800';
@@ -363,10 +363,58 @@ function SubscriberProfilePage() {
     return getSubscriberData(subscriberId);
   }, [subscriberId]);
 
-  const hasOutstandingBalance = React.useMemo(() =>
-    (subscriber?.billing?.balance ?? 0) > 0 || (subscriber?.billing?.pendingInvoices?.filter(inv => inv.status === 'Due').length ?? 0) > 0,
-    [subscriber?.billing]
-  );
+
+  const { pendingInvoiceCount, pendingInvoiceUrgency } = React.useMemo(() => {
+    if (!subscriber?.billing?.pendingInvoices) {
+      return { pendingInvoiceCount: 0, pendingInvoiceUrgency: 'none' as 'none' | 'yellow' | 'red' };
+    }
+
+    const dueInvoices = subscriber.billing.pendingInvoices.filter(inv => inv.status === 'Due');
+    const count = dueInvoices.length;
+
+    if (count === 0) {
+      return { pendingInvoiceCount: 0, pendingInvoiceUrgency: 'none' as 'none' | 'yellow' | 'red' };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize today to start of day for comparison
+
+    let maxLateness = -Infinity;
+    let isAnyOverdueOrDueToday = false;
+
+    for (const invoice of dueInvoices) {
+        try {
+            const dueDate = parseISO(invoice.dueDate);
+            dueDate.setHours(0,0,0,0);
+
+            if (dueDate <= today) { // Invoice is due today or past due
+                isAnyOverdueOrDueToday = true;
+                const diffTime = today.getTime() - dueDate.getTime();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Days past due (0 if due today)
+                if (diffDays > maxLateness) {
+                    maxLateness = diffDays;
+                }
+            }
+        } catch (e) {
+            console.error("Error parsing due date for invoice:", invoice.id, invoice.dueDate, e);
+            // Skip this invoice or handle error as appropriate
+        }
+    }
+
+    if (!isAnyOverdueOrDueToday && count > 0) {
+        return { pendingInvoiceCount: count, pendingInvoiceUrgency: 'none' as 'none' | 'yellow' | 'red' };
+    }
+
+    let urgency: 'none' | 'yellow' | 'red' = 'none';
+    if (maxLateness > 3) {
+        urgency = 'red';
+    } else if (maxLateness >= 0) { // Due today or up to 3 days past due
+        urgency = 'yellow';
+    }
+
+    return { pendingInvoiceCount: count, pendingInvoiceUrgency: urgency };
+  }, [subscriber?.billing?.pendingInvoices]);
+
 
   const pppoeForm = useForm<{ pppoeUsername?: string; pppoePassword?: string }>({
     defaultValues: { pppoeUsername: '', pppoePassword: '' },
@@ -460,7 +508,7 @@ function SubscriberProfilePage() {
     console.log("Promise to Pay data:", data, "for invoices:", selectedPendingInvoices);
     toast({
         title: t('subscriber_profile.promise_to_pay_success_title'),
-        description: t('subscriber_profile.promise_to_pay_success_desc', 'Promise to pay registered for {amount} until {date}.').replace('{amount}', data.promiseAmount.toString()).replace('{date}', format(data.promiseDate, 'PP')),
+        description: t('subscriber_profile.promise_to_pay_success_desc', 'Promise to pay registered for {amount} until {date}.').replace('{amount}', data.promiseAmount.toString()).replace('{date}', format(data.promiseDate, 'PP', { locale: dateLocales[locale] || enUSLocale }) ),
     });
     setIsPromiseToPayModalOpen(false);
     setSelectedPendingInvoices([]);
@@ -552,10 +600,19 @@ function SubscriberProfilePage() {
           <TabsTrigger value="overview"><User className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.overview_tab')}</TabsTrigger>
           <TabsTrigger value="contracts"><FileSignature className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_tab')}</TabsTrigger>
           <TabsTrigger value="services"><ServerIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_tab')}</TabsTrigger>
-          <TabsTrigger value="billing" className="relative">
-            <DollarSign className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.billing_tab')}
-            {hasOutstandingBalance && (
-              <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[0.6rem] font-bold">!</span>
+          <TabsTrigger value="billing" className="relative flex items-center justify-center">
+            <DollarSign className={`mr-1.5 ${tabIconSize}`} />
+            <span>{t('subscriber_profile.billing_tab')}</span>
+            {pendingInvoiceCount > 0 && pendingInvoiceUrgency !== 'none' && (
+              <span className={cn(
+                "ml-2 flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold text-white",
+                {
+                  'bg-yellow-500': pendingInvoiceUrgency === 'yellow',
+                  'bg-red-600': pendingInvoiceUrgency === 'red',
+                }
+              )}>
+                {pendingInvoiceCount}
+              </span>
             )}
           </TabsTrigger>
           <TabsTrigger value="service-calls"><Wrench className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.service_calls_tab')}</TabsTrigger>
@@ -654,7 +711,7 @@ function SubscriberProfilePage() {
                     <div className="flex items-center gap-2">
                       {getTechnologyIcon(service.technology)}
                       <CardTitle className="text-sm">{service.plan}</CardTitle>
-                      <Badge variant={service.status === 'Active' ? 'default' : 'secondary'} className={cn(service.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800', 'text-xs')}>{service.status}</Badge>
+                      <Badge variant={service.status === 'Active' ? 'default' : 'secondary'} className={cn(getStatusBadgeVariant(service.status), 'text-xs')}>{service.status}</Badge>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -791,13 +848,13 @@ function SubscriberProfilePage() {
                           </TableCell>
                           <TableCell className="text-xs">{(item as Invoice).contractId || '-'}</TableCell>
                           <TableCell className="text-xs">
-                            {item.itemType === 'invoice' && (item as Invoice).dateMade ? format(new Date((item as Invoice).dateMade), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
-                              item.itemType === 'paymentPlan' && (item as PaymentPlan).startDate ? format(new Date((item as PaymentPlan).startDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
+                            {item.itemType === 'invoice' && (item as Invoice).dateMade ? format(parseISO((item as Invoice).dateMade), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
+                              item.itemType === 'paymentPlan' && (item as PaymentPlan).startDate ? format(parseISO((item as PaymentPlan).startDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
                                 '-'}
                           </TableCell>
                           <TableCell className="text-xs">
-                            {item.itemType === 'invoice' && (item as Invoice).dueDate ? format(new Date((item as Invoice).dueDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
-                              item.itemType === 'promiseToPay' && (item as PromiseToPay).promiseDate ? format(new Date((item as PromiseToPay).promiseDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
+                            {item.itemType === 'invoice' && (item as Invoice).dueDate ? format(parseISO((item as Invoice).dueDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
+                              item.itemType === 'promiseToPay' && (item as PromiseToPay).promiseDate ? format(parseISO((item as PromiseToPay).promiseDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
                                 '-'}
                           </TableCell>
                           <TableCell className="text-xs text-right">
@@ -1004,7 +1061,7 @@ function SubscriberProfilePage() {
                                                 mode="single"
                                                 selected={field.value}
                                                 onSelect={field.onChange}
-                                                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
+                                                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) } // Corrected to allow today
                                                 initialFocus
                                             />
                                         </PopoverContent>
