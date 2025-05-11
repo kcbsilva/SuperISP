@@ -600,15 +600,16 @@ function SubscriberProfilePage() {
           <TabsTrigger value="overview"><User className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.overview_tab')}</TabsTrigger>
           <TabsTrigger value="contracts"><FileSignature className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.contracts_tab')}</TabsTrigger>
           <TabsTrigger value="services"><ServerIcon className={`mr-1.5 ${tabIconSize}`} />{t('subscriber_profile.services_tab')}</TabsTrigger>
-          <TabsTrigger value="billing" className="relative flex items-center justify-center">
+          <TabsTrigger value="billing" className="relative flex items-center justify-center"> {/* Added relative for bubble positioning */}
             <DollarSign className={`mr-1.5 ${tabIconSize}`} />
             <span>{t('subscriber_profile.billing_tab')}</span>
-            {pendingInvoiceCount > 0 && pendingInvoiceUrgency !== 'none' && (
+            {pendingInvoiceCount > 0 && ( // Bubble will only show if count > 0
               <span className={cn(
-                "ml-2 flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold text-white",
+                "absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold text-white", // Adjusted top and right for "half in, half out"
                 {
                   'bg-yellow-500': pendingInvoiceUrgency === 'yellow',
                   'bg-red-600': pendingInvoiceUrgency === 'red',
+                  'bg-primary': pendingInvoiceUrgency === 'none' // Default to primary if not urgent but count > 0
                 }
               )}>
                 {pendingInvoiceCount}
@@ -1096,3 +1097,4 @@ function SubscriberProfilePage() {
     </div>
   );
 }
+
