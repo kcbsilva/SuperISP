@@ -197,6 +197,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/subscribers/list" className="flex items-center gap-2">
                     <Users className={iconSize} />
                     <span className="truncate">{t('sidebar.subscribers')}</span>
+                    {/* Removed ChevronDown */}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -405,10 +406,18 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </Tooltip>
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/inventory/warehouses')} size="sm" tooltip={t('sidebar.inventory_warehouses', 'Warehouses')}>
-                        <Link href="/inventory/warehouses" className="flex items-center gap-2">
-                          <Warehouse className={subIconSize + " text-muted-foreground"} />
-                          <span>{t('sidebar.inventory_warehouses', 'Warehouses')}</span>
+                      <SidebarMenuButton asChild isActive={isActive('/inventory/categories')} size="sm" tooltip={t('sidebar.inventory_categories', 'Categories')}>
+                        <Link href="#" className="flex items-center gap-2">
+                          <ListFilter className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.inventory_categories', 'Categories')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/inventory/manufacturers')} size="sm" tooltip={t('sidebar.inventory_manufacturers', 'Manufacturers')}>
+                        <Link href="#" className="flex items-center gap-2">
+                          <Factory className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.inventory_manufacturers', 'Manufacturers')}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -429,10 +438,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/inventory/manufacturers')} size="sm" tooltip={t('sidebar.inventory_manufacturers', 'Manufacturers')}>
-                        <Link href="#" className="flex items-center gap-2">
-                          <Factory className={subIconSize + " text-muted-foreground"} />
-                          <span>{t('sidebar.inventory_manufacturers', 'Manufacturers')}</span>
+                      <SidebarMenuButton asChild isActive={isActive('/inventory/warehouses')} size="sm" tooltip={t('sidebar.inventory_warehouses', 'Warehouses')}>
+                        <Link href="/inventory/warehouses" className="flex items-center gap-2">
+                          <Warehouse className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.inventory_warehouses', 'Warehouses')}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -444,14 +453,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/inventory/categories')} size="sm" tooltip={t('sidebar.inventory_categories', 'Categories')}>
-                        <Link href="#" className="flex items-center gap-2">
-                          <ListFilter className={subIconSize + " text-muted-foreground"} />
-                          <span>{t('sidebar.inventory_categories', 'Categories')}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
               </SidebarMenuItem>
@@ -908,4 +909,3 @@ export default function RootLayout({
     </html>
   );
 }
-
