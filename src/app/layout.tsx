@@ -230,6 +230,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/maps/projects')} size="sm" tooltip={t('sidebar.maps_projects', 'Projects')}>
+                        <Link href="/maps/projects" className="flex items-center gap-2">
+                          <FileCode className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.maps_projects', 'Projects')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
                       <SidebarMenuSub>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -306,14 +314,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </SidebarMenuItem>
                         </SidebarMenuSubContent>
                       </SidebarMenuSub>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild isActive={isActive('/maps/projects')} size="sm" tooltip={t('sidebar.maps_projects', 'Projects')}>
-                        <Link href="#" className="flex items-center gap-2"> {/* Ensure correct href */}
-                          <FileCode className={subIconSize + " text-muted-foreground"} /> {/* Icon for Projects */}
-                          <span>{t('sidebar.maps_projects', 'Projects')}</span>
-                        </Link>
-                      </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
@@ -928,4 +928,3 @@ export default function RootLayout({
     </html>
   );
 }
-
