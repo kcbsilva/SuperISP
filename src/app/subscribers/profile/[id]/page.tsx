@@ -63,6 +63,9 @@ import {
   Loader2,
   ChevronDown, // Added for Actions dropdown
   CalendarIcon, // Added for Promise to Pay modal
+  CreditCard, // Added for Receive Payment
+  Receipt, // Added for Detailed Invoice
+  FileX, // Added for Remove Payment
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -109,7 +112,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Removed useQuery
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -400,7 +403,7 @@ function SubscriberProfilePage() {
   };
 
   const handleMakePaymentPlan = () => {
-    if (selectedPendingInvoices.length === 0) {
+    if (selectedPendingInvoices.length === 0 && activeBillingTab === 'Pending') {
       toast({
         title: t('subscriber_profile.billing_no_invoice_selected_title'),
         description: t('subscriber_profile.billing_no_invoice_selected_desc'),
@@ -416,7 +419,7 @@ function SubscriberProfilePage() {
   };
 
   const handleOpenPromiseToPayModal = () => {
-    if (selectedPendingInvoices.length === 0 && activeBillingTab === 'Pending') { // Ensure it's for pending invoices
+    if (selectedPendingInvoices.length === 0 && activeBillingTab === 'Pending') {
         toast({
             title: t('subscriber_profile.billing_no_invoice_selected_title'),
             description: t('subscriber_profile.promise_to_pay_no_invoice_selected_desc'),
@@ -427,7 +430,7 @@ function SubscriberProfilePage() {
     const selectedAmount = subscriber.billing.pendingInvoices
         .filter(inv => selectedPendingInvoices.includes(inv.id) && inv.status === 'Due')
         .reduce((sum, inv) => sum + inv.value, 0);
-    
+
     promiseToPayForm.reset({ promiseDate: new Date(), promiseAmount: selectedAmount });
     setIsPromiseToPayModalOpen(true);
   };
@@ -449,6 +452,13 @@ function SubscriberProfilePage() {
       description: `Action '${action}' for service ${serviceId || ''} is not yet implemented.`,
     });
   };
+
+  const handleBillingAction = (action: string, itemId?: string) => {
+     toast({
+      title: `Billing Action: ${action}`,
+      description: `Action '${action}' for item ${itemId || ''} is not yet implemented.`,
+    });
+  }
 
   const handleUpdateLogin = (service: SubscriberService) => {
     setCurrentServiceForLoginUpdate(service);
@@ -781,8 +791,12 @@ function SubscriberProfilePage() {
                                 <Button variant="ghost" size="icon" className="h-7 w-7"><MoreVertical className={iconSize} /></Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleServiceAction('print_pdf', item.id)}><Printer className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_action_print_pdf')}</DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleServiceAction('send_email', item.id)}><Send className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_action_send_email')}</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleBillingAction('receive_payment', item.id)}><CreditCard className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_action_receive_payment')}</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleBillingAction('remove_payment', item.id)}><FileX className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_action_remove_payment')}</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => handleBillingAction('detailed_invoice', item.id)}><Receipt className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_action_detailed_invoice')}</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleBillingAction('print_pdf', item.id)}><Printer className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_action_print_pdf')}</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleBillingAction('send_email', item.id)}><Send className={`mr-2 ${iconSize}`} /> {t('subscriber_profile.billing_action_send_email')}</DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>
@@ -958,7 +972,7 @@ function SubscriberProfilePage() {
                                                 mode="single"
                                                 selected={field.value}
                                                 onSelect={field.onChange}
-                                                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) } 
+                                                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
                                                 initialFocus
                                             />
                                         </PopoverContent>

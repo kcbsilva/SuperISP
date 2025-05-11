@@ -391,6 +391,9 @@ const pt = {
     billing_item_type_invoice: 'Fatura',
     billing_item_type_paymentPlan: 'Plano de Pagamento',
     billing_item_type_promiseToPay: 'Promessa de Pagamento',
+    billing_action_receive_payment: 'Receber Pagamento',
+    billing_action_remove_payment: 'Remover Pagamento',
+    billing_action_detailed_invoice: 'Fatura Detalhada',
     billing_action_print_pdf: 'Gerar PDF',
     billing_action_send_email: 'Enviar por Email',
     billing_header_select: 'Selecionar',
@@ -672,9 +675,7 @@ const pt = {
       refresh_toast_title: 'Refreshing Metrics',
       refresh_toast_description: 'Fetching latest system status...',
       postgres_connected: 'Connected', // Should be MySQL
-      postgres_disconnected: 'Disconnected - Check logs!', // Should be MySQL
-      mysql_connected: 'Conectado', // Added
-      mysql_disconnected: 'Desconectado - Verifique os logs!', // Added
+      postgres_disconnected: 'Disconnected - Check logs!', // Added
       live_logs_title: 'Live Logs (Placeholder)',
       live_logs_description: 'This section would display real-time system logs.',
     },
