@@ -213,7 +213,7 @@ const getSubscriberData = (id: string | string[] | undefined) => {
         ],
     };
 
-    if (id === 'sub-1') {
+    if (id === 'sub-1') { // Alice Wonderland
         baseData.name = 'Alice Wonderland';
         baseData.address = '123 Fantasy Lane, Wonderland, WND 12345';
         baseData.pointOfReference = 'Next to the Mad Hatter Tea Party';
@@ -229,7 +229,7 @@ const getSubscriberData = (id: string | string[] | undefined) => {
              { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
              { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
          ];
-    } else if (id === 'sub-2') {
+    } else if (id === 'sub-2') { // Bob The Builder Inc.
         baseData.name = 'Bob The Builder Inc.';
         baseData.type = 'Commercial';
         baseData.companyName = 'Bob The Builder Inc.';
@@ -299,6 +299,7 @@ const OverviewDetailItem: React.FC<{icon: React.ElementType, label: string, valu
     </div>
   );
 };
+
 const OverviewSection: React.FC<{title: string, icon: React.ElementType, children: React.ReactNode}> = ({title, icon: Icon, children}) => {
     const iconSize = "h-3 w-3";
     return (
@@ -523,7 +524,6 @@ function SubscriberProfilePage() {
     }
   };
 
-
   if (!subscriber) {
     return (
         <div className="flex flex-col gap-6">
@@ -534,6 +534,7 @@ function SubscriberProfilePage() {
         </div>
     );
   }
+  
   // The main return of the component
   return (
     <div className="flex flex-col gap-6">
