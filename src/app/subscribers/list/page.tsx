@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Card, CardContent } from "@/components/ui/card"; 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; 
 import {
   Table,
   TableBody,
@@ -30,6 +30,8 @@ import type { Subscriber, SubscriberStatus, SubscriberType } from '@/types/subsc
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge'; 
 import { cn } from '@/lib/utils';
+import { listSubscribers as fetchSubscribers } from '@/services/mysql/subscribers'; // Renamed to avoid conflict
+
 
 type FilterState = {
     type: ('Residential' | 'Commercial')[];
@@ -93,15 +95,26 @@ export default function ListSubscribersPage() {
     const iconSize = "h-3 w-3";
     const statIconSize = "h-4 w-4 text-muted-foreground"; 
 
-    const [subscribers, setSubscribers] = React.useState<Subscriber[]>(placeholderSubscribers);
+    const [subscribers, setSubscribers] = React.useState<Subscriber[]>([]); // Initialize with empty array
 
     React.useEffect(() => {
       setIsLoading(true);
-      setTimeout(() => {
-        setSubscribers(placeholderSubscribers);
-        setIsLoading(false);
-      }, 500); 
-    }, []);
+      fetchSubscribers()
+        .then(data => {
+          setSubscribers(data);
+          console.log('Subscribers response', data);
+        })
+        .catch(error => {
+          console.error("Failed to fetch subscribers:", error);
+          toast({
+            title: "Error",
+            description: "Failed to load subscriber data.",
+            variant: "destructive",
+          });
+          setSubscribers(placeholderSubscribers); // Fallback to placeholder on error
+        })
+        .finally(() => setIsLoading(false));
+    }, [toast]);
 
     const filteredSubscribers = React.useMemo(() => {
         return subscribers.filter(sub => {
@@ -131,11 +144,22 @@ export default function ListSubscribersPage() {
     const handleRefresh = async () => {
         setIsLoading(true);
         toast({ title: t('list_subscribers.refresh_start_toast') });
-        setTimeout(() => {
-            setSubscribers(placeholderSubscribers); 
-            toast({ title: t('list_subscribers.refresh_end_toast') });
+        try {
+          const data = await fetchSubscribers();
+          setSubscribers(data);
+          console.log('Subscribers response', data);
+          toast({ title: t('list_subscribers.refresh_end_toast') });
+        } catch (error) {
+           console.error("Failed to refresh subscribers:", error);
+           toast({
+             title: "Error Refreshing",
+             description: "Failed to refresh subscriber data.",
+             variant: "destructive",
+           });
+           setSubscribers(placeholderSubscribers); // Fallback
+        } finally {
             setIsLoading(false);
-        }, 1000);
+        }
     };
 
   return (
@@ -223,7 +247,7 @@ export default function ListSubscribersPage() {
                         checked={filters.status.includes(status)}
                         onCheckedChange={(checked) => handleFilterChange('status', status, !!checked)}
                      >
-                        {t(`list_subscribers.filter_status_${status.toLowerCase()}` as any, status)}
+                        {t(`list_subscribers.status_${status.toLowerCase()}` as any, status)}
                      </DropdownMenuCheckboxItem>
                  ))}
               </DropdownMenuContent>
