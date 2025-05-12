@@ -346,12 +346,12 @@ function VlanManagementPage() {
                     <TableRow key={vlan.id}>
                       <TableCell className="font-mono text-muted-foreground text-xs">{vlan.vlanId}</TableCell>
                       <TableCell className="text-muted-foreground text-xs">{vlan.description || '-'}</TableCell>
-                      <TableCell className="text-xs">
+                      <TableCell className="text-center">
                         <Badge variant={vlan.isTagged ? 'default' : 'secondary'} className={`text-xs ${vlan.isTagged ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
                            {vlan.isTagged ? t('vlan_page.tagged', 'Tagged') : t('vlan_page.untagged', 'Untagged')}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-xs">
+                      <TableCell className="text-center">
                          <Badge variant={vlan.status === 'Active' ? 'default' : 'secondary'} className={`text-xs ${vlan.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                            {t(`vlan_page.status_${vlan.status.toLowerCase()}` as any, vlan.status)}
                          </Badge>

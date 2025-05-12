@@ -270,8 +270,8 @@ export default function WarehousesPage() {
                   <TableHead className="w-16 text-xs">{t('inventory_warehouses.table_header_id', 'ID')}</TableHead>
                   <TableHead className="text-xs">{t('inventory_warehouses.table_header_name', 'Name')}</TableHead>
                   <TableHead className="text-xs">{t('inventory_warehouses.table_header_address', 'Address')}</TableHead>
-                  <TableHead className="text-xs text-center">{t('inventory_warehouses.table_header_is_main', 'Main')}</TableHead>
-                  <TableHead className="text-xs text-center">{t('inventory_warehouses.table_header_items', 'Items')}</TableHead>
+                  <TableHead className="text-xs">{t('inventory_warehouses.table_header_is_main', 'Main')}</TableHead>
+                  <TableHead className="text-xs">{t('inventory_warehouses.table_header_items', 'Items')}</TableHead>
                   <TableHead className="text-right w-28 text-xs">{t('inventory_warehouses.table_header_actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -340,3 +340,4 @@ export default function WarehousesPage() {
     </div>
   );
 }
+

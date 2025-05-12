@@ -306,39 +306,39 @@ function PoPsPage() {
               <table className="min-w-full divide-y divide-border">
                 <thead className="bg-muted/50">
                   <tr>
-                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-16">
+                     <TableHead className="w-16">
                        {t('pops.table_header_id')}
-                     </th>
-                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                     </TableHead>
+                     <TableHead>
                        {t('pops.table_header_name')}
-                     </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                     </TableHead>
+                    <TableHead>
                       {t('pops.table_header_location')}
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    </TableHead>
+                    <TableHead>
                       {t('pops.table_header_status')}
-                    </th>
-                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-24">
+                    </TableHead>
+                     <TableHead className="w-24">
                        {t('pops.table_header_created')}
-                     </th>
-                    <th scope="col" className="relative px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider w-28">
+                     </TableHead>
+                    <TableHead className="relative w-28 text-right">
                       {t('pops.table_header_actions')}
-                    </th>
+                    </TableHead>
                   </tr>
                 </thead>
                 <tbody className="bg-background divide-y divide-border">
                   {pops.map((pop) => (
                     <tr key={pop.id}>
-                       <td className="px-6 py-4 whitespace-nowrap text-xs font-mono text-muted-foreground">
+                       <TableCell className="px-6 py-4 whitespace-nowrap text-xs font-mono text-muted-foreground">
                         {pop.id.toString().substring(0, 8)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-xs font-medium text-foreground">
+                      </TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs font-medium text-foreground">
                         {pop.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
+                      </TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
                         {pop.location}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-xs">
+                      </TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             pop.status && pop.status.toLowerCase() === "active"
@@ -350,11 +350,11 @@ function PoPsPage() {
                         >
                           {pop.status ? t(`pops.form_status_${pop.status.toLowerCase()}` as any, pop.status) : t('pops.status_unknown')}
                         </span>
-                      </td>
-                       <td className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
+                      </TableCell>
+                       <TableCell className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
                          {pop.createdAt instanceof Date ? pop.createdAt.toLocaleDateString() : 'N/A'}
-                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-1">
+                       </TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-1">
                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditPop(pop)} disabled={updatePopMutation.isPending}>
                            <Pencil className={iconSize} />
                            <span className="sr-only">Edit PoP</span>
@@ -390,7 +390,7 @@ function PoPsPage() {
                              </AlertDialogFooter>
                            </AlertDialogContent>
                          </AlertDialog>
-                      </td>
+                      </TableCell>
                     </tr>
                   ))}
                 </tbody>
@@ -404,3 +404,4 @@ function PoPsPage() {
     </div>
   );
 }
+

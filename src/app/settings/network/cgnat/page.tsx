@@ -299,7 +299,7 @@ export default function CgnatPage() {
                   <TableHead className="text-xs">{t('cgnat_page.table_header_num_ports', '# of Ports')}</TableHead>
                   <TableHead className="text-xs">{t('cgnat_page.table_header_protocol', 'Protocol')}</TableHead>
                   <TableHead className="text-xs">{t('cgnat_page.table_header_status', 'Status')}</TableHead>
-                  <TableHead className="text-right w-32 text-xs">{t('cgnat_page.table_header_actions', 'Actions')}</TableHead> {/* Increased width for actions */}
+                  <TableHead className="w-32 text-xs text-right">{t('cgnat_page.table_header_actions', 'Actions')}</TableHead> {/* Increased width for actions */}
                 </TableRow>
               </TableHeader>
               <TableBody>

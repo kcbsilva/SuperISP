@@ -298,11 +298,11 @@ export default function OltsAndOnxsPage() {
                                 <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_manufacturer', 'Manufacturer')}</TableHead>
                                 <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_model', 'Model')}</TableHead>
                                 <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_technology', 'Technology')}</TableHead>
-                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_slots', 'Slots')}</TableHead>
-                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_ports', 'PON Ports')}</TableHead>
-                                <TableHead className="text-xs font-semibold text-center">{t('fttx_olts.table_header_onxs', 'ONXs (Connected / Max)')}</TableHead>
+                                <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_slots', 'Slots')}</TableHead>
+                                <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_ports', 'PON Ports')}</TableHead>
+                                <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_onxs', 'ONXs (Connected / Max)')}</TableHead>
                                 <TableHead className="text-xs font-semibold">{t('fttx_olts.table_header_ip_address', 'IP Address')}</TableHead>
-                                <TableHead className="text-right w-32 text-xs font-semibold">{t('fttx_olts.table_header_actions', 'Actions')}</TableHead>
+                                <TableHead className="w-32 text-xs font-semibold text-right">{t('fttx_olts.table_header_actions', 'Actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -391,7 +391,7 @@ export default function OltsAndOnxsPage() {
                                         <TableHead className="text-xs font-semibold">{t('fttx_olts.onx_table_fdh_id', 'FDH ID')}</TableHead>
                                         <TableHead className="text-xs font-semibold">{t('fttx_olts.onx_table_light_level_tx_rx', 'Light Level (TX/RX)')}</TableHead>
                                         <TableHead className="text-xs font-semibold">{t('fttx_olts.onx_table_status', 'Status')}</TableHead>
-                                        <TableHead className="text-right w-20 text-xs font-semibold">{t('fttx_olts.onx_table_actions', 'Actions')}</TableHead>
+                                        <TableHead className="w-20 text-xs font-semibold text-right">{t('fttx_olts.onx_table_actions', 'Actions')}</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -448,3 +448,4 @@ export default function OltsAndOnxsPage() {
     </div>
   );
 }
+

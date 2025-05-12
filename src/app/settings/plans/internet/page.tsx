@@ -143,7 +143,7 @@ export default function InternetPlansPage() {
                         'Connection Type'
                       )}
                     </TableHead>
-                    <TableHead className="text-right text-xs"> 
+                    <TableHead className="text-xs"> 
                       {t(
                         'settings_plans.table_header_client_count',
                         'Client Count'
@@ -163,12 +163,12 @@ export default function InternetPlansPage() {
                       <TableCell className="text-xs">{plan.uploadSpeed}</TableCell> 
                       <TableCell className="text-xs">{plan.downloadSpeed}</TableCell> 
                       <TableCell className="text-xs">{plan.price}</TableCell> 
-                      <TableCell>
+                      <TableCell className="text-center">
                         <Badge variant={getConnectionTypeBadgeVariant(plan.connectionType)} className="text-xs"> 
                           {t(`settings_plans.connection_type_${plan.connectionType.toLowerCase()}` as any, plan.connectionType)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right text-xs"> 
+                      <TableCell className="text-center text-xs"> 
                         {plan.clientCount}
                       </TableCell>
                     </TableRow>
@@ -189,3 +189,4 @@ export default function InternetPlansPage() {
     </div>
   );
 }
+

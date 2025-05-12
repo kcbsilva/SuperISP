@@ -355,7 +355,7 @@ export default function CashBookPage() {
                     className="w-[120px] cursor-pointer hover:bg-muted/80"
                     onClick={() => handleSort('date')}
                   >
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 justify-center">
                         {t('cash_book.table_header_date', 'Date')}
                         {sortColumn === 'date' && <ArrowUpDown className={smallIconSize} />}
                     </div>
@@ -364,37 +364,37 @@ export default function CashBookPage() {
                   <TableHead>{t('cash_book.table_header_category', 'Category')}</TableHead>
                   <TableHead>{t('cash_book.table_header_type', 'Type')}</TableHead>
                   <TableHead
-                     className="text-right cursor-pointer hover:bg-muted/80"
+                     className="cursor-pointer hover:bg-muted/80"
                      onClick={() => handleSort('amount')}
                   >
-                     <div className="flex items-center justify-end gap-1">
+                     <div className="flex items-center justify-center gap-1"> {/* Centered amount header */}
                         {t('cash_book.table_header_amount', 'Amount')}
                         {sortColumn === 'amount' && <ArrowUpDown className={smallIconSize} />}
                     </div>
                   </TableHead>
                   <TableHead>{t('cash_book.table_header_reference', 'Reference')}</TableHead>
-                  <TableHead className="text-right w-28">{t('cash_book.table_header_actions', 'Actions')}</TableHead>
+                  <TableHead className="w-28">{t('cash_book.table_header_actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredAndSortedEntries.length > 0 ? (
                   filteredAndSortedEntries.map((entry) => (
                     <TableRow key={entry.id}>
-                      <TableCell>{format(entry.date, 'PP', { locale: dateLocales[locale] || enUS })}</TableCell>
+                      <TableCell className="text-center">{format(entry.date, 'PP', { locale: dateLocales[locale] || enUS })}</TableCell>
                       <TableCell className="font-medium">{entry.description}</TableCell>
                       <TableCell className="text-muted-foreground">{entry.category}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         <Badge variant={entry.type === 'Income' ? 'default' : 'secondary'}
                           className={entry.type === 'Income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
                         >
                           {t(`cash_book.entry_type_${entry.type.toLowerCase()}` as any, entry.type)}
                         </Badge>
                       </TableCell>
-                      <TableCell className={`text-right font-semibold ${entry.type === 'Income' ? 'text-green-600' : 'text-red-600'}`}>
+                      <TableCell className={`text-center font-semibold ${entry.type === 'Income' ? 'text-green-600' : 'text-red-600'}`}>
                         {formatCurrency(entry.amount)}
                       </TableCell>
                       <TableCell className="text-muted-foreground">{entry.reference || '-'}</TableCell>
-                       <TableCell className="text-right">
+                       <TableCell className="text-center">
                             <Button variant="ghost" size="icon" className="h-8 w-8">
                                 <Edit className={iconSize} />
                                 <span className="sr-only">{t('cash_book.action_edit', 'Edit')}</span>
@@ -433,3 +433,4 @@ export default function CashBookPage() {
     </div>
   );
 }
+
