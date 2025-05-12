@@ -30,8 +30,8 @@ import {
   Phone, // Icon for Landline Plan
   Combine, // Icon for Combos Plan
   ListFilter, // Icon for Entry Categories
-  UserPlus, // For "New" subscriber
-  UsersRound, // For "List" subscribers,
+  // UserPlus, // For "New" subscriber - Removed
+  // UsersRound, // For "List" subscribers - Removed
   Archive, // Added for Inventory
   Factory, // Icon for Manufacturers
   Package as PackageIcon, // Icon for Products
@@ -138,8 +138,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined' && theme) {
       const newFillColor = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-        ? 'hsl(var(--accent))' // Use Dark Blue for dark theme
-        : 'hsl(var(--primary))'; // Use Teal for light theme
+        ? 'hsl(var(--accent))' 
+        : 'hsl(var(--primary))'; 
       setLogoFillColor(newFillColor);
     }
   }, [theme]);
@@ -487,7 +487,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               {/* Service Calls Menu Item - MOVED HERE */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={isActive('/service-calls')} tooltip={t('sidebar.service_calls', 'Service Calls')}>
-                  <Link href="#" className="flex items-center gap-2">
+                  <Link href="/service-calls" className="flex items-center gap-2">
                     <Wrench className={iconSize}/>
                     <span>{t('sidebar.service_calls', 'Service Calls')}</span>
                   </Link>
