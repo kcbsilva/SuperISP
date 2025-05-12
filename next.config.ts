@@ -18,6 +18,18 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config, { isServer }) => {
+    // Fix for 'net', 'tls', 'fs' modules not found in client-side bundle due to mysql2
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...(config.resolve.fallback || {}), // Spread existing fallbacks if any
+        net: false,
+        tls: false,
+        fs: false,
+      };
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
