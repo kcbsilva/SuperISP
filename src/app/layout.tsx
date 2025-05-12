@@ -516,14 +516,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={isActive('/service-calls')} size="sm" tooltip={t('sidebar.service_calls', 'All Service Calls')}>
-                           <Link href="/service-calls" className="flex items-center gap-2">
-                             <Wrench className={subIconSize + " text-muted-foreground"} /> {/* Changed icon */}
-                             <span>{t('sidebar.service_calls_all', 'All Service Calls')}</span>
-                           </Link>
-                        </SidebarMenuButton>
-                     </SidebarMenuItem>
                   </SidebarMenuSubContent>
                 </SidebarMenuSub>
               </SidebarMenuItem>
