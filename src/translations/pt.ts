@@ -19,6 +19,7 @@ const pt = {
     maps_elements_foscs: 'CEOs',
     maps_elements_peds: 'PEDs',
     maps_elements_accessories: 'Acessórios',
+    maps_elements_splitters: 'Splitters', // Added
     maps_elements_towers: 'Torres',
     maps_elements_cables: 'Cabos',
     maps_map: 'Mapa',
@@ -532,6 +533,8 @@ const pt = {
     no_fdhs_found: 'Nenhuma CTO encontrada. Elas são tipicamente adicionadas pela interface do mapa.',
     list_title_foscs: 'Lista de CEOs',
     no_foscs_found: 'Nenhuma CEO encontrada. Elas são tipicamente adicionadas pela interface do mapa.',
+    list_title_splitters: 'Lista de Splitters', // Added
+    no_splitters_found: 'Nenhum splitter encontrado. Eles são tipicamente adicionados pela interface do mapa.', // Added
     fosc_table_header_gps: 'Coordenadas GPS',
     fosc_table_header_type: 'Tipo',
     fosc_type_aerial: 'Aéreo',
@@ -607,6 +610,8 @@ const pt = {
     cable_template_modal_not_implemented_desc: 'Gerenciamento de modelos para Cabos ainda não está disponível.',
     accessory_template_button: 'Modelos de Acessórios',
     accessory_template_modal_not_implemented_desc: 'Gerenciamento de modelos para Acessórios ainda não está disponível.',
+    splitter_template_button: 'Modelos de Splitters', // Added
+    splitter_template_modal_not_implemented_desc: 'Gerenciamento de modelos para Splitters ainda não está disponível.', // Added
     fdh_template_button: 'Modelos de CTO',
     // FDH Template Modal translations
     fdh_manage_templates_title: 'Gerenciar Modelos de CTO',
@@ -615,7 +620,7 @@ const pt = {
     fdh_template_form_manufacturer_placeholder: 'Selecionar Fabricante',
     fdh_template_form_model_label: 'Modelo',
     fdh_template_form_model_placeholder: 'ex: OptiSheath',
-    fdh_template_form_port_capacity_label: 'Capacidade de Portas',
+    fdh_template_form_max_port_capacity_label: 'Capacidade Máx. de Portas', // Updated from port_capacity
     fdh_template_form_type_label: 'Tipo de CTO',
     fdh_template_form_type_placeholder: 'Selecionar Tipo',
     fdh_template_form_cancel_button: 'Cancelar',
@@ -624,7 +629,7 @@ const pt = {
     fdh_template_add_success_desc: 'Modelo para {model} por {manufacturer} adicionado.',
     existing_fdh_templates_list_title: 'Modelos de CTO Existentes',
     no_existing_fdh_templates: 'Nenhum modelo de CTO existente.',
-    fdh_template_info_ports: 'Portas',
+    fdh_template_info_max_ports: 'Portas Máx.', // Updated from info_ports
     fdh_template_info_type: 'Tipo',
     // Poll Template Modal translations
     poll_manage_templates_title: 'Gerenciar Modelos de Poste',

@@ -7,11 +7,11 @@ import { useState, useEffect, type ReactNode } from 'react';
 // Import specific icons
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, ChevronDown, ChevronRight, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
+  Split, // Added for VLAN and Splitters
   Code, // Added for IPv4/6
   Router as RouterIcon, // Added for Devices, aliased
   Share2, // Added for CGNAT
   Server as ServerIcon, // Added for RADIUS & Services, aliased to avoid conflict
-  Split, // Added for VLAN
   DollarSign, // Added for Finances
   BarChart3, // Added for Reports
   Plug, // Added for Integrations
@@ -293,6 +293,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                               <Link href="/maps/elements/accessories" className="flex items-center gap-2">
                                 <Puzzle className={subIconSize + " text-muted-foreground"} />
                                 <span>{t('sidebar.maps_elements_accessories')}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/splitters')} size="sm" tooltip={t('sidebar.maps_elements_splitters', 'Splitters')}>
+                              <Link href="/maps/elements/splitters" className="flex items-center gap-2">
+                                <Split className={subIconSize + " text-muted-foreground"} />
+                                <span>{t('sidebar.maps_elements_splitters', 'Splitters')}</span>
                               </Link>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
@@ -928,3 +936,4 @@ export default function RootLayout({
     </html>
   );
 }
+

@@ -19,6 +19,7 @@ const fr = {
     maps_elements_foscs: 'CEOs',
     maps_elements_peds: 'PEDs',
     maps_elements_accessories: 'Accessoires',
+    maps_elements_splitters: 'Répartiteurs', // Added
     maps_elements_towers: 'Tours',
     maps_elements_cables: 'Câbles',
     maps_map: 'Carte',
@@ -533,6 +534,8 @@ const fr = {
     no_fdhs_found: 'Aucune CTO trouvée. Elles sont généralement ajoutées via l\'interface de la carte.',
     list_title_foscs: 'Liste des CEOs',
     no_foscs_found: 'Aucune CEO trouvée. Elles sont généralement ajoutées via l\'interface de la carte.',
+    list_title_splitters: 'Liste des Répartiteurs', // Added
+    no_splitters_found: 'Aucun répartiteur trouvé. Ils sont généralement ajoutés via l\'interface de la carte.', // Added
     fosc_table_header_gps: 'Coordonnées GPS',
     fosc_table_header_type: 'Type',
     fosc_type_aerial: 'Aérien',
@@ -608,6 +611,8 @@ const fr = {
     cable_template_modal_not_implemented_desc: 'La gestion des modèles pour les Câbles n\'est pas encore disponible.',
     accessory_template_button: 'Modèles d\'Accessoires',
     accessory_template_modal_not_implemented_desc: 'La gestion des modèles pour les Accessoires n\'est pas encore disponible.',
+    splitter_template_button: 'Modèles de Répartiteurs', // Added
+    splitter_template_modal_not_implemented_desc: 'La gestion des modèles pour les Répartiteurs n\'est pas encore disponible.', // Added
     fdh_template_button: 'Modèles de CTO',
     // FDH Template Modal translations
     fdh_manage_templates_title: 'Gérer les Modèles de CTO',
@@ -616,7 +621,7 @@ const fr = {
     fdh_template_form_manufacturer_placeholder: 'Sélectionner Fabricant',
     fdh_template_form_model_label: 'Modèle',
     fdh_template_form_model_placeholder: 'ex: OptiSheath',
-    fdh_template_form_port_capacity_label: 'Capacité de Ports',
+    fdh_template_form_max_port_capacity_label: 'Capacité Max de Ports', // Updated from port_capacity
     fdh_template_form_type_label: 'Type de CTO',
     fdh_template_form_type_placeholder: 'Sélectionner Type',
     fdh_template_form_cancel_button: 'Annuler',
@@ -625,7 +630,7 @@ const fr = {
     fdh_template_add_success_desc: 'Modèle pour {model} par {manufacturer} ajouté.',
     existing_fdh_templates_list_title: 'Modèles de CTO Existants',
     no_existing_fdh_templates: 'Aucun modèle de CTO existant.',
-    fdh_template_info_ports: 'Ports',
+    fdh_template_info_max_ports: 'Ports Max', // Updated from info_ports
     fdh_template_info_type: 'Type',
     // Poll Template Modal translations
     poll_manage_templates_title: 'Gérer les Modèles de Poteaux',
@@ -735,7 +740,7 @@ const fr = {
   },
   entry_categories: {
     title: 'Catégories d\'Écritures',
-    add_category_button: 'Ajouter une Catégorie',
+    add_category_button: 'Ajouter une Catégorie', // Corrected
     refresh_button: 'Actualiser',
     search_placeholder: 'Rechercher des catégories...',
     table_header_category_number: 'N° Catégorie',
@@ -1052,3 +1057,4 @@ const fr = {
 };
 
 export default fr;
+

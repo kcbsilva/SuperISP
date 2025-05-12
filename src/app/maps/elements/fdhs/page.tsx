@@ -66,7 +66,7 @@ const placeholderFdhs: Fdh[] = [
 const fdhTemplateSchema = z.object({
   manufacturer: z.string().min(1, "Manufacturer is required."),
   model: z.string().min(1, "Model is required."),
-  portCapacity: z.coerce.number().int().positive("Port capacity must be a positive number."),
+  maxPortCapacity: z.coerce.number().int().positive("Max port capacity must be a positive number."),
   fdhType: z.enum(['Aerial', 'Underground'], { required_error: "FDH type is required."}),
 });
 type FdhTemplateFormData = z.infer<typeof fdhTemplateSchema>;
@@ -78,8 +78,8 @@ interface FdhTemplate extends FdhTemplateFormData {
 const placeholderManufacturers = ["Corning", "CommScope", "Prysmian", "Furukawa", "TE Connectivity"];
 
 const placeholderExistingFdhTemplates: FdhTemplate[] = [
-  { id: 'tpl-fdh-1', manufacturer: 'Corning', model: 'OptiSheath® MultiPort Terminal', portCapacity: 16, fdhType: 'Aerial' },
-  { id: 'tpl-fdh-2', manufacturer: 'CommScope', model: 'FACT Pedestal', portCapacity: 32, fdhType: 'Underground' },
+  { id: 'tpl-fdh-1', manufacturer: 'Corning', model: 'OptiSheath® MultiPort Terminal', maxPortCapacity: 16, fdhType: 'Aerial' },
+  { id: 'tpl-fdh-2', manufacturer: 'CommScope', model: 'FACT Pedestal', maxPortCapacity: 32, fdhType: 'Underground' },
 ];
 
 
@@ -94,7 +94,7 @@ export default function FdhsPage() {
     defaultValues: {
       manufacturer: '',
       model: '',
-      portCapacity: undefined,
+      maxPortCapacity: undefined,
       fdhType: undefined,
     },
   });
@@ -178,10 +178,10 @@ export default function FdhsPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <FormField
                                         control={templateForm.control}
-                                        name="portCapacity"
+                                        name="maxPortCapacity"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>{t('maps_elements.fdh_template_form_port_capacity_label', 'Port Capacity')}</FormLabel>
+                                                <FormLabel>{t('maps_elements.fdh_template_form_max_port_capacity_label', 'Max Port Capacity')}</FormLabel>
                                                 <FormControl>
                                                     <Input type="number" placeholder="e.g., 16" {...field} />
                                                 </FormControl>
@@ -234,7 +234,7 @@ export default function FdhsPage() {
                                 <div key={template.id} className="text-xs p-1.5 border-b last:border-b-0 hover:bg-background rounded-sm cursor-default">
                                     <div className="font-medium">{template.manufacturer} - {template.model}</div>
                                     <div className="text-muted-foreground">
-                                    {t('maps_elements.fdh_template_info_ports')}: {template.portCapacity}, {t('maps_elements.fdh_template_info_type')}: {t(`maps_elements.fdh_type_${template.fdhType.toLowerCase()}` as any, template.fdhType)}
+                                    {t('maps_elements.fdh_template_info_max_ports')}: {template.maxPortCapacity}, {t('maps_elements.fdh_template_info_type')}: {t(`maps_elements.fdh_type_${template.fdhType.toLowerCase()}` as any, template.fdhType)}
                                     </div>
                                 </div>
                                 ))

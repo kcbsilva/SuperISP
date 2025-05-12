@@ -19,6 +19,7 @@ const en = {
     maps_elements_foscs: 'FOSCs',
     maps_elements_peds: 'PEDs',
     maps_elements_accessories: 'Accessories',
+    maps_elements_splitters: 'Splitters', // Added
     maps_elements_towers: 'Towers',
     maps_elements_cables: 'Cables',
     maps_map: 'Map',
@@ -541,6 +542,8 @@ const en = {
     no_fdhs_found: 'No FDHs found. They are typically added via the map interface.',
     list_title_foscs: 'FOSC List',
     no_foscs_found: 'No FOSCs found. They are typically added via the map interface.',
+    list_title_splitters: 'Splitter List', // Added
+    no_splitters_found: 'No splitters found. They are typically added via the map interface.', // Added
     fosc_table_header_gps: 'GPS Coordinates',
     fosc_table_header_type: 'Type',
     fosc_type_aerial: 'Aerial',
@@ -616,6 +619,8 @@ const en = {
     cable_template_modal_not_implemented_desc: 'Managing templates for Cables is not yet available.',
     accessory_template_button: 'Accessory Templates',
     accessory_template_modal_not_implemented_desc: 'Managing templates for Accessories is not yet available.',
+    splitter_template_button: 'Splitter Templates', // Added
+    splitter_template_modal_not_implemented_desc: 'Managing templates for Splitters is not yet available.', // Added
     fdh_template_button: 'FDH Templates',
     // FDH Template Modal translations
     fdh_manage_templates_title: 'Manage FDH Templates',
@@ -624,7 +629,7 @@ const en = {
     fdh_template_form_manufacturer_placeholder: 'Select Manufacturer',
     fdh_template_form_model_label: 'Model',
     fdh_template_form_model_placeholder: 'e.g., OptiSheath',
-    fdh_template_form_port_capacity_label: 'Port Capacity',
+    fdh_template_form_max_port_capacity_label: 'Max Port Capacity', // Updated from port_capacity
     fdh_template_form_type_label: 'FDH Type',
     fdh_template_form_type_placeholder: 'Select Type',
     fdh_template_form_cancel_button: 'Cancel',
@@ -633,7 +638,7 @@ const en = {
     fdh_template_add_success_desc: 'Template for {model} by {manufacturer} added.',
     existing_fdh_templates_list_title: 'Existing FDH Templates',
     no_existing_fdh_templates: 'No existing FDH templates.',
-    fdh_template_info_ports: 'Ports',
+    fdh_template_info_max_ports: 'Max Ports', // Updated from info_ports
     fdh_template_info_type: 'Type',
     // Poll Template Modal translations
     poll_manage_templates_title: 'Manage Poll Templates',
@@ -1060,3 +1065,4 @@ const en = {
 };
 
 export default en;
+
