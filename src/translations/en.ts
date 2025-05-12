@@ -36,7 +36,6 @@ const en = {
     service_calls: 'Service Calls',
     service_calls_dashboard: 'Dashboard',
     service_calls_service_types: 'Service Types',
-    service_calls_all: 'All Service Calls',
     reports: 'Reports',
     hr: 'HR',
     hr_employees: 'Employees',
@@ -1307,6 +1306,7 @@ const en = {
       status_in_progress: 'In Progress',
       status_resolved: 'Resolved',
       status_canceled: 'Canceled',
+      status_all_tab: 'All',
       no_calls_found: 'No service calls found.',
       new_call_not_implemented_title: 'New Service Call (Not Implemented)',
       new_call_not_implemented_desc: 'Functionality to create a new service call is not yet available.',
@@ -1319,7 +1319,14 @@ const en = {
     },
     service_calls_dashboard: {
       title: 'Service Calls Overview',
-      placeholder: 'Dashboard content for service calls will be displayed here.'
+      stats_opened_month: 'Opened This Month',
+      stats_resolved: 'Resolved Calls',
+      stats_pending: 'Pending Calls',
+      stats_avg_resolution: 'Avg. Resolution Time',
+      search_placeholder: 'Search calls by ID, subscriber, reason...',
+      filter_button: 'Filter Status',
+      filter_status_label: 'Filter by Status',
+      no_calls_found_filtered: 'No service calls found matching your current filters and tab selection.',
     },
     service_types: {
       add_type_not_implemented_title: 'Add Service Type (Not Implemented)',
@@ -1331,3 +1338,4 @@ const en = {
 };
 
 export default en;
+

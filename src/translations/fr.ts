@@ -43,7 +43,6 @@ const fr = {
     service_calls: 'Appels de Service',
     service_calls_dashboard: 'Tableau de Bord',
     service_calls_service_types: 'Types de Service',
-    service_calls_all: 'Tous les Appels',
     reports: 'Rapports',
     hr: 'RH',
     hr_employees: 'Employés',
@@ -439,6 +438,9 @@ const fr = {
      notes_card_title: 'Notes',
      notes_add_button: 'Ajouter une note',
      notes_author_label: 'Auteur',
+     notes_none: 'Aucune note trouvée pour cet abonné.',
+     history_card_title: 'Historique',
+     history_user_label: 'Utilisateur',
      notes_none: 'Aucune note trouvée pour cet abonné.',
      history_card_title: 'Historique',
      history_user_label: 'Utilisateur',
@@ -1299,6 +1301,7 @@ const fr = {
       status_in_progress: 'En cours',
       status_resolved: 'Résolu',
       status_canceled: 'Annulé',
+      status_all_tab: 'Tous',
       no_calls_found: 'Aucun appel de service trouvé.',
       new_call_not_implemented_title: 'Nouvel Appel de Service (Non implémenté)',
       new_call_not_implemented_desc: 'La fonctionnalité pour créer un nouvel appel de service n\'est pas encore disponible.',
@@ -1311,7 +1314,14 @@ const fr = {
     },
     service_calls_dashboard: {
       title: 'Aperçu des Appels de Service',
-      placeholder: 'Le contenu du tableau de bord des appels de service sera affiché ici.'
+      stats_opened_month: 'Ouverts ce Mois-ci',
+      stats_resolved: 'Appels Résolus',
+      stats_pending: 'Appels en Attente',
+      stats_avg_resolution: 'Temps Résolution Moyen',
+      search_placeholder: 'Rechercher par ID, abonné, raison...',
+      filter_button: 'Filtrer Statut',
+      filter_status_label: 'Filtrer par Statut',
+      no_calls_found_filtered: 'Aucun appel de service trouvé correspondant à vos filtres et onglet actuels.',
     },
     service_types: {
       add_type_not_implemented_title: 'Ajouter Type de Service (Non implémenté)',
@@ -1323,3 +1333,4 @@ const fr = {
 };
 
 export default fr;
+
