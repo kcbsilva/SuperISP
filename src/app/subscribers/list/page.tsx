@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card"; // Added CardHeader
 import {
   Table,
   TableBody,
@@ -451,3 +451,4 @@ export default function ListSubscribersPage() {
     </div>
   );
 }
+
