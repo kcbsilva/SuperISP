@@ -28,7 +28,7 @@ export default function MapPage() {
              <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
                <Tooltip>
                  <TooltipTrigger asChild>
-                   <Button variant="outline" size="icon" className="bg-background">
+                   <Button variant="outline" size="icon" className="bg-background border border-border">
                      <Plus className={iconSize} />
                       <span className="sr-only">{t('maps_page.zoom_in_tooltip', 'Zoom In')}</span>
                    </Button>
@@ -39,7 +39,7 @@ export default function MapPage() {
                </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="bg-background">
+                    <Button variant="outline" size="icon" className="bg-background border border-border">
                       <Minus className={iconSize} />
                       <span className="sr-only">{t('maps_page.zoom_out_tooltip', 'Zoom Out')}</span>
                     </Button>
@@ -50,7 +50,7 @@ export default function MapPage() {
                 </Tooltip>
                  <Tooltip>
                    <TooltipTrigger asChild>
-                     <Button variant="outline" size="icon" className="bg-background">
+                     <Button variant="outline" size="icon" className="bg-background border border-border">
                        <Maximize className={iconSize} />
                        <span className="sr-only">{t('maps_page.fullscreen_tooltip', 'Toggle Fullscreen')}</span>
                      </Button>
@@ -61,7 +61,7 @@ export default function MapPage() {
                  </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="bg-background">
+                      <Button variant="outline" size="icon" className="bg-background border border-border">
                         <Layers className={iconSize} />
                         <span className="sr-only">{t('maps_page.layers_tooltip', 'Manage Layers')}</span>
                       </Button>
@@ -75,7 +75,7 @@ export default function MapPage() {
               <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
                  <Tooltip>
                    <TooltipTrigger asChild>
-                     <Button variant="outline" size="icon" className="bg-background">
+                     <Button variant="outline" size="icon" className="bg-background border border-border">
                        <Cable className={iconSize} />
                        <span className="sr-only">{t('maps_page.add_cable_tooltip', 'Add Cable')}</span>
                      </Button>
@@ -86,7 +86,7 @@ export default function MapPage() {
                  </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="bg-background">
+                      <Button variant="outline" size="icon" className="bg-background border border-border">
                         <Warehouse className={iconSize} />
                         <span className="sr-only">{t('maps_page.add_fosc_tooltip', 'Add FOSC')}</span>
                       </Button>
@@ -97,7 +97,7 @@ export default function MapPage() {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="bg-background">
+                      <Button variant="outline" size="icon" className="bg-background border border-border">
                         <Box className={iconSize} />
                         <span className="sr-only">{t('maps_page.add_fdh_tooltip', 'Add FDH')}</span>
                       </Button>
@@ -108,7 +108,7 @@ export default function MapPage() {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="bg-background">
+                      <Button variant="outline" size="icon" className="bg-background border border-border">
                         <Power className={iconSize} />
                         <span className="sr-only">{t('maps_page.add_poll_tooltip', 'Add Hydro Poll')}</span>
                       </Button>
@@ -119,7 +119,7 @@ export default function MapPage() {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="bg-background">
+                      <Button variant="outline" size="icon" className="bg-background border border-border">
                         <TowerControl className={iconSize} />
                         <span className="sr-only">{t('maps_page.add_tower_tooltip', 'Add Tower')}</span>
                       </Button>
@@ -130,7 +130,7 @@ export default function MapPage() {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="bg-background">
+                      <Button variant="outline" size="icon" className="bg-background border border-border">
                         <Building className={iconSize} />
                         <span className="sr-only">{t('maps_page.add_pop_tooltip', 'Add PoP')}</span>
                       </Button>
@@ -148,3 +148,4 @@ export default function MapPage() {
     </TooltipProvider>
   );
 }
+
