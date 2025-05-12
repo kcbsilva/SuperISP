@@ -534,8 +534,8 @@ const fr = {
     no_fdhs_found: 'Aucune CTO trouvée. Elles sont généralement ajoutées via l\'interface de la carte.',
     list_title_foscs: 'Liste des CEOs',
     no_foscs_found: 'Aucune CEO trouvée. Elles sont généralement ajoutées via l\'interface de la carte.',
-    list_title_splitters: 'Liste des Répartiteurs', // Added
-    no_splitters_found: 'Aucun répartiteur trouvé. Ils sont généralement ajoutés via l\'interface de la carte.', // Added
+    list_title_splitters: 'Liste des Répartiteurs',
+    no_splitters_found: 'Aucun répartiteur trouvé. Ils sont généralement ajoutés via l\'interface de la carte.',
     fosc_table_header_gps: 'Coordonnées GPS',
     fosc_table_header_type: 'Type',
     fosc_type_aerial: 'Aérien',
@@ -569,6 +569,18 @@ const fr = {
     fosc_template_info_cables: 'Câbles',
     fosc_template_info_splices: 'Épissures',
     list_title_peds: 'Liste des PEDs',
+    ped_table_header_description: 'Description',
+    ped_table_header_ped_type: 'Type de PED',
+    ped_type_column: 'Colonne',
+    ped_type_cabinet: 'Armoire',
+    ped_table_header_energized: 'Alimenté?',
+    ped_table_header_manufacturer: 'Fabricant',
+    ped_table_header_gps: 'GPS',
+    ped_table_header_address: 'Adresse (Facultatif)',
+    action_edit_ped: 'Modifier PED',
+    action_delete_ped: 'Supprimer PED',
+    yes_indicator: 'Oui',
+    no_indicator: 'Non',
     no_peds_found: 'Aucun PED trouvé. Ils sont généralement ajoutés via l\'interface de la carte.',
     list_title_accessories: 'Liste des Accessoires',
     no_accessories_found: 'Aucun accessoire trouvé. Ils sont généralement ajoutés via l\'interface de la carte.',
@@ -675,7 +687,7 @@ const fr = {
     combos_page_title: 'Forfaits Combinés',
     add_plan_button_combos: 'Ajouter un forfait Combiné',
     existing_plans_description_combos: 'Gérez vos forfaits de services combinés.',
-    no_plans_found_combos: 'Aucun forfait combiné configuré pour le moment. Cliquez sur "Ajouter un forfait Combiné" pour en créer un.',
+    no_plans_found_combos: 'Aucun forfait combiné configuré pour le moment. Cliquez sur "Ajouter un forfait Combiné" pour en créer un."',
     table_header_id: 'ID',
     table_header_name: 'Nom',
     table_header_upload: 'Téléversement',
@@ -740,11 +752,11 @@ const fr = {
   },
   entry_categories: {
     title: 'Catégories d\'Écritures',
-    add_category_button: 'Ajouter une Catégorie', // Corrected
+    add_category_button: 'Ajouter une Entrée', // Corrected from 'Add Entry Category'
     refresh_button: 'Actualiser',
     search_placeholder: 'Rechercher des catégories...',
     table_header_category_number: 'N° Catégorie',
-    table_header_description: 'Description',
+    table_header_description: 'Description', // Was Name, changed to Description for clarity
     table_header_type: 'Type',
     table_header_actions: 'Actions',
     category_type_income: 'Revenu',
@@ -1057,4 +1069,3 @@ const fr = {
 };
 
 export default fr;
-

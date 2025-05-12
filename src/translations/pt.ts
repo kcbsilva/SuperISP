@@ -533,8 +533,8 @@ const pt = {
     no_fdhs_found: 'Nenhuma CTO encontrada. Elas são tipicamente adicionadas pela interface do mapa.',
     list_title_foscs: 'Lista de CEOs',
     no_foscs_found: 'Nenhuma CEO encontrada. Elas são tipicamente adicionadas pela interface do mapa.',
-    list_title_splitters: 'Lista de Splitters', // Added
-    no_splitters_found: 'Nenhum splitter encontrado. Eles são tipicamente adicionados pela interface do mapa.', // Added
+    list_title_splitters: 'Lista de Splitters',
+    no_splitters_found: 'Nenhum splitter encontrado. Eles são tipicamente adicionados pela interface do mapa.',
     fosc_table_header_gps: 'Coordenadas GPS',
     fosc_table_header_type: 'Tipo',
     fosc_type_aerial: 'Aéreo',
@@ -568,6 +568,18 @@ const pt = {
     fosc_template_info_cables: 'Cabos',
     fosc_template_info_splices: 'Emendas',
     list_title_peds: 'Lista de PEDs',
+    ped_table_header_description: 'Descrição',
+    ped_table_header_ped_type: 'Tipo de PED',
+    ped_type_column: 'Coluna',
+    ped_type_cabinet: 'Gabinete',
+    ped_table_header_energized: 'Energizado?',
+    ped_table_header_manufacturer: 'Fabricante',
+    ped_table_header_gps: 'GPS',
+    ped_table_header_address: 'Endereço (Opcional)',
+    action_edit_ped: 'Editar PED',
+    action_delete_ped: 'Excluir PED',
+    yes_indicator: 'Sim',
+    no_indicator: 'Não',
     no_peds_found: 'Nenhum PED encontrado. Eles são tipicamente adicionados pela interface do mapa.',
     list_title_accessories: 'Lista de Acessórios',
     no_accessories_found: 'Nenhum acessório encontrado. Eles são tipicamente adicionados pela interface do mapa.',
@@ -610,7 +622,7 @@ const pt = {
     cable_template_modal_not_implemented_desc: 'Gerenciamento de modelos para Cabos ainda não está disponível.',
     accessory_template_button: 'Modelos de Acessórios',
     accessory_template_modal_not_implemented_desc: 'Gerenciamento de modelos para Acessórios ainda não está disponível.',
-    splitter_template_button: 'Modelos de Splitters', // Added
+    splitter_template_button: 'Splitter Templates', // Added
     splitter_template_modal_not_implemented_desc: 'Gerenciamento de modelos para Splitters ainda não está disponível.', // Added
     fdh_template_button: 'Modelos de CTO',
     // FDH Template Modal translations
@@ -955,7 +967,7 @@ const pt = {
     onx_status_online: 'Online',
     onx_status_offline: 'Offline',
     onx_status_provisioning: 'Provisionando',
-    onx_actions_menu: 'Ações ONx',
+    onx_actions_menu: 'ONx Actions',
     onx_action_view_details: 'Ver Detalhes',
     onx_action_unprovision: 'Desprovisionar',
     no_onxs_found: 'Nenhum dispositivo ONx encontrado.',
@@ -1014,7 +1026,7 @@ const pt = {
     add_template_button: 'Adicionar Modelo',
     form_title_edit: 'Editar Modelo ONx',
     form_title_add: 'Adicionar Novo Modelo ONx',
-    form_description: 'Configurar scripts de provisionamento para dispositivos ONx.',
+    form_description: 'Configure provisioning scripts for ONx devices.',
     form_template_name_label: 'Nome do Modelo',
     form_template_name_placeholder: 'ex: Fiberhome Residencial',
     form_manufacturer_label: 'Fabricante',
@@ -1165,7 +1177,7 @@ const pt = {
     delete_day_success_title: 'Data de Faturamento Excluída',
     delete_day_success_description: 'Data de faturamento "{dayOfMonth}" excluída.',
     delete_confirm_title: 'Tem certeza?',
-    delete_confirm_description_day: 'Isso excluirá permanentemente a regra da data de faturamento para "{dayOfMonth}".',
+    delete_confirm_description_day: 'Tem certeza que deseja excluir a regra da data de faturamento para "{dayOfMonth}"?',
     delete_confirm_cancel: 'Cancelar',
     delete_confirm_delete: 'Excluir',
   },
@@ -1328,5 +1340,3 @@ const pt = {
 };
 
 export default pt;
-
-    

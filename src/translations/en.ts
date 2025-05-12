@@ -542,8 +542,8 @@ const en = {
     no_fdhs_found: 'No FDHs found. They are typically added via the map interface.',
     list_title_foscs: 'FOSC List',
     no_foscs_found: 'No FOSCs found. They are typically added via the map interface.',
-    list_title_splitters: 'Splitter List', // Added
-    no_splitters_found: 'No splitters found. They are typically added via the map interface.', // Added
+    list_title_splitters: 'Splitter List',
+    no_splitters_found: 'No splitters found. They are typically added via the map interface.',
     fosc_table_header_gps: 'GPS Coordinates',
     fosc_table_header_type: 'Type',
     fosc_type_aerial: 'Aerial',
@@ -577,6 +577,18 @@ const en = {
     fosc_template_info_cables: 'Cables',
     fosc_template_info_splices: 'Splices',
     list_title_peds: 'PED List',
+    ped_table_header_description: 'Description',
+    ped_table_header_ped_type: 'PED Type',
+    ped_type_column: 'Column',
+    ped_type_cabinet: 'Cabinet',
+    ped_table_header_energized: 'Energized?',
+    ped_table_header_manufacturer: 'Manufacturer',
+    ped_table_header_gps: 'GPS',
+    ped_table_header_address: 'Address (Optional)',
+    action_edit_ped: 'Edit PED',
+    action_delete_ped: 'Delete PED',
+    yes_indicator: 'Yes',
+    no_indicator: 'No',
     no_peds_found: 'No PEDs found. They are typically added via the map interface.',
     list_title_accessories: 'Accessory List',
     no_accessories_found: 'No accessories found. They are typically added via the map interface.',
@@ -748,11 +760,11 @@ const en = {
     },
     entry_categories: {
       title: 'Entry Categories',
-      add_category_button: 'Add Entry',
+      add_category_button: 'Add Entry', // Changed from 'Add Entry Category'
       refresh_button: 'Refresh',
       search_placeholder: 'Search categories...',
       table_header_category_number: 'Category No.',
-      table_header_description: 'Description',
+      table_header_description: 'Description', // Was Name, changed to Description for clarity
       table_header_type: 'Type',
       table_header_actions: 'Actions',
       category_type_income: 'Income',
@@ -1065,4 +1077,3 @@ const en = {
 };
 
 export default en;
-
