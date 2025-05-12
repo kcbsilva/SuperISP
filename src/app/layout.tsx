@@ -23,7 +23,6 @@ import {
   Briefcase, // Added for Business and HR
   Building, // Added for PoPs
   Cog, // Icon for Global Settings
-  Plane, // Icon for PilotView
   ListChecks, // Icon for Plans
   Wifi, // Icon for Internet Plan
   Tv, // Icon for TV Plan
@@ -49,6 +48,7 @@ import {
   Bus, // Icon for Vehicles
   BriefcaseBusiness, // Icon for HR Menu (Corrected)
   FileCode, // Icon for Projects
+  Wrench, // For Service Calls
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -138,8 +138,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined' && theme) {
       const newFillColor = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-        ? 'hsl(var(--accent))'
-        : 'hsl(var(--secondary))';
+        ? 'hsl(var(--accent))' // Use Dark Blue for dark theme
+        : 'hsl(var(--primary))'; // Use Teal for light theme
       setLogoFillColor(newFillColor);
     }
   }, [theme]);
@@ -484,6 +484,15 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuSub>
               </SidebarMenuItem>
 
+              {/* Service Calls Menu Item - MOVED HERE */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/service-calls')} tooltip={t('sidebar.service_calls', 'Service Calls')}>
+                  <Link href="#" className="flex items-center gap-2">
+                    <Wrench className={iconSize}/>
+                    <span>{t('sidebar.service_calls', 'Service Calls')}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
 
               {/* Reports Menu */}
               <SidebarMenuItem>
@@ -936,4 +945,3 @@ export default function RootLayout({
     </html>
   );
 }
-

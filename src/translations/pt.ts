@@ -40,6 +40,7 @@ const pt = {
     inventory_products: 'Produtos',
     inventory_vehicles: 'Veículos',
     inventory_warehouses: 'Armazéns',
+    service_calls: 'Chamados de Serviço', // Added translation
     hr: 'RH',
     hr_employees: 'Funcionários',
     reports: 'Relatórios',
