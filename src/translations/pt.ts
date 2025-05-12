@@ -611,21 +611,23 @@ const pt = {
     poll_manage_templates_title: 'Gerenciar Modelos de Poste',
     poll_new_template_heading: 'Novo Modelo de Poste',
     poll_template_form_manufacturer_label: 'Fabricante',
+    poll_template_form_manufacturer_label_optional: 'Fabricante (Opcional)',
     poll_template_form_manufacturer_placeholder: 'Selecionar Fabricante',
     poll_template_form_material_label: 'Material',
     poll_template_form_material_placeholder: 'Selecionar Material',
-    poll_template_form_heights_label: 'Opções de Altura (separadas por vírgula)',
-    poll_template_form_heights_placeholder: 'ex: 9m, 10.5m, 12m',
-    poll_template_form_strength_label: 'Classe de Resistência',
-    poll_template_form_strength_placeholder: 'ex: Classe 5, 300daN',
+    poll_template_form_height_label: 'Descrição da Altura',
+    poll_template_form_height_placeholder: 'ex: 12m Concreto, 10ft Madeira',
+    poll_template_form_type_label: 'Tipo',
+    poll_template_form_type_placeholder: 'Selecionar tipo de poste',
+    poll_type_circular: 'Circular',
+    poll_type_square: 'Quadrado',
     poll_template_form_cancel_button: 'Cancelar',
     poll_template_form_save_button: 'Salvar Modelo',
     poll_template_add_success_title: 'Modelo de Poste Adicionado',
-    poll_template_add_success_desc: 'Modelo por {manufacturer} para postes de {material} adicionado.',
+    poll_template_add_success_desc_new: 'Modelo para postes de {height} em {material} adicionado.',
     existing_poll_templates_list_title: 'Modelos Existentes',
     no_existing_poll_templates: 'Nenhum modelo existente.',
-    poll_template_info_heights: 'Alturas',
-    poll_template_info_strength: 'Resistência',
+    poll_template_info_height_display: 'Altura: {height}',
   },
     settings_plans: {
       internet_page_title: 'Planos de Internet',
@@ -1030,4 +1032,3 @@ const pt = {
 };
 
 export default pt;
-

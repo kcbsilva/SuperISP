@@ -613,21 +613,23 @@ const fr = {
     poll_manage_templates_title: 'Gérer les Modèles de Poteaux',
     poll_new_template_heading: 'Nouveau Modèle de Poteau',
     poll_template_form_manufacturer_label: 'Fabricant',
+    poll_template_form_manufacturer_label_optional: 'Fabricant (Facultatif)',
     poll_template_form_manufacturer_placeholder: 'Sélectionner Fabricant',
     poll_template_form_material_label: 'Matériau',
     poll_template_form_material_placeholder: 'Sélectionner Matériau',
-    poll_template_form_heights_label: 'Options de Hauteur (séparées par virgule)',
-    poll_template_form_heights_placeholder: 'ex: 9m, 10.5m, 12m',
-    poll_template_form_strength_label: 'Classe de Résistance',
-    poll_template_form_strength_placeholder: 'ex: Classe 5, 300daN',
+    poll_template_form_height_label: 'Description de la Hauteur',
+    poll_template_form_height_placeholder: 'ex: 12m Béton, 10ft Bois',
+    poll_template_form_type_label: 'Type',
+    poll_template_form_type_placeholder: 'Sélectionner le type de poteau',
+    poll_type_circular: 'Circulaire',
+    poll_type_square: 'Carré',
     poll_template_form_cancel_button: 'Annuler',
     poll_template_form_save_button: 'Enregistrer Modèle',
     poll_template_add_success_title: 'Modèle de Poteau Ajouté',
-    poll_template_add_success_desc: 'Modèle par {manufacturer} pour poteaux en {material} ajouté.',
+    poll_template_add_success_desc_new: 'Modèle pour poteaux de {height} en {material} ajouté.',
     existing_poll_templates_list_title: 'Modèles Existants',
     no_existing_poll_templates: 'Aucun modèle existant.',
-    poll_template_info_heights: 'Hauteurs',
-    poll_template_info_strength: 'Résistance',
+    poll_template_info_height_display: 'Hauteur: {height}',
   },
    settings_plans: {
     internet_page_title: 'Forfaits Internet',
@@ -1032,4 +1034,3 @@ const fr = {
 };
 
 export default fr;
-

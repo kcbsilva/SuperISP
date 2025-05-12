@@ -74,10 +74,10 @@ const placeholderPolls: HydroPoll[] = [
 ];
 
 const pollTemplateSchema = z.object({
-  manufacturer: z.string().min(1, "Manufacturer is required."),
+  manufacturer: z.string().optional(),
   material: z.string().min(1, "Material is required."), // e.g., Concrete, Wood, Steel
-  heightOptions: z.string().min(1, "Height options are required (e.g., 9m, 10m, 12m)."),
-  strengthClass: z.string().min(1, "Strength class is required (e.g., Class 5, 300daN)."),
+  height: z.string().min(1, "Height description is required (e.g., 12m Concrete Pole)."),
+  type: z.enum(['Circular', 'Square'], { required_error: "Poll type is required."}),
 });
 type PollTemplateFormData = z.infer<typeof pollTemplateSchema>;
 
@@ -85,12 +85,12 @@ interface PollTemplate extends PollTemplateFormData {
   id: string;
 }
 
-const placeholderPollManufacturers = ["Manufacturer A", "Manufacturer B", "Manufacturer C"];
+const placeholderPollManufacturers = ["Manufacturer A", "Manufacturer B", "Manufacturer C", "Other"];
 const placeholderPollMaterials = ["Concrete", "Wood", "Steel", "Composite"];
 
 const placeholderExistingPollTemplates: PollTemplate[] = [
-  { id: 'tpl-poll-1', manufacturer: 'Manufacturer A', material: 'Concrete', heightOptions: '9m, 10.5m, 12m', strengthClass: '300daN' },
-  { id: 'tpl-poll-2', manufacturer: 'Manufacturer B', material: 'Wood', heightOptions: '10m, 11m', strengthClass: 'Class 5' },
+  { id: 'tpl-poll-1', manufacturer: 'Manufacturer A', material: 'Concrete', height: '12m Reinforced Concrete', type: 'Circular' },
+  { id: 'tpl-poll-2', manufacturer: 'Manufacturer B', material: 'Wood', height: '10m Treated Pine', type: 'Square' },
 ];
 
 
@@ -105,8 +105,8 @@ export default function HydroPollsPage() {
     defaultValues: {
       manufacturer: '',
       material: '',
-      heightOptions: '',
-      strengthClass: '',
+      height: '',
+      type: undefined,
     },
   });
 
@@ -116,7 +116,7 @@ export default function HydroPollsPage() {
     placeholderExistingPollTemplates.push(newTemplate);
     toast({
       title: t('maps_elements.poll_template_add_success_title', 'Poll Template Added'),
-      description: t('maps_elements.poll_template_add_success_desc', 'Template by {manufacturer} for {material} polls added.').replace('{manufacturer}', data.manufacturer).replace('{material}', data.material),
+      description: t('maps_elements.poll_template_add_success_desc_new', 'Poll template for {height} {material} poles added.').replace('{height}', data.height).replace('{material}', data.material),
     });
     templateForm.reset();
     setIsAddTemplateModalOpen(false);
@@ -153,7 +153,7 @@ export default function HydroPollsPage() {
                                         name="manufacturer"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>{t('maps_elements.poll_template_form_manufacturer_label', 'Manufacturer')}</FormLabel>
+                                                <FormLabel>{t('maps_elements.poll_template_form_manufacturer_label_optional', 'Manufacturer (Optional)')}</FormLabel>
                                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                     <FormControl>
                                                         <SelectTrigger>
@@ -189,14 +189,14 @@ export default function HydroPollsPage() {
                                         )}
                                     />
                                 </div>
-                                <FormField
+                                 <FormField
                                     control={templateForm.control}
-                                    name="heightOptions"
+                                    name="height"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{t('maps_elements.poll_template_form_heights_label', 'Height Options (comma-separated)')}</FormLabel>
+                                            <FormLabel>{t('maps_elements.poll_template_form_height_label', 'Height Description')}</FormLabel>
                                             <FormControl>
-                                                <Input placeholder={t('maps_elements.poll_template_form_heights_placeholder', 'e.g., 9m, 10.5m, 12m')} {...field} />
+                                                <Input placeholder={t('maps_elements.poll_template_form_height_placeholder', 'e.g., 12m Concrete, 10ft Wood')} {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -204,13 +204,21 @@ export default function HydroPollsPage() {
                                 />
                                 <FormField
                                     control={templateForm.control}
-                                    name="strengthClass"
+                                    name="type"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{t('maps_elements.poll_template_form_strength_label', 'Strength Class')}</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder={t('maps_elements.poll_template_form_strength_placeholder', 'e.g., Class 5, 300daN')} {...field} />
-                                            </FormControl>
+                                            <FormLabel>{t('maps_elements.poll_template_form_type_label', 'Type')}</FormLabel>
+                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder={t('maps_elements.poll_template_form_type_placeholder', 'Select poll type')} />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="Circular">{t('maps_elements.poll_type_circular', 'Circular')}</SelectItem>
+                                                    <SelectItem value="Square">{t('maps_elements.poll_type_square', 'Square')}</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -236,9 +244,9 @@ export default function HydroPollsPage() {
                             {placeholderExistingPollTemplates.length > 0 ? (
                                 placeholderExistingPollTemplates.map(template => (
                                 <div key={template.id} className="text-xs p-1.5 border-b last:border-b-0 hover:bg-background rounded-sm cursor-default">
-                                    <div className="font-medium">{template.manufacturer} - {template.material}</div>
+                                    <div className="font-medium">{template.manufacturer ? `${template.manufacturer} - ` : ''}{template.material} - {template.type}</div>
                                     <div className="text-muted-foreground">
-                                    {t('maps_elements.poll_template_info_heights')}: {template.heightOptions}, {t('maps_elements.poll_template_info_strength')}: {template.strengthClass}
+                                    {t('maps_elements.poll_template_info_height_display', 'Height: {height}').replace('{height}', template.height)}
                                     </div>
                                 </div>
                                 ))
@@ -310,4 +318,3 @@ export default function HydroPollsPage() {
     </div>
   );
 }
-
