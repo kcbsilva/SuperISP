@@ -40,7 +40,10 @@ const pt = {
     inventory_products: 'Produtos',
     inventory_vehicles: 'Veículos',
     inventory_warehouses: 'Armazéns',
-    service_calls: 'Chamados de Serviço', // Added translation
+    service_calls: 'Chamados de Serviço',
+    service_calls_dashboard: 'Painel',
+    service_calls_service_types: 'Tipos de Serviço',
+    service_calls_all: 'Todos os Chamados',
     hr: 'RH',
     hr_employees: 'Funcionários',
     reports: 'Relatórios',
@@ -1028,8 +1031,8 @@ const pt = {
     filter_by_light_level_label: 'Filtrar por Nível de Luz',
   },
   // General form translations
-  form_cancel_button: 'Cancelar',
-  form_saving_button: 'Salvando...',
+  form_cancel_button: 'Cancel',
+  form_saving_button: 'Saving...',
   // Inventory > Warehouses
   inventory_warehouses: {
     title: 'Armazéns',
@@ -1103,11 +1106,6 @@ const pt = {
     form_save_button: 'Salvar Modelo',
     table_header_name: 'Nome do Modelo',
     table_header_manufacturer: 'Fabricante',
-    form_saving_button: 'Salvando...',
-    form_saving_button: 'Salvando...',
-    form_saving_button: 'Salvando...',
-    form_saving_button: 'Salvando...',
-    form_saving_button: 'Salvando...',
     table_header_model: 'Modelo',
     table_header_actions: 'Ações',
     action_edit: 'Editar',
@@ -1309,6 +1307,17 @@ const pt = {
       edit_call_not_implemented_desc: 'Editar o chamado {id} ainda não está disponível.',
       delete_call_not_implemented_title: 'Excluir Chamado (Não Implementado)',
       delete_call_not_implemented_desc: 'Excluir o chamado {id} ainda não está disponível.',
+    },
+    service_calls_dashboard: {
+      title: 'Visão Geral dos Chamados de Serviço',
+      placeholder: 'O conteúdo do painel de chamados de serviço será exibido aqui.'
+    },
+    service_types: {
+      add_type_not_implemented_title: 'Adicionar Tipo de Serviço (Não Implementado)',
+      add_type_not_implemented_desc: 'A funcionalidade para adicionar novos tipos de serviço ainda não está disponível.',
+      add_type_button: 'Adicionar Tipo de Serviço',
+      list_title: 'Tipos de Serviço Configurados',
+      no_types_configured: 'Nenhum tipo de serviço configurado ainda. Clique em "Adicionar Tipo de Serviço" para criar um.'
     }
 };
 

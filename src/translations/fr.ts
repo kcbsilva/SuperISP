@@ -40,7 +40,10 @@ const fr = {
     inventory_products: 'Produits',
     inventory_vehicles: 'Véhicules',
     inventory_warehouses: 'Entrepôts',
-    service_calls: 'Appels de Service', // Added translation
+    service_calls: 'Appels de Service',
+    service_calls_dashboard: 'Tableau de Bord',
+    service_calls_service_types: 'Types de Service',
+    service_calls_all: 'Tous les Appels',
     reports: 'Rapports',
     hr: 'RH',
     hr_employees: 'Employés',
@@ -1104,11 +1107,6 @@ const fr = {
     form_save_button: 'Enregistrer Modèle',
     table_header_name: 'Nom du Modèle',
     table_header_manufacturer: 'Fabricant',
-    form_saving_button: 'Enregistrement...',
-    form_saving_button: 'Enregistrement...',
-    form_saving_button: 'Enregistrement...',
-    form_saving_button: 'Enregistrement...',
-    form_saving_button: 'Enregistrement...',
     table_header_model: 'Modèle',
     table_header_actions: 'Actions',
     action_edit: 'Modifier',
@@ -1278,7 +1276,7 @@ const fr = {
         delete_template_confirm_title: 'Êtes-vous sûr ?',
         delete_template_confirm_desc: 'Êtes-vous sûr de vouloir supprimer le modèle "{name}" ? Cette action est irréversible.',
         form_delete_button: 'Supprimer',
-        add_user_toast_title: 'Ajouter Utilisateur (Non implémenté)',
+        add_user_toast_title: 'Ajouter Utilisateur (Non implmenté)',
         add_user_toast_desc: 'La fonctionnalité pour ajouter de nouveaux utilisateurs n\'est pas encore implémentée.',
     },
     service_calls: {
@@ -1310,6 +1308,17 @@ const fr = {
       edit_call_not_implemented_desc: 'La modification de l\'appel de service {id} n\'est pas encore disponible.',
       delete_call_not_implemented_title: 'Supprimer l\'Appel de Service (Non implémenté)',
       delete_call_not_implemented_desc: 'La suppression de l\'appel de service {id} n\'est pas encore disponible.',
+    },
+    service_calls_dashboard: {
+      title: 'Aperçu des Appels de Service',
+      placeholder: 'Le contenu du tableau de bord des appels de service sera affiché ici.'
+    },
+    service_types: {
+      add_type_not_implemented_title: 'Ajouter Type de Service (Non implémenté)',
+      add_type_not_implemented_desc: 'La fonctionnalité pour ajouter de nouveaux types de service n\'est pas encore disponible.',
+      add_type_button: 'Ajouter Type de Service',
+      list_title: 'Types de Service Configurés',
+      no_types_configured: 'Aucun type de service configuré pour le moment. Cliquez sur "Ajouter Type de Service" pour en créer un.'
     }
 };
 

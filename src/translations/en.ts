@@ -33,7 +33,10 @@ const en = {
     inventory_products: 'Products',
     inventory_vehicles: 'Vehicles',
     inventory_warehouses: 'Warehouses',
-    service_calls: 'Service Calls', // Added translation
+    service_calls: 'Service Calls',
+    service_calls_dashboard: 'Dashboard',
+    service_calls_service_types: 'Service Types',
+    service_calls_all: 'All Service Calls',
     reports: 'Reports',
     hr: 'HR',
     hr_employees: 'Employees',
@@ -1112,11 +1115,6 @@ const en = {
       form_save_button: 'Save Template',
       table_header_name: 'Template Name',
       table_header_manufacturer: 'Manufacturer',
-      form_saving_button: 'Saving...',
-      form_saving_button: 'Saving...',
-      form_saving_button: 'Saving...',
-      form_saving_button: 'Saving...',
-      form_saving_button: 'Saving...',
       table_header_model: 'Model',
       table_header_actions: 'Actions',
       action_edit: 'Edit',
@@ -1318,6 +1316,17 @@ const en = {
       edit_call_not_implemented_desc: 'Editing service call {id} is not yet available.',
       delete_call_not_implemented_title: 'Delete Service Call (Not Implemented)',
       delete_call_not_implemented_desc: 'Deleting service call {id} is not yet available.',
+    },
+    service_calls_dashboard: {
+      title: 'Service Calls Overview',
+      placeholder: 'Dashboard content for service calls will be displayed here.'
+    },
+    service_types: {
+      add_type_not_implemented_title: 'Add Service Type (Not Implemented)',
+      add_type_not_implemented_desc: 'Functionality to add new service types is not yet available.',
+      add_type_button: 'Add Service Type',
+      list_title: 'Configured Service Types',
+      no_types_configured: 'No service types configured yet. Click "Add Service Type" to create one.'
     }
 };
 

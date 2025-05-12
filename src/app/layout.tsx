@@ -30,8 +30,6 @@ import {
   Phone, // Icon for Landline Plan
   Combine, // Icon for Combos Plan
   ListFilter, // Icon for Entry Categories
-  // UserPlus, // For "New" subscriber - Removed
-  // UsersRound, // For "List" subscribers - Removed
   Archive, // Added for Inventory
   Factory, // Icon for Manufacturers
   Package as PackageIcon, // Icon for Products
@@ -48,7 +46,9 @@ import {
   Bus, // Icon for Vehicles
   BriefcaseBusiness, // Icon for HR Menu (Corrected)
   FileCode, // Icon for Projects
-  Wrench, // For Service Calls
+  Wrench, // Icon for Service Calls
+  LayoutDashboard as ServiceDashboardIcon, // For Service Calls Dashboard
+  List as ServiceTypesIcon, // For Service Types
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -138,8 +138,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined' && theme) {
       const newFillColor = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-        ? 'hsl(var(--accent))' 
-        : 'hsl(var(--primary))'; 
+        ? 'hsl(var(--accent))'
+        : 'hsl(var(--primary))';
       setLogoFillColor(newFillColor);
     }
   }, [theme]);
@@ -484,15 +484,50 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuSub>
               </SidebarMenuItem>
 
-              {/* Service Calls Menu Item - MOVED HERE */}
+              {/* Service Calls Menu Item */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/service-calls')} tooltip={t('sidebar.service_calls', 'Service Calls')}>
-                  <Link href="/service-calls" className="flex items-center gap-2">
-                    <Wrench className={iconSize}/>
-                    <span>{t('sidebar.service_calls', 'Service Calls')}</span>
-                  </Link>
-                </SidebarMenuButton>
+                <SidebarMenuSub>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SidebarMenuSubTrigger tooltip={t('sidebar.service_calls', 'Service Calls')}>
+                        <div className="flex items-center gap-2 cursor-pointer">
+                          <Wrench className={iconSize}/>
+                          <span className="truncate">{t('sidebar.service_calls', 'Service Calls')}</span>
+                          <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                        </div>
+                      </SidebarMenuSubTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" align="center">{t('sidebar.service_calls', 'Service Calls')}</TooltipContent>
+                  </Tooltip>
+                  <SidebarMenuSubContent>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/service-calls/dashboard')} size="sm" tooltip={t('sidebar.service_calls_dashboard', 'Dashboard')}>
+                        <Link href="/service-calls/dashboard" className="flex items-center gap-2">
+                          <ServiceDashboardIcon className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.service_calls_dashboard', 'Dashboard')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive('/service-calls/service-types')} size="sm" tooltip={t('sidebar.service_calls_service_types', 'Service Types')}>
+                        <Link href="/service-calls/service-types" className="flex items-center gap-2">
+                          <ServiceTypesIcon className={subIconSize + " text-muted-foreground"} />
+                          <span>{t('sidebar.service_calls_service_types', 'Service Types')}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={isActive('/service-calls')} size="sm" tooltip={t('sidebar.service_calls', 'All Service Calls')}>
+                           <Link href="/service-calls" className="flex items-center gap-2">
+                             <Wrench className={subIconSize + " text-muted-foreground"} /> {/* Changed icon */}
+                             <span>{t('sidebar.service_calls_all', 'All Service Calls')}</span>
+                           </Link>
+                        </SidebarMenuButton>
+                     </SidebarMenuItem>
+                  </SidebarMenuSubContent>
+                </SidebarMenuSub>
               </SidebarMenuItem>
+
 
               {/* Reports Menu */}
               <SidebarMenuItem>
