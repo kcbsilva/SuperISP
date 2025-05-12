@@ -244,45 +244,45 @@ export default function ListSubscribersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-24 text-xs">{t('list_subscribers.table_header_id')}</TableHead> 
-                  <TableHead className="w-12 text-xs">{t('list_subscribers.table_header_type')}</TableHead> 
-                  <TableHead className="text-xs">{t('list_subscribers.table_header_name')}</TableHead> 
-                  <TableHead className="text-xs">{t('list_subscribers.table_header_tax_id', 'Tax ID')}</TableHead> 
-                  <TableHead className="text-xs">{t('list_subscribers.table_header_address', 'Address')}</TableHead> 
-                  <TableHead className="text-xs">{t('list_subscribers.table_header_phone')}</TableHead> 
+                  <TableHead className="w-24 text-xs text-center">{t('list_subscribers.table_header_id')}</TableHead> 
+                  <TableHead className="w-12 text-xs text-center">{t('list_subscribers.table_header_type')}</TableHead> 
+                  <TableHead className="text-xs text-center">{t('list_subscribers.table_header_name')}</TableHead> 
+                  <TableHead className="text-xs text-center">{t('list_subscribers.table_header_tax_id', 'Tax ID')}</TableHead> 
+                  <TableHead className="text-xs text-center">{t('list_subscribers.table_header_address', 'Address')}</TableHead> 
+                  <TableHead className="text-xs text-center">{t('list_subscribers.table_header_phone')}</TableHead> 
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                     Array.from({ length: 5 }).map((_, index) => (
                         <TableRow key={`skeleton-${index}`}>
-                            <TableCell><Skeleton className="h-4 bg-muted rounded w-20" /></TableCell>
-                            <TableCell><Skeleton className="h-4 bg-muted rounded w-8" /></TableCell>
-                            <TableCell><Skeleton className="h-4 bg-muted rounded w-40" /></TableCell>
-                            <TableCell><Skeleton className="h-4 bg-muted rounded w-24" /></TableCell>
-                            <TableCell><Skeleton className="h-4 bg-muted rounded w-48" /></TableCell>
-                            <TableCell><Skeleton className="h-4 bg-muted rounded w-28" /></TableCell>
+                            <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-20 mx-auto" /></TableCell>
+                            <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-8 mx-auto" /></TableCell>
+                            <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-40 mx-auto" /></TableCell>
+                            <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-24 mx-auto" /></TableCell>
+                            <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-48 mx-auto" /></TableCell>
+                            <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-28 mx-auto" /></TableCell>
                         </TableRow>
                     ))
                 ) : filteredSubscribers.length > 0 ? (
                   filteredSubscribers.map((subscriber) => (
                     <TableRow key={subscriber.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs">{subscriber.id}</TableCell> 
-                      <TableCell>
+                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{subscriber.id}</TableCell> 
+                      <TableCell className="text-center">
                         {subscriber.subscriberType === 'Residential' ? (
-                          <User className={`${iconSize} text-muted-foreground`} title={t('add_subscriber.type_residential')} />
+                          <User className={`${iconSize} text-muted-foreground mx-auto`} title={t('add_subscriber.type_residential')} />
                         ) : (
-                          <Building className={`${iconSize} text-muted-foreground`} title={t('add_subscriber.type_commercial')} />
+                          <Building className={`${iconSize} text-muted-foreground mx-auto`} title={t('add_subscriber.type_commercial')} />
                         )}
                       </TableCell>
-                      <TableCell className="font-medium text-xs"> 
+                      <TableCell className="font-medium text-xs text-center"> 
                         <Link href={`/subscribers/profile/${subscriber.id}`} className="hover:underline text-primary">
                           {subscriber.subscriberType === 'Residential' ? subscriber.fullName : subscriber.companyName}
                         </Link>
                       </TableCell>
-                      <TableCell className="text-muted-foreground text-xs">{formatTaxId(subscriber.subscriberType === 'Residential' ? subscriber.taxId : subscriber.businessNumber)}</TableCell> 
-                      <TableCell className="text-muted-foreground text-xs">{subscriber.address}</TableCell> 
-                      <TableCell className="text-muted-foreground text-xs">{subscriber.phoneNumber}</TableCell> 
+                      <TableCell className="text-muted-foreground text-xs text-center">{formatTaxId(subscriber.subscriberType === 'Residential' ? subscriber.taxId : subscriber.businessNumber)}</TableCell> 
+                      <TableCell className="text-muted-foreground text-xs text-center">{subscriber.address}</TableCell> 
+                      <TableCell className="text-muted-foreground text-xs text-center">{subscriber.phoneNumber}</TableCell> 
                     </TableRow>
                   ))
                 ) : (
@@ -300,4 +300,3 @@ export default function ListSubscribersPage() {
     </div>
   );
 }
-
