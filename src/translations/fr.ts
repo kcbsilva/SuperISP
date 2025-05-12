@@ -623,8 +623,8 @@ const fr = {
     cable_template_modal_not_implemented_desc: 'La gestion des modèles pour les Câbles n\'est pas encore disponible.',
     accessory_template_button: 'Modèles d\'Accessoires',
     accessory_template_modal_not_implemented_desc: 'La gestion des modèles pour les Accessoires n\'est pas encore disponible.',
-    splitter_template_button: 'Modèles de Répartiteurs', // Added
-    splitter_template_modal_not_implemented_desc: 'La gestion des modèles pour les Répartiteurs n\'est pas encore disponible.', // Added
+    splitter_template_button: 'Modèles de Répartiteurs',
+    splitter_template_modal_not_implemented_desc: 'La gestion des modèles pour les Répartiteurs n\'est pas encore disponible.',
     fdh_template_button: 'Modèles de CTO',
     // FDH Template Modal translations
     fdh_manage_templates_title: 'Gérer les Modèles de CTO',
@@ -633,7 +633,7 @@ const fr = {
     fdh_template_form_manufacturer_placeholder: 'Sélectionner Fabricant',
     fdh_template_form_model_label: 'Modèle',
     fdh_template_form_model_placeholder: 'ex: OptiSheath',
-    fdh_template_form_max_port_capacity_label: 'Capacité Max de Ports', // Updated from port_capacity
+    fdh_template_form_max_port_capacity_label: 'Capacité Max de Ports',
     fdh_template_form_type_label: 'Type de CTO',
     fdh_template_form_type_placeholder: 'Sélectionner Type',
     fdh_template_form_cancel_button: 'Annuler',
@@ -642,7 +642,7 @@ const fr = {
     fdh_template_add_success_desc: 'Modèle pour {model} par {manufacturer} ajouté.',
     existing_fdh_templates_list_title: 'Modèles de CTO Existants',
     no_existing_fdh_templates: 'Aucun modèle de CTO existant.',
-    fdh_template_info_max_ports: 'Ports Max', // Updated from info_ports
+    fdh_template_info_max_ports: 'Ports Max',
     fdh_template_info_type: 'Type',
     // Poll Template Modal translations
     poll_manage_templates_title: 'Gérer les Modèles de Poteaux',
@@ -665,6 +665,24 @@ const fr = {
     existing_poll_templates_list_title: 'Modèles Existants',
     no_existing_poll_templates: 'Aucun modèle existant.',
     poll_template_info_height_display: 'Hauteur: {height}',
+    // PED Template Modal translations
+    ped_manage_templates_title: 'Gérer les Modèles de PED',
+    ped_new_template_heading: 'Nouveau Modèle de PED',
+    ped_template_form_manufacturer_label: 'Fabricant',
+    ped_template_form_manufacturer_placeholder: 'Sélectionner Fabricant',
+    ped_template_form_model_label: 'Modèle',
+    ped_template_form_model_placeholder: 'ex: Alpha PED 2000',
+    ped_template_form_max_capacity_label: 'Capacité Max (Slots/Connexions)',
+    ped_template_form_type_label: 'Type de PED',
+    ped_template_form_type_placeholder: 'Sélectionner Type',
+    ped_template_form_cancel_button: 'Annuler',
+    ped_template_form_save_button: 'Enregistrer Modèle',
+    ped_template_add_success_title: 'Modèle de PED Ajouté',
+    ped_template_add_success_desc: 'Modèle pour {model} par {manufacturer} ajouté.',
+    existing_ped_templates_list_title: 'Modèles de PED Existants',
+    no_existing_ped_templates: 'Aucun modèle de PED existant.',
+    ped_template_info_max_capacity: 'Capacité Max',
+    ped_template_info_type: 'Type',
   },
    settings_plans: {
     internet_page_title: 'Forfaits Internet',
@@ -752,11 +770,11 @@ const fr = {
   },
   entry_categories: {
     title: 'Catégories d\'Écritures',
-    add_category_button: 'Ajouter une Entrée', // Corrected from 'Add Entry Category'
+    add_category_button: 'Ajouter une Entrée',
     refresh_button: 'Actualiser',
     search_placeholder: 'Rechercher des catégories...',
     table_header_category_number: 'N° Catégorie',
-    table_header_description: 'Description', // Was Name, changed to Description for clarity
+    table_header_description: 'Description',
     table_header_type: 'Type',
     table_header_actions: 'Actions',
     category_type_income: 'Revenu',

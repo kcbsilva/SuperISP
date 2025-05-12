@@ -641,7 +641,7 @@ const en = {
     fdh_template_form_manufacturer_placeholder: 'Select Manufacturer',
     fdh_template_form_model_label: 'Model',
     fdh_template_form_model_placeholder: 'e.g., OptiSheath',
-    fdh_template_form_max_port_capacity_label: 'Max Port Capacity', // Updated from port_capacity
+    fdh_template_form_max_port_capacity_label: 'Max Port Capacity',
     fdh_template_form_type_label: 'FDH Type',
     fdh_template_form_type_placeholder: 'Select Type',
     fdh_template_form_cancel_button: 'Cancel',
@@ -650,7 +650,7 @@ const en = {
     fdh_template_add_success_desc: 'Template for {model} by {manufacturer} added.',
     existing_fdh_templates_list_title: 'Existing FDH Templates',
     no_existing_fdh_templates: 'No existing FDH templates.',
-    fdh_template_info_max_ports: 'Max Ports', // Updated from info_ports
+    fdh_template_info_max_ports: 'Max Ports',
     fdh_template_info_type: 'Type',
     // Poll Template Modal translations
     poll_manage_templates_title: 'Manage Poll Templates',
@@ -673,6 +673,24 @@ const en = {
     existing_poll_templates_list_title: 'Existing Templates',
     no_existing_poll_templates: 'No existing templates.',
     poll_template_info_height_display: 'Height: {height}',
+    // PED Template Modal translations
+    ped_manage_templates_title: 'Manage PED Templates',
+    ped_new_template_heading: 'New PED Template',
+    ped_template_form_manufacturer_label: 'Manufacturer',
+    ped_template_form_manufacturer_placeholder: 'Select Manufacturer',
+    ped_template_form_model_label: 'Model',
+    ped_template_form_model_placeholder: 'e.g., Alpha PED 2000',
+    ped_template_form_max_capacity_label: 'Max Capacity (Slots/Connections)',
+    ped_template_form_type_label: 'PED Type',
+    ped_template_form_type_placeholder: 'Select Type',
+    ped_template_form_cancel_button: 'Cancel',
+    ped_template_form_save_button: 'Save Template',
+    ped_template_add_success_title: 'PED Template Added',
+    ped_template_add_success_desc: 'Template for {model} by {manufacturer} added.',
+    existing_ped_templates_list_title: 'Existing PED Templates',
+    no_existing_ped_templates: 'No existing PED templates.',
+    ped_template_info_max_capacity: 'Max Capacity',
+    ped_template_info_type: 'Type',
   },
     settings_plans: {
       internet_page_title: 'Internet Plans',
@@ -695,7 +713,7 @@ const en = {
       combos_page_title: 'Combo Plans',
       add_plan_button_combos: 'Add Combo Plan',
       existing_plans_description_combos: 'Manage your combo service plans.',
-      no_plans_found_combos: 'No combo plans configured yet. Click "Add Combo Plan" to create one.',
+      no_plans_found_combos: 'No combo plans configured yet. Click "Add Combo Plan" to create one."',
       table_header_id: 'ID',
       table_header_name: 'Name',
       table_header_upload: 'Upload',
@@ -760,11 +778,11 @@ const en = {
     },
     entry_categories: {
       title: 'Entry Categories',
-      add_category_button: 'Add Entry', // Changed from 'Add Entry Category'
+      add_category_button: 'Add Entry',
       refresh_button: 'Refresh',
       search_placeholder: 'Search categories...',
       table_header_category_number: 'Category No.',
-      table_header_description: 'Description', // Was Name, changed to Description for clarity
+      table_header_description: 'Description',
       table_header_type: 'Type',
       table_header_actions: 'Actions',
       category_type_income: 'Income',
