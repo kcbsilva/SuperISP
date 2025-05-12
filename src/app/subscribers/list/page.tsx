@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; // Added CardHeader, CardTitle
+import { Card, CardContent } from "@/components/ui/card"; 
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { User, Building, Search, Filter, RefreshCw, PlusCircle, Users, UserCheck, UserX, TrendingUp } from "lucide-react"; // Added more icons
+import { User, Building, Search, Filter, RefreshCw, PlusCircle, Users, UserCheck, UserX, TrendingUp } from "lucide-react"; 
 import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
@@ -25,12 +25,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
-
 import { useRouter } from 'next/navigation';
-
-// import { getSubscribers } from '@/services/postgresql/subscribers'; // Removed PostgreSQL import
-import type { Subscriber, SubscriberStatus, SubscriberType } from '@/types/subscribers'; // Keep type for placeholder data structure
+import type { Subscriber, SubscriberStatus, SubscriberType } from '@/types/subscribers'; 
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge'; 
+import { cn } from '@/lib/utils';
 
 type FilterState = {
     type: ('Residential' | 'Commercial')[];
@@ -51,7 +50,6 @@ const formatTaxId = (taxId: string | undefined | null): string => {
   return `${prefix}${maskedMiddle}${suffix}`;
 };
 
-// Placeholder data for counters
 const subscriberStats = {
   newSubscribers: 25,
   activeSubscribers: 1180,
@@ -63,7 +61,24 @@ const placeholderSubscribers: Subscriber[] = [
     { id: 1, subscriberType: 'Residential', fullName: 'Alice Wonderland', address: '123 Fantasy Lane', phoneNumber: '555-1111', taxId: '123.456.789-00', status: 'Active', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'alice@example.com' },
     { id: 2, subscriberType: 'Commercial', companyName: 'Bob The Builder Inc.', address: '456 Construction Ave', phoneNumber: '555-2222', businessNumber: '98.765.432/0001-00', status: 'Active', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'bob@example.com' },
     { id: 3, subscriberType: 'Residential', fullName: 'Charlie Brown', address: '789 Peanut Street', phoneNumber: '555-3333', taxId: '111.222.333-44', status: 'Suspended', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'charlie@example.com' },
+    { id: 4, subscriberType: 'Residential', fullName: 'Diana Prince', address: '1 Amazon Way', phoneNumber: '555-4444', taxId: '444.555.666-77', status: 'Inactive', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'diana@example.com' },
+    { id: 5, subscriberType: 'Commercial', companyName: 'Wayne Enterprises', address: '1007 Mountain Drive', phoneNumber: '555-5555', businessNumber: '11.222.333/0001-44', status: 'Planned', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'bruce@example.com' },
 ];
+
+const getStatusBadgeVariant = (status: SubscriberStatus | undefined) => {
+    switch (status) {
+        case 'Active':
+            return 'bg-green-100 text-green-800';
+        case 'Suspended':
+            return 'bg-yellow-100 text-yellow-800';
+        case 'Inactive':
+        case 'Canceled':
+        case 'Planned':
+            return 'bg-gray-100 text-gray-800';
+        default:
+            return 'bg-secondary text-secondary-foreground';
+    }
+};
 
 
 export default function ListSubscribersPage() {
@@ -74,19 +89,18 @@ export default function ListSubscribersPage() {
         type: [],
         status: [],
     });
-    const [isLoading, setIsLoading] = React.useState(false); // Kept for simulating refresh
+    const [isLoading, setIsLoading] = React.useState(false); 
     const iconSize = "h-3 w-3";
-    const statIconSize = "h-4 w-4 text-muted-foreground"; // For stat cards
+    const statIconSize = "h-4 w-4 text-muted-foreground"; 
 
     const [subscribers, setSubscribers] = React.useState<Subscriber[]>(placeholderSubscribers);
 
-    // Simulating data fetching, remove if connecting to a real backend
     React.useEffect(() => {
       setIsLoading(true);
       setTimeout(() => {
         setSubscribers(placeholderSubscribers);
         setIsLoading(false);
-      }, 500); // Simulate network delay
+      }, 500); 
     }, []);
 
     const filteredSubscribers = React.useMemo(() => {
@@ -117,9 +131,8 @@ export default function ListSubscribersPage() {
     const handleRefresh = async () => {
         setIsLoading(true);
         toast({ title: t('list_subscribers.refresh_start_toast') });
-        // Simulate fetching data again
         setTimeout(() => {
-            setSubscribers(placeholderSubscribers); // Reset to placeholder or fetch from your source
+            setSubscribers(placeholderSubscribers); 
             toast({ title: t('list_subscribers.refresh_end_toast') });
             setIsLoading(false);
         }, 1000);
@@ -127,46 +140,44 @@ export default function ListSubscribersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Subscriber Statistics Section */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-2">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> {/* Reduced padding */}
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> 
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_new_subscribers', 'New Subscribers (Month)')}</CardTitle>
             <TrendingUp className={statIconSize} />
           </CardHeader>
-          <CardContent className="pb-3 px-4"> {/* Reduced padding */}
+          <CardContent className="pb-3 px-4"> 
             <div className="text-lg font-bold">{subscriberStats.newSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> {/* Reduced padding */}
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> 
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_active_subscribers', 'Active Subscribers')}</CardTitle>
             <UserCheck className={statIconSize} />
           </CardHeader>
-          <CardContent className="pb-3 px-4"> {/* Reduced padding */}
+          <CardContent className="pb-3 px-4"> 
             <div className="text-lg font-bold">{subscriberStats.activeSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> {/* Reduced padding */}
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> 
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_suspended_subscribers', 'Suspended Subscribers')}</CardTitle>
             <UserX className={statIconSize} />
           </CardHeader>
-          <CardContent className="pb-3 px-4"> {/* Reduced padding */}
+          <CardContent className="pb-3 px-4"> 
             <div className="text-lg font-bold">{subscriberStats.suspendedSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> {/* Reduced padding */}
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> 
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_total_subscribers', 'Total Subscribers')}</CardTitle>
             <Users className={statIconSize} />
           </CardHeader>
-          <CardContent className="pb-3 px-4"> {/* Reduced padding */}
+          <CardContent className="pb-3 px-4"> 
             <div className="text-lg font-bold">{subscriberStats.totalSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
       </div>
-
 
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-base font-semibold">{t('sidebar.subscribers')}</h1>
@@ -237,7 +248,6 @@ export default function ListSubscribersPage() {
         </div>
       </div>
 
-
       <Card>
         <CardContent className="pt-0"> 
           <div className="overflow-x-auto">
@@ -250,6 +260,7 @@ export default function ListSubscribersPage() {
                   <TableHead className="text-xs text-center">{t('list_subscribers.table_header_tax_id', 'Tax ID')}</TableHead> 
                   <TableHead className="text-xs text-center">{t('list_subscribers.table_header_address', 'Address')}</TableHead> 
                   <TableHead className="text-xs text-center">{t('list_subscribers.table_header_phone')}</TableHead> 
+                  <TableHead className="text-xs text-center">{t('list_subscribers.table_header_status')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -262,6 +273,7 @@ export default function ListSubscribersPage() {
                             <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-24 mx-auto" /></TableCell>
                             <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-48 mx-auto" /></TableCell>
                             <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-28 mx-auto" /></TableCell>
+                            <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-20 mx-auto" /></TableCell>
                         </TableRow>
                     ))
                 ) : filteredSubscribers.length > 0 ? (
@@ -283,11 +295,16 @@ export default function ListSubscribersPage() {
                       <TableCell className="text-muted-foreground text-xs text-center">{formatTaxId(subscriber.subscriberType === 'Residential' ? subscriber.taxId : subscriber.businessNumber)}</TableCell> 
                       <TableCell className="text-muted-foreground text-xs text-center">{subscriber.address}</TableCell> 
                       <TableCell className="text-muted-foreground text-xs text-center">{subscriber.phoneNumber}</TableCell> 
+                      <TableCell className="text-center">
+                        <Badge variant={subscriber.status === 'Active' ? 'default' : 'secondary'} className={cn("text-xs", getStatusBadgeVariant(subscriber.status))}>
+                             {t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)}
+                        </Badge>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8 text-xs"> 
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8 text-xs"> 
                       {t('list_subscribers.no_results')}
                     </TableCell>
                   </TableRow>
