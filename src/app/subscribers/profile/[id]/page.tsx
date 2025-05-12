@@ -183,10 +183,10 @@ const getSubscriberData = (id: string | string[] | undefined): Subscriber | null
       { id: 'svc-2', type: 'TV', plan: 'Basic Cable', popId: 'pop-1', status: 'Active' },
     ];
     baseData.billing.balance = 0.00;
-    baseData.billing.pendingInvoices =  [
-        { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
-        { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
-     ];
+    baseData.billing.pendingInvoices = [
+      { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
+      { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
+    ];
     baseData.billing.promisesToPay = [
       { id: 'ptp-alice-01', promiseDate: '2024-08-25', amount: 50.00, status: 'Pending' },
     ];
@@ -819,7 +819,7 @@ function SubscriberProfilePage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-10">
+                        <TableHead className="w-10 text-center">
                           {activeBillingTab === 'Pending' && (
                             <Checkbox
                               checked={isAllPendingSelected}
@@ -828,18 +828,18 @@ function SubscriberProfilePage() {
                             />
                           )}
                         </TableHead>
-                        <TableHead>{t('subscriber_profile.billing_header_contract_id')}</TableHead>
-                        <TableHead>{t('subscriber_profile.billing_header_date_made')}</TableHead>
-                        <TableHead>{t('subscriber_profile.billing_header_due_date')}</TableHead>
-                        <TableHead className="text-right">{t('subscriber_profile.billing_header_value')}</TableHead>
-                        <TableHead>{t('subscriber_profile.billing_header_wallet')}</TableHead>
-                        <TableHead className="text-right">{t('subscriber_profile.billing_header_actions')}</TableHead>
+                        <TableHead className="text-center">{t('subscriber_profile.billing_header_contract_id')}</TableHead>
+                        <TableHead className="text-center">{t('subscriber_profile.billing_header_date_made')}</TableHead>
+                        <TableHead className="text-center">{t('subscriber_profile.billing_header_due_date')}</TableHead>
+                        <TableHead className="text-center">{t('subscriber_profile.billing_header_value')}</TableHead>
+                        <TableHead className="text-center">{t('subscriber_profile.billing_header_wallet')}</TableHead>
+                        <TableHead className="text-center">{t('subscriber_profile.billing_header_actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredBillingItems.map(item => (
                         <TableRow key={item.id}>
-                          <TableCell>
+                          <TableCell className="text-center">
                             {item.itemType === 'invoice' && item.status === 'Due' && activeBillingTab === 'Pending' && (
                               <Checkbox
                                 checked={selectedPendingInvoices.includes(item.id)}
@@ -848,25 +848,25 @@ function SubscriberProfilePage() {
                               />
                             )}
                           </TableCell>
-                          <TableCell className="text-xs">{(item as Invoice).contractId || '-'}</TableCell>
-                          <TableCell className="text-xs">
+                          <TableCell className="text-xs text-center">{(item as Invoice).contractId || '-'}</TableCell>
+                          <TableCell className="text-xs text-center">
                             {item.itemType === 'invoice' && (item as Invoice).dateMade ? format(parseISO((item as Invoice).dateMade), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
                               item.itemType === 'paymentPlan' && (item as PaymentPlan).startDate ? format(parseISO((item as PaymentPlan).startDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
                                 '-'}
                           </TableCell>
-                          <TableCell className="text-xs">
+                          <TableCell className="text-xs text-center">
                             {item.itemType === 'invoice' && (item as Invoice).dueDate ? format(parseISO((item as Invoice).dueDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
                               item.itemType === 'promiseToPay' && (item as PromiseToPay).promiseDate ? format(parseISO((item as PromiseToPay).promiseDate), 'PP', { locale: dateLocales[locale] || enUSLocale }) :
                                 '-'}
                           </TableCell>
-                          <TableCell className="text-xs text-right">
+                          <TableCell className="text-xs text-center">
                             {item.itemType === 'invoice' ? (item as Invoice).value.toFixed(2) :
                               item.itemType === 'paymentPlan' ? `${(item as PaymentPlan).installments}x ${(item as PaymentPlan).installmentAmount.toFixed(2)}` :
                                 item.itemType === 'promiseToPay' ? (item as PromiseToPay).amount.toFixed(2) :
                                   '-'}
                           </TableCell>
-                          <TableCell className="text-xs">{(item as Invoice).wallet || '-'}</TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-xs text-center">{(item as Invoice).wallet || '-'}</TableCell>
+                          <TableCell className="text-center">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-7 w-7"><MoreVertical className={iconSize} /></Button>
