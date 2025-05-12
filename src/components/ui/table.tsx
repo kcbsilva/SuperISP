@@ -21,7 +21,16 @@ const TableHeader = React.forwardRef<
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, children, ...props }, ref) => (
   <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props}>
-    {children}
+    {React.Children.map(children, child => {
+      if (React.isValidElement(child)) {
+        // Assuming children are TableRow -> TableHead
+        // You might need a more robust way to pass props if structure varies
+        return React.cloneElement(child as React.ReactElement<any>, {
+          // Example: Pass down a prop to TableRow or directly to TableHead if child is TableRow
+        });
+      }
+      return child;
+    })}
   </thead>
 ))
 TableHeader.displayName = "TableHeader"
@@ -59,8 +68,6 @@ const TableRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
 >(({ className, children, ...props }, ref) => {
-  // Filter children to ensure only valid React elements are rendered.
-  // This helps prevent issues with whitespace or other non-element nodes.
   const validChildren = React.Children.toArray(children).filter(child =>
     React.isValidElement(child)
   );
@@ -87,7 +94,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-10 px-2 align-middle text-xs font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 border border-border text-center", // Added border and text-center
+      "h-10 px-2 align-middle text-xs font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 border border-border", // Removed text-center
       className
     )}
     {...props}
@@ -101,7 +108,7 @@ const TableCell = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn("p-2 align-middle text-xs [&:has([role=checkbox])]:pr-0 border border-border", className)} // Added border
+    className={cn("p-2 align-middle text-xs [&:has([role=checkbox])]:pr-0 border border-border", className)}
     {...props}
   />
 ))
@@ -129,4 +136,3 @@ export {
   TableCell,
   TableCaption,
 }
-

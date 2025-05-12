@@ -5,8 +5,6 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  // CardHeader, // Removed
-  // CardTitle, // Removed
 } from "@/components/ui/card";
 import {
   Table,
@@ -50,6 +48,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { cn } from "@/lib/utils";
 
 type ConnectorType = 'UPC' | 'APC';
 type DistributionType = 'Network' | 'PON';
@@ -82,8 +81,6 @@ const splitterTemplateSchema = z.object({
   inputConnectorType: z.enum(['UPC', 'APC'], { required_error: "Input connector type is required."}),
   outputConnectorType: z.enum(['UPC', 'APC'], { required_error: "Output connector type is required."}),
   distributionType: z.enum(['Network', 'PON'], { required_error: "Distribution type is required."}),
-  // Ratios are more complex and depend on category; for simplicity, not making it a direct form field for now in the template.
-  // If category is '1x2', a specific ratio might be selected or it might support multiple.
 });
 type SplitterTemplateFormData = z.infer<typeof splitterTemplateSchema>;
 
@@ -142,7 +139,7 @@ export default function SplittersPage() {
                     <FileTextIcon className={`mr-2 ${iconSize}`} /> {t('maps_elements.splitter_template_button', 'Splitter Templates')}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-3xl"> {/* Increased width */}
+            <DialogContent className="sm:max-w-3xl">
                 <DialogHeader>
                     <DialogTitle className="text-sm">{t('maps_elements.splitter_manage_templates_title', 'Manage Splitter Templates')}</DialogTitle>
                 </DialogHeader>
@@ -296,39 +293,43 @@ export default function SplittersPage() {
       </div>
 
       <Card>
-        {/* CardHeader removed */}
-        <CardContent className="pt-6"> {/* Adjusted pt-6 because CardHeader was removed */}
+        <CardContent className="pt-6">
           {placeholderSplitters.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs">ID</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.splitter_table_header_description', 'Description')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.splitter_table_header_enclosure', 'Enclosure (FOSC/FDH ID)')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.splitter_table_header_connectorized', 'Connectorized')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.splitter_table_header_connector_type', 'Connector Type')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.splitter_table_header_distribution_type', 'Distribution Type')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.splitter_table_header_category', 'Category')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.splitter_table_header_ratio', 'Ratio (if 1x2)')}</TableHead>
-                    <TableHead className="text-xs text-right">{t('maps_elements.project_table_header_actions', 'Actions')}</TableHead>
+                    <TableHead className="text-xs font-semibold">{t('maps_elements.splitter_table_header_id', 'ID')}</TableHead>
+                    <TableHead className="text-xs font-semibold">{t('maps_elements.splitter_table_header_description', 'Description')}</TableHead>
+                    <TableHead className="text-xs font-semibold">{t('maps_elements.splitter_table_header_enclosure', 'Enclosure (FOSC/FDH ID)')}</TableHead>
+                    <TableHead className="text-xs font-semibold">{t('maps_elements.splitter_table_header_connectorized', 'Connectorized')}</TableHead>
+                    <TableHead className="text-xs font-semibold">{t('maps_elements.splitter_table_header_connector_type', 'Connector Type')}</TableHead>
+                    <TableHead className="text-xs font-semibold">{t('maps_elements.splitter_table_header_distribution_type', 'Distribution Type')}</TableHead>
+                    <TableHead className="text-xs font-semibold">{t('maps_elements.splitter_table_header_category', 'Category')}</TableHead>
+                    <TableHead className="text-xs font-semibold">{t('maps_elements.splitter_table_header_ratio', 'Ratio (if 1x2)')}</TableHead>
+                    <TableHead className="text-xs font-semibold text-right">{t('maps_elements.project_table_header_actions', 'Actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {placeholderSplitters.map((splitter) => (
                     <TableRow key={splitter.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs">{splitter.id}</TableCell>
+                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{splitter.id}</TableCell>
                       <TableCell className="text-xs">{splitter.description}</TableCell>
-                      <TableCell className="font-mono text-muted-foreground text-xs">{splitter.enclosureId}</TableCell>
-                      <TableCell className="text-xs">
+                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{splitter.enclosureId}</TableCell>
+                      <TableCell className="text-xs text-center">
                         <Badge variant={splitter.connectorized ? 'default' : 'secondary'} className={`text-xs ${splitter.connectorized ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                           {splitter.connectorized ? t('maps_elements.yes_indicator', 'Yes') : t('maps_elements.no_indicator', 'No')}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-xs">{splitter.connectorized ? splitter.connectorType : '-'}</TableCell>
-                      <TableCell className="text-xs">{splitter.distributionType}</TableCell>
-                      <TableCell className="text-xs">{splitter.category}</TableCell>
-                      <TableCell className="text-xs">{splitter.category === '1x2' ? splitter.ratio : '-'}</TableCell>
+                      <TableCell className={cn("text-xs text-center", 
+                        splitter.connectorType === 'APC' && 'text-green-800',
+                        splitter.connectorType === 'UPC' && 'text-blue-800'
+                      )}>
+                        {splitter.connectorized ? splitter.connectorType : '-'}
+                      </TableCell>
+                      <TableCell className="text-xs text-center">{splitter.distributionType}</TableCell>
+                      <TableCell className="text-xs text-center">{splitter.category}</TableCell>
+                      <TableCell className="text-xs text-center">{splitter.category === '1x2' ? splitter.ratio : '-'}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="icon" className="h-7 w-7">
                           <Edit className={iconSize} />
