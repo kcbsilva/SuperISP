@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; 
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { User, Building, Search, Filter, RefreshCw, PlusCircle, Users, UserCheck, UserX, TrendingUp } from "lucide-react"; 
+import { User, Building, Search, Filter, RefreshCw, PlusCircle, Users, UserCheck, UserX, TrendingUp, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
     DropdownMenu,
@@ -26,12 +26,11 @@ import {
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import type { Subscriber, SubscriberStatus, SubscriberType } from '@/types/subscribers'; 
+import type { Subscriber, SubscriberStatus, SubscriberType } from '@/types/subscribers';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge'; 
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { listSubscribers as fetchSubscribers } from '@/services/mysql/subscribers'; // Renamed to avoid conflict
-
+import { listSubscribers as fetchSubscribers } from '@/services/mysql/subscribers';
 
 type FilterState = {
     type: ('Residential' | 'Commercial')[];
@@ -82,6 +81,8 @@ const getStatusBadgeVariant = (status: SubscriberStatus | undefined) => {
     }
 };
 
+type SortableSubscriberKeys = keyof Subscriber | 'name';
+
 
 export default function ListSubscribersPage() {
     const { t } = useLocale();
@@ -91,11 +92,17 @@ export default function ListSubscribersPage() {
         type: [],
         status: [],
     });
-    const [isLoading, setIsLoading] = React.useState(false); 
+    const [isLoading, setIsLoading] = React.useState(false);
     const iconSize = "h-3 w-3";
-    const statIconSize = "h-4 w-4 text-muted-foreground"; 
+    const statIconSize = "h-4 w-4 text-muted-foreground";
 
-    const [subscribers, setSubscribers] = React.useState<Subscriber[]>([]); // Initialize with empty array
+    const [subscribers, setSubscribers] = React.useState<Subscriber[]>([]);
+
+    const [currentPage, setCurrentPage] = React.useState(1);
+    const itemsPerPage = 10;
+    const [sortColumn, setSortColumn] = React.useState<SortableSubscriberKeys | null>(null);
+    const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
+
 
     React.useEffect(() => {
       setIsLoading(true);
@@ -111,7 +118,7 @@ export default function ListSubscribersPage() {
             description: "Failed to load subscriber data.",
             variant: "destructive",
           });
-          setSubscribers(placeholderSubscribers); // Fallback to placeholder on error
+          setSubscribers(placeholderSubscribers);
         })
         .finally(() => setIsLoading(false));
     }, [toast]);
@@ -131,6 +138,49 @@ export default function ListSubscribersPage() {
         });
     }, [searchTerm, filters, subscribers]);
 
+    const sortedSubscribers = React.useMemo(() => {
+        if (!sortColumn) return filteredSubscribers;
+        return [...filteredSubscribers].sort((a, b) => {
+            let valA: any;
+            let valB: any;
+
+            if (sortColumn === 'name') {
+                valA = a.subscriberType === 'Residential' ? a.fullName : a.companyName;
+                valB = b.subscriberType === 'Residential' ? b.fullName : b.companyName;
+            } else {
+                valA = a[sortColumn as keyof Subscriber];
+                valB = b[sortColumn as keyof Subscriber];
+            }
+
+            if (valA === undefined || valA === null) valA = '';
+            if (valB === undefined || valB === null) valB = '';
+
+
+            if (typeof valA === 'string' && typeof valB === 'string') {
+                valA = valA.toLowerCase();
+                valB = valB.toLowerCase();
+            }
+
+
+            if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+            if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
+    }, [filteredSubscribers, sortColumn, sortDirection]);
+
+
+    const totalPages = Math.ceil(sortedSubscribers.length / itemsPerPage);
+    const currentSubscribers = sortedSubscribers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const handleSort = (column: SortableSubscriberKeys) => {
+        if (sortColumn === column) {
+            setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortColumn(column);
+            setSortDirection('asc');
+        }
+    };
+
     const handleFilterChange = (category: keyof FilterState, value: string, checked: boolean) => {
         setFilters(prev => {
             const currentCategory = prev[category] as string[];
@@ -139,6 +189,7 @@ export default function ListSubscribersPage() {
                 : currentCategory.filter(item => item !== value);
             return { ...prev, [category]: updatedCategory };
         });
+        setCurrentPage(1); // Reset to first page on filter change
     };
 
     const handleRefresh = async () => {
@@ -156,9 +207,10 @@ export default function ListSubscribersPage() {
              description: "Failed to refresh subscriber data.",
              variant: "destructive",
            });
-           setSubscribers(placeholderSubscribers); // Fallback
+           setSubscribers(placeholderSubscribers);
         } finally {
             setIsLoading(false);
+            setCurrentPage(1);
         }
     };
 
@@ -166,38 +218,38 @@ export default function ListSubscribersPage() {
     <div className="flex flex-col gap-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-2">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> 
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4">
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_new_subscribers', 'New Subscribers (Month)')}</CardTitle>
             <TrendingUp className={statIconSize} />
           </CardHeader>
-          <CardContent className="pb-3 px-4"> 
+          <CardContent className="pb-3 px-4">
             <div className="text-lg font-bold">{subscriberStats.newSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> 
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4">
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_active_subscribers', 'Active Subscribers')}</CardTitle>
             <UserCheck className={statIconSize} />
           </CardHeader>
-          <CardContent className="pb-3 px-4"> 
+          <CardContent className="pb-3 px-4">
             <div className="text-lg font-bold">{subscriberStats.activeSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> 
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4">
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_suspended_subscribers', 'Suspended Subscribers')}</CardTitle>
             <UserX className={statIconSize} />
           </CardHeader>
-          <CardContent className="pb-3 px-4"> 
+          <CardContent className="pb-3 px-4">
             <div className="text-lg font-bold">{subscriberStats.suspendedSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4"> 
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4">
             <CardTitle className="text-xs font-medium">{t('list_subscribers.stats_total_subscribers', 'Total Subscribers')}</CardTitle>
             <Users className={statIconSize} />
           </CardHeader>
-          <CardContent className="pb-3 px-4"> 
+          <CardContent className="pb-3 px-4">
             <div className="text-lg font-bold">{subscriberStats.totalSubscribers.toLocaleString()}</div>
           </CardContent>
         </Card>
@@ -205,7 +257,7 @@ export default function ListSubscribersPage() {
 
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-base font-semibold">{t('sidebar.subscribers')}</h1>
-        
+
         <div className="flex flex-1 flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <div className="relative flex-1">
               <Search className={`absolute left-2.5 top-2.5 ${iconSize} text-muted-foreground`} />
@@ -214,7 +266,7 @@ export default function ListSubscribersPage() {
                 placeholder={t('list_subscribers.search_placeholder')}
                 className="pl-8 w-full"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {setSearchTerm(e.target.value); setCurrentPage(1);}}
               />
             </div>
             <DropdownMenu>
@@ -273,23 +325,58 @@ export default function ListSubscribersPage() {
       </div>
 
       <Card>
-        <CardContent className="pt-0"> 
+        <CardContent className="pt-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-24 text-xs text-center">{t('list_subscribers.table_header_id')}</TableHead> 
-                  <TableHead className="w-12 text-xs text-center">{t('list_subscribers.table_header_type')}</TableHead> 
-                  <TableHead className="text-xs text-center">{t('list_subscribers.table_header_name')}</TableHead> 
-                  <TableHead className="text-xs text-center">{t('list_subscribers.table_header_tax_id', 'Tax ID')}</TableHead> 
-                  <TableHead className="text-xs text-center">{t('list_subscribers.table_header_address', 'Address')}</TableHead> 
-                  <TableHead className="text-xs text-center">{t('list_subscribers.table_header_phone')}</TableHead> 
-                  <TableHead className="text-xs text-center">{t('list_subscribers.table_header_status')}</TableHead>
+                  <TableHead className="w-24 text-xs text-center cursor-pointer hover:bg-muted/50" onClick={() => handleSort('id')}>
+                    <div className="flex items-center justify-center gap-1">
+                        {t('list_subscribers.table_header_id')}
+                        {sortColumn === 'id' && <ArrowUpDown className="h-2.5 w-2.5" />}
+                    </div>
+                  </TableHead>
+                  <TableHead className="w-12 text-xs text-center cursor-pointer hover:bg-muted/50" onClick={() => handleSort('subscriberType')}>
+                     <div className="flex items-center justify-center gap-1">
+                        {t('list_subscribers.table_header_type')}
+                        {sortColumn === 'subscriberType' && <ArrowUpDown className="h-2.5 w-2.5" />}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-xs text-center cursor-pointer hover:bg-muted/50" onClick={() => handleSort('name')}>
+                    <div className="flex items-center justify-center gap-1">
+                        {t('list_subscribers.table_header_name')}
+                        {sortColumn === 'name' && <ArrowUpDown className="h-2.5 w-2.5" />}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-xs text-center cursor-pointer hover:bg-muted/50" onClick={() => handleSort('taxId')}>
+                    <div className="flex items-center justify-center gap-1">
+                        {t('list_subscribers.table_header_tax_id')}
+                        {sortColumn === 'taxId' && <ArrowUpDown className="h-2.5 w-2.5" />}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-xs text-center cursor-pointer hover:bg-muted/50" onClick={() => handleSort('address')}>
+                    <div className="flex items-center justify-center gap-1">
+                        {t('list_subscribers.table_header_address')}
+                        {sortColumn === 'address' && <ArrowUpDown className="h-2.5 w-2.5" />}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-xs text-center cursor-pointer hover:bg-muted/50" onClick={() => handleSort('phoneNumber')}>
+                    <div className="flex items-center justify-center gap-1">
+                        {t('list_subscribers.table_header_phone')}
+                        {sortColumn === 'phoneNumber' && <ArrowUpDown className="h-2.5 w-2.5" />}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-xs text-center cursor-pointer hover:bg-muted/50" onClick={() => handleSort('status')}>
+                    <div className="flex items-center justify-center gap-1">
+                        {t('list_subscribers.table_header_status')}
+                        {sortColumn === 'status' && <ArrowUpDown className="h-2.5 w-2.5" />}
+                    </div>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                    Array.from({ length: 5 }).map((_, index) => (
+                    Array.from({ length: itemsPerPage }).map((_, index) => (
                         <TableRow key={`skeleton-${index}`}>
                             <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-20 mx-auto" /></TableCell>
                             <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-8 mx-auto" /></TableCell>
@@ -300,10 +387,10 @@ export default function ListSubscribersPage() {
                             <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-20 mx-auto" /></TableCell>
                         </TableRow>
                     ))
-                ) : filteredSubscribers.length > 0 ? (
-                  filteredSubscribers.map((subscriber) => (
+                ) : currentSubscribers.length > 0 ? (
+                  currentSubscribers.map((subscriber) => (
                     <TableRow key={subscriber.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{subscriber.id}</TableCell> 
+                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{subscriber.id}</TableCell>
                       <TableCell className="text-center">
                         {subscriber.subscriberType === 'Residential' ? (
                           <User className={`${iconSize} text-muted-foreground mx-auto`} title={t('add_subscriber.type_residential')} />
@@ -311,14 +398,14 @@ export default function ListSubscribersPage() {
                           <Building className={`${iconSize} text-muted-foreground mx-auto`} title={t('add_subscriber.type_commercial')} />
                         )}
                       </TableCell>
-                      <TableCell className="font-medium text-xs text-center"> 
+                      <TableCell className="font-medium text-xs text-center">
                         <Link href={`/subscribers/profile/${subscriber.id}`} className="hover:underline text-primary">
                           {subscriber.subscriberType === 'Residential' ? subscriber.fullName : subscriber.companyName}
                         </Link>
                       </TableCell>
-                      <TableCell className="text-muted-foreground text-xs text-center">{formatTaxId(subscriber.subscriberType === 'Residential' ? subscriber.taxId : subscriber.businessNumber)}</TableCell> 
-                      <TableCell className="text-muted-foreground text-xs text-center">{subscriber.address}</TableCell> 
-                      <TableCell className="text-muted-foreground text-xs text-center">{subscriber.phoneNumber}</TableCell> 
+                      <TableCell className="text-muted-foreground text-xs text-center">{formatTaxId(subscriber.subscriberType === 'Residential' ? subscriber.taxId : subscriber.businessNumber)}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs text-center">{subscriber.address}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs text-center">{subscriber.phoneNumber}</TableCell>
                       <TableCell className="text-center">
                         <Badge variant={subscriber.status === 'Active' ? 'default' : 'secondary'} className={cn("text-xs", getStatusBadgeVariant(subscriber.status))}>
                              {t(`list_subscribers.status_${subscriber.status.toLowerCase()}` as any, subscriber.status)}
@@ -328,7 +415,7 @@ export default function ListSubscribersPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8 text-xs"> 
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8 text-xs">
                       {t('list_subscribers.no_results')}
                     </TableCell>
                   </TableRow>
@@ -336,6 +423,29 @@ export default function ListSubscribersPage() {
               </TableBody>
             </Table>
           </div>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-end space-x-2 py-4">
+              <span className="text-xs text-muted-foreground">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className={iconSize} />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className={iconSize} />
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
