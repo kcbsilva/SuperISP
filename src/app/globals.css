@@ -1,162 +1,132 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "bootstrap/dist/css/bootstrap.min.css";
 
-@layer base {
-  :root {
-    /* Light Theme Colors - New Palette */
-    --background: 0 0% 90%; /* Light Gray (#E5E5E5) */
-    --foreground: 219 70% 9%; /* Very Dark Blue (#081124) */
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 219 70% 9%; /* Very Dark Blue */
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 219 70% 9%; /* Very Dark Blue */
-    --primary: 219 50% 28%; /* Dark Blue (#233B6E) */
-    --primary-foreground: 0 0% 90%; /* Light Gray (#E5E5E5) */
-    --secondary: 216 49% 16%; /* Darker Blue (#14213D) */
-    --secondary-foreground: 0 0% 90%; /* Light Gray */
-    --muted: 0 0% 96.1%; /* Default Light Gray - slightly off-white */
-    --muted-foreground: 216 49% 30%; /* Mid-tone of Darker Blue */
-    --accent: 38 96% 52%; /* Orange/Yellow (#FCA311) */
-    --accent-foreground: 219 70% 9%; /* Very Dark Blue for contrast on yellow */
-    --destructive: 0 84.2% 60.2%; /* Default Red */
-    --destructive-foreground: 0 0% 98%; /* Default Light */
-    --border: 0 0% 82%; /* Slightly darker than #E5E5E5 for borders */
-    --input: 0 0% 82%; /* Similar to border */
-    --ring: 38 96% 52%; /* Orange/Yellow for focus rings */
-    --chart-1: 219 50% 28%; /* #233B6E */
-    --chart-2: 38 96% 52%; /* #FCA311 */
-    --chart-3: 216 49% 16%; /* #14213D */
-    --chart-4: 219 50% 48%; /* Lighter #233B6E */
-    --chart-5: 38 96% 62%; /* Lighter #FCA311 */
-    --radius: 0.5rem;
-
-    /* Light Theme Sidebar */
-    --sidebar-background: 0 0% 100%; /* White (same as card) */
-    --sidebar-foreground: 219 70% 9%; /* Very Dark Blue */
-    --sidebar-primary: 219 50% 28%; /* Dark Blue */
-    --sidebar-primary-foreground: 0 0% 90%; /* Light Gray */
-    --sidebar-accent: 0 0% 96%; /* Light gray for hover */
-    --sidebar-accent-foreground: 219 50% 28%; /* Dark Blue text on hover */
-    --sidebar-border: 0 0% 82%; /* Consistent with main border */
-    --sidebar-ring: 38 96% 52%; /* Orange/Yellow */
+:root {
+  /* Light Theme Colors - Mapped to Bootstrap CSS Variables */
+  --bs-body-bg: hsl(0 0% 90%); /* Light Gray (#E5E5E5) */
+  --bs-body-color: hsl(219 70% 9%); /* Very Dark Blue (#081124) */
+  --bs-primary: hsl(219 50% 28%); /* Dark Blue (#233B6E) */
+  --bs-primary-rgb: 35,59,110;
+  --bs-secondary: hsl(216 49% 16%); /* Darker Blue (#14213D) */
+  --bs-secondary-rgb: 20,33,61;
+  --bs-warning: hsl(38 96% 52%); /* Orange/Yellow (#FCA311) for accent */
+  --bs-warning-rgb: 252,163,17;
+  --bs-danger: hsl(0 84.2% 60.2%); /* Default Red */
+  --bs-danger-rgb: 220,53,69;
+  --bs-light: hsl(0 0% 100%); /* White for cards/popovers */
+  --bs-light-rgb: 255,255,255;
+  --bs-dark: hsl(219 70% 9%); /* Very Dark Blue */
+  --bs-dark-rgb: 8,17,36;
+  --bs-border-color: hsl(0 0% 82%);
+  --bs-border-radius: 0.5rem;
+  --bs-link-color: hsl(var(--primary));
+  --bs-link-hover-color: hsl(var(--primary) / 0.8);
 
 
-    /* Green colors for buttons/badges (keeping existing logic, can be themed if needed) */
-    --green-100: 120 60% 90%;
-    --green-600: 134 61% 41%;
-    --green-700: 134 61% 36%;
-    --green-800: 134 61% 31%;
+  /* Original Theme Variables (kept for reference, might not be fully used by Bootstrap) */
+  --background: 0 0% 90%;
+  --foreground: 219 70% 9%;
+  --card: 0 0% 100%;
+  --card-foreground: 219 70% 9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 219 70% 9%;
+  --primary: 219 50% 28%;
+  --primary-foreground: 0 0% 90%;
+  --secondary: 216 49% 16%;
+  --secondary-foreground: 0 0% 90%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 216 49% 30%;
+  --accent: 38 96% 52%;
+  --accent-foreground: 219 70% 9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 82%;
+  --input: 0 0% 82%;
+  --ring: 38 96% 52%;
+  --radius: 0.5rem;
 
-    /* Red colors for badges (keeping existing logic) */
-    --red-100: 0 70% 90%;
-    --red-800: 0 70% 35%;
+  --chart-1: hsl(var(--primary));
+  --chart-2: hsl(var(--accent));
+  --chart-3: hsl(var(--secondary));
+  --chart-4: hsl(219 50% 48%); 
+  --chart-5: hsl(38 96% 62%);
 
-    /* Yellow colors for badges (keeping existing logic) */
-    --yellow-100: 45 90% 90%;
-    --yellow-800: 45 70% 35%;
-
-    /* Blue colors for badges (keeping existing logic) */
-    --blue-100: 210 90% 90%;
-    --blue-800: 210 70% 35%;
-
-    /* Gray colors for badges (keeping existing logic) */
-    --gray-100: 210 15% 90%;
-    --gray-800: 210 10% 35%;
-  }
-
-  .dark {
-    /* Dark Theme Colors - New Palette */
-    --background: 219 70% 9%; /* Very Dark Blue (#081124) */
-    --foreground: 0 0% 90%; /* Light Gray (#E5E5E5) */
-    --card: 216 49% 16%; /* Darker Blue (#14213D) */
-    --card-foreground: 0 0% 90%; /* Light Gray */
-    --popover: 216 49% 16%; /* Darker Blue */
-    --popover-foreground: 0 0% 90%; /* Light Gray */
-    --primary: 38 96% 52%; /* Orange/Yellow (#FCA311) */
-    --primary-foreground: 219 70% 9%; /* Very Dark Blue on yellow */
-    --secondary: 219 50% 28%; /* Dark Blue (#233B6E) */
-    --secondary-foreground: 0 0% 90%; /* Light Gray */
-    --muted: 216 49% 20%; /* Darker than card */
-    --muted-foreground: 0 0% 70%; /* Lighter gray for muted text */
-    --accent: 219 50% 28%; /* Dark Blue (#233B6E) - can be different from secondary if needed */
-    --accent-foreground: 0 0% 90%; /* Light Gray */
-    --destructive: 0 70% 45%; /* Darker Red */
-    --destructive-foreground: 0 0% 98%; /* Light */
-    --border: 219 50% 28%; /* Dark Blue for borders */
-    --input: 216 49% 22%; /* Slightly lighter than card for input bg */
-    --ring: 38 96% 52%; /* Orange/Yellow */
-
-    --chart-1: 219 50% 28%; /* #233B6E */
-    --chart-2: 38 96% 52%; /* #FCA311 */
-    --chart-3: 0 0% 90%; /* #E5E5E5 - Light gray for contrast */
-    --chart-4: 219 50% 48%; /* Lighter #233B6E */
-    --chart-5: 38 96% 72%; /* Lighter #FCA311 */
-
-    /* Dark Theme Sidebar */
-    --sidebar-background: 216 49% 16%; /* Darker Blue (same as card) */
-    --sidebar-foreground: 0 0% 90%; /* Light Gray */
-    --sidebar-primary: 38 96% 52%; /* Orange/Yellow */
-    --sidebar-primary-foreground: 219 70% 9%; /* Very Dark Blue */
-    --sidebar-accent: 219 50% 22%; /* Slightly lighter blue than card for hover */
-    --sidebar-accent-foreground: 38 96% 52%; /* Orange/Yellow text on hover */
-    --sidebar-border: 219 50% 28%; /* Dark Blue */
-    --sidebar-ring: 38 96% 52%; /* Orange/Yellow */
-
-    /* Dark theme green/red/yellow/blue/gray for badges (adjust if needed) */
-    --green-100: 120 60% 10%;
-    --green-600: 134 61% 41%;
-    --green-700: 134 61% 46%;
-    --green-800: 134 61% 51%;
-
-    --red-100: 0 70% 15%;
-    --red-800: 0 70% 70%;
-
-    --yellow-100: 45 70% 15%;
-    --yellow-800: 45 70% 70%;
-
-    --blue-100: 210 70% 15%;
-    --blue-800: 210 70% 70%;
-
-    --gray-100: 210 10% 15%;
-    --gray-800: 210 10% 70%;
-  }
+  /* Sidebar specific - these will need to be applied via Bootstrap classes or custom CSS */
+  --sidebar-background: hsl(0 0% 100%);
+  --sidebar-foreground: hsl(219 70% 9%);
+  --sidebar-primary: hsl(219 50% 28%);
+  --sidebar-primary-foreground: hsl(0 0% 90%);
+  --sidebar-accent: hsl(0 0% 96%);
+  --sidebar-accent-foreground: hsl(219 50% 28%);
+  --sidebar-border: hsl(0 0% 82%);
+  --sidebar-ring: hsl(38 96% 52%);
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground text-xs;
-    font-family: Arial, Helvetica, sans-serif;
-  }
+.dark {
+  --bs-body-bg: hsl(219 70% 9%);
+  --bs-body-color: hsl(0 0% 90%);
+  --bs-primary: hsl(38 96% 52%);
+  --bs-primary-rgb: 252,163,17;
+  --bs-secondary: hsl(219 50% 28%);
+  --bs-secondary-rgb: 35,59,110;
+  --bs-warning: hsl(219 50% 28%); /* Using primary for warning in dark if accent is primary */
+  --bs-warning-rgb: 35,59,110;
+  --bs-danger: hsl(0 70% 45%); 
+  --bs-danger-rgb: 207,45,45;
+  --bs-light: hsl(216 49% 16%); /* Darker Blue for cards/popovers */
+  --bs-light-rgb: 20,33,61;
+  --bs-dark: hsl(0 0% 90%); /* Light Gray */
+  --bs-dark-rgb: 229,229,229;
+  --bs-border-color: hsl(219 50% 28%);
+  --bs-link-color: hsl(var(--accent));
+  --bs-link-hover-color: hsl(var(--accent) / 0.8);
+
+
+  /* Original Dark Theme Variables */
+  --background: 219 70% 9%;
+  --foreground: 0 0% 90%;
+  --card: 216 49% 16%;
+  --card-foreground: 0 0% 90%;
+  --popover: 216 49% 16%;
+  --popover-foreground: 0 0% 90%;
+  --primary: 38 96% 52%;
+  --primary-foreground: 219 70% 9%;
+  --secondary: 219 50% 28%;
+  --secondary-foreground: 0 0% 90%;
+  --muted: 216 49% 20%;
+  --muted-foreground: 0 0% 70%;
+  --accent: 219 50% 28%;
+  --accent-foreground: 0 0% 90%;
+  --destructive: 0 70% 45%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 219 50% 28%;
+  --input: 216 49% 22%;
+  --ring: 38 96% 52%;
+
+  --chart-1: hsl(var(--primary));
+  --chart-2: hsl(var(--accent)); /* This will be same as primary in dark */
+  --chart-3: hsl(var(--foreground)); 
+  --chart-4: hsl(219 50% 48%);
+  --chart-5: hsl(38 96% 72%);
+
+  --sidebar-background: hsl(216 49% 16%);
+  --sidebar-foreground: hsl(0 0% 90%);
+  --sidebar-primary: hsl(38 96% 52%);
+  --sidebar-primary-foreground: hsl(219 70% 9%);
+  --sidebar-accent: hsl(219 50% 22%);
+  --sidebar-accent-foreground: hsl(38 96% 52%);
+  --sidebar-border: hsl(219 50% 28%);
+  --sidebar-ring: hsl(38 96% 52%);
 }
 
-/* Utility classes for green colors */
-.bg-green-100 { background-color: hsl(var(--green-100)); }
-.text-green-800 { color: hsl(var(--green-800)); }
-.bg-green-600 { background-color: hsl(var(--green-600)); }
-.hover\:bg-green-700:hover { background-color: hsl(var(--green-700)); }
-.text-white { color: white; }
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.875rem; /* Equivalent to text-xs, adjust if needed */
+  line-height: 1.25rem; /* Equivalent to text-xs, adjust if needed */
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
 
-/* Utility classes for red colors */
-.bg-red-100 { background-color: hsl(var(--red-100)); }
-.text-red-800 { color: hsl(var(--red-800)); }
-
-/* Utility classes for yellow colors */
-.bg-yellow-100 { background-color: hsl(var(--yellow-100)); }
-.text-yellow-800 { color: hsl(var(--yellow-800)); }
-
-/* Utility classes for blue colors */
-.bg-blue-100 { background-color: hsl(var(--blue-100)); }
-.text-blue-800 { color: hsl(var(--blue-800)); }
-
-/* Utility classes for gray colors */
-.bg-gray-100 { background-color: hsl(var(--gray-100)); }
-.text-gray-800 { color: hsl(var(--gray-800)); }
-
-/* Utility class for accent background (Orange/Yellow) */
-.bg-accent { background-color: hsl(var(--accent)); }
-.text-accent-foreground { color: hsl(var(--accent-foreground)); }
-.hover\:bg-accent\/90:hover { background-color: hsla(var(--accent), 0.9); }
+/* Remove Tailwind-specific color utility classes like .bg-green-100 etc.
+   Bootstrap contextual classes (bg-success, text-danger) should be used instead.
+   Or, define custom Bootstrap theme colors if needed.
+*/
