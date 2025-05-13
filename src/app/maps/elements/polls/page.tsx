@@ -267,28 +267,28 @@ export default function HydroPollsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs">ID</TableHead>
-                    <TableHead className="text-xs">Description</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.table_header_project', 'Project')}</TableHead>
-                    <TableHead className="text-xs">Height</TableHead>
-                    <TableHead className="text-xs">Type</TableHead>
-                    <TableHead className="text-xs">Address</TableHead>
-                    <TableHead className="text-xs">GPS Coordinates</TableHead>
-                    <TableHead className="text-xs">Transformer</TableHead>
+                    <TableHead className="text-xs text-center">ID</TableHead>
+                    <TableHead className="text-xs text-center">Description</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.table_header_project', 'Project')}</TableHead>
+                    <TableHead className="text-xs text-center">Height</TableHead>
+                    <TableHead className="text-xs text-center">Type</TableHead>
+                    <TableHead className="text-xs text-center">Address</TableHead>
+                    <TableHead className="text-xs text-center">GPS Coordinates</TableHead>
+                    <TableHead className="text-xs text-center">Transformer</TableHead>
                     <TableHead className="text-xs text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {placeholderPolls.map((poll) => (
                     <TableRow key={poll.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs">{poll.id}</TableCell>
-                      <TableCell className="text-xs">{poll.description}</TableCell>
-                      <TableCell className="text-xs">{poll.project || '-'}</TableCell>
-                      <TableCell className="text-xs">{poll.height}</TableCell>
-                      <TableCell className="text-xs">{poll.type}</TableCell>
-                      <TableCell className="text-xs">{poll.address}</TableCell>
-                      <TableCell className="text-xs">{poll.gpsCoordinates}</TableCell>
-                      <TableCell className="text-xs">
+                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{poll.id}</TableCell>
+                      <TableCell className="text-xs text-center">{poll.description}</TableCell>
+                      <TableCell className="text-xs text-center">{poll.project || '-'}</TableCell>
+                      <TableCell className="text-xs text-center">{poll.height}</TableCell>
+                      <TableCell className="text-xs text-center">{poll.type}</TableCell>
+                      <TableCell className="text-xs text-center">{poll.address}</TableCell>
+                      <TableCell className="text-xs text-center">{poll.gpsCoordinates}</TableCell>
+                      <TableCell className="text-xs text-center">
                         <Badge variant={poll.transformer === 'Yes' ? 'destructive' : 'default'} className={`text-xs ${poll.transformer === 'Yes' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                           {poll.transformer}
                         </Badge>
@@ -318,3 +318,4 @@ export default function HydroPollsPage() {
     </div>
   );
 }
+
