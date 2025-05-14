@@ -3,7 +3,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect, type ReactNode } from 'react';
+import * as React from 'react'; // Ensure React is imported for useState, useEffect
+import type { ReactNode } from 'react';
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, ChevronDown, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
   Split,
@@ -67,7 +68,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarInset,
-  SidebarMenuSub, 
+  SidebarMenuSub,
   SidebarMenuSubTrigger,
   SidebarMenuSubContent,
   SidebarSeparator,
@@ -83,7 +84,17 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 const ProlterLogo = () => {
   const { theme } = useTheme();
-  const fillColor = theme === 'dark' ? 'hsl(var(--accent))' : '#14213D';
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Default fill color for server-side rendering and before client-side theme is determined
+  // This default should match one of your theme's expected initial states (e.g., light theme)
+  const ssrFillColor = '#14213D'; // Default to light theme color for SSR
+
+  const fillColor = isMounted ? (theme === 'dark' ? 'hsl(var(--accent))' : '#14213D') : ssrFillColor;
 
   return (
     <svg
@@ -120,20 +131,17 @@ const queryClient = new QueryClient();
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [progress, setProgress] = React.useState(0);
   const { t } = useLocale();
-  const { theme, setTheme } = useTheme();
-
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  // const { theme, setTheme } = useTheme(); // theme and setTheme are in AppHeader now
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
   const isMobile = useIsMobile();
-  const { collapsed, setCollapsed, collapsible } = useSidebar(); // Removed side as it's fixed
+  const { collapsed, setCollapsed, collapsible } = useSidebar();
 
 
   const toggleMobileSidebar = () => setIsMobileSidebarOpen(!isMobileSidebarOpen);
-  
-  // Since the sidebar is non-collapsible, this function is effectively not used for desktop
-  // Kept for structural consistency if collapsibility is re-enabled
+
   const toggleDesktopSidebar = () => {
     if (collapsible !== 'none') {
       setCollapsed(!collapsed);
@@ -141,14 +149,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!isMobile && isMobileSidebarOpen) {
       setIsMobileSidebarOpen(false);
     }
   }, [isMobile, isMobileSidebarOpen]);
 
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (pathname) {
       setIsLoading(true);
       setProgress(10);
@@ -189,7 +197,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <Link href="/" className="flex items-center gap-2 text-lg font-semibold" style={{ width: '131px', height: '32px' }}>
               <ProlterLogo />
             </Link>
-            {/* Removed collapse/expand button as sidebar is non-collapsible */}
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
@@ -208,7 +215,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 <span className="truncate">{t('sidebar.subscribers')}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          
+
           {/* FTTx Menu */}
           <SidebarMenuItem>
               <SidebarMenuSub>
@@ -340,7 +347,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuSubContent>
               </SidebarMenuSub>
           </SidebarMenuItem>
-          
+
           {/* Service Calls Menu */}
           <SidebarMenuItem>
             <SidebarMenuSub>
@@ -737,8 +744,8 @@ export default function RootLayout({
         >
           <QueryClientProvider client={queryClient}>
             <LocaleProvider>
-              <TooltipProvider> {/* Ensure TooltipProvider wraps SidebarProvider */}
-                <SidebarProvider side="left" collapsible="none"> {/* Set to non-collapsible */}
+              <TooltipProvider>
+                <SidebarProvider side="left" collapsible="none">
                   <AppLayout>{children}</AppLayout>
                 </SidebarProvider>
               </TooltipProvider>
