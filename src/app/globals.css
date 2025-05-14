@@ -65,7 +65,7 @@ table {
   --muted: 217.2 32.6% 17.5%;
   --muted-foreground: 215 20.2% 65.1%;
 
-  --accent: 26.1, 90.5%, 56.9%; /* HSL for #FCA311 */
+  --accent: 26.1 90.5% 56.9%; /* HSL for #FCA311 - Corrected: space-separated */
   --accent-foreground: 222.2 47.4% 11.2%; /* Dark text for bright accent */
 
   --destructive: 0 62.8% 30.6%;
@@ -97,7 +97,7 @@ table {
   --muted: 12 6.5% 15.1%;
   --muted-foreground: 24 5.4% 63.9%;
 
-  --accent: 26.1, 90.5%, 56.9%;
+  --accent: 26.1 90.5% 56.9%; /* Corrected: space-separated */
   --accent-foreground: 20 14.3% 4.1%;
 
   --destructive: 0 72.2% 50.6%;
