@@ -2,14 +2,14 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link";
+import Link, { type LinkProps } from "next/link";
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronDown } from "lucide-react" // ChevronLeft and ChevronRight removed as sidebar is not collapsible
 import { useIsMobile } from "@/hooks/use-mobile" // Corrected import path
 import { cn } from "@/lib/utils"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
+import { Button } from '@/components/ui/button'; // Keep Button import
 
 const sidebarVariants = cva(
   "group/sidebar peer relative hidden md:block text-sidebar-foreground transition-[width] duration-300 ease-in-out",
@@ -24,16 +24,17 @@ const sidebarVariants = cva(
         left: "inset-y-0 left-0 border-r",
         right: "inset-y-0 right-0 border-l",
       },
+      // Collapsible variants are kept for structure but effectively not used if collapsible="none"
       collapsible: {
-        none: "",
-        icon: "", 
-        full: "" 
+        none: "w-[var(--sidebar-width)]", // Always use standard width if not collapsible
+        icon: "w-[var(--sidebar-width-icon)] data-[collapsed=false]:w-[var(--sidebar-width)]",
+        full: "w-[var(--sidebar-width)] data-[collapsed=true]:w-[var(--sidebar-width-icon)]"
       },
     },
     defaultVariants: {
       variant: "default",
       side: "left",
-      collapsible: "none",
+      collapsible: "none", // Default to non-collapsible
     },
   }
 )
@@ -97,20 +98,21 @@ const SidebarProvider = React.forwardRef<
       children,
       variant = "default",
       side = "left",
-      collapsible = "full", // Default to full collapse
-      defaultCollapsed,
+      collapsible = "none", // Set to none, making it non-collapsible
+      defaultCollapsed, // This will be ignored if collapsible is 'none'
       defaultOpenMobile,
       ...props
     },
     ref
   ) => {
     const isMobile = useIsMobile()
+    // collapsed state is managed but effectively ignored if collapsible is 'none'
     const [collapsed, setCollapsed] = React.useState(defaultCollapsed ?? false)
     const [isOpenMobile, setIsOpenMobile] = React.useState(defaultOpenMobile ?? false)
 
     React.useEffect(() => {
       if (isMobile) {
-        setCollapsed(false) // On mobile, sidebar is not "collapsed" in the desktop sense
+        setCollapsed(false) // Always expand on mobile
       }
     }, [isMobile])
 
@@ -119,7 +121,7 @@ const SidebarProvider = React.forwardRef<
       () => ({
         variant,
         side,
-        collapsed: collapsible === 'none' ? false : collapsed,
+        collapsed: collapsible === 'none' ? false : collapsed, // Ensure collapsed is false if not collapsible
         collapsible,
         setCollapsed,
         isMobile,
@@ -144,16 +146,15 @@ SidebarProvider.displayName = "SidebarProvider"
 const Sidebar = React.forwardRef<
   HTMLElement,
   SidebarProps
->(({ className, asChild, children, ...props }, ref) => {
-  const { variant, side, collapsed, collapsible, isMobile, isOpenMobile, setIsOpenMobile } = useSidebar()
-  const Comp = asChild ? Slot : "nav"
-
+>(({ className, children, ...props }, ref) => {
+  const { variant, side, collapsible, collapsed, isMobile, isOpenMobile, setIsOpenMobile } = useSidebar()
+  
   const commonProps = {
     ref,
     "data-sidebar": "sidebar",
     "data-variant": variant,
     "data-side": side,
-    "data-collapsed": collapsible === 'none' ? false : collapsed,
+    "data-collapsed": collapsed, // Reflects current collapsed state
     "data-collapsible": collapsible,
     ...props,
   }
@@ -162,10 +163,10 @@ const Sidebar = React.forwardRef<
     return (
       <>
         {isOpenMobile && <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={() => setIsOpenMobile(false)} />}
-        <Comp
+        <nav
           className={cn(
             sidebarMobileVariants({ side }),
-            "w-[var(--sidebar-width)]", // Use full width for mobile
+            "w-[var(--sidebar-width)]", // Use standard width for mobile
             variant === "inset" && "m-0 rounded-none border-none shadow-none",
             variant === "floating" && "m-0 rounded-none border-none shadow-none",
             className
@@ -174,25 +175,27 @@ const Sidebar = React.forwardRef<
           {...commonProps}
         >
           {children}
-        </Comp>
+        </nav>
       </>
     )
   }
+  
+  // Non-collapsible: always use --sidebar-width
+  const widthClass = "w-[var(--sidebar-width)]";
 
   return (
-    <Comp
+    <nav
       className={cn(
         sidebarVariants({ variant, side, collapsible }),
         "flex flex-col",
-        // Apply width based on collapsible state
-        collapsible === 'none' ? "w-[var(--sidebar-width)]" : (collapsed ? "w-[var(--sidebar-width-icon)]" : "w-[var(--sidebar-width)]"),
+        widthClass,
         (variant === "floating" || variant === "inset") && "p-2",
         className
       )}
       {...commonProps}
     >
       {children}
-    </Comp>
+    </nav>
   )
 })
 Sidebar.displayName = "Sidebar"
@@ -202,16 +205,14 @@ const SidebarHeader = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
-  const { collapsed, collapsible } = useSidebar()
-  const hideText = collapsible !== 'none' && collapsed;
-
+  const { collapsed } = useSidebar(); // Get collapsed state
   return (
     <div
       ref={ref}
       data-sidebar="header"
       className={cn(
         "flex items-center border-b p-2 shrink-0 h-12",
-        hideText ? "justify-center" : "justify-between",
+        collapsed ? "justify-center" : "justify-between", // Center logo when collapsed
         className
       )}
       {...props}
@@ -303,11 +304,12 @@ const sidebarMenuButtonVariants = cva(
       },
       size: {
         default: "",
-        sm: "px-2 py-1 text-xs",
+        sm: "px-2 py-1 text-xs", // Adjusted sizes
         lg: "px-3 py-2 text-sm",
       },
-      isCollapsed: {
-        true: "justify-center",
+      isCollapsed: { // Kept for structure, but not used if collapsible='none'
+        true: "justify-center [&>span:not(.sr-only)]:hidden [&>svg~svg]:hidden", // Hide text and extra chevrons when collapsed
+        false: "",
       },
     },
     defaultVariants: {
@@ -319,25 +321,51 @@ const sidebarMenuButtonVariants = cva(
 );
 
 
+// Interface for SidebarMenuButton props
+interface SidebarMenuButtonProps extends Omit<LinkProps, 'asChild' | 'legacyBehavior'> {
+  isActive?: boolean;
+  tooltip?: React.ReactNode;
+  size?: "default" | "sm" | "lg";
+  asChild?: boolean;
+  children: React.ReactNode;
+  href: string; // href is now required
+}
+
+
 const SidebarMenuButton = React.forwardRef<
-  HTMLAnchorElement, // Changed to HTMLAnchorElement as Link's asChild will render an 'a'
-  React.ComponentProps<typeof Link> & { // Use Link props
-    isActive?: boolean
-    tooltip?: React.ReactNode
-    size?: "default" | "sm" | "lg"
-  }
+  HTMLAnchorElement, // Changed to HTMLAnchorElement as we always render Link
+  SidebarMenuButtonProps
 >(
   (
-    { className, isActive, children, tooltip, size = "default", ...props },
+    { className, isActive, children, tooltip, size = "default", asChild, href, ...props },
     ref
   ) => {
     const { collapsed, collapsible, isMobile } = useSidebar();
     const hideText = collapsible !== 'none' && collapsed && !isMobile;
 
-    // Ensure Link is the direct child if asChild is used elsewhere,
-    // but here we render Link directly.
+    const Comp = asChild ? Slot : Link;
+
+    const buttonChildren = (
+      <>
+        {React.Children.map(children, (child, index) => {
+          if (React.isValidElement(child) && child.type === ChevronDown) {
+            // Don't render ChevronDown if text is hidden (collapsed)
+            return hideText ? null : React.cloneElement(child as React.ReactElement<any>);
+          }
+          // For icons and text (span), render them but text might be hidden by CSS
+          if (React.isValidElement(child) && typeof child.type !== 'string' && (child.type.displayName?.includes('LucideIcon') || child.type.name?.includes('LucideIcon'))) {
+            return React.cloneElement(child as React.ReactElement<any>); // Render icon
+          }
+          if (React.isValidElement(child) && child.type === 'span' && (child.props as any).className?.includes('truncate')) {
+            return React.cloneElement(child as React.ReactElement<any>, { className: cn(child.props.className, hideText && 'sr-only') });
+          }
+          return child;
+        })}
+      </>
+    );
+
     const buttonElement = (
-      <Link
+      <Comp
         ref={ref}
         data-sidebar="menu-button"
         data-size={size}
@@ -345,27 +373,19 @@ const SidebarMenuButton = React.forwardRef<
           sidebarMenuButtonVariants({ isActive, size, isCollapsed: hideText }),
           className
         )}
-        {...props} // Spread props to Link (includes href, etc.)
+        href={href} // href is always present
+        {...props}
       >
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child) && typeof child.type !== 'string') { // Icon
-            return React.cloneElement(child as React.ReactElement<any>, {
-              className: cn(child.props.className, "h-4 w-4") // Ensure icon size consistency
-            });
-          }
-          if (typeof child === 'string' && hideText) { // Text
-            return null;
-          }
-          return child;
-        })}
-      </Link>
+        {buttonChildren}
+      </Comp>
     );
     
-
-    if (hideText && tooltip) {
+    if (hideText && tooltip && !isMobile) {
       return (
         <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>{buttonElement}</TooltipTrigger>
+          <TooltipTrigger asChild>
+            {buttonElement}
+          </TooltipTrigger>
           <TooltipContent side="right" align="center">
             {tooltip}
           </TooltipContent>
@@ -398,7 +418,7 @@ SidebarMenuSub.displayName = "SidebarMenuSub"
 
 const SidebarMenuSubTrigger = React.forwardRef<
   HTMLButtonElement,
-  React.HTMLAttributes<HTMLButtonElement> & {
+  React.ButtonHTMLAttributes<HTMLButtonElement> & { // Changed to ButtonHTMLAttributes
     isActive?: boolean
     tooltip?: React.ReactNode
     size?: "default" | "sm" | "lg"
@@ -408,45 +428,39 @@ const SidebarMenuSubTrigger = React.forwardRef<
     { className, children, isActive, tooltip, size = "default", ...props },
     ref
   ) => {
-    const { collapsed, collapsible, isMobile } = useSidebar()
+    const { collapsed, collapsible, isMobile } = useSidebar();
     const hideText = collapsible !== 'none' && collapsed && !isMobile;
-
 
     const buttonContent = (
       <button
+        type="button" // Explicitly set type for button
         ref={ref}
         data-sidebar="menu-sub-trigger"
         data-size={size}
         className={cn(
           sidebarMenuButtonVariants({ isActive, size, isCollapsed: hideText }),
-          "justify-between", 
+          "justify-between", // Default for trigger
           className
         )}
         {...props}
       >
-        <div className="flex items-center gap-2 flex-1">
-          {React.Children.map(children, (child) => {
-             if (React.isValidElement(child) && typeof child.type !== 'string') {
-                return React.cloneElement(child as React.ReactElement<any>, {
-                  className: cn(child.props.className, "h-4 w-4")
-                });
-              }
-              if (typeof child === 'string' && hideText) {
-                return null
-              }
-              return child
-          })}
-        </div>
-        {!hideText && (
-          <ChevronDown className="ml-auto h-4 w-4 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-        )}
+        {/* Render children, applying sr-only to text if collapsed */}
+        {React.Children.map(children, (child) => {
+          if (React.isValidElement(child) && typeof child.type === 'string' && child.type === 'span') {
+            return React.cloneElement(child as React.ReactElement<any>, {className: cn(hideText && "sr-only", (child.props as any).className) });
+          }
+          // Render icons (like ChevronDown) normally
+          return child;
+        })}
       </button>
     )
-
-    if (hideText && tooltip) {
+    
+    if (hideText && tooltip && !isMobile) {
       return (
         <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
+          <TooltipTrigger asChild>
+            {buttonContent}
+          </TooltipTrigger>
           <TooltipContent side="right" align="center">
             {tooltip}
           </TooltipContent>
@@ -464,6 +478,7 @@ const SidebarMenuSubContent = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & { "data-state"?: "open" | "closed" }
 >(({ className, children, ...props }, ref) => {
   const { collapsed, collapsible } = useSidebar()
+  const hideText = collapsible !== 'none' && collapsed;
 
   return (
     <div
@@ -471,15 +486,13 @@ const SidebarMenuSubContent = React.forwardRef<
       data-sidebar="menu-sub-content"
       className={cn(
         "overflow-hidden transition-all duration-300 ease-in-out",
-        collapsible !== 'none' && collapsed ? "max-h-0" : "max-h-[--radix-accordion-content-height] data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up",
-        collapsible !== 'none' && collapsed && "pl-0", // No padding when fully collapsed
-        collapsible === 'none' && "", // Default state for non-collapsible
-        !(collapsible !== 'none' && collapsed) && "pl-4", // Padding for expanded or icon-only
+        hideText ? "max-h-0" : "max-h-[--radix-accordion-content-height] data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up",
+        !hideText && "pl-4", // Apply padding only when not collapsed
         className
       )}
       {...props}
     >
-      <ul className="flex flex-col gap-0.5 py-1">{children}</ul>
+      <ul className={cn("flex flex-col gap-0.5 py-1", hideText && "hidden")}>{children}</ul>
     </div>
   )
 })
@@ -490,7 +503,7 @@ const SidebarSeparator = React.forwardRef<
   HTMLHRElement,
   React.HTMLAttributes<HTMLHRElement>
 >(({ className, ...props }, ref) => {
-  const { collapsed, collapsible } = useSidebar();
+  const { collapsed, collapsible } = useSidebar()
   const hideText = collapsible !== 'none' && collapsed;
 
   return (
@@ -499,7 +512,7 @@ const SidebarSeparator = React.forwardRef<
       data-sidebar="separator"
       className={cn(
         "my-1 border-border",
-        hideText && "mx-auto w-3/4", 
+        hideText && "mx-auto w-3/4",
         className
       )}
       {...props}
@@ -513,23 +526,34 @@ const SidebarInset = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"main"> & { noMargin?: boolean }
 >(({ className, noMargin, ...props }, ref) => {
-  const { collapsed, collapsible, isMobile, side, variant } = useSidebar();
+  const { side, variant, collapsed, collapsible, isMobile } = useSidebar();
 
   const marginClass = React.useMemo(() => {
-    if (noMargin) return ''; 
-     // For desktop, adjust margin based on sidebar state
-     const desktopMarginValue = collapsible === 'none' 
-       ? 'var(--sidebar-width)' 
-       : collapsed 
-         ? 'var(--sidebar-width-icon)' 
-         : 'var(--sidebar-width)';
-     
-     if (side === 'left') {
-        return `md:ml-[${desktopMarginValue}]`;
-     } else {
-        return `md:mr-[${desktopMarginValue}]`;
-     }
-   }, [collapsed, collapsible, isMobile, noMargin, side]);
+    if (noMargin || isMobile) return 'md:ml-0 md:mr-0'; // No margin on mobile or if noMargin is true
+    
+    let marginLeft = '0px';
+    let marginRight = '0px';
+
+    const baseWidthVar = (collapsible !== 'none' && collapsed) ? 'var(--sidebar-width-icon)' : 'var(--sidebar-width)';
+    const gap = (variant === 'floating' || variant === 'inset') ? '1rem' : '0px'; // Corresponds to p-2 (0.5rem) on each side for floating/inset
+
+    if (side === 'left') {
+      marginLeft = `calc(${baseWidthVar} + ${gap})`;
+    } else { // side === 'right'
+      marginRight = `calc(${baseWidthVar} + ${gap})`;
+    }
+    
+    // Add a fixed 20px gap as requested
+    if (side === 'left') {
+        marginLeft = `calc(${marginLeft} + 20px)`;
+    } else {
+        marginRight = `calc(${marginRight} + 20px)`;
+    }
+
+
+    return { marginLeft, marginRight };
+
+  }, [side, variant, collapsed, collapsible, noMargin, isMobile]);
 
 
   return (
@@ -537,10 +561,9 @@ const SidebarInset = React.forwardRef<
       ref={ref}
       className={cn(
         "relative flex-1 overflow-auto transition-[margin] duration-300 ease-in-out",
-        noMargin ? "p-0" : "md:ml-5", // Always apply consistent padding, margin handled by marginClass
-        marginClass,
         className
       )}
+      style={{ marginLeft: marginClass.marginLeft, marginRight: marginClass.marginRight }}
       {...props}
     />
   )

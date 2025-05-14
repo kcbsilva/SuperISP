@@ -50,7 +50,6 @@ import {
   List as ServiceTypesIcon,
   ChevronRight,
   Menu as MenuIcon,
-  ChevronLeft,
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -72,7 +71,7 @@ import {
   SidebarMenuSubTrigger,
   SidebarMenuSubContent,
   SidebarSeparator,
-  useSidebar, // Import useSidebar
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { AppHeader } from '@/components/app-header';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
@@ -88,8 +87,8 @@ const ProlterLogo = () => {
 
   return (
     <svg
-      width="100%" // Will be constrained by parent Link's style
-      height="100%" // Will be constrained by parent Link's style
+      width="100%"
+      height="100%"
       viewBox="0 0 131 32"
       xmlns="http://www.w3.org/2000/svg"
       fill={fillColor}
@@ -123,16 +122,23 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const { t } = useLocale(); // Removed locale as it's not directly used here, only t
-  const { theme, setTheme } = useTheme(); // useTheme for toggling
+  const { t } = useLocale();
+  const { theme, setTheme } = useTheme();
 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { collapsed, setCollapsed, collapsible, side } = useSidebar();
+  const { collapsed, setCollapsed, collapsible } = useSidebar(); // Removed side as it's fixed
 
 
   const toggleMobileSidebar = () => setIsMobileSidebarOpen(!isMobileSidebarOpen);
-  const toggleDesktopSidebar = () => setCollapsed(!collapsed);
+  
+  // Since the sidebar is non-collapsible, this function is effectively not used for desktop
+  // Kept for structural consistency if collapsibility is re-enabled
+  const toggleDesktopSidebar = () => {
+    if (collapsible !== 'none') {
+      setCollapsed(!collapsed);
+    }
+  };
 
 
   useEffect(() => {
@@ -177,213 +183,36 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const isMapPage = pathname === '/maps/map';
 
   return (
-    <div className="flex h-full"> {/* Ensure AppLayout's root div takes full height and is flex */}
+    <div className="flex h-full">
       <Sidebar>
         <SidebarHeader>
             <Link href="/" className="flex items-center gap-2 text-lg font-semibold" style={{ width: '131px', height: '32px' }}>
               <ProlterLogo />
             </Link>
-            {collapsible !== 'none' && !isMobile && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleDesktopSidebar}
-                className="ml-auto"
-                aria-label={collapsed ? t('sidebar.expand_sidebar') : t('sidebar.collapse_sidebar')}
-              >
-                {collapsed ? <ChevronRight /> : <ChevronLeft />}
-              </Button>
-            )}
+            {/* Removed collapse/expand button as sidebar is non-collapsible */}
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
           {/* Dashboard */}
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive('/')} tooltip={t('sidebar.dashboard')}>
-              <Link href="/" className="flex items-center gap-2">
+            <SidebarMenuButton href="/" isActive={isActive('/')} tooltip={t('sidebar.dashboard')}>
                 <LayoutDashboard />
                 <span className="truncate">{t('sidebar.dashboard')}</span>
-              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
 
-          {/* Subscribers Menu - Direct Links */}
+          {/* Subscribers Menu - Direct Link */}
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive('/subscribers/list')} tooltip={t('sidebar.subscribers')}>
-              <Link href="/subscribers/list" className="flex items-center gap-2">
+            <SidebarMenuButton href="/subscribers/list" isActive={isActive('/subscribers/list')} tooltip={t('sidebar.subscribers')}>
                 <Users />
                 <span className="truncate">{t('sidebar.subscribers')}</span>
-              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-
-          {/* Network Menu */}
-          <SidebarMenuItem>
-              <SidebarMenuSub>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <SidebarMenuSubTrigger tooltip={t('sidebar.network')} isActive={isActive('/settings/network')}>
-                      <div className="flex items-center gap-2 cursor-pointer">
-                        <Network />
-                        <span className="truncate">{t('sidebar.network')}</span>
-                        <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                      </div>
-                    </SidebarMenuSubTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" align="center">{t('sidebar.network')}</TooltipContent>
-                </Tooltip>
-                <SidebarMenuSubContent>
-                  {/* Submenu Items */}
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/settings/network/ip')} size="sm">
-                      <Link href="/settings/network/ip" className="flex items-center gap-2">
-                        <Code className="h-4 w-4 text-muted-foreground"/>
-                        <span>{t('sidebar.network_ip')}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/settings/network/devices')} size="sm">
-                      <Link href="/settings/network/devices" className="flex items-center gap-2">
-                          <RouterIcon className="h-4 w-4 text-muted-foreground"/>
-                          <span>{t('sidebar.network_devices')}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/settings/network/cgnat')} size="sm">
-                      <Link href="/settings/network/cgnat" className="flex items-center gap-2">
-                          <Share2 className="h-4 w-4 text-muted-foreground"/>
-                          <span>{t('sidebar.network_cgnat')}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/settings/network/radius')} size="sm">
-                      <Link href="/settings/network/radius" className="flex items-center gap-2">
-                          <ServerIcon className="h-4 w-4 text-muted-foreground"/>
-                          <span>{t('sidebar.network_radius')}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/settings/network/vlan')} size="sm">
-                      <Link href="/settings/network/vlan" className="flex items-center gap-2">
-                          <Split className="h-4 w-4 text-muted-foreground"/>
-                          <span>{t('sidebar.network_vlan')}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenuSubContent>
-              </SidebarMenuSub>
-          </SidebarMenuItem>
-
-          {/* Maps Menu */}
-          <SidebarMenuItem>
-              <SidebarMenuSub>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <SidebarMenuSubTrigger tooltip={t('sidebar.maps')} isActive={isActive('/maps')}>
-                      <div className="flex items-center gap-2 cursor-pointer">
-                        <MapPin />
-                        <span className="truncate">{t('sidebar.maps')}</span>
-                        <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                      </div>
-                    </SidebarMenuSubTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" align="center">{t('sidebar.maps')}</TooltipContent>
-                </Tooltip>
-                <SidebarMenuSubContent>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/maps/map')} size="sm" tooltip={t('sidebar.maps_map')}>
-                      <Link href="/maps/map" className="flex items-center gap-2">
-                        <Globe className="h-4 w-4 text-muted-foreground"/>
-                        <span>{t('sidebar.maps_map')}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/maps/projects')} size="sm" tooltip={t('sidebar.maps_projects')}>
-                      <Link href="/maps/projects" className="flex items-center gap-2">
-                        <FileCode className="h-4 w-4 text-muted-foreground"/>
-                        <span>{t('sidebar.maps_projects')}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  {/* Elements Item - Now a Submenu Trigger */}
-                  <SidebarMenuItem>
-                    <SidebarMenuSub>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <SidebarMenuSubTrigger tooltip={t('sidebar.maps_elements')} isActive={isActive('/maps/elements')} size="sm">
-                                <div className="flex items-center gap-2 cursor-pointer">
-                                    <GitFork className="h-4 w-4 text-muted-foreground"/>
-                                    <span className="truncate">{t('sidebar.maps_elements')}</span>
-                                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                                </div>
-                            </SidebarMenuSubTrigger>
-                          </TooltipTrigger>
-                          <TooltipContent side="right" align="center">{t('sidebar.maps_elements')}</TooltipContent>
-                        </Tooltip>
-                      <SidebarMenuSubContent>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/polls')} size="sm"><Link href="/maps/elements/polls" className="flex items-center gap-2">
-                                <Power className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.maps_elements_polls')}</span>
-                            </Link></SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/fdhs')} size="sm"><Link href="/maps/elements/fdhs" className="flex items-center gap-2">
-                                <Box className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.maps_elements_fdhs')}</span>
-                            </Link></SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/foscs')} size="sm"><Link href="/maps/elements/foscs" className="flex items-center gap-2">
-                                <Warehouse className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.maps_elements_foscs')}</span>
-                            </Link></SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/peds')} size="sm"><Link href="/maps/elements/peds" className="flex items-center gap-2">
-                                <Box className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.maps_elements_peds')}</span>
-                            </Link></SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/accessories')} size="sm"><Link href="/maps/elements/accessories" className="flex items-center gap-2">
-                                <Puzzle className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.maps_elements_accessories')}</span>
-                            </Link></SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/splitters')} size="sm"><Link href="/maps/elements/splitters" className="flex items-center gap-2">
-                                <Split className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.maps_elements_splitters')}</span>
-                            </Link></SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/towers')} size="sm"><Link href="/maps/elements/towers" className="flex items-center gap-2">
-                                <TowerControl className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.maps_elements_towers')}</span>
-                            </Link></SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/maps/elements/cables')} size="sm"><Link href="/maps/elements/cables" className="flex items-center gap-2">
-                                <Cable className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.maps_elements_cables')}</span>
-                            </Link></SidebarMenuButton>
-                          </SidebarMenuItem>
-                      </SidebarMenuSubContent>
-                    </SidebarMenuSub>
-                  </SidebarMenuItem>
-                </SidebarMenuSubContent>
-              </SidebarMenuSub>
-          </SidebarMenuItem>
-
+          
           {/* FTTx Menu */}
           <SidebarMenuItem>
               <SidebarMenuSub>
+                <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <SidebarMenuSubTrigger tooltip={t('sidebar.fttx')} isActive={isActive('/fttx')}>
@@ -396,29 +225,24 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </TooltipTrigger>
                   <TooltipContent side="right" align="center">{t('sidebar.fttx')}</TooltipContent>
                 </Tooltip>
+                </TooltipProvider>
                 <SidebarMenuSubContent>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/fttx/dashboard')} size="sm">
-                      <Link href="/fttx/dashboard" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/fttx/dashboard" isActive={isActive('/fttx/dashboard')} size="sm">
                         <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.fttx_dashboard')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.fttx_dashboard')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/fttx/olts')} size="sm">
-                      <Link href="/fttx/olts" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/fttx/olts" isActive={isActive('/fttx/olts')} size="sm">
                         <Network className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.fttx_olts')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.fttx_olts')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/fttx/onx-templates')} size="sm">
-                      <Link href="/fttx/onx-templates" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/fttx/onx-templates" isActive={isActive('/fttx/onx-templates')} size="sm">
                         <FileTextIcon className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.fttx_onx_templates')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.fttx_onx_templates')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenuSubContent>
@@ -428,6 +252,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           {/* Finances Menu */}
           <SidebarMenuItem>
               <SidebarMenuSub>
+                <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <SidebarMenuSubTrigger tooltip={t('sidebar.finances')} isActive={isActive('/finances')}>
@@ -440,29 +265,18 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </TooltipTrigger>
                   <TooltipContent side="right" align="center">{t('sidebar.finances')}</TooltipContent>
                 </Tooltip>
+                </TooltipProvider>
                 <SidebarMenuSubContent>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/finances/cash-book')} size="sm">
-                      <Link href="/finances/cash-book" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/finances/cash-book" isActive={isActive('/finances/cash-book')} size="sm">
                         <BookOpen className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.finances_cash_book')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.finances_cash_book')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/finances/entry-categories')} size="sm">
-                      <Link href="/finances/entry-categories" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/finances/entry-categories" isActive={isActive('/finances/entry-categories')} size="sm">
                         <ListFilter className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.finances_entry_categories')}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/settings/finances/configurations')} size="sm">
-                      <Link href="/settings/finances/configurations" className="flex items-center gap-2">
-                        <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.finances_config')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.finances_entry_categories')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenuSubContent>
@@ -472,6 +286,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Inventory Menu */}
           <SidebarMenuItem>
               <SidebarMenuSub>
+                <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <SidebarMenuSubTrigger tooltip={t('sidebar.inventory')} isActive={isActive('/inventory')}>
@@ -484,62 +299,52 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </TooltipTrigger>
                   <TooltipContent side="right" align="center">{t('sidebar.inventory')}</TooltipContent>
                 </Tooltip>
+                </TooltipProvider>
                 <SidebarMenuSubContent>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/inventory/categories')} size="sm">
-                      <Link href="/inventory/categories" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/inventory/categories" isActive={isActive('/inventory/categories')} size="sm">
                         <ListFilter className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.inventory_categories')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.inventory_categories')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/inventory/manufacturers')} size="sm">
-                      <Link href="/inventory/manufacturers" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/inventory/manufacturers" isActive={isActive('/inventory/manufacturers')} size="sm">
                         <Factory className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.inventory_manufacturers')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.inventory_manufacturers')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/inventory/suppliers')} size="sm">
-                      <Link href="/inventory/suppliers" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/inventory/suppliers" isActive={isActive('/inventory/suppliers')} size="sm">
                         <Truck className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.inventory_suppliers')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.inventory_suppliers')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/inventory/products')} size="sm">
-                      <Link href="/inventory/products" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/inventory/products" isActive={isActive('/inventory/products')} size="sm">
                         <PackageIcon className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.inventory_products')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.inventory_products')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/inventory/warehouses')} size="sm">
-                      <Link href="/inventory/warehouses" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/inventory/warehouses" isActive={isActive('/inventory/warehouses')} size="sm">
                         <Warehouse className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.inventory_warehouses')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.inventory_warehouses')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                     <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/inventory/vehicles')} size="sm">
-                      <Link href="/inventory/vehicles" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/inventory/vehicles" isActive={isActive('/inventory/vehicles')} size="sm">
                         <Bus className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.inventory_vehicles')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.inventory_vehicles')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenuSubContent>
               </SidebarMenuSub>
           </SidebarMenuItem>
-
+          
           {/* Service Calls Menu */}
           <SidebarMenuItem>
             <SidebarMenuSub>
+              <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <SidebarMenuSubTrigger tooltip={t('sidebar.service_calls')} isActive={isActive('/service-calls')}>
@@ -552,41 +357,36 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </TooltipTrigger>
                 <TooltipContent side="right" align="center">{t('sidebar.service_calls')}</TooltipContent>
               </Tooltip>
+              </TooltipProvider>
               <SidebarMenuSubContent>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={isActive('/service-calls/dashboard')} size="sm">
-                    <Link href="/service-calls/dashboard" className="flex items-center gap-2">
+                  <SidebarMenuButton href="/service-calls/dashboard" isActive={isActive('/service-calls/dashboard')} size="sm">
                       <ServiceDashboardIcon className="h-4 w-4 text-muted-foreground" />
-                      <span>{t('sidebar.service_calls_dashboard')}</span>
-                    </Link>
+                      <span className="truncate">{t('sidebar.service_calls_dashboard')}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={isActive('/service-calls/service-types')} size="sm">
-                    <Link href="/service-calls/service-types" className="flex items-center gap-2">
+                  <SidebarMenuButton href="/service-calls/service-types" isActive={isActive('/service-calls/service-types')} size="sm">
                       <ServiceTypesIcon className="h-4 w-4 text-muted-foreground" />
-                      <span>{t('sidebar.service_calls_service_types')}</span>
-                    </Link>
+                      <span className="truncate">{t('sidebar.service_calls_service_types')}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenuSubContent>
             </SidebarMenuSub>
           </SidebarMenuItem>
 
-
           {/* Reports */}
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive('/reports')} tooltip={t('sidebar.reports')}>
-              <Link href="/reports" className="flex items-center gap-2">
+            <SidebarMenuButton href="/reports" isActive={isActive('/reports')} tooltip={t('sidebar.reports')}>
                 <BarChart3 />
                 <span className="truncate">{t('sidebar.reports')}</span>
-              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
 
           {/* HR Menu */}
           <SidebarMenuItem>
               <SidebarMenuSub>
+                <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <SidebarMenuSubTrigger tooltip={t('sidebar.hr')} isActive={isActive('/hr')}>
@@ -599,13 +399,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </TooltipTrigger>
                   <TooltipContent side="right" align="center">{t('sidebar.hr')}</TooltipContent>
                 </Tooltip>
+                </TooltipProvider>
                 <SidebarMenuSubContent>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/hr/employees')} size="sm">
-                      <Link href="/hr/employees" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/hr/employees" isActive={isActive('/hr/employees')} size="sm">
                         <Users className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.hr_employees')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.hr_employees')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenuSubContent>
@@ -616,6 +415,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           {/* Settings Menu */}
           <SidebarMenuItem>
               <SidebarMenuSub>
+                <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <SidebarMenuSubTrigger tooltip={t('sidebar.settings')} isActive={isActive('/settings')}>
@@ -628,18 +428,18 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   </TooltipTrigger>
                   <TooltipContent side="right" align="center">{t('sidebar.settings')}</TooltipContent>
                 </Tooltip>
+                </TooltipProvider>
                 <SidebarMenuSubContent>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/settings/global')} size="sm">
-                      <Link href="/settings/global" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/settings/global" isActive={isActive('/settings/global')} size="sm">
                         <Cog className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.settings_global')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.settings_global')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   {/* Business Sub-Accordion */}
                   <SidebarMenuItem>
                       <SidebarMenuSub>
+                        <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <SidebarMenuSubTrigger tooltip={t('sidebar.settings_business')} isActive={isActive('/settings/business')} size="sm">
@@ -652,12 +452,13 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </TooltipTrigger>
                           <TooltipContent side="right" align="center">{t('sidebar.settings_business')}</TooltipContent>
                         </Tooltip>
+                        </TooltipProvider>
                         <SidebarMenuSubContent>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/business/pops')} size="sm"><Link href="/settings/business/pops" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/settings/business/pops" isActive={isActive('/settings/business/pops')} size="sm">
                                 <Building className="h-4 w-4 text-muted-foreground" />
-                                <span>{t('sidebar.settings_business_pops')}</span>
-                              </Link></SidebarMenuButton>
+                                <span className="truncate">{t('sidebar.settings_business_pops')}</span>
+                            </SidebarMenuButton>
                           </SidebarMenuItem>
                         </SidebarMenuSubContent>
                       </SidebarMenuSub>
@@ -665,6 +466,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   {/* Plans Sub-Accordion */}
                   <SidebarMenuItem>
                       <SidebarMenuSub>
+                        <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <SidebarMenuSubTrigger tooltip={t('sidebar.settings_plans')} isActive={isActive('/settings/plans')} size="sm">
@@ -677,45 +479,36 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </TooltipTrigger>
                           <TooltipContent side="right" align="center">{t('sidebar.settings_plans')}</TooltipContent>
                         </Tooltip>
+                        </TooltipProvider>
                         <SidebarMenuSubContent>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/internet')} size="sm">
-                              <Link href="/settings/plans/internet" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/settings/plans/internet" isActive={isActive('/settings/plans/internet')} size="sm">
                                 <Wifi className="h-4 w-4 text-muted-foreground" />
-                                <span>{t('sidebar.settings_plans_internet')}</span>
-                              </Link>
+                                <span className="truncate">{t('sidebar.settings_plans_internet')}</span>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/tv')} size="sm">
-                              <Link href="/settings/plans/tv" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/settings/plans/tv" isActive={isActive('/settings/plans/tv')} size="sm">
                                 <Tv className="h-4 w-4 text-muted-foreground" />
-                                <span>{t('sidebar.settings_plans_tv')}</span>
-                              </Link>
+                                <span className="truncate">{t('sidebar.settings_plans_tv')}</span>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/mobile')} size="sm">
-                              <Link href="/settings/plans/mobile" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/settings/plans/mobile" isActive={isActive('/settings/plans/mobile')} size="sm">
                                 <Smartphone className="h-4 w-4 text-muted-foreground" />
-                                <span>{t('sidebar.settings_plans_mobile')}</span>
-                              </Link>
+                                <span className="truncate">{t('sidebar.settings_plans_mobile')}</span>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/landline')} size="sm">
-                              <Link href="/settings/plans/landline" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/settings/plans/landline" isActive={isActive('/settings/plans/landline')} size="sm">
                                 <Phone className="h-4 w-4 text-muted-foreground" />
-                                <span>{t('sidebar.settings_plans_landline')}</span>
-                              </Link>
+                                <span className="truncate">{t('sidebar.settings_plans_landline')}</span>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/plans/combos')} size="sm">
-                              <Link href="/settings/plans/combos" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/settings/plans/combos" isActive={isActive('/settings/plans/combos')} size="sm">
                                 <Combine className="h-4 w-4 text-muted-foreground" />
-                                <span>{t('sidebar.settings_plans_combos')}</span>
-                              </Link>
+                                <span className="truncate">{t('sidebar.settings_plans_combos')}</span>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                         </SidebarMenuSubContent>
@@ -724,6 +517,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   {/* Network (moved under settings) */}
                   <SidebarMenuItem>
                     <SidebarMenuSub>
+                      <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <SidebarMenuSubTrigger tooltip={t('sidebar.network')} isActive={isActive('/settings/network')} size="sm">
@@ -736,67 +530,63 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         </TooltipTrigger>
                         <TooltipContent side="right" align="center">{t('sidebar.network')}</TooltipContent>
                       </Tooltip>
+                      </TooltipProvider>
                       <SidebarMenuSubContent>
                         <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/settings/network/ip')} size="sm"><Link href="/settings/network/ip" className="flex items-center gap-2">
+                          <SidebarMenuButton href="/settings/network/ip" isActive={isActive('/settings/network/ip')} size="sm">
                               <Code className="h-4 w-4 text-muted-foreground"/>
-                              <span>{t('sidebar.network_ip')}</span>
-                            </Link></SidebarMenuButton>
+                              <span className="truncate">{t('sidebar.network_ip')}</span>
+                          </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/settings/network/devices')} size="sm"><Link href="/settings/network/devices" className="flex items-center gap-2">
+                          <SidebarMenuButton href="/settings/network/devices" isActive={isActive('/settings/network/devices')} size="sm">
                               <RouterIcon className="h-4 w-4 text-muted-foreground"/>
-                              <span>{t('sidebar.network_devices')}</span>
-                            </Link></SidebarMenuButton>
+                              <span className="truncate">{t('sidebar.network_devices')}</span>
+                          </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/settings/network/cgnat')} size="sm"><Link href="/settings/network/cgnat" className="flex items-center gap-2">
+                          <SidebarMenuButton href="/settings/network/cgnat" isActive={isActive('/settings/network/cgnat')} size="sm">
                               <Share2 className="h-4 w-4 text-muted-foreground"/>
-                              <span>{t('sidebar.network_cgnat')}</span>
-                            </Link></SidebarMenuButton>
+                              <span className="truncate">{t('sidebar.network_cgnat')}</span>
+                          </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/settings/network/radius')} size="sm"><Link href="/settings/network/radius" className="flex items-center gap-2">
+                          <SidebarMenuButton href="/settings/network/radius" isActive={isActive('/settings/network/radius')} size="sm">
                               <ServerIcon className="h-4 w-4 text-muted-foreground"/>
-                              <span>{t('sidebar.network_radius')}</span>
-                            </Link></SidebarMenuButton>
+                              <span className="truncate">{t('sidebar.network_radius')}</span>
+                          </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                          <SidebarMenuButton asChild isActive={isActive('/settings/network/vlan')} size="sm"><Link href="/settings/network/vlan" className="flex items-center gap-2">
+                          <SidebarMenuButton href="/settings/network/vlan" isActive={isActive('/settings/network/vlan')} size="sm">
                               <Split className="h-4 w-4 text-muted-foreground"/>
-                              <span>{t('sidebar.network_vlan')}</span>
-                            </Link></SidebarMenuButton>
+                              <span className="truncate">{t('sidebar.network_vlan')}</span>
+                          </SidebarMenuButton>
                         </SidebarMenuItem>
                       </SidebarMenuSubContent>
                     </SidebarMenuSub>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/settings/finances/configurations')} size="sm">
-                      <Link href="/settings/finances/configurations" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/settings/finances/configurations" isActive={isActive('/settings/finances/configurations')} size="sm">
                         <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.finances_config')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.finances_config')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/settings/security')} size="sm">
-                      <Link href="/settings/security" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/settings/security" isActive={isActive('/settings/security')} size="sm">
                         <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.security')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.security')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/settings/system-monitor')} size="sm">
-                      <Link href="/settings/system-monitor" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/settings/system-monitor" isActive={isActive('/settings/system-monitor')} size="sm">
                         <RouterIcon className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.settings_system_monitor')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.settings_system_monitor')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   {/* Integrations Sub-Accordion */}
                   <SidebarMenuItem>
                       <SidebarMenuSub>
+                        <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <SidebarMenuSubTrigger tooltip={t('sidebar.settings_integrations')} isActive={isActive('/settings/integrations')} size="sm">
@@ -809,45 +599,45 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </TooltipTrigger>
                           <TooltipContent side="right" align="center">{t('sidebar.settings_integrations')}</TooltipContent>
                         </Tooltip>
+                        </TooltipProvider>
                         <SidebarMenuSubContent>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/integrations/whatsapp')} size="sm"><Link href="/settings/integrations/whatsapp" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/settings/integrations/whatsapp" isActive={isActive('/settings/integrations/whatsapp')} size="sm">
                                 <MessageSquare className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.settings_integrations_whatsapp')}</span>
-                              </Link></SidebarMenuButton>
+                                <span className="truncate">{t('sidebar.settings_integrations_whatsapp')}</span>
+                            </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/integrations/telegram')} size="sm"><Link href="/settings/integrations/telegram" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/settings/integrations/telegram" isActive={isActive('/settings/integrations/telegram')} size="sm">
                                 <MessageSquare className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.settings_integrations_telegram')}</span>
-                              </Link></SidebarMenuButton>
+                                <span className="truncate">{t('sidebar.settings_integrations_telegram')}</span>
+                            </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/integrations/meta')} size="sm"><Link href="/settings/integrations/meta" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/settings/integrations/meta" isActive={isActive('/settings/integrations/meta')} size="sm">
                                 <MessageSquare className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.settings_integrations_meta')}</span>
-                              </Link></SidebarMenuButton>
+                                <span className="truncate">{t('sidebar.settings_integrations_meta')}</span>
+                            </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/settings/integrations/sms')} size="sm"><Link href="/settings/integrations/sms" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/settings/integrations/sms" isActive={isActive('/settings/integrations/sms')} size="sm">
                                 <Text className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.settings_integrations_sms')}</span>
-                              </Link></SidebarMenuButton>
+                                <span className="truncate">{t('sidebar.settings_integrations_sms')}</span>
+                            </SidebarMenuButton>
                           </SidebarMenuItem>
                         </SidebarMenuSubContent>
                       </SidebarMenuSub>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={isActive('/settings/users')} size="sm">
-                      <Link href="/settings/users" className="flex items-center gap-2">
+                    <SidebarMenuButton href="/settings/users" isActive={isActive('/settings/users')} size="sm">
                         <Users className="h-4 w-4 text-muted-foreground" />
-                        <span>{t('sidebar.settings_users')}</span>
-                      </Link>
+                        <span className="truncate">{t('sidebar.settings_users')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   {/* MySQL Sub-Accordion */}
                   <SidebarMenuItem>
                       <SidebarMenuSub>
+                        <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <SidebarMenuSubTrigger tooltip={t('sidebar.mysql')} isActive={isActive('/settings/mysql')} size="sm">
@@ -860,18 +650,19 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           </TooltipTrigger>
                           <TooltipContent side="right" align="center">{t('sidebar.mysql')}</TooltipContent>
                         </Tooltip>
+                        </TooltipProvider>
                         <SidebarMenuSubContent>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/mysql/databases')} size="sm"><Link href="/mysql/databases" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/mysql/databases" isActive={isActive('/mysql/databases')} size="sm">
                                 <Database className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.mysql_databases')}</span>
-                              </Link></SidebarMenuButton>
+                                <span className="truncate">{t('sidebar.mysql_databases')}</span>
+                            </SidebarMenuButton>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
-                            <SidebarMenuButton asChild isActive={isActive('/mysql/cli')} size="sm"><Link href="/mysql/cli" className="flex items-center gap-2">
+                            <SidebarMenuButton href="/mysql/cli" isActive={isActive('/mysql/cli')} size="sm">
                                 <Code className="h-4 w-4 text-muted-foreground"/>
-                                <span>{t('sidebar.mysql_cli')}</span>
-                              </Link></SidebarMenuButton>
+                                <span className="truncate">{t('sidebar.mysql_cli')}</span>
+                            </SidebarMenuButton>
                           </SidebarMenuItem>
                         </SidebarMenuSubContent>
                       </SidebarMenuSub>
@@ -885,31 +676,25 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* PilotView */}
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive('/pilotview')} tooltip="PilotView ACS">
-              <Link href="/pilotview" className="flex items-center gap-2">
+            <SidebarMenuButton href="/pilotview" isActive={isActive('/pilotview')} tooltip="PilotView ACS">
                 <TbDeviceImacStar />
                 <span className="truncate">{t('sidebar.pilotview')}</span>
-              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
 
           {/* TransitOS */}
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive('/transitos')} tooltip="TransitOS BGP Manager">
-              <Link href="/transitos" className="flex items-center gap-2">
+            <SidebarMenuButton href="/transitos" isActive={isActive('/transitos')} tooltip="TransitOS BGP Manager">
                 <SiReactrouter />
                 <span className="truncate">{t('sidebar.transitos')}</span>
-              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
 
           {/* Zones (DNS) */}
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive('/zones')} tooltip="DNS Zones">
-              <Link href="/zones" className="flex items-center gap-2">
+            <SidebarMenuButton href="/zones" isActive={isActive('/zones')} tooltip="DNS Zones">
                 <SiNextdns />
                 <span className="truncate">{t('sidebar.zones')}</span>
-              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           </SidebarMenu>
@@ -939,7 +724,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="h-full">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`antialiased min-h-screen flex flex-col h-full`}
         suppressHydrationWarning
@@ -952,9 +737,11 @@ export default function RootLayout({
         >
           <QueryClientProvider client={queryClient}>
             <LocaleProvider>
-              <SidebarProvider side="left" collapsible="none">
-                <AppLayout>{children}</AppLayout>
-              </SidebarProvider>
+              <TooltipProvider> {/* Ensure TooltipProvider wraps SidebarProvider */}
+                <SidebarProvider side="left" collapsible="none"> {/* Set to non-collapsible */}
+                  <AppLayout>{children}</AppLayout>
+                </SidebarProvider>
+              </TooltipProvider>
             </LocaleProvider>
           </QueryClientProvider>
         </NextThemesProvider>
