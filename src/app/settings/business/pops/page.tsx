@@ -45,10 +45,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog" // Removed AlertDialogTrigger as it's part of the button
+} from "@/components/ui/alert-dialog" 
 import { useLocale } from '@/contexts/LocaleContext';
 import type { Pop, PopData } from '@/types/pops'; 
-import { addPop, getPops, updatePop, removePop } from '@/services/mysql/pops'; // Updated import
+import { addPop, getPops, updatePop, removePop } from '@/services/mysql/pops'; 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -62,13 +62,7 @@ const popSchema = z.object({
 type PopFormData = z.infer<typeof popSchema>;
 
 
-export default function PoPsPageWrapper() {
-  const queryClient = useQueryClient(); // Ensure QueryClientProvider is in RootLayout
-  return <PoPsPage />;
-}
-
-
-function PoPsPage() {
+export default function PoPsPage() {
   const queryClientReact = useQueryClient();
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
   const [editingPop, setEditingPop] = React.useState<Pop | null>(null); 
@@ -306,19 +300,19 @@ function PoPsPage() {
               <table className="min-w-full divide-y divide-border">
                 <thead className="bg-muted/50">
                   <tr>
-                     <TableHead className="w-16">
+                     <TableHead className="w-16 text-center">
                        {t('pops.table_header_id')}
                      </TableHead>
-                     <TableHead>
+                     <TableHead className="text-center">
                        {t('pops.table_header_name')}
                      </TableHead>
-                    <TableHead>
+                    <TableHead className="text-center">
                       {t('pops.table_header_location')}
                     </TableHead>
-                    <TableHead>
+                    <TableHead className="text-center">
                       {t('pops.table_header_status')}
                     </TableHead>
-                     <TableHead className="w-24">
+                     <TableHead className="w-24 text-center">
                        {t('pops.table_header_created')}
                      </TableHead>
                     <TableHead className="relative w-28 text-right">
@@ -329,16 +323,16 @@ function PoPsPage() {
                 <tbody className="bg-background divide-y divide-border">
                   {pops.map((pop) => (
                     <tr key={pop.id}>
-                       <TableCell className="px-6 py-4 whitespace-nowrap text-xs font-mono text-muted-foreground">
+                       <TableCell className="px-6 py-4 whitespace-nowrap text-xs font-mono text-muted-foreground text-center">
                         {pop.id.toString().substring(0, 8)}
                       </TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs font-medium text-foreground">
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs font-medium text-foreground text-center">
                         {pop.name}
                       </TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground text-center">
                         {pop.location}
                       </TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs">
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs text-center">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             pop.status && pop.status.toLowerCase() === "active"
@@ -351,7 +345,7 @@ function PoPsPage() {
                           {pop.status ? t(`pops.form_status_${pop.status.toLowerCase()}` as any, pop.status) : t('pops.status_unknown')}
                         </span>
                       </TableCell>
-                       <TableCell className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
+                       <TableCell className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground text-center">
                          {pop.createdAt instanceof Date ? pop.createdAt.toLocaleDateString() : 'N/A'}
                        </TableCell>
                       <TableCell className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-1">
@@ -404,4 +398,3 @@ function PoPsPage() {
     </div>
   );
 }
-

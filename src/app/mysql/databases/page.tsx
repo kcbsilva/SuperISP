@@ -53,7 +53,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { listMysqlDatabases, createMysqlDatabase } from '@/services/mysql/list-databases';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -62,17 +62,8 @@ const addDatabaseSchema = z.object({
 });
 type AddDatabaseFormData = z.infer<typeof addDatabaseSchema>;
 
-const queryClient = new QueryClient();
 
-export default function MysqlDatabasesPageWrapper() {
-    return (
-        <QueryClientProvider client={queryClient}>
-            <MysqlDatabasesPage />
-        </QueryClientProvider>
-    );
-}
-
-function MysqlDatabasesPage() {
+export default function MysqlDatabasesPage() {
   const { t } = useLocale();
   const { toast } = useToast();
   const queryClientReact = useQueryClient();
@@ -208,17 +199,17 @@ function MysqlDatabasesPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-12 text-xs"><Database className={iconSize} /></TableHead>
-                    <TableHead className="text-xs">{t('mysql_page.db_header_name')}</TableHead>
+                    <TableHead className="w-12 text-xs text-center"><Database className={iconSize} /></TableHead>
+                    <TableHead className="text-xs text-center">{t('mysql_page.db_header_name')}</TableHead>
                     {/* Add other headers if needed, e.g., Owner, Encoding, Size */}
-                    <TableHead className="text-right w-28 text-xs">{t('mysql_page.db_header_actions')}</TableHead>
+                    <TableHead className="text-right w-28 text-xs text-center">{t('mysql_page.db_header_actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {databases.map((dbName) => (
                     <TableRow key={dbName}>
-                      <TableCell><Database className={`${iconSize} text-muted-foreground`} /></TableCell>
-                      <TableCell className="font-medium text-xs">{dbName}</TableCell>
+                      <TableCell className="text-center"><Database className={`${iconSize} text-muted-foreground`} /></TableCell>
+                      <TableCell className="font-medium text-xs text-center">{dbName}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => {/* TODO: Implement edit */}}>
                             <Trash2 className={`${iconSize} text-destructive`} />

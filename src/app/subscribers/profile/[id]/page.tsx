@@ -34,7 +34,7 @@ import {
   XCircle,
   Clock,
   CalendarClock,
-  Handshake, // Added for Promise to Pay
+  Handshake, 
   FileSignature,
   FilePlus2,
   MoreVertical,
@@ -56,18 +56,18 @@ import {
   Globe,
   GitFork,
   Code,
-  Router as RouterIcon, // Renamed to avoid conflict with NextRouter
+  Router as RouterIcon, 
   Share2,
   Split,
   Settings as SettingsIcon,
   Loader2,
-  ChevronDown, // Added for Actions dropdown
-  CalendarIcon, // Added for Promise to Pay modal
-  CreditCard, // Added for Receive Payment
-  Receipt, // Added for Detailed Invoice
-  FileX, // Added for Remove Payment
-  Hourglass, // Added for In Progress service call
-  List, // Added for All service call
+  ChevronDown, 
+  CalendarIcon, 
+  CreditCard, 
+  Receipt, 
+  FileX, 
+  Hourglass, 
+  List, 
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -114,7 +114,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -134,7 +134,13 @@ import {
 import { NewContractWizard } from '@/components/new-contract-wizard';
 import type { Subscriber, SubscriberService, BillingDetails, Invoice, PaymentPlan, PromiseToPay, ServiceCall, InventoryItem, Document, Note, HistoryEntry, SubscriberStatus, ServiceStatus } from '@/types/subscribers';
 
-// Placeholder data functions (replace with actual data fetching)
+
+const placeholderPops: Pop[] = [
+  { id: 'pop-1', name: 'Central Hub', location: '123 Fiber Lane, Anytown', status: 'Active', createdAt: new Date() },
+  { id: 'pop-2', name: 'North Branch', location: '456 Network Rd, Anytown', status: 'Planned', createdAt: new Date(Date.now() - 86400000) },
+];
+
+
 const getSubscriberData = (id: string | string[] | undefined): Subscriber | null => {
   if (!id) return null;
   const baseData: Subscriber = {
@@ -184,8 +190,8 @@ const getSubscriberData = (id: string | string[] | undefined): Subscriber | null
     ];
     baseData.billing.balance = 0.00;
     baseData.billing.pendingInvoices = [
-      { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
-      { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
+        { id: 'inv-p04', contractId: 'SVC-ALICE-INT-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 50.00, wallet: 'Visa **** 1234', status: 'Due' },
+        { id: 'inv-p05', contractId: 'SVC-ALICE-TV-001', dateMade: '2024-08-01', dueDate: '2024-08-20', value: 20.00, wallet: 'Visa **** 1234', status: 'Due' },
     ];
     baseData.billing.promisesToPay = [
       { id: 'ptp-alice-01', promiseDate: '2024-08-25', amount: 50.00, status: 'Pending' },
@@ -224,12 +230,6 @@ const getSubscriberData = (id: string | string[] | undefined): Subscriber | null
   return baseData;
 };
 
-const placeholderPops: Pop[] = [
-  { id: 'pop-1', name: 'Central Hub', location: '123 Fiber Lane, Anytown', status: 'Active', createdAt: new Date() },
-  { id: 'pop-2', name: 'North Branch', location: '456 Network Rd, Anytown', status: 'Planned', createdAt: new Date(Date.now() - 86400000) },
-];
-
-const queryClient = new QueryClient();
 
 const dateLocales: Record<string, DateFnsLocale> = {
   en: enUSLocale,
@@ -293,7 +293,7 @@ const ServiceDetailItem: React.FC<{ label: string, value?: string | null, childr
 };
 
 const getTechnologyIcon = (technology?: string) => {
-  const iconSize = "h-4 w-4 text-primary";
+  const iconSize = "h-4 w-4 text-primary"; 
   if (!technology) return <ServerIcon className={iconSize} />;
 
   switch (technology.toLowerCase()) {
@@ -327,15 +327,7 @@ const getStatusBadgeVariant = (status: SubscriberStatus | ServiceStatus | undefi
 };
 
 
-export default function SubscriberProfilePageWrapper() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <SubscriberProfilePage />
-    </QueryClientProvider>
-  );
-}
-
-function SubscriberProfilePage() {
+export default function SubscriberProfilePage() {
   const params = useParams();
   const subscriberId = params.id;
   const { toast } = useToast();
@@ -377,7 +369,7 @@ function SubscriberProfilePage() {
     }
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize today to start of day for comparison
+    today.setHours(0, 0, 0, 0); 
 
     let maxLateness = -Infinity;
     let isAnyOverdueOrDueToday = false;
@@ -387,31 +379,29 @@ function SubscriberProfilePage() {
             const dueDate = parseISO(invoice.dueDate);
             dueDate.setHours(0,0,0,0);
 
-            if (dueDate <= today) { // Invoice is due today or past due
+            if (dueDate <= today) { 
                 isAnyOverdueOrDueToday = true;
                 const diffTime = today.getTime() - dueDate.getTime();
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Days past due (0 if due today)
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                 if (diffDays > maxLateness) {
                     maxLateness = diffDays;
                 }
             }
         } catch (e) {
             console.error("Error parsing due date for invoice:", invoice.id, invoice.dueDate, e);
-            // Skip this invoice or handle error as appropriate
         }
     }
 
-    if (!isAnyOverdueOrDueToday && count > 0) { // Invoices are pending but none are due/overdue yet
+    if (!isAnyOverdueOrDueToday && count > 0) { 
         return { pendingInvoiceCount: count, pendingInvoiceUrgency: 'none' as 'none' | 'yellow' | 'red' };
     }
     
     let urgency: 'none' | 'yellow' | 'red' = 'none';
-    if (maxLateness > 3) { // More than 3 days past due
+    if (maxLateness > 3) { 
         urgency = 'red';
-    } else if (maxLateness >= 0) { // Due today or up to 3 days past due
+    } else if (maxLateness >= 0) { 
         urgency = 'yellow';
     }
-    // If maxLateness is still -Infinity (meaning no invoices were due/overdue), urgency remains 'none'
 
     return { pendingInvoiceCount: count, pendingInvoiceUrgency: urgency };
   }, [subscriber?.billing?.pendingInvoices]);
@@ -577,7 +567,7 @@ function SubscriberProfilePage() {
       setSelectedPendingInvoices([]);
     }
   };
-  // The main return of the component
+  
   return (
     <div className="flex flex-col gap-6">
       <Card>
@@ -606,7 +596,7 @@ function SubscriberProfilePage() {
             <span>{t('subscriber_profile.billing_tab')}</span>
             {pendingInvoiceCount > 0 && (
               <span className={cn(
-                "absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold text-white", // Adjusted positioning
+                "absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold text-white",
                 {
                   'bg-yellow-500': pendingInvoiceUrgency === 'yellow',
                   'bg-red-600': pendingInvoiceUrgency === 'red',
@@ -1031,7 +1021,6 @@ function SubscriberProfilePage() {
         </DialogContent>
       </Dialog>
 
-      {/* Promise to Pay Modal */}
        <Dialog open={isPromiseToPayModalOpen} onOpenChange={setIsPromiseToPayModalOpen}>
             <DialogContent>
                 <DialogHeader>
@@ -1063,7 +1052,7 @@ function SubscriberProfilePage() {
                                                 mode="single"
                                                 selected={field.value}
                                                 onSelect={field.onChange}
-                                                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) } // Corrected to allow today
+                                                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) } 
                                                 initialFocus
                                             />
                                         </PopoverContent>

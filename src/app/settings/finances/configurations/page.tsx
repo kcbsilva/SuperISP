@@ -5,7 +5,6 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  // CardDescription, // Removed
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -14,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
-  DialogDescription as DialogDescriptionComponent, // Renamed to avoid conflict with CardDescription
+  DialogDescription as DialogDescriptionComponent, 
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -36,12 +35,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// import { Calendar } from "@/components/ui/calendar"; // No longer needed for day of month
-// import {
-//     Popover,
-//     PopoverContent,
-//     PopoverTrigger,
-// } from "@/components/ui/popover"; // No longer needed for day of month
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,25 +55,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Switch } from '@/components/ui/switch';
-import { PlusCircle, Trash2, Loader2, RefreshCw, ChevronRight, ChevronLeft } from 'lucide-react'; // CalendarIcon removed
+import { PlusCircle, Trash2, Loader2, RefreshCw, ChevronRight, ChevronLeft } from 'lucide-react'; 
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-// import { format } from 'date-fns'; // Not directly needed for day of month display
-// import { enUS, fr, ptBR } from 'date-fns/locale'; // Not directly needed
 import { cn } from "@/lib/utils";
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/mysql/pops'; // Changed to MySQL service
+import { useQuery } from '@tanstack/react-query';
+import { getPops } from '@/services/mysql/pops'; 
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// const dateLocales: Record<string, typeof enUS> = {
-//     en: enUS,
-//     fr: fr,
-//     pt: ptBR,
-// };
 
 const dayOfMonthSchema = z.union([
   z.coerce.number().int().min(1).max(31),
@@ -97,27 +83,18 @@ type BillingDayFormData = z.infer<typeof billingDaySchema>;
 
 interface BillingDay extends BillingDayFormData {
   id: string;
-  activeContracts: number; // Added activeContracts
+  activeContracts: number; 
 }
 
 const placeholderBillingDays: BillingDay[] = [
-  { id: 'bd-1', dayOfMonth: 1, status: true, permittedPopIds: ['1'], activeContracts: 120 }, // Assuming sim-1 is ID 1
-  { id: 'bd-2', dayOfMonth: 15, status: true, permittedPopIds: ['1', '2'], activeContracts: 75 }, // Assuming sim-2 is ID 2
-  { id: 'bd-3', dayOfMonth: 'Last Day', status: false, permittedPopIds: ['3'], activeContracts: 0 }, // Assuming sim-3 is ID 3
+  { id: 'bd-1', dayOfMonth: 1, status: true, permittedPopIds: ['1'], activeContracts: 120 }, 
+  { id: 'bd-2', dayOfMonth: 15, status: true, permittedPopIds: ['1', '2'], activeContracts: 75 }, 
+  { id: 'bd-3', dayOfMonth: 'Last Day', status: false, permittedPopIds: ['3'], activeContracts: 0 }, 
 ];
 
-const queryClient = new QueryClient();
 
-export default function FinancialConfigurationsPageWrapper() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <FinancialConfigurationsPage />
-    </QueryClientProvider>
-  );
-}
-
-function FinancialConfigurationsPage() {
-  const { t } = useLocale(); // locale removed as date formatting is not the primary display
+export default function FinancialConfigurationsPage() {
+  const { t } = useLocale(); 
   const { toast } = useToast();
   const [billingDays, setBillingDays] = React.useState<BillingDay[]>(placeholderBillingDays);
   const [isAddDayModalOpen, setIsAddDayModalOpen] = React.useState(false);
@@ -133,7 +110,7 @@ function FinancialConfigurationsPage() {
   const addDayForm = useForm<BillingDayFormData>({
     resolver: zodResolver(billingDaySchema),
     defaultValues: {
-      dayOfMonth: 1, // Default to 1st day
+      dayOfMonth: 1, 
       status: true,
       permittedPopIds: [],
     },
@@ -143,10 +120,10 @@ function FinancialConfigurationsPage() {
     const newBillingDay: BillingDay = {
       ...data,
       id: `bd-${Date.now()}`,
-      activeContracts: 0, // New days start with 0 active contracts
+      activeContracts: 0, 
     };
     setBillingDays(prev => [...prev, newBillingDay].sort((a, b) => {
-        const dayA = a.dayOfMonth === 'Last Day' ? 32 : a.dayOfMonth; // Treat 'Last Day' as 32 for sorting
+        const dayA = a.dayOfMonth === 'Last Day' ? 32 : a.dayOfMonth; 
         const dayB = b.dayOfMonth === 'Last Day' ? 32 : b.dayOfMonth;
         return dayA - dayB;
     }));
@@ -228,20 +205,20 @@ function FinancialConfigurationsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs">{t('financial_configs.table_header_day_of_month', 'Day of Month')}</TableHead>
-                    <TableHead className="text-xs">{t('financial_configs.table_header_active_contracts', 'Active Contracts')}</TableHead>
-                    <TableHead className="text-xs">{t('financial_configs.table_header_status')}</TableHead>
-                    <TableHead className="text-right w-20 text-xs">{t('financial_configs.table_header_actions')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('financial_configs.table_header_day_of_month', 'Day of Month')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('financial_configs.table_header_active_contracts', 'Active Contracts')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('financial_configs.table_header_status')}</TableHead>
+                    <TableHead className="text-right w-20 text-xs text-center">{t('financial_configs.table_header_actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {billingDays.map((bd) => (
                     <TableRow key={bd.id}>
-                      <TableCell className="text-xs">
+                      <TableCell className="text-xs text-center">
                         {bd.dayOfMonth === 'Last Day' ? t('financial_configs.day_last', 'Last Day') : bd.dayOfMonth}
                       </TableCell>
                       <TableCell className="text-xs text-center">{bd.activeContracts}</TableCell>
-                      <TableCell className="text-xs">
+                      <TableCell className="text-xs text-center">
                         <Switch
                           checked={bd.status}
                           onCheckedChange={() => toggleBillingDayStatus(bd.id, bd.status)}
@@ -249,7 +226,7 @@ function FinancialConfigurationsPage() {
                         />
                          <span className="ml-2 text-xs">{bd.status ? t('financial_configs.status_active') : t('financial_configs.status_inactive')}</span>
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right text-center">
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive">
@@ -347,11 +324,10 @@ function FinancialConfigurationsPage() {
                       )}
                     />
 
-                    {/* Permitted PoPs Selection */}
                     <FormField
                       control={addDayForm.control}
                       name="permittedPopIds"
-                      render={({ field }) => ( // field is not directly used here, but necessary for FormField
+                      render={({ field }) => ( 
                         <FormItem>
                            <FormLabel>{t('financial_configs.form_permitted_pops_label')}</FormLabel>
                            <div className="grid grid-cols-3 items-center gap-2">
@@ -388,7 +364,7 @@ function FinancialConfigurationsPage() {
                                )) : <p className="text-xs text-muted-foreground text-center pt-4">{t('financial_configs.form_no_selected_pops')}</p>}
                              </div>
                            </div>
-                           <FormMessage /> {/* For permittedPopIds validation error */}
+                           <FormMessage /> 
                         </FormItem>
                       )}
                     />
@@ -412,4 +388,3 @@ function FinancialConfigurationsPage() {
   </div>
 );
 }
-

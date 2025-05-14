@@ -6,8 +6,6 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  // CardHeader, // Removed as per previous request
-  // CardTitle, // Removed as per previous request
 } from "@/components/ui/card";
 import {
   Table,
@@ -53,7 +51,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger, // Ensure this is imported
+  AlertDialogTrigger, 
 } from "@/components/ui/alert-dialog";
 import { PlusCircle, Edit, Trash2, Loader2, RefreshCw } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -61,8 +59,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/mysql/pops'; // Changed to MySQL service
+import { useQuery } from '@tanstack/react-query';
+import { getPops } from '@/services/mysql/pops'; 
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
@@ -82,27 +80,18 @@ const vlanSchema = z.object({
 type VlanFormData = z.infer<typeof vlanSchema>;
 
 interface Vlan extends VlanFormData {
-  id: string; // Or number, depending on backend
+  id: string; 
   createdAt: Date;
 }
 
 const placeholderVlans: Vlan[] = [
-  { id: 'vlan-1', vlanId: 10, name: 'Data VLAN - HQ', description: 'Main data network for headquarters', popId: '1', subnet: '192.168.10.0/24', createdAt: new Date(), isTagged: true, status: 'Active' }, // Assuming sim-1 is ID 1
-  { id: 'vlan-2', vlanId: 20, name: 'VoIP VLAN - Branch A', popId: '2', subnet: '10.10.20.0/25', createdAt: new Date(Date.now() - 86400000), isTagged: false, status: 'Active' }, // Assuming sim-2 is ID 2
-  { id: 'vlan-3', vlanId: 30, name: 'Guest WiFi', description: 'Isolated network for guests', popId: '1', subnet: '172.16.30.0/24', createdAt: new Date(Date.now() - 172800000), isTagged: true, status: 'Inactive' }, // Assuming sim-3 is ID 3
+  { id: 'vlan-1', vlanId: 10, name: 'Data VLAN - HQ', description: 'Main data network for headquarters', popId: '1', subnet: '192.168.10.0/24', createdAt: new Date(), isTagged: true, status: 'Active' }, 
+  { id: 'vlan-2', vlanId: 20, name: 'VoIP VLAN - Branch A', popId: '2', subnet: '10.10.20.0/25', createdAt: new Date(Date.now() - 86400000), isTagged: false, status: 'Active' }, 
+  { id: 'vlan-3', vlanId: 30, name: 'Guest WiFi', description: 'Isolated network for guests', popId: '1', subnet: '172.16.30.0/24', createdAt: new Date(Date.now() - 172800000), isTagged: true, status: 'Inactive' }, 
 ];
 
-const queryClient = new QueryClient();
 
-export default function VlanPageWrapper() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <VlanManagementPage />
-    </QueryClientProvider>
-  );
-}
-
-function VlanManagementPage() {
+export default function VlanManagementPage() {
   const { t } = useLocale();
   const { toast } = useToast();
   const [isAddVlanDialogOpen, setIsAddVlanDialogOpen] = React.useState(false);
@@ -322,30 +311,30 @@ function VlanManagementPage() {
       </div>
 
       <Card>
-        <CardContent className="pt-0"> {/* Removed top padding from CardContent */}
+        <CardContent className="pt-0"> 
           {isLoadingPops ? (
-             <div className="space-y-3 pt-6"> {/* Keep pt-6 here if skeleton needs space */}
+             <div className="space-y-3 pt-6"> 
                 <Skeleton className="h-8 w-full" />
                 <Skeleton className="h-8 w-full" />
                 <Skeleton className="h-8 w-full" />
              </div>
           ) : vlans.length > 0 ? (
-            <div className="overflow-x-auto pt-6"> {/* Added pt-6 here */}
+            <div className="overflow-x-auto pt-6"> 
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-20 text-xs">{t('vlan_page.table_header_vlan_id', 'VLAN ID')}</TableHead>
-                    <TableHead className="text-xs">{t('vlan_page.table_header_description', 'Description')}</TableHead>
-                    <TableHead className="text-xs">{t('vlan_page.table_header_tagged', 'Tagged/Untagged')}</TableHead>
-                    <TableHead className="text-xs">{t('vlan_page.table_header_status', 'Status')}</TableHead>
-                    <TableHead className="text-right w-28 text-xs">{t('vlan_page.table_header_actions', 'Actions')}</TableHead>
+                    <TableHead className="w-20 text-xs text-center">{t('vlan_page.table_header_vlan_id', 'VLAN ID')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('vlan_page.table_header_description', 'Description')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('vlan_page.table_header_tagged', 'Tagged/Untagged')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('vlan_page.table_header_status', 'Status')}</TableHead>
+                    <TableHead className="text-right w-28 text-xs text-center">{t('vlan_page.table_header_actions', 'Actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {vlans.map((vlan) => (
                     <TableRow key={vlan.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs">{vlan.vlanId}</TableCell>
-                      <TableCell className="text-muted-foreground text-xs">{vlan.description || '-'}</TableCell>
+                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{vlan.vlanId}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs text-center">{vlan.description || '-'}</TableCell>
                       <TableCell className="text-center">
                         <Badge variant={vlan.isTagged ? 'default' : 'secondary'} className={`text-xs ${vlan.isTagged ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
                            {vlan.isTagged ? t('vlan_page.tagged', 'Tagged') : t('vlan_page.untagged', 'Untagged')}

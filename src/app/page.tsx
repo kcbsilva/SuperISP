@@ -9,7 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'; // Will attempt to style with Bootstrap classes
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -17,10 +17,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'; // Will attempt to style with Bootstrap classes
-import { Badge } from '@/components/ui/badge'; // Will attempt to style with Bootstrap classes
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import { SubscriberChart } from '@/components/dashboard/subscriber-chart';
-import { Button } from '@/components/ui/button'; // Will attempt to style with Bootstrap classes
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +28,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; // Will attempt to style with Bootstrap classes
+} from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
@@ -59,7 +59,7 @@ export default function DashboardPage() {
   const [currentView, setCurrentView] = React.useState<DashboardView>("General");
   const [formattedSubscribers, setFormattedSubscribers] = React.useState<string | null>(null);
   const [formattedMrr, setFormattedMrr] = React.useState<string | null>(null);
-  const iconSize = { width: '0.75rem', height: '0.75rem' }; 
+  const iconSize = { width: '0.75rem', height: '0.75rem' };
   const smallIconSize = { width: '0.625rem', height: '0.625rem' };
 
   React.useEffect(() => {
@@ -83,9 +83,7 @@ export default function DashboardPage() {
   };
 
   return (
-    // Bootstrap flex container
     <div className="d-flex flex-column min-vh-100 w-100">
-      {/* Bootstrap flex container with gaps */}
       <main className="d-flex flex-column flex-grow-1 gap-3 gap-md-4">
 
          <div className="d-flex align-items-start gap-3 mb-2">
@@ -93,13 +91,11 @@ export default function DashboardPage() {
              <div className="small text-muted px-1">{t('dashboard.dashboard_view_label', 'Dashboard View')}</div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  {/* Bootstrap button styling */}
                   <Button variant="outline" size="sm" className="btn btn-outline-secondary btn-sm">
                     {t(`dashboard.${currentView.toLowerCase()}_view`)} Dashboard
                     <ChevronDown style={smallIconSize} className="ms-2" />
                   </Button>
                 </DropdownMenuTrigger>
-                {/* Bootstrap dropdown menu styling */}
                 <DropdownMenuContent align="start" className="dropdown-menu">
                   <DropdownMenuLabel className="dropdown-header">{t('dashboard.select_view')}</DropdownMenuLabel>
                   <DropdownMenuSeparator className="dropdown-divider"/>
@@ -130,7 +126,7 @@ export default function DashboardPage() {
                        <Button
                           variant="outline"
                           size="icon"
-                          className="btn btn-outline-secondary p-1" 
+                          className="btn btn-outline-secondary p-1"
                           style={{height: '2rem', width: '2rem'}}
                           onClick={() => handleQuickActionClick(index)}
                        >
@@ -146,15 +142,11 @@ export default function DashboardPage() {
                </TooltipProvider>
               </div>
             </div>
-
          </div>
-
 
         {currentView === "General" && (
           <>
-            {/* Bootstrap grid */}
             <div className="row g-3 g-md-4">
-              {/* Bootstrap column */}
               <div className="col-lg-3 col-md-6">
                 <Card className="card h-100">
                   <CardHeader className="card-header d-flex flex-row align-items-center justify-content-between pb-2">
@@ -243,7 +235,7 @@ export default function DashboardPage() {
                             <div className="small fw-medium">
                                {t(`dashboard.activity_type_${activity.type.toLowerCase().replace(/\s+/g, '_')}` as any, activity.type)}
                               {activity.level && (
-                                <Badge bg={activity.level === 'warning' ? 'danger' : 'secondary'} className="ms-2 small badge"> {/* Bootstrap badge */}
+                                <Badge variant={activity.level === 'warning' ? 'destructive' : 'secondary'} className="ms-2 small badge">
                                   {t(`dashboard.badge_${activity.level}` as any, activity.level)}
                                 </Badge>
                               )}
@@ -283,8 +275,8 @@ export default function DashboardPage() {
                 <Card className="card h-100">
                   <CardHeader className="card-header">
                       <CardTitle className="card-title h6 mb-0 small">{t('dashboard.financial.expense_category_title')}</CardTitle>
-                      <CardDescription className="card-text small text-muted">{t('dashboard.financial.expense_category_desc')}</CardHeader>
-                  </CardContent>
+                      <CardDescription className="card-text small text-muted">{t('dashboard.financial.expense_category_desc')}</CardDescription>
+                  </CardHeader>
                   <CardContent className="card-body">
                      <div className="d-flex align-items-center justify-content-center border rounded p-3" style={{height: '12rem', backgroundColor: 'var(--bs-light)'}}>
                        <PieChart style={{width: '1rem', height: '1rem'}} className="me-2 text-primary"/>
