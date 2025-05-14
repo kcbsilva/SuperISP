@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  allowedDevOrigins: ['9003-idx-studio-1746297214025.cluster-uf6urqn4lned4spwk4xorq6bpo.cloudworkstations.dev'],
   webpack: (config, { isServer }) => {
     // Fix for 'net', 'tls', 'fs' modules not found in client-side bundle due to mysql2
     if (!isServer) {
