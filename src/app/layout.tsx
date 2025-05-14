@@ -49,35 +49,31 @@ import {
   LayoutDashboard as ServiceDashboardIcon,
   List as ServiceTypesIcon,
   ChevronRight,
-  Menu as MenuIcon, // Changed from PanelLeft to MenuIcon for Bootstrap toggle
+  Menu as MenuIcon,
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
 import { SiReactrouter } from "react-icons/si";
 
 
-import './globals.css'; // Keep for theme variables and minimal resets
-import { Toaster } from '@/components/ui/toaster'; // Toaster might need Bootstrap styling
-
-// Assuming Bootstrap CSS is linked globally e.g. in <head> or imported from node_modules
-// import 'bootstrap/dist/css/bootstrap.min.css';
-
+import './globals.css';
+import { Toaster } from '@/components/ui/toaster';
 
 import { AppHeader } from '@/components/app-header';
-import { TooltipProvider } from '@/components/ui/tooltip'; // Tooltip will need Bootstrap styling
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Progress } from '@/components/ui/progress'; // Progress will need Bootstrap styling
+import { Progress } from '@/components/ui/progress';
 import { LocaleProvider, useLocale } from '@/contexts/LocaleContext';
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 const queryClient = new QueryClient();
 
-// Simplified Sidebar for Bootstrap
 const BootstrapSidebar: React.FC<{ children: ReactNode, isMobile: boolean, isOpen: boolean, toggle: () => void, logoFillColor: string, t: Function, isActive: Function }> =
  ({ children, isMobile, isOpen, toggle, logoFillColor, t, isActive }) => {
-  const iconSize = { width: '0.875rem', height: '0.875rem' }; // Equivalent to h-3.5 w-3.5 or text-sm
-  const subIconSize = { width: '0.75rem', height: '0.75rem' }; // Equivalent to h-3 w-3 or text-xs
+  const iconSize = { width: '0.875rem', height: '0.875rem' };
+  const subIconSize = { width: '0.75rem', height: '0.75rem' };
 
   return (
     <>
@@ -89,14 +85,14 @@ const BootstrapSidebar: React.FC<{ children: ReactNode, isMobile: boolean, isOpe
           ${isMobile ? `offcanvas offcanvas-start${isOpen ? ' show' : ''}` : 'sticky-top vh-100'}
         `}
         style={{ width: isMobile ? '280px' : '220px', transition: 'transform .3s ease-in-out' }}
-        tabIndex={-1}
-        aria-labelledby="nethubSidebarLabel"
+        tabIndex={isMobile ? -1 : undefined}
+        aria-labelledby={isMobile ? "nethubSidebarLabel" : undefined}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
            <Link
               href="/"
               className="d-flex align-items-center text-dark text-decoration-none"
-              style={{ width: '131px', height: '32px' }}
+              style={{ width: '131px', height: '32px' }} // Fixed dimensions for the logo
               onClick={() => isMobile && toggle()}
             >
               <svg
@@ -130,11 +126,9 @@ const BootstrapSidebar: React.FC<{ children: ReactNode, isMobile: boolean, isOpe
         </div>
         <hr className="my-2" />
         <ul className="nav nav-pills flex-column mb-auto overflow-auto">
-          {/* Sidebar items here, converted to Bootstrap nav-link structure */}
           {children}
         </ul>
         <hr className="my-2" />
-        {/* Footer can go here if needed */}
       </nav>
     </>
   );
@@ -150,13 +144,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const [logoFillColor, setLogoFillColor] = useState<string>('hsl(var(--primary))');
 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const isMobile = useIsMobile(); // Your existing hook
+  const isMobile = useIsMobile();
 
   const toggleMobileSidebar = () => setIsMobileSidebarOpen(!isMobileSidebarOpen);
 
 
   useEffect(() => {
-    // This effect ensures the sidebar is closed when transitioning from mobile to desktop
     if (!isMobile && isMobileSidebarOpen) {
       setIsMobileSidebarOpen(false);
     }
@@ -203,7 +196,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined' && theme) {
       const newFillColor = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         ? 'hsl(var(--accent))'
-        : 'hsl(222.2, 47.4%, 11.2%)'; // Dark Blue for light theme #14213D
+        : 'hsl(222.2, 47.4%, 11.2%)';
       setLogoFillColor(newFillColor);
     }
   }, [theme]);
@@ -211,10 +204,13 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const navLinkClass = (path: string) => `nav-link text-dark d-flex align-items-center gap-2 ${isActive(path) ? 'active' : ''}`;
   const subNavLinkClass = (path: string) => `nav-link text-dark d-flex align-items-center gap-2 ps-4 ${isActive(path) ? 'active' : ''}`;
 
+  const mainContentMargin = isMobile ? '0' : '220px';
+  const mainContentPadding = isMapPage ? 'p-0' : 'p-3 p-md-4';
+
 
   return (
     <TooltipProvider>
-        <div className="d-flex"> {/* Main flex container for sidebar and content */}
+        <div className="d-flex">
           <BootstrapSidebar
             isMobile={isMobile}
             isOpen={isMobileSidebarOpen}
@@ -232,12 +228,13 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             </li>
 
             {/* Subscribers */}
-            <li className="nav-item">
-              <Link href="/subscribers/list" className={navLinkClass('/subscribers/list')} onClick={() => isMobile && toggleMobileSidebar()}>
-                <Users style={iconSize} />
-                <span className="truncate">{t('sidebar.subscribers')}</span>
-              </Link>
+             <li className="nav-item">
+                <Link href="/subscribers/list" className={navLinkClass('/subscribers/list')} onClick={() => isMobile && toggleMobileSidebar()}>
+                    <Users style={iconSize} />
+                    <span className="truncate">{t('sidebar.subscribers')}</span>
+                </Link>
             </li>
+
 
             {/* Maps Accordion */}
             <li className="nav-item">
@@ -484,7 +481,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             </li>
           </BootstrapSidebar>
 
-          <div className={`flex-grow-1 ${isMapPage ? '' : 'p-3 p-md-4'}`} style={{ marginLeft: isMobile ? '0' : '220px' }}>
+           <div className={`flex-grow-1 ${mainContentPadding}`} style={{ marginLeft: mainContentMargin }}> {/* Use template literal for class */}
             <div className="position-fixed top-0 start-0 w-100 z-index-toast" style={{ height: '0.25rem' }}>
               {isLoading && <Progress value={progress} className="w-100 h-100 rounded-0 bg-transparent progress" style={{ height: '0.25rem' }}><div className="progress-bar bg-warning" role="progressbar" style={{ width: `${progress}%` }} aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}></div></Progress>}
             </div>
@@ -508,8 +505,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-         {/* Link to Bootstrap CSS (assuming it's in public/css or from CDN) */}
-         {/* Example using CDN: */}
          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
       </head>
       <body
@@ -528,11 +523,8 @@ export default function RootLayout({
             </LocaleProvider>
           </QueryClientProvider>
         </NextThemesProvider>
-        {/* Bootstrap JS Bundle (Popper.js included) */}
-        {/* Placed at the end of body for better performance */}
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" async></script>
       </body>
     </html>
   );
 }
-
