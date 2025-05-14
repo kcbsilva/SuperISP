@@ -2,55 +2,15 @@
 'use client';
 
 import * as React from 'react';
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { PlusCircle, Pencil, Trash2, Loader2, RefreshCw } from "lucide-react";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog" 
 import { useLocale } from '@/contexts/LocaleContext';
-import type { Pop, PopData } from '@/types/pops'; 
-import { addPop, getPops, updatePop, removePop } from '@/services/mysql/pops'; 
+import type { Pop, PopData } from '@/types/pops';
+import { addPop, getPops, updatePop, removePop } from '@/services/mysql/pops';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Skeleton } from '@/components/ui/skeleton';
 
 
 const popSchema = z.object({
@@ -64,13 +24,15 @@ type PopFormData = z.infer<typeof popSchema>;
 
 export default function PoPsPage() {
   const queryClientReact = useQueryClient();
-  const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
-  const [editingPop, setEditingPop] = React.useState<Pop | null>(null); 
+  const [isAddModalOpen, setIsAddModalOpen] = React.useState(false); // For Bootstrap modal
+  const [editingPop, setEditingPop] = React.useState<Pop | null>(null);
   const [popToDelete, setPopToDelete] = React.useState<Pop | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+
 
   const { toast } = useToast();
   const { t } = useLocale();
-  const iconSize = "h-3 w-3";
+  const iconSize = "h-3 w-3"; // text-xs equivalent for icons
 
 
   const { data: pops = [], isLoading: isLoadingPops, error: popsError, refetch: refetchPops } = useQuery<Pop[], Error>({
@@ -87,7 +49,7 @@ export default function PoPsPage() {
         description: t('pops.add_success_toast_description', '{name} has been added successfully.').replace('{name}', form.getValues('name')),
       });
       form.reset();
-      setIsAddDialogOpen(false);
+      setIsAddModalOpen(false);
     },
     onError: (error: any) => {
       toast({
@@ -108,7 +70,7 @@ export default function PoPsPage() {
         });
         form.reset();
         setEditingPop(null);
-        setIsAddDialogOpen(false);
+        setIsAddModalOpen(false);
     },
     onError: (error: any) => {
         toast({
@@ -129,6 +91,7 @@ export default function PoPsPage() {
             variant: 'destructive'
         });
         setPopToDelete(null);
+        setShowDeleteConfirm(false);
     },
     onError: (error: any) => {
         toast({
@@ -137,6 +100,7 @@ export default function PoPsPage() {
             variant: 'destructive',
         });
         setPopToDelete(null);
+        setShowDeleteConfirm(false);
     },
   });
 
@@ -159,10 +123,15 @@ export default function PoPsPage() {
   };
 
   const handleEditPop = (pop: Pop) => {
-     setEditingPop(pop); 
-     form.reset(pop); 
-     setIsAddDialogOpen(true);
+     setEditingPop(pop);
+     form.reset(pop);
+     setIsAddModalOpen(true);
    };
+
+  const handleDeleteClick = (pop: Pop) => {
+    setPopToDelete(pop);
+    setShowDeleteConfirm(true);
+  }
 
   const handleRemovePopConfirm = () => {
     if (popToDelete) {
@@ -178,223 +147,166 @@ export default function PoPsPage() {
       });
     };
 
+  const getStatusBadgeClass = (status: string | undefined) => {
+    if (!status) return 'bg-secondary text-secondary-content';
+    switch (status.toLowerCase()) {
+        case 'active': return 'bg-success-subtle text-success';
+        case 'planned': return 'bg-warning-subtle text-warning';
+        case 'inactive': return 'bg-danger-subtle text-danger';
+        default: return 'bg-light text-dark';
+    }
+  };
+
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-base font-semibold">{t('pops.title')}</h1>
+    <div className="d-flex flex-column gap-4">
+      <div className="d-flex justify-content-between align-items-center">
+        <h1 className="h5 mb-0">{t('pops.title')}</h1>
 
-        <div className="flex items-center gap-2">
-          <Button
-              variant="default"
+        <div className="d-flex align-items-center gap-2">
+          <button
+              type="button"
+              className="btn btn-primary btn-sm d-flex align-items-center"
               onClick={handleRefresh}
               disabled={isLoadingPops || addPopMutation.isPending || updatePopMutation.isPending || removePopMutation.isPending}
-              className="bg-primary hover:bg-primary/90"
           >
-              {isLoadingPops ? <Loader2 className={`mr-2 ${iconSize} animate-spin`} /> : <RefreshCw className={`mr-2 ${iconSize}`} />}
+              {isLoadingPops ? <Loader2 style={{width: iconSize.width, height: iconSize.height}} className="me-2 spinner-border spinner-border-sm" /> : <RefreshCw style={iconSize} className="me-2" />}
               {t('pops.refresh_button')}
-          </Button>
+          </button>
 
-          <Dialog open={isAddDialogOpen} onOpenChange={(isOpen) => {
-              setIsAddDialogOpen(isOpen);
-              if (!isOpen) {
-                setEditingPop(null); 
-                form.reset({ name: '', location: '', status: 'Active' }); 
-              }
-            }}>
-            <DialogTrigger asChild>
-              <Button className="bg-green-600 hover:bg-green-700 text-white">
-                <PlusCircle className={`mr-2 ${iconSize}`} /> {editingPop ? t('pops.edit_dialog_title') : t('pops.add_button')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle className="text-sm">{editingPop ? t('pops.edit_dialog_title') : t('pops.add_dialog_title')}</DialogTitle>
-                <DialogDescription className="text-xs">
-                  {editingPop ? t('pops.edit_dialog_description') : t('pops.add_dialog_description')}
-                </DialogDescription>
-              </DialogHeader>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleFormSubmit)} className="grid gap-4 py-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right">{t('pops.form_name_label')}</FormLabel>
-                        <FormControl className="col-span-3">
-                          <Input placeholder={t('pops.form_name_placeholder')} {...field} />
-                        </FormControl>
-                        <FormMessage className="col-span-4 text-right" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="location"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right">{t('pops.form_location_label')}</FormLabel>
-                        <FormControl className="col-span-3">
-                          <Input placeholder={t('pops.form_location_placeholder')} {...field} />
-                        </FormControl>
-                         <FormMessage className="col-span-4 text-right" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right">{t('pops.form_status_label')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl className="col-span-3">
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('pops.form_status_placeholder')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Active">{t('pops.form_status_active')}</SelectItem>
-                            <SelectItem value="Inactive">{t('pops.form_status_inactive')}</SelectItem>
-                            <SelectItem value="Planned">{t('pops.form_status_planned')}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage className="col-span-4 text-right" />
-                      </FormItem>
-                    )}
-                  />
-                   <DialogFooter>
-                      <DialogClose asChild>
-                        <Button type="button" variant="outline" disabled={addPopMutation.isPending || updatePopMutation.isPending}>{t('pops.form_cancel_button')}</Button>
-                      </DialogClose>
-                      <Button type="submit" disabled={addPopMutation.isPending || updatePopMutation.isPending}>
-                          {(addPopMutation.isPending || updatePopMutation.isPending) && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                          {editingPop ? t('pops.form_update_button') : t('pops.form_save_button')}
-                      </Button>
-                   </DialogFooter>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
+          <button type="button" className="btn btn-success btn-sm d-flex align-items-center text-white" onClick={() => { setEditingPop(null); form.reset({ name: '', location: '', status: 'Active'}); setIsAddModalOpen(true); }}>
+            <PlusCircle style={iconSize} className="me-2" /> {t('pops.add_button')}
+          </button>
         </div>
-
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">{t('pops.table_title')}</CardTitle>
-          <CardDescription className="text-xs">{t('pops.table_description')}</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="card shadow-sm">
+        <div className="card-header bg-light">
+          <h6 className="card-title mb-0 small">{t('pops.table_title')}</h6>
+          <p className="card-text small text-muted mb-0">{t('pops.table_description')}</p>
+        </div>
+        <div className="card-body p-0"> {/* Remove padding for table to fit better */}
           {isLoadingPops ? (
-            <div className="space-y-3">
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
+            <div className="p-4">
+                <div className="skeleton-text mb-2" style={{height: '1.5rem', width: '100%'}}></div>
+                <div className="skeleton-text mb-2" style={{height: '1.5rem', width: '100%'}}></div>
+                <div className="skeleton-text" style={{height: '1.5rem', width: '100%'}}></div>
             </div>
           ) : popsError ? (
-             <div className="text-center text-destructive py-4 text-xs">{t('pops.loading_error', { message: popsError.message })}</div>
+             <div className="text-center text-danger p-4 small">{t('pops.loading_error', { message: popsError.message })}</div>
           ) : pops.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-border">
-                <thead className="bg-muted/50">
+            <div className="table-responsive">
+              <table className="table table-hover table-sm mb-0">
+                <thead className="table-light">
                   <tr>
-                     <TableHead className="w-16 text-center">
-                       {t('pops.table_header_id')}
-                     </TableHead>
-                     <TableHead className="text-center">
-                       {t('pops.table_header_name')}
-                     </TableHead>
-                    <TableHead className="text-center">
-                      {t('pops.table_header_location')}
-                    </TableHead>
-                    <TableHead className="text-center">
-                      {t('pops.table_header_status')}
-                    </TableHead>
-                     <TableHead className="w-24 text-center">
-                       {t('pops.table_header_created')}
-                     </TableHead>
-                    <TableHead className="relative w-28 text-right">
-                      {t('pops.table_header_actions')}
-                    </TableHead>
+                     <th scope="col" className="text-center small" style={{width: '80px'}}>{t('pops.table_header_id')}</th>
+                     <th scope="col" className="text-center small">{t('pops.table_header_name')}</th>
+                    <th scope="col" className="text-center small">{t('pops.table_header_location')}</th>
+                    <th scope="col" className="text-center small">{t('pops.table_header_status')}</th>
+                     <th scope="col" className="text-center small" style={{width: '120px'}}>{t('pops.table_header_created')}</th>
+                    <th scope="col" className="text-center small" style={{width: '100px'}}>{t('pops.table_header_actions')}</th>
                   </tr>
                 </thead>
-                <tbody className="bg-background divide-y divide-border">
+                <tbody>
                   {pops.map((pop) => (
                     <tr key={pop.id}>
-                       <TableCell className="px-6 py-4 whitespace-nowrap text-xs font-mono text-muted-foreground text-center">
-                        {pop.id.toString().substring(0, 8)}
-                      </TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs font-medium text-foreground text-center">
-                        {pop.name}
-                      </TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground text-center">
-                        {pop.location}
-                      </TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs text-center">
-                        <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            pop.status && pop.status.toLowerCase() === "active"
-                              ? "bg-green-100 text-green-800"
-                              : pop.status && pop.status.toLowerCase() === "planned"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
-                          }`}
-                        >
+                       <td className="text-center small text-muted font-monospace">{(pop.id as string).substring(0,8)}</td>
+                      <td className="text-center small fw-medium">{pop.name}</td>
+                      <td className="text-center small text-muted">{pop.location}</td>
+                      <td className="text-center small">
+                        <span className={`badge small ${getStatusBadgeClass(pop.status)}`}>
                           {pop.status ? t(`pops.form_status_${pop.status.toLowerCase()}` as any, pop.status) : t('pops.status_unknown')}
                         </span>
-                      </TableCell>
-                       <TableCell className="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground text-center">
+                      </td>
+                       <td className="text-center small text-muted">
                          {pop.createdAt instanceof Date ? pop.createdAt.toLocaleDateString() : 'N/A'}
-                       </TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditPop(pop)} disabled={updatePopMutation.isPending}>
-                           <Pencil className={iconSize} />
-                           <span className="sr-only">Edit PoP</span>
-                        </Button>
-                         <AlertDialog>
-                           <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" disabled={removePopMutation.isPending}>
-                                <Trash2 className={iconSize} />
-                                <span className="sr-only">Remove PoP</span>
-                              </Button>
-                           </AlertDialogTrigger>
-                           <AlertDialogContent>
-                             <AlertDialogHeader>
-                               <AlertDialogTitle>{t('pops.delete_alert_title')}</AlertDialogTitle>
-                               <AlertDialogDescription className="text-xs">
-                                 {t('pops.delete_alert_description', 'This action cannot be undone. This will permanently delete the PoP named "{name}" (ID: {id}).')
-                                    .replace('{name}', pop.name)
-                                    .replace('{id}', pop.id.toString())}
-                               </AlertDialogDescription>
-                             </AlertDialogHeader>
-                             <AlertDialogFooter>
-                               <AlertDialogCancel onClick={() => setPopToDelete(null)}>{t('pops.delete_alert_cancel')}</AlertDialogCancel>
-                               <AlertDialogAction
-                                 className={buttonVariants({ variant: "destructive" })}
-                                 onClick={() => {
-                                    setPopToDelete(pop); 
-                                    handleRemovePopConfirm(); 
-                                  }}
-                                 disabled={removePopMutation.isPending}
-                               >
-                                 {removePopMutation.isPending ? <Loader2 className={`mr-2 ${iconSize} animate-spin`} /> : t('pops.delete_alert_delete')}
-                               </AlertDialogAction>
-                             </AlertDialogFooter>
-                           </AlertDialogContent>
-                         </AlertDialog>
-                      </TableCell>
+                       </td>
+                      <td className="text-center">
+                        <button className="btn btn-link btn-sm p-1" onClick={() => handleEditPop(pop)} disabled={updatePopMutation.isPending} data-bs-toggle="tooltip" title="Edit PoP">
+                           <Pencil style={iconSize} />
+                        </button>
+                        <button className="btn btn-link btn-sm p-1 text-danger" onClick={() => handleDeleteClick(pop)} disabled={removePopMutation.isPending} data-bs-toggle="tooltip" title="Remove PoP">
+                           <Trash2 style={iconSize} />
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p className="text-center text-muted-foreground py-4 text-xs">{t('pops.no_pops_found')}</p>
+            <p className="text-center text-muted p-4 small">{t('pops.no_pops_found')}</p>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {/* Add/Edit Modal */}
+      <div className={`modal fade ${isAddModalOpen ? 'show d-block' : ''}`} tabIndex={-1} style={{backgroundColor: isAddModalOpen ? 'rgba(0,0,0,0.4)' : 'transparent'}}>
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title h6">{editingPop ? t('pops.edit_dialog_title') : t('pops.add_dialog_title')}</h5>
+              <button type="button" className="btn-close btn-sm" onClick={() => setIsAddModalOpen(false)} aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <p className="small text-muted mb-3">{editingPop ? t('pops.edit_dialog_description') : t('pops.add_dialog_description')}</p>
+              <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+                <div className="mb-3">
+                  <label htmlFor="popName" className="form-label small">{t('pops.form_name_label')}</label>
+                  <input type="text" className={`form-control form-control-sm ${form.formState.errors.name ? 'is-invalid' : ''}`} id="popName" placeholder={t('pops.form_name_placeholder')} {...form.register('name')} />
+                  {form.formState.errors.name && <div className="invalid-feedback small">{form.formState.errors.name.message}</div>}
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="popLocation" className="form-label small">{t('pops.form_location_label')}</label>
+                  <input type="text" className={`form-control form-control-sm ${form.formState.errors.location ? 'is-invalid' : ''}`} id="popLocation" placeholder={t('pops.form_location_placeholder')} {...form.register('location')} />
+                  {form.formState.errors.location && <div className="invalid-feedback small">{form.formState.errors.location.message}</div>}
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="popStatus" className="form-label small">{t('pops.form_status_label')}</label>
+                  <select className={`form-select form-select-sm ${form.formState.errors.status ? 'is-invalid' : ''}`} id="popStatus" {...form.register('status')}>
+                    <option value="Active">{t('pops.form_status_active')}</option>
+                    <option value="Inactive">{t('pops.form_status_inactive')}</option>
+                    <option value="Planned">{t('pops.form_status_planned')}</option>
+                  </select>
+                  {form.formState.errors.status && <div className="invalid-feedback small">{form.formState.errors.status.message}</div>}
+                </div>
+                <div className="modal-footer p-0 pt-3">
+                  <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setIsAddModalOpen(false)} disabled={addPopMutation.isPending || updatePopMutation.isPending}>{t('pops.form_cancel_button')}</button>
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={addPopMutation.isPending || updatePopMutation.isPending}>
+                    {(addPopMutation.isPending || updatePopMutation.isPending) && <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>}
+                    {editingPop ? t('pops.form_update_button') : t('pops.form_save_button')}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       {/* Delete Confirmation Modal */}
+       <div className={`modal fade ${showDeleteConfirm ? 'show d-block' : ''}`} tabIndex={-1} style={{backgroundColor: showDeleteConfirm ? 'rgba(0,0,0,0.4)' : 'transparent'}}>
+        <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+            <div className="modal-header">
+                <h5 className="modal-title h6">{t('pops.delete_alert_title')}</h5>
+                <button type="button" className="btn-close btn-sm" onClick={() => setShowDeleteConfirm(false)} aria-label="Close"></button>
+            </div>
+            <div className="modal-body small">
+                {t('pops.delete_alert_description', 'This action cannot be undone. This will permanently delete the PoP named "{name}" (ID: {id}).')
+                .replace('{name}', popToDelete?.name || '')
+                .replace('{id}', popToDelete?.id.toString() || '')}
+            </div>
+            <div className="modal-footer">
+                <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setShowDeleteConfirm(false)}>{t('pops.delete_alert_cancel')}</button>
+                <button type="button" className="btn btn-danger btn-sm" onClick={handleRemovePopConfirm} disabled={removePopMutation.isPending}>
+                {removePopMutation.isPending ? <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> : null}
+                {t('pops.delete_alert_delete')}
+                </button>
+            </div>
+            </div>
+        </div>
+      </div>
+
     </div>
   );
 }
