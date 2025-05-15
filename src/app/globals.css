@@ -33,7 +33,7 @@
     --ring: 220 50% 28%; /* #233B6E */
 
     --radius: 0.5rem;
-    --sidebar-width: 250px;
+    --sidebar-width: 200px; /* Reduced from 250px */
     --sidebar-width-icon: 56px;
 
     /* Chart Colors Light Theme */
