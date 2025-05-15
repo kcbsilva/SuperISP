@@ -53,7 +53,7 @@ import {
   Menu as MenuIcon,
   ListTree,
   Users2,
-  UserPlus
+  UserPlus,
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -93,7 +93,9 @@ const ProlterLogo = () => {
     setIsMounted(true);
   }, []);
 
-  const fillColor = !isMounted ? '#14213D' : theme === 'dark' ? 'hsl(var(--accent))' : '#14213D';
+  // Ensure fillColor is always defined, even before mount
+  const fillColor = !isMounted ? '#14213D' : (theme === 'dark' ? 'hsl(var(--accent))' : '#14213D');
+
 
   return (
     <svg
@@ -102,7 +104,7 @@ const ProlterLogo = () => {
       viewBox="0 0 131 32"
       xmlns="http://www.w3.org/2000/svg"
       fill={fillColor}
-      style={{ maxWidth: '131px', height: '32px' }}
+      style={{ maxWidth: '131px', height: '32px' }} // Adjusted to 131x32
       preserveAspectRatio="xMidYMid meet"
     >
       <path d="M21.0938 18.375H18.2188V27H15.25V18.375H12.375V15.875H15.25V11.6562C15.25 9.5625 16.3438 8.03125 18.5312 8.03125L21.25 8.0625V10.625H19.5C18.8125 10.625 18.2188 10.9688 18.2188 11.8438V15.875H21.2188L21.0938 18.375Z" />
@@ -126,7 +128,6 @@ const ProlterLogo = () => {
   </svg>
   );
 };
-
 
 const queryClient = new QueryClient();
 

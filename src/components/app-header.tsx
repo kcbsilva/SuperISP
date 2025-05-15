@@ -52,9 +52,9 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   const { t } = useLocale();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
- const [mounted, setMounted] = React.useState(false);
-  const iconSize = "h-4 w-4"; // Adjusted from h-5 w-5 for text-xs base
-  const smallIconSize = "h-3 w-3"; // Adjusted from h-4 w-4
+  const [mounted, setMounted] = React.useState(false);
+  const iconSize = "h-4 w-4"; 
+  const smallIconSize = "h-3 w-3";
 
   React.useEffect(() => setMounted(true), []);
 
@@ -113,18 +113,18 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
 
 
   return (
- <header className="sticky top-0 z-30 flex h-14 items-center justify-between bg-[#1A237E] text-white px-4 md:px-6 shadow-sm">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between bg-[#1A237E] px-4 text-white shadow-sm md:px-6">
       <div className="flex items-center">
- {/* Logo or App Title */}
- <Link href="/" className="flex items-center mr-4">
- <img src="/app/assets/prolter-logo.svg" alt="Prolter Logo" className="h-6 w-auto" />
- </Link>
-         <Button variant="ghost" size="icon" className="md:hidden" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
-            <MenuIcon className={`${iconSize} text-white`} />
-         </Button>
+        <Link href="/" className="mr-4 flex items-center">
+          {/* ProlterLogo component was removed, ensure it's re-added or replaced if needed */}
+          {/* <ProlterLogo /> */}
+          <span className="sr-only">Prolter Home</span>
+        </Link>
+        <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
+            <MenuIcon className={`${iconSize}`} />
+        </Button>
       </div>
- {/* Search Bar */}
-      <div className="flex flex-1 justify-center items-center">
+      <div className="flex flex-1 items-center justify-center">
         <div className="relative w-full max-w-sm md:max-w-md">
           <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${iconSize} text-muted-foreground`} />
            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -132,8 +132,8 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
                 <Input
                     ref={inputRef}
                     type="search"
- placeholder={t('search.placeholder', 'Search clients, equipment, elements...')}
-                    className="pl-8 w-full rounded-full h-8 text-xs"
+                    placeholder={t('search.placeholder', 'Search clients, equipment, elements...')}
+                    className="h-8 w-full rounded-full bg-background pl-8 text-xs text-foreground" // Ensure text color is visible
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onFocus={() => searchTerm.length > 1 && setIsPopoverOpen(true)}
@@ -142,15 +142,15 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
             {searchResults && (
                 <PopoverContent
                 ref={popoverRef}
-                className="w-[var(--radix-popover-trigger-width)] p-1 mt-1 max-h-80 overflow-y-auto"
+                className="mt-1 w-[var(--radix-popover-trigger-width)] max-h-80 overflow-y-auto p-1"
                 align="start"
-                onOpenAutoFocus={(e) => e.preventDefault()} // Prevent focus stealing
+                onOpenAutoFocus={(e) => e.preventDefault()} 
                 >
                 {(searchResults.clients?.length ?? 0) > 0 && (
                     <>
                     <div className="mb-1 px-2 py-1 text-xs font-semibold text-muted-foreground">{t('search.clients_label')}</div>
                     {searchResults.clients.map(client => (
-                        <Button key={client.id} variant="ghost" asChild className="w-full justify-start h-auto px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
+                        <Button key={client.id} variant="ghost" asChild className="h-auto w-full justify-start px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
                             <Link href={`/subscribers/profile/${client.id}`} className="flex items-center gap-2">
                                 <User className={`${smallIconSize} text-muted-foreground`} />
                                 {client.name}
@@ -163,7 +163,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
                     <>
                     <div className="mb-1 mt-2 px-2 py-1 text-xs font-semibold text-muted-foreground">{t('search.equipment_label')}</div>
                     {searchResults.equipment.map(item => (
-                        <Button key={item.id} variant="ghost" className="w-full justify-start h-auto px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
+                        <Button key={item.id} variant="ghost" className="h-auto w-full justify-start px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
                             <Box className={`${smallIconSize} text-muted-foreground mr-2`} />
                             <span>{item.type} ({t('search.serial_prefix')}: {item.serial})</span>
                         </Button>
@@ -174,7 +174,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
                     <>
                     <div className="mb-1 mt-2 px-2 py-1 text-xs font-semibold text-muted-foreground">{t('search.elements_label')}</div>
                     {searchResults.elements.map(elem => (
-                        <Button key={elem.id} variant="ghost" className="w-full justify-start h-auto px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
+                        <Button key={elem.id} variant="ghost" className="h-auto w-full justify-start px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
                             <Cable className={`${smallIconSize} text-muted-foreground mr-2`} />
                             <span>{elem.name} ({elem.type})</span>
                         </Button>
@@ -195,20 +195,20 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
       </div>
 
        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('header.toggle_theme', 'Toggle theme')}>
+          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('header.toggle_theme', 'Toggle theme')} className="text-white hover:bg-white/10">
             {mounted ? (theme === 'light' ? <Moon className={iconSize} /> : <Sun className={iconSize} />) : <Settings className={iconSize} /> }
- </Button>
+          </Button>
 
          <DropdownMenu>
            <DropdownMenuTrigger asChild>
-             <Button variant="ghost" size="icon" aria-label={t('header.changelog', 'Changelog')}>
- <Info className={`${iconSize} text-white`}/>
- </Button>
+             <Button variant="ghost" size="icon" aria-label={t('header.changelog', 'Changelog')} className="text-white hover:bg-white/10">
+                <Info className={`${iconSize}`}/>
+             </Button>
            </DropdownMenuTrigger>
            <DropdownMenuContent align="end" className="w-64">
              <DropdownMenuLabel className="text-xs">{t('header.changelog_label', 'Version 0.1.0')}</DropdownMenuLabel>
              <DropdownMenuSeparator />
-             <div className="p-2 text-xs space-y-1">
+             <div className="space-y-1 p-2 text-xs">
                <p><strong>{t('header.changelog_new', 'New')}:</strong> {t('header.changelog_new_desc', 'Initial release features.')}</p>
                <p><strong>{t('header.changelog_fixes', 'Fixes')}:</strong> {t('header.changelog_fixes_desc', 'Various UI adjustments.')}</p>
                <p><strong>{t('header.changelog_improvements', 'Improvements')}:</strong> {t('header.changelog_improvements_desc', 'Sidebar and dashboard layout.')}</p>
@@ -218,19 +218,19 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
 
           <DropdownMenu>
              <DropdownMenuTrigger asChild>
-               <Button variant="ghost" size="icon" aria-label={t('header.profile', 'User Profile')}>
- <User className={`${iconSize} text-white`}/>
- </Button>
+               <Button variant="ghost" size="icon" aria-label={t('header.profile', 'User Profile')} className="text-white hover:bg-white/10">
+                <User className={`${iconSize}`}/>
+               </Button>
              </DropdownMenuTrigger>
              <DropdownMenuContent align="end">
                <DropdownMenuLabel className="text-xs">{t('header.my_account', 'My Account')}</DropdownMenuLabel>
                <DropdownMenuSeparator />
                <DropdownMenuItem onSelect={handleProfileClick} className="text-xs">
-                 <UserCircle className={smallIconSize} />
+                 <UserCircle className={`${smallIconSize} mr-2`} /> {/* Added mr-2 */}
                  <span>{t('header.profile_menu_item', 'Profile')}</span>
                </DropdownMenuItem>
                <DropdownMenuItem onSelect={handleLogoutClick} className="text-xs">
-                 <LogOut className={smallIconSize} />
+                 <LogOut className={`${smallIconSize} mr-2`} /> {/* Added mr-2 */}
                  <span>{t('header.logout_menu_item', 'Logout')}</span>
                </DropdownMenuItem>
              </DropdownMenuContent>

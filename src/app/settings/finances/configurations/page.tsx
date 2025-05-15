@@ -55,7 +55,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Switch } from '@/components/ui/switch';
-import { PlusCircle, Trash2, Loader2, RefreshCw, ChevronRight, ChevronLeft } from 'lucide-react'; 
+import { PlusCircle, Trash2, Loader2, ChevronRight, ChevronLeft } from 'lucide-react'; 
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';

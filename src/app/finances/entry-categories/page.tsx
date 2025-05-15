@@ -94,7 +94,7 @@ export default function EntryCategoriesPage() {
   const [editingCategory, setEditingCategory] = React.useState<EntryCategory | null>(null);
   const [categoryToDelete, setCategoryToDelete] = React.useState<EntryCategory | null>(null);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const iconSize = "h-3 w-3"; // Reduced icon size
+  const iconSize = "h-3 w-3";
 
 
   const form = useForm<CategoryFormData>({
@@ -283,7 +283,7 @@ export default function EntryCategoriesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center gap-4">
-        <h1 className="text-base font-semibold">{t('entry_categories.title', 'Entry Categories')}</h1> {/* Reduced heading size */}
+        <h1 className="text-base font-semibold">{t('entry_categories.title', 'Entry Categories')}</h1>
         
         <div className="relative flex-1">
             <Search className={`absolute left-2.5 top-2.5 ${iconSize} text-muted-foreground`} />
@@ -311,7 +311,7 @@ export default function EntryCategoriesPage() {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="text-sm">{editingCategory ? t('entry_categories.edit_category_dialog_title', 'Edit Category') : t('entry_categories.add_category_dialog_title', 'Add New Entry Category')}</DialogTitle> {/* Reduced title size */}
+                        <DialogTitle className="text-sm">{editingCategory ? t('entry_categories.edit_category_dialog_title', 'Edit Category') : t('entry_categories.add_category_dialog_title', 'Add New Entry Category')}</DialogTitle>
                         <DialogDescription className="text-xs">{editingCategory ? t('entry_categories.edit_category_dialog_description', 'Update the details for this category.') : t('entry_categories.add_category_dialog_description', 'Fill in the details for the new entry category.')}</DialogDescription> 
                     </DialogHeader>
                     <Form {...form}>
@@ -414,29 +414,28 @@ export default function EntryCategoriesPage() {
                     const indentationLevel = getIndentationLevel(category, placeholderCategories);
                     return (
                     <TableRow key={category.id}>
-                      <TableCell className="font-medium py-1.5">{getCategoryNumber(category, placeholderCategories)}</TableCell> {/* Reduced py */}
+                      <TableCell className="font-medium py-1.5">{getCategoryNumber(category, placeholderCategories)}</TableCell>
                       <TableCell 
-                        className="font-medium py-1.5" // Reduced py
-                        style={{ paddingLeft: `${indentationLevel * 1.25 + 0.5}rem` }} // Adjusted padding
+                        className="font-medium py-1.5"
+                        style={{ paddingLeft: `${indentationLevel * 1.25 + 0.5}rem` }}
                       >
                           {category.name}
                       </TableCell>
-                      <TableCell className="py-1.5 text-center"> {/* Reduced py and centered */}
+                      <TableCell className="py-1.5 text-center">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                           category.type === 'Income' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                         }`}>
                           {t(`entry_categories.category_type_${category.type.toLowerCase()}` as any, category.type)}
                         </span>
                       </TableCell>
-                       <TableCell className="text-right py-1.5"> {/* Reduced py */}
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditCategory(category)} disabled={isStatic}> {/* Reduced h/w */}
+                       <TableCell className="text-right py-1.5">
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditCategory(category)} disabled={isStatic}>
                                 <Edit className={iconSize} />
                                 <span className="sr-only">{t('entry_categories.action_edit', 'Edit')}</span>
                             </Button>
                              <AlertDialog>
                                <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" disabled={isStatic}> {/* Reduced h/w */}
-                                    {/* Reduced h/w */}
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" disabled={isStatic}>
                                     <Trash2 className={iconSize} />
                                     <span className="sr-only">{t('entry_categories.action_delete', 'Delete')}</span>
                                 </Button>
@@ -480,4 +479,3 @@ export default function EntryCategoriesPage() {
     </div>
   );
 }
-

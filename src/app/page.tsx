@@ -37,11 +37,10 @@ export default function DashboardPage() {
   const [currentView, setCurrentView] = React.useState<DashboardView>("General");
   const [formattedSubscribers, setFormattedSubscribers] = React.useState<string | null>(null);
   const [formattedMrr, setFormattedMrr] = React.useState<string | null>(null);
-  const iconSize = "h-4 w-4"; // Standard icon size for cards
-  const smallIconSize = "h-3 w-3"; // For buttons or smaller indicators
+  const iconSize = "h-4 w-4"; 
+  const smallIconSize = "h-3 w-3"; 
 
   React.useEffect(() => {
-    // Ensure this runs only on client-side after hydration
     setFormattedSubscribers(dashboardData.totalSubscribers.toLocaleString(locale));
     const currencyLocale = locale === 'pt' ? 'pt-BR' : locale === 'fr' ? 'fr-FR' : 'en-US';
     setFormattedMrr(dashboardData.mrr.toLocaleString(currencyLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
@@ -97,7 +96,7 @@ export default function DashboardPage() {
                     key={index}
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8" // Standard small icon button size
+                    className="h-8 w-8" 
                     onClick={() => handleQuickActionClick(index)}
                     title={t('dashboard.quick_action_tooltip', 'Quick Action {action} (e.g., Add Client)').replace('{action}', `${index + 1}`)}
                  >
@@ -185,7 +184,7 @@ export default function DashboardPage() {
                     dashboardData.recentActivity.map((activity) => (
                       <div key={activity.id} className="flex items-center gap-3">
                         <Activity className={`${iconSize} text-muted-foreground flex-shrink-0`}/>
-                        <div className="grid gap-0.5 flex-grow-1">
+                        <div className="grid gap-0.5 flex-grow">
                           <p className="text-xs font-medium leading-none">
                              {t(`dashboard.activity_type_${activity.type.toLowerCase().replace(/\s+/g, '_')}` as any, activity.type)}
                             {activity.level && (

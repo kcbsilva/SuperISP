@@ -143,14 +143,12 @@ export default function UsersPage() {
 
   const handleTemplateSubmit = (data: UserTemplateFormData) => {
     if (editingTemplate) {
-        // Update existing template
         setUserTemplates(prev => prev.map(tpl => tpl.id === editingTemplate.id ? { ...tpl, ...data, permissions: data.permissions || [] } : tpl));
         toast({
             title: t('settings_users.update_template_success_title', 'Template Updated'),
             description: t('settings_users.update_template_success_desc', 'User template "{name}" updated.').replace('{name}', data.templateName),
         });
     } else {
-        // Add new template
         const newTemplate: UserTemplate = {
             ...data,
             id: `tpl-${Date.now()}`,
@@ -399,4 +397,3 @@ export default function UsersPage() {
     </div>
   );
 }
-

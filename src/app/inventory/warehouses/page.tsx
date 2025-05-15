@@ -53,6 +53,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -340,4 +341,3 @@ export default function WarehousesPage() {
     </div>
   );
 }
-

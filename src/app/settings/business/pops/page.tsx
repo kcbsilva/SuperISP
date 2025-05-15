@@ -9,7 +9,7 @@ import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
 import type { Pop, PopData } from '@/types/pops';
-import { addPop, getPops, updatePop, removePop } from '@/services/mysql/pops'; // Ensure this path is correct
+import { addPop, getPops, updatePop, removePop } from '@/services/mysql/pops';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -18,7 +18,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -156,9 +156,9 @@ export default function PoPsPage() {
   const getStatusBadgeVariant = (status: string | undefined) => {
     if (!status) return 'secondary';
     switch (status.toLowerCase()) {
-        case 'active': return 'default'; // Greenish
-        case 'planned': return 'outline'; // Yellowish if you customize outline
-        case 'inactive': return 'destructive'; // Reddish
+        case 'active': return 'default'; 
+        case 'planned': return 'outline'; 
+        case 'inactive': return 'destructive';
         default: return 'secondary';
     }
   };
