@@ -18,11 +18,6 @@ import {
   MessageSquare,
   Text,
   Settings2,
-  BookOpen,
-  SlidersHorizontal,
-  Briefcase,
-  Building,
-  Cog,
   ListChecks,
   Wifi,
   Tv,
@@ -53,6 +48,7 @@ import {
   List as ServiceTypesIcon,
   ListTree,
   Menu as MenuIcon,
+  Dot, // Added Dot for submenu items
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -92,7 +88,9 @@ const ProlterLogo = () => {
     setIsMounted(true);
   }, []);
 
-  const fillColor = !isMounted ? 'hsl(var(--card-foreground))' : (theme === 'dark' ? 'hsl(var(--accent))' : 'hsl(var(--primary))');
+  // Determine fill color based on theme, ensuring it's only applied client-side after mount
+  const fillColor = !isMounted ? 'hsl(var(--card-foreground))' : (theme === 'dark' ? 'hsl(var(--accent))' : 'hsl(var(--foreground))');
+
 
   return (
     <svg
@@ -101,7 +99,7 @@ const ProlterLogo = () => {
       viewBox="0 0 131 32"
       xmlns="http://www.w3.org/2000/svg"
       fill={fillColor}
-      style={{ maxWidth: '131px', height: '32px' }}
+      style={{ maxWidth: '131px', height: '32px' }} // Ensures the SVG scales correctly within its container
       preserveAspectRatio="xMidYMid meet"
     >
       <path d="M21.0938 18.375H18.2188V27H15.25V18.375H12.375V15.875H15.25V11.6562C15.25 9.5625 16.3438 8.03125 18.5312 8.03125L21.25 8.0625V10.625H19.5C18.8125 10.625 18.2188 10.9688 18.2188 11.8438V15.875H21.2188L21.0938 18.375Z" />
@@ -126,6 +124,7 @@ const ProlterLogo = () => {
   );
 };
 
+
 const queryClient = new QueryClient();
 
 function AppLayout({ children }: { children: React.ReactNode }) {
@@ -146,27 +145,28 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     if (pathname) {
       setIsLoading(true);
-      setProgress(10);
+      setProgress(20); // Start with a slightly more visible initial progress immediately
 
       const timer = setTimeout(() => {
-        setProgress(90);
-      }, 100);
-
+        setProgress(90); // Simulate further progress
+      }, 100); // Short delay to show progress
+      // The overall duration is relatively short, making it a quick visual cue.
       const finishTimer = setTimeout(() => {
-        setProgress(100);
+        setProgress(100); // Finish
         const hideTimer = setTimeout(() => {
-          setIsLoading(false);
+          setIsLoading(false); // Hide
           setProgress(0);
-        }, 300);
+        }, 300); // Delay before hiding
         return () => clearTimeout(hideTimer);
-      }, 500);
+      }, 400); // Reduced total time slightly
 
       return () => {
         clearTimeout(timer);
         clearTimeout(finishTimer);
       };
     }
-  }, [pathname]);
+  }, [pathname]); // Effect runs when pathname changes
+
 
   const isActive = (href: string) => {
     const cleanHref = href.split('?')[0];
@@ -176,7 +176,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   const isMapPage = pathname === '/maps/map';
-  const iconSize = "h-3 w-3";
+  const iconSize = "h-3 w-3"; // Consistent icon size for top-level items
 
   return (
     <div className="flex h-screen">
@@ -188,7 +188,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            {/* Dashboard */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/" isActive={isActive('/')} tooltip={t('sidebar.dashboard')}>
                 <LayoutDashboard className={iconSize} />
@@ -206,7 +205,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
             {/* Maps Menu */}
             <SidebarMenuItem>
-              <SidebarMenuSub>
+              <SidebarMenuSub defaultOpen={isActive('/maps')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.maps')} isActive={isActive('/maps')}>
                   <MapPin className={iconSize} />
                   <span className="truncate">{t('sidebar.maps')}</span>
@@ -226,7 +225,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuSub>
+                    <SidebarMenuSub defaultOpen={isActive('/maps/elements')}>
                       <SidebarMenuSubTrigger tooltip={t('sidebar.maps_elements')} isActive={isActive('/maps/elements')} size="sm">
                         <ListTree className={`${iconSize} text-muted-foreground`} />
                         <span className="truncate">{t('sidebar.maps_elements')}</span>
@@ -290,7 +289,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
             {/* FTTx Menu */}
             <SidebarMenuItem>
-              <SidebarMenuSub>
+              <SidebarMenuSub defaultOpen={isActive('/fttx')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.fttx')} isActive={isActive('/fttx')}>
                   <GitBranch className={iconSize} />
                   <span className="truncate">{t('sidebar.fttx')}</span>
@@ -321,7 +320,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
             {/* Finances Menu */}
             <SidebarMenuItem>
-              <SidebarMenuSub>
+              <SidebarMenuSub defaultOpen={isActive('/finances')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.finances')} isActive={isActive('/finances')}>
                   <DollarSign className={iconSize} />
                   <span className="truncate">{t('sidebar.finances')}</span>
@@ -346,7 +345,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
             {/* Inventory Menu */}
             <SidebarMenuItem>
-              <SidebarMenuSub>
+              <SidebarMenuSub defaultOpen={isActive('/inventory')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.inventory')} isActive={isActive('/inventory')}>
                   <Archive className={iconSize} />
                   <span className="truncate">{t('sidebar.inventory')}</span>
@@ -392,10 +391,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuSubContent>
               </SidebarMenuSub>
             </SidebarMenuItem>
-            
+
             {/* Service Calls Menu */}
             <SidebarMenuItem>
-              <SidebarMenuSub>
+              <SidebarMenuSub defaultOpen={isActive('/service-calls')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.service_calls')} isActive={isActive('/service-calls')}>
                   <Wrench className={iconSize} />
                   <span className="truncate">{t('sidebar.service_calls')}</span>
@@ -418,7 +417,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuSub>
             </SidebarMenuItem>
 
-
             {/* Reports */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/reports" isActive={isActive('/reports')} tooltip={t('sidebar.reports')}>
@@ -429,7 +427,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
             {/* HR Menu */}
             <SidebarMenuItem>
-              <SidebarMenuSub>
+              <SidebarMenuSub defaultOpen={isActive('/hr')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.hr')} isActive={isActive('/hr')}>
                   <BriefcaseBusiness className={iconSize} />
                   <span className="truncate">{t('sidebar.hr')}</span>
@@ -448,7 +446,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
             {/* Settings Menu */}
             <SidebarMenuItem>
-              <SidebarMenuSub>
+              <SidebarMenuSub defaultOpen={isActive('/settings')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.settings')} isActive={isActive('/settings')}>
                   <Settings className={iconSize} />
                   <span className="truncate">{t('sidebar.settings')}</span>
@@ -461,9 +459,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       <span className="truncate">{t('sidebar.settings_global')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                  {/* Business Sub-Accordion */}
                   <SidebarMenuItem>
-                    <SidebarMenuSub>
+                    <SidebarMenuSub defaultOpen={isActive('/settings/business')}>
                       <SidebarMenuSubTrigger tooltip={t('sidebar.settings_business')} isActive={isActive('/settings/business')} size="sm">
                         <Briefcase className={`${iconSize} text-muted-foreground`} />
                         <span className="truncate">{t('sidebar.settings_business')}</span>
@@ -479,9 +476,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       </SidebarMenuSubContent>
                     </SidebarMenuSub>
                   </SidebarMenuItem>
-                  {/* Plans Sub-Accordion */}
                   <SidebarMenuItem>
-                    <SidebarMenuSub>
+                    <SidebarMenuSub defaultOpen={isActive('/settings/plans')}>
                       <SidebarMenuSubTrigger tooltip={t('sidebar.settings_plans')} isActive={isActive('/settings/plans')} size="sm">
                         <ListChecks className={`${iconSize} text-muted-foreground`} />
                         <span className="truncate">{t('sidebar.settings_plans')}</span>
@@ -521,9 +517,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       </SidebarMenuSubContent>
                     </SidebarMenuSub>
                   </SidebarMenuItem>
-                  {/* Network (moved under settings) */}
                   <SidebarMenuItem>
-                    <SidebarMenuSub>
+                    <SidebarMenuSub defaultOpen={isActive('/settings/network')}>
                       <SidebarMenuSubTrigger tooltip={t('sidebar.network')} isActive={isActive('/settings/network')} size="sm">
                         <NetworkIcon className={`${iconSize} text-muted-foreground`} />
                         <span className="truncate">{t('sidebar.network')}</span>
@@ -581,9 +576,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       <span className="truncate">{t('sidebar.settings_system_monitor')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                  {/* Integrations Sub-Accordion */}
                   <SidebarMenuItem>
-                    <SidebarMenuSub>
+                    <SidebarMenuSub defaultOpen={isActive('/settings/integrations')}>
                       <SidebarMenuSubTrigger tooltip={t('sidebar.settings_integrations')} isActive={isActive('/settings/integrations')} size="sm">
                         <Plug className={`${iconSize} text-muted-foreground`} />
                         <span className="truncate">{t('sidebar.settings_integrations')}</span>
@@ -623,9 +617,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       <span className="truncate">{t('sidebar.settings_users')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                  {/* MySQL Sub-Accordion */}
                   <SidebarMenuItem>
-                    <SidebarMenuSub>
+                    <SidebarMenuSub defaultOpen={isActive('/settings/mysql')}>
                       <SidebarMenuSubTrigger tooltip={t('sidebar.mysql')} isActive={isActive('/settings/mysql')} size="sm">
                         <Database className={`${iconSize} text-muted-foreground`} />
                         <span className="truncate">{t('sidebar.mysql')}</span>
@@ -651,10 +644,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuSub>
             </SidebarMenuItem>
 
-            {/* Separator */}
             <SidebarSeparator />
 
-            {/* PilotView */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/pilotview" isActive={isActive('/pilotview')} tooltip={t('sidebar.pilotview')}>
                 <TbDeviceImacStar className={iconSize} />
@@ -662,7 +653,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
 
-            {/* TransitOS */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/transitos" isActive={isActive('/transitos')} tooltip={t('sidebar.transitos')}>
                 <SiReactrouter className={iconSize} />
@@ -670,7 +660,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
 
-            {/* Zones (DNS) */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/zones" isActive={isActive('/zones')} tooltip={t('sidebar.zones')}>
                 <SiNextdns className={iconSize} />
@@ -691,7 +680,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="fixed top-0 left-0 w-full h-1 z-50">
             {isLoading && <Progress value={progress} className="w-full h-full rounded-none bg-transparent [&>div]:bg-accent" />}
           </div>
-          <div className={isMapPage ? "p-0 h-full" : "p-2 h-[calc(100%-theme(space.12))] overflow-y-auto"}> {/* Changed from p-5 to p-2 */}
+          <div className={isMapPage ? "p-0 h-full" : "p-2 h-[calc(100%-theme(space.12))] overflow-y-auto"}>
             {children}
           </div>
           <Toaster />
