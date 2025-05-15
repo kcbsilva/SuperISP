@@ -48,7 +48,12 @@ import {
   List as ServiceTypesIcon,
   ListTree,
   Menu as MenuIcon,
-  Dot, // Added Dot for submenu items
+  Dot,
+  BookOpen, // Added BookOpen
+  SlidersHorizontal, // Added SlidersHorizontal
+  Briefcase, // Added Briefcase
+  Building, // Added Building
+  Cog, // Added Cog
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -89,17 +94,17 @@ const ProlterLogo = () => {
   }, []);
 
   // Determine fill color based on theme, ensuring it's only applied client-side after mount
-  const fillColor = !isMounted ? 'hsl(var(--card-foreground))' : (theme === 'dark' ? 'hsl(var(--accent))' : 'hsl(var(--foreground))');
+  const fillColor = !isMounted ? 'hsl(var(--card-foreground))' : (theme === 'dark' ? 'hsl(var(--accent))' : '#14213D');
 
 
   return (
     <svg
-      width="100%"
-      height="100%"
+      width="131px"
+      height="32px"
       viewBox="0 0 131 32"
       xmlns="http://www.w3.org/2000/svg"
       fill={fillColor}
-      style={{ maxWidth: '131px', height: '32px' }} // Ensures the SVG scales correctly within its container
+      style={{ maxWidth: '131px', height: '32px' }}
       preserveAspectRatio="xMidYMid meet"
     >
       <path d="M21.0938 18.375H18.2188V27H15.25V18.375H12.375V15.875H15.25V11.6562C15.25 9.5625 16.3438 8.03125 18.5312 8.03125L21.25 8.0625V10.625H19.5C18.8125 10.625 18.2188 10.9688 18.2188 11.8438V15.875H21.2188L21.0938 18.375Z" />
@@ -145,27 +150,26 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     if (pathname) {
       setIsLoading(true);
-      setProgress(20); // Start with a slightly more visible initial progress immediately
+      setProgress(20);
 
       const timer = setTimeout(() => {
-        setProgress(90); // Simulate further progress
-      }, 100); // Short delay to show progress
-      // The overall duration is relatively short, making it a quick visual cue.
+        setProgress(90);
+      }, 100);
       const finishTimer = setTimeout(() => {
-        setProgress(100); // Finish
+        setProgress(100);
         const hideTimer = setTimeout(() => {
-          setIsLoading(false); // Hide
+          setIsLoading(false);
           setProgress(0);
-        }, 300); // Delay before hiding
+        }, 300);
         return () => clearTimeout(hideTimer);
-      }, 400); // Reduced total time slightly
+      }, 300); // Reduced total time
 
       return () => {
         clearTimeout(timer);
         clearTimeout(finishTimer);
       };
     }
-  }, [pathname]); // Effect runs when pathname changes
+  }, [pathname]);
 
 
   const isActive = (href: string) => {
@@ -176,7 +180,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   const isMapPage = pathname === '/maps/map';
-  const iconSize = "h-3 w-3"; // Consistent icon size for top-level items
+  const iconSize = "h-3 w-3";
 
   return (
     <div className="flex h-screen">
@@ -644,6 +648,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuSub>
             </SidebarMenuItem>
 
+            {/* Separator and Custom Tools */}
             <SidebarSeparator />
 
             <SidebarMenuItem>
@@ -673,11 +678,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
 
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1">
         {!isMapPage && <AppHeader onToggleSidebar={toggleMobileSidebar} />}
       
         <SidebarInset noMargin={isMapPage}>
-          <div className="fixed top-0 left-0 w-full h-1 z-50">
+          <div className="fixed top-0 left-[var(--sidebar-width)] w-[calc(100%-var(--sidebar-width))] h-1 z-50"> {/* Adjusted left and width */}
             {isLoading && <Progress value={progress} className="w-full h-full rounded-none bg-transparent [&>div]:bg-accent" />}
           </div>
           <div className={isMapPage ? "p-0 h-full" : "p-2 h-[calc(100%-theme(space.12))] overflow-y-auto"}>
