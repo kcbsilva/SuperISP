@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import type { ReactNode } from 'react';
 import {
-  LayoutDashboard, ShieldCheck, Settings, Users, ChevronDown, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
+  LayoutDashboard, ShieldCheck, Settings, Users, ChevronDown, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
   Split,
   Code,
   Router as RouterIcon,
@@ -51,9 +51,8 @@ import {
   Wrench,
   LayoutDashboard as ServiceDashboardIcon,
   List as ServiceTypesIcon,
-  ChevronRight,
-  Menu as MenuIcon,
   ListTree,
+  Menu as MenuIcon,
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -179,7 +178,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const isMapPage = pathname === '/maps/map';
 
   return (
-    <div className="flex h-screen"> {/* Main horizontal flex container */}
+    <div className="flex h-screen">
       <Sidebar>
         <SidebarHeader>
           <Link href="/" className="flex items-center justify-center w-full h-full" style={{ textDecoration: 'none' }}>
@@ -191,7 +190,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Dashboard */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/" isActive={isActive('/')} tooltip={t('sidebar.dashboard')}>
-                <LayoutDashboard />
+                <LayoutDashboard className="h-3 w-3" />
                 <span className="truncate">{t('sidebar.dashboard')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -199,7 +198,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Subscribers Menu - Direct Link */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/subscribers/list" isActive={isActive('/subscribers/list')} tooltip={t('sidebar.subscribers')}>
-                <Users />
+                <Users className="h-3 w-3" />
                 <span className="truncate">{t('sidebar.subscribers')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -208,7 +207,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarMenuItem>
               <SidebarMenuSub>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.maps')} isActive={isActive('/maps')}>
-                  <MapPin />
+                  <MapPin className="h-3 w-3" />
                   <span className="truncate">{t('sidebar.maps')}</span>
                   <ChevronDown />
                 </SidebarMenuSubTrigger>
@@ -217,6 +216,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     <SidebarMenuButton href="/maps/projects" isActive={isActive('/maps/projects')} size="sm">
                       <FileCode className="h-3 w-3 text-muted-foreground" />
                       <span className="truncate">{t('sidebar.maps_projects')}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                   <SidebarMenuItem>
+                    <SidebarMenuButton href="/maps/map" isActive={isActive('/maps/map')} size="sm">
+                      <Globe className="h-3 w-3 text-muted-foreground" />
+                      <span className="truncate">{t('sidebar.maps_map')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
@@ -278,12 +283,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       </SidebarMenuSubContent>
                     </SidebarMenuSub>
                   </SidebarMenuItem>
-                   <SidebarMenuItem>
-                    <SidebarMenuButton href="/maps/map" isActive={isActive('/maps/map')} size="sm">
-                      <Globe className="h-3 w-3 text-muted-foreground" />
-                      <span className="truncate">{t('sidebar.maps_map')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
                 </SidebarMenuSubContent>
               </SidebarMenuSub>
             </SidebarMenuItem>
@@ -292,7 +291,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarMenuItem>
               <SidebarMenuSub>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.fttx')} isActive={isActive('/fttx')}>
-                  <GitBranch />
+                  <GitBranch className="h-3 w-3" />
                   <span className="truncate">{t('sidebar.fttx')}</span>
                   <ChevronDown />
                 </SidebarMenuSubTrigger>
@@ -323,7 +322,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarMenuItem>
               <SidebarMenuSub>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.finances')} isActive={isActive('/finances')}>
-                  <DollarSign />
+                  <DollarSign className="h-3 w-3" />
                   <span className="truncate">{t('sidebar.finances')}</span>
                   <ChevronDown />
                 </SidebarMenuSubTrigger>
@@ -348,7 +347,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarMenuItem>
               <SidebarMenuSub>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.inventory')} isActive={isActive('/inventory')}>
-                  <Archive />
+                  <Archive className="h-3 w-3" />
                   <span className="truncate">{t('sidebar.inventory')}</span>
                   <ChevronDown />
                 </SidebarMenuSubTrigger>
@@ -392,12 +391,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuSubContent>
               </SidebarMenuSub>
             </SidebarMenuItem>
-
+            
             {/* Service Calls Menu */}
             <SidebarMenuItem>
               <SidebarMenuSub>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.service_calls')} isActive={isActive('/service-calls')}>
-                  <Wrench />
+                  <Wrench className="h-3 w-3" />
                   <span className="truncate">{t('sidebar.service_calls')}</span>
                   <ChevronDown />
                 </SidebarMenuSubTrigger>
@@ -418,10 +417,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuSub>
             </SidebarMenuItem>
 
+
             {/* Reports */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/reports" isActive={isActive('/reports')} tooltip={t('sidebar.reports')}>
-                <BarChart3 />
+                <BarChart3 className="h-3 w-3" />
                 <span className="truncate">{t('sidebar.reports')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -430,7 +430,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarMenuItem>
               <SidebarMenuSub>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.hr')} isActive={isActive('/hr')}>
-                  <BriefcaseBusiness />
+                  <BriefcaseBusiness className="h-3 w-3" />
                   <span className="truncate">{t('sidebar.hr')}</span>
                   <ChevronDown />
                 </SidebarMenuSubTrigger>
@@ -449,7 +449,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarMenuItem>
               <SidebarMenuSub>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.settings')} isActive={isActive('/settings')}>
-                  <Settings />
+                  <Settings className="h-3 w-3" />
                   <span className="truncate">{t('sidebar.settings')}</span>
                   <ChevronDown />
                 </SidebarMenuSubTrigger>
@@ -656,7 +656,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             {/* PilotView */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/pilotview" isActive={isActive('/pilotview')} tooltip={t('sidebar.pilotview')}>
-                <TbDeviceImacStar />
+                <TbDeviceImacStar className="h-3 w-3" />
                 <span className="truncate">{t('sidebar.pilotview')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -664,7 +664,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             {/* TransitOS */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/transitos" isActive={isActive('/transitos')} tooltip={t('sidebar.transitos')}>
-                <SiReactrouter />
+                <SiReactrouter className="h-3 w-3" />
                 <span className="truncate">{t('sidebar.transitos')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -672,7 +672,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Zones (DNS) */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/zones" isActive={isActive('/zones')} tooltip={t('sidebar.zones')}>
-                <SiNextdns />
+                <SiNextdns className="h-3 w-3" />
                 <span className="truncate">{t('sidebar.zones')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -683,20 +683,19 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
 
-      {/* Main Content Area (Header + Page Content) */}
-       <div className="flex flex-col flex-1 overflow-hidden">
-          {!isMapPage && <AppHeader onToggleSidebar={toggleMobileSidebar} />}
-        
-          <SidebarInset noMargin={isMapPage}>
-            <div className="fixed top-0 left-0 w-full h-1 z-50">
-              {isLoading && <Progress value={progress} className="w-full h-full rounded-none bg-transparent [&>div]:bg-accent" />}
-            </div>
-            <div className={isMapPage ? "p-0 h-full" : "p-2 h-[calc(100%-theme(space.12))] overflow-y-auto"}>
-              {children}
-            </div>
-            <Toaster />
-          </SidebarInset>
-        </div>
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {!isMapPage && <AppHeader onToggleSidebar={toggleMobileSidebar} />}
+      
+        <SidebarInset noMargin={isMapPage}>
+          <div className="fixed top-0 left-0 w-full h-1 z-50">
+            {isLoading && <Progress value={progress} className="w-full h-full rounded-none bg-transparent [&>div]:bg-accent" />}
+          </div>
+          <div className={isMapPage ? "p-0 h-full" : "p-2 h-[calc(100%-theme(space.12))] overflow-y-auto"}>
+            {children}
+          </div>
+          <Toaster />
+        </SidebarInset>
+      </div>
     </div>
   );
 }
