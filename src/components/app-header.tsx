@@ -52,7 +52,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   const { t } = useLocale();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
+ const [mounted, setMounted] = React.useState(false);
   const iconSize = "h-4 w-4"; // Adjusted from h-5 w-5 for text-xs base
   const smallIconSize = "h-3 w-3"; // Adjusted from h-4 w-4
 
@@ -113,13 +113,17 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
 
 
   return (
-    <header className="sticky top-0 z-30 flex h-12 items-center justify-between border-b bg-background px-4 md:px-6 shadow-sm">
+ <header className="sticky top-0 z-30 flex h-14 items-center justify-between bg-[#1A237E] text-white px-4 md:px-6 shadow-sm">
       <div className="flex items-center">
+ {/* Logo or App Title */}
+ <Link href="/" className="flex items-center mr-4">
+ <img src="/app/assets/prolter-logo.svg" alt="Prolter Logo" className="h-6 w-auto" />
+ </Link>
          <Button variant="ghost" size="icon" className="md:hidden" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
-            <MenuIcon className={iconSize} />
+            <MenuIcon className={`${iconSize} text-white`} />
          </Button>
       </div>
-
+ {/* Search Bar */}
       <div className="flex flex-1 justify-center items-center">
         <div className="relative w-full max-w-sm md:max-w-md">
           <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${iconSize} text-muted-foreground`} />
@@ -128,7 +132,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
                 <Input
                     ref={inputRef}
                     type="search"
-                    placeholder={t('search.placeholder')}
+ placeholder={t('search.placeholder', 'Search clients, equipment, elements...')}
                     className="pl-8 w-full rounded-full h-8 text-xs"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -193,13 +197,13 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
        <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('header.toggle_theme', 'Toggle theme')}>
             {mounted ? (theme === 'light' ? <Moon className={iconSize} /> : <Sun className={iconSize} />) : <Settings className={iconSize} /> }
-          </Button>
+ </Button>
 
          <DropdownMenu>
            <DropdownMenuTrigger asChild>
              <Button variant="ghost" size="icon" aria-label={t('header.changelog', 'Changelog')}>
-               <Info className={iconSize}/>
-             </Button>
+ <Info className={`${iconSize} text-white`}/>
+ </Button>
            </DropdownMenuTrigger>
            <DropdownMenuContent align="end" className="w-64">
              <DropdownMenuLabel className="text-xs">{t('header.changelog_label', 'Version 0.1.0')}</DropdownMenuLabel>
@@ -215,8 +219,8 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
           <DropdownMenu>
              <DropdownMenuTrigger asChild>
                <Button variant="ghost" size="icon" aria-label={t('header.profile', 'User Profile')}>
-                 <User className={iconSize}/>
-               </Button>
+ <User className={`${iconSize} text-white`}/>
+ </Button>
              </DropdownMenuTrigger>
              <DropdownMenuContent align="end">
                <DropdownMenuLabel className="text-xs">{t('header.my_account', 'My Account')}</DropdownMenuLabel>
