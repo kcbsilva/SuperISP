@@ -53,8 +53,8 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
-  const iconSize = "h-3 w-3";
-  const smallIconSize = "h-2.5 w-2.5";
+  const iconSize = "h-2.5 w-2.5"; 
+  const smallIconSize = "h-2.5 w-2.5"; 
 
   React.useEffect(() => setMounted(true), []);
 
@@ -115,9 +115,9 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 flex h-14 items-center justify-between px-4 shadow-sm md:px-6",
+        "sticky top-0 z-30 flex h-14 items-center justify-between px-4 md:px-6",
         "bg-background text-foreground", // Light theme: Use main background color, main foreground text
-        "dark:bg-background dark:text-foreground" // Dark theme: page background header, light text
+        "dark:bg-background dark:text-foreground dark:border-b-2 dark:border-accent" // Dark theme: page background header, light text, and accent bottom border
       )}
     >
       <div className="flex items-center">
@@ -137,8 +137,8 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
                     placeholder={t('search.placeholder', 'Search clients, equipment, elements...')}
                     className={cn(
                       "h-8 w-full rounded-full pl-8 text-xs",
-                      "bg-card text-foreground", // Light theme search input (white background, dark text)
-                      "dark:bg-muted/80 dark:text-foreground" // Dark theme search input
+                      "bg-card text-card-foreground", 
+                      "dark:bg-muted/80 dark:text-foreground" 
                     )}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
