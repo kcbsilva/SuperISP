@@ -6,7 +6,7 @@ import Link, { type LinkProps } from "next/link";
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { ChevronDown, ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useIsMobile } from "@/hooks/use-mobile" // Corrected import path
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { usePathname } from 'next/navigation';
@@ -131,7 +131,7 @@ const SidebarProvider = React.forwardRef<
 
     return (
       <SidebarContext.Provider value={contextValue}>
-        <div ref={ref} className={cn("flex h-full", className)} {...props}>
+        <div ref={ref} className={cn(className)} {...props}> {/* Removed "flex h-full" as it's now in AppLayout */}
           {children}
         </div>
       </SidebarContext.Provider>
@@ -184,7 +184,7 @@ const Sidebar = React.forwardRef<
     <nav
       className={cn(
         sidebarVariants({ variant, side, collapsible }),
-        "flex flex-col",
+        "flex flex-col h-full", // Ensure sidebar takes full height
         widthClass,
         (variant === "floating" || variant === "inset") && "p-2",
         className
@@ -545,31 +545,14 @@ const SidebarInset = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"main"> & { noMargin?: boolean }
 >(({ className, noMargin, ...props }, ref) => {
-  const { side, collapsed, collapsible, isMobile } = useSidebar();
-
-  const marginStyle = React.useMemo(() => {
-    if (noMargin || isMobile) return {};
-
-    let sidebarCurrentWidth = 'var(--sidebar-width)';
-    if (collapsible !== 'none' && collapsed) {
-      sidebarCurrentWidth = 'var(--sidebar-width-icon)';
-    }
-    
-    if (side === 'left') {
-      return { marginLeft: sidebarCurrentWidth };
-    } else {
-      return { marginRight: sidebarCurrentWidth };
-    }
-  }, [noMargin, isMobile, side, collapsed, collapsible]);
-
+  // marginStyle logic is removed as positioning is handled by the parent flex container in AppLayout
   return (
     <main
       ref={ref}
       className={cn(
-        "relative flex-1 overflow-auto transition-[margin] duration-300 ease-in-out",
+        "relative flex-1 overflow-auto", // Removed transition-[margin] and default margin
         className
       )}
-      style={marginStyle}
       {...props}
     />
   )
