@@ -93,7 +93,7 @@ const ProlterLogo = () => {
     setIsMounted(true);
   }, []);
 
-  const fillColor = !isMounted ? 'hsl(var(--foreground))' : (theme === 'dark' ? 'hsl(var(--accent))' : 'hsl(var(--foreground))');
+  const fillColor = !isMounted ? 'hsl(var(--foreground))' : (theme === 'dark' ? 'hsl(var(--accent))' : 'hsl(var(--primary))');
 
 
   return (
@@ -697,7 +697,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="fixed top-0 left-0 w-full h-1 z-50">
             {isLoading && <Progress value={progress} className="w-full h-full rounded-none bg-transparent [&>div]:bg-accent" />}
           </div>
-          <div className={isMapPage ? "p-0 h-full" : "p-2 h-[calc(100%-theme(space.12))] overflow-y-auto"}> {/* Changed p-4 to p-2 */}
+          <div className={isMapPage ? "p-0 h-full" : "p-2 h-[calc(100%-theme(space.12))] overflow-y-auto"}>
             {children}
           </div>
           <Toaster />
@@ -739,4 +739,3 @@ export default function RootLayout({
     </html>
   );
 }
-
