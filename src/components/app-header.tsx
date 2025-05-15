@@ -53,7 +53,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
-  const iconSize = "h-3 w-3"; 
+  const iconSize = "h-3 w-3";
   const smallIconSize = "h-2.5 w-2.5";
 
   React.useEffect(() => setMounted(true), []);
@@ -113,13 +113,16 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
 
 
   return (
-    <header 
-      className="sticky top-0 z-30 flex h-14 items-center justify-between px-4 shadow-sm md:px-6 bg-card text-card-foreground dark:bg-background dark:text-foreground"
+    <header
+      className={cn(
+        "sticky top-0 z-30 flex h-14 items-center justify-between px-4 shadow-sm md:px-6",
+        "bg-muted text-card-foreground", // Light theme: grey header bar, dark blue text
+        "dark:bg-background dark:text-foreground" // Dark theme: page background header, light text
+      )}
     >
       <div className="flex items-center">
-        <span className="sr-only">Prolter Home</span>
         <Button variant="ghost" size="icon" className="md:hidden text-inherit hover:bg-muted/50" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
-            <MenuIcon className={`${iconSize}`} />
+            <MenuIcon className={iconSize} />
         </Button>
       </div>
       <div className="flex flex-1 items-center justify-center">
@@ -131,7 +134,11 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
                     ref={inputRef}
                     type="search"
                     placeholder={t('search.placeholder', 'Search clients, equipment, elements...')}
-                    className="h-8 w-full rounded-full bg-background pl-8 text-xs text-foreground" 
+                    className={cn(
+                      "h-8 w-full rounded-full pl-8 text-xs",
+                      "bg-card text-foreground", // Light theme: white search bar, dark text
+                      "dark:bg-muted/80 dark:text-foreground" // Dark theme: muted search bar, light text
+                    )}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onFocus={() => searchTerm.length > 1 && setIsPopoverOpen(true)}
@@ -142,7 +149,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
                 ref={popoverRef}
                 className="mt-1 w-[var(--radix-popover-trigger-width)] max-h-80 overflow-y-auto p-1"
                 align="start"
-                onOpenAutoFocus={(e) => e.preventDefault()} 
+                onOpenAutoFocus={(e) => e.preventDefault()}
                 >
                 {(searchResults.clients?.length ?? 0) > 0 && (
                     <>
@@ -200,7 +207,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
          <DropdownMenu>
            <DropdownMenuTrigger asChild>
              <Button variant="ghost" size="icon" aria-label={t('header.changelog', 'Changelog')} className="text-inherit hover:bg-muted/50">
-                <Info className={`${iconSize}`}/>
+                <Info className={iconSize}/>
              </Button>
            </DropdownMenuTrigger>
            <DropdownMenuContent align="end" className="w-64">
@@ -217,7 +224,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
           <DropdownMenu>
              <DropdownMenuTrigger asChild>
                <Button variant="ghost" size="icon" aria-label={t('header.profile', 'User Profile')} className="text-inherit hover:bg-muted/50">
-                <User className={`${iconSize}`}/>
+                <User className={iconSize}/>
                </Button>
              </DropdownMenuTrigger>
              <DropdownMenuContent align="end">
