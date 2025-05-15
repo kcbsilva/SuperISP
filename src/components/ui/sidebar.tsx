@@ -6,7 +6,7 @@ import Link, { type LinkProps } from "next/link";
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { ChevronDown, ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react"
-import { useIsMobile } from "@/hooks/use-mobile" // Corrected import path
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { usePathname } from 'next/navigation';
@@ -16,9 +16,9 @@ const sidebarVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-background",
-        inset: "m-2 rounded-lg border bg-background shadow-lg",
-        floating: "m-2 rounded-lg border bg-background shadow-lg",
+        default: "bg-card text-card-foreground", // Changed from bg-background
+        inset: "m-2 rounded-lg border bg-card text-card-foreground shadow-lg", // Changed from bg-background
+        floating: "m-2 rounded-lg border bg-card text-card-foreground shadow-lg", // Changed from bg-background
       },
       side: {
         left: "inset-y-0 left-0 border-r",
@@ -39,7 +39,7 @@ const sidebarVariants = cva(
 )
 
 const sidebarMobileVariants = cva(
-  "fixed inset-y-0 z-50 h-full text-sidebar-foreground bg-background border-border shadow-xl transition-transform duration-300 ease-in-out data-[state=open]:translate-x-0 data-[state=closed]:-translate-x-full",
+  "fixed inset-y-0 z-50 h-full text-card-foreground bg-card border-border shadow-xl transition-transform duration-300 ease-in-out data-[state=open]:translate-x-0 data-[state=closed]:-translate-x-full", // Changed to bg-card
   {
     variants: {
       side: {
@@ -131,7 +131,7 @@ const SidebarProvider = React.forwardRef<
 
     return (
       <SidebarContext.Provider value={contextValue}>
-        <div ref={ref} className={cn(className)} {...props}> {/* Removed "flex h-full" as it's now in AppLayout */}
+        <div ref={ref} className={cn(className)} {...props}>
           {children}
         </div>
       </SidebarContext.Provider>
@@ -184,7 +184,7 @@ const Sidebar = React.forwardRef<
     <nav
       className={cn(
         sidebarVariants({ variant, side, collapsible }),
-        "flex flex-col h-full", // Ensure sidebar takes full height
+        "flex flex-col h-full", 
         widthClass,
         (variant === "floating" || variant === "inset") && "p-2",
         className
@@ -209,7 +209,7 @@ const SidebarHeader = React.forwardRef<
       data-sidebar="header"
       className={cn(
         "flex items-center border-b p-2 shrink-0 h-14", 
-        collapsed ? "justify-center px-1" : "justify-between px-3",
+        collapsed ? "justify-center px-1" : "justify-center px-3", // Centered content
         className
       )}
       {...props}
@@ -354,7 +354,11 @@ const SidebarMenuButton = React.memo(React.forwardRef<
         href={href}
         {...props}
       >
-        {children}
+        {React.Children.map(children, child =>
+            React.isValidElement(child) && (child.type as any).displayName === 'ChevronDown'
+            ? React.cloneElement(child as React.ReactElement<any>, { className: cn(child.props.className, "ml-auto h-3 w-3 transition-transform group-data-[state=open]:rotate-180")})
+            : child
+        )}
       </Comp>
     );
 
@@ -468,7 +472,11 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
         disabled={isParentEffectivelyCollapsed}
         {...props}
       >
-        {children}
+        {React.Children.map(children, child =>
+            React.isValidElement(child) && (child.type as any).displayName === 'ChevronDown'
+            ? React.cloneElement(child as React.ReactElement<any>, { className: cn(child.props.className, "ml-auto h-3 w-3 transition-transform group-data-[state=open]:rotate-180")})
+            : child
+        )}
       </button>
     )
 
@@ -545,12 +553,18 @@ const SidebarInset = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"main"> & { noMargin?: boolean }
 >(({ className, noMargin, ...props }, ref) => {
-  // marginStyle logic is removed as positioning is handled by the parent flex container in AppLayout
+  const { side, variant } = useSidebar()
+
+   const marginClass = React.useMemo(() => {
+      if (noMargin) return ''; 
+     return 'md:ml-5'; 
+   }, [side, variant, noMargin]);
+
   return (
     <main
       ref={ref}
       className={cn(
-        "relative flex-1 overflow-auto", // Removed transition-[margin] and default margin
+        "relative flex-1 overflow-auto", 
         className
       )}
       {...props}

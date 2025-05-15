@@ -41,7 +41,7 @@ export default function PoPsPage() {
 
   const { toast } = useToast();
   const { t } = useLocale();
-  const iconSize = "h-3 w-3";
+  const iconSize = "h-2.5 w-2.5"; // Reduced icon size
 
 
   const { data: pops = [], isLoading: isLoadingPops, error: popsError, refetch: refetchPops } = useQuery<Pop[], Error>({

@@ -37,8 +37,8 @@ export default function DashboardPage() {
   const [currentView, setCurrentView] = React.useState<DashboardView>("General");
   const [formattedSubscribers, setFormattedSubscribers] = React.useState<string | null>(null);
   const [formattedMrr, setFormattedMrr] = React.useState<string | null>(null);
-  const iconSize = "h-4 w-4"; 
-  const smallIconSize = "h-3 w-3"; 
+  const iconSize = "h-3 w-3"; 
+  const smallIconSize = "h-2.5 w-2.5"; 
 
   React.useEffect(() => {
     setFormattedSubscribers(dashboardData.totalSubscribers.toLocaleString(locale));
@@ -183,7 +183,7 @@ export default function DashboardPage() {
                   {dashboardData.recentActivity.length > 0 ? (
                     dashboardData.recentActivity.map((activity) => (
                       <div key={activity.id} className="flex items-center gap-3">
-                        <Activity className={`${iconSize} text-muted-foreground flex-shrink-0`}/>
+                        <Activity className={`${smallIconSize} text-muted-foreground flex-shrink-0`}/>
                         <div className="grid gap-0.5 flex-grow">
                           <p className="text-xs font-medium leading-none">
                              {t(`dashboard.activity_type_${activity.type.toLowerCase().replace(/\s+/g, '_')}` as any, activity.type)}
@@ -215,7 +215,7 @@ export default function DashboardPage() {
                    <CardDescription className="text-xs">{t('dashboard.financial.revenue_by_plan_desc')}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex items-center justify-center p-4 h-48 bg-muted rounded-md">
-                   <PieChart className="h-6 w-6 text-primary mr-2"/>
+                   <PieChart className="h-5 w-5 text-primary mr-2"/>
                    <span className="text-xs text-muted-foreground">{t('dashboard.financial.pie_chart_placeholder')}</span>
                 </CardContent>
               </Card>
@@ -225,7 +225,7 @@ export default function DashboardPage() {
                     <CardDescription className="text-xs">{t('dashboard.financial.expense_category_desc')}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex items-center justify-center p-4 h-48 bg-muted rounded-md">
-                   <PieChart className="h-6 w-6 text-primary mr-2"/>
+                   <PieChart className="h-5 w-5 text-primary mr-2"/>
                    <span className="text-xs text-muted-foreground">{t('dashboard.financial.pie_chart_placeholder')}</span>
                 </CardContent>
               </Card>
@@ -235,7 +235,7 @@ export default function DashboardPage() {
                      <CardDescription className="text-xs">{t('dashboard.financial.payment_status_desc')}</CardDescription>
                  </CardHeader>
                  <CardContent className="flex items-center justify-center p-4 h-48 bg-muted rounded-md">
-                   <PieChart className="h-6 w-6 text-primary mr-2"/>
+                   <PieChart className="h-5 w-5 text-primary mr-2"/>
                    <span className="text-xs text-muted-foreground">{t('dashboard.financial.pie_chart_placeholder')}</span>
                  </CardContent>
                </Card>

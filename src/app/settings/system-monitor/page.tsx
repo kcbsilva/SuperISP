@@ -10,11 +10,11 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Cpu, HardDrive, MemoryStick, Database, RefreshCw, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Cpu, HardDrive, MemoryStick, Database, RefreshCw, Loader2, CheckCircle, XCircle, Router as RouterIcon } from 'lucide-react'; // Added RouterIcon
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
-import { testConnection as testMysqlConnection } from '@/services/mysql/db'; // Import MySQL test connection
+import { testConnection as testMysqlConnection } from '@/services/mysql/db'; 
 
 interface SystemMetric {
   nameKey: string;
@@ -22,7 +22,7 @@ interface SystemMetric {
   unit?: string;
   icon: React.ElementType;
   status?: 'ok' | 'warning' | 'error' | 'fetching';
-  progress?: number; // Optional progress for CPU/RAM/SSD
+  progress?: number; 
 }
 
 export default function SystemMonitorPage() {
@@ -33,11 +33,11 @@ export default function SystemMonitorPage() {
     { nameKey: 'system_monitor.cpu_usage', value: 'Fetching...', icon: Cpu, status: 'fetching', progress: 0 },
     { nameKey: 'system_monitor.ram_usage', value: 'Fetching...', icon: MemoryStick, status: 'fetching', progress: 0 },
     { nameKey: 'system_monitor.ssd_usage', value: 'Fetching...', icon: HardDrive, status: 'fetching', progress: 0 },
-    { nameKey: 'system_monitor.mysql_status', value: 'Fetching...', icon: Database, status: 'fetching' }, // Changed from postgres_status
+    { nameKey: 'system_monitor.mysql_status', value: 'Fetching...', icon: Database, status: 'fetching' }, 
   ]);
 
-  const iconSize = "h-5 w-5"; // Standard icon size
-  const smallIconSize = "h-3 w-3"; // For button icons
+  const iconSize = "h-4 w-4"; // Adjusted icon size
+  const smallIconSize = "h-2.5 w-2.5"; // Reduced icon size
 
   const fetchSystemMetrics = React.useCallback(async () => {
     setIsLoading(true);
@@ -71,13 +71,13 @@ export default function SystemMonitorPage() {
   const getStatusIndicator = (status?: 'ok' | 'warning' | 'error' | 'fetching') => {
     switch (status) {
       case 'ok':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-3 w-3 text-green-500" />; // Reduced icon size
       case 'warning':
-        return <XCircle className="h-4 w-4 text-yellow-500" />; 
+        return <XCircle className="h-3 w-3 text-yellow-500" />; // Reduced icon size
       case 'error':
-        return <XCircle className="h-4 w-4 text-red-500" />;
+        return <XCircle className="h-3 w-3 text-red-500" />; // Reduced icon size
       case 'fetching':
-        return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />;
+        return <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />; // Reduced icon size
       default:
         return null;
     }
@@ -86,7 +86,10 @@ export default function SystemMonitorPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-base font-semibold">{t('sidebar.settings_system_monitor', 'System Monitor')}</h1>
+        <h1 className="text-base font-semibold flex items-center gap-2">
+            <RouterIcon className={`${smallIconSize} text-primary`} /> {/* Icon added */}
+            {t('sidebar.settings_system_monitor', 'System Monitor')}
+        </h1>
         <Button onClick={fetchSystemMetrics} disabled={isLoading}>
           <RefreshCw className={`mr-2 ${smallIconSize} ${isLoading ? 'animate-spin' : ''}`} />
           {t('system_monitor.refresh_button')}

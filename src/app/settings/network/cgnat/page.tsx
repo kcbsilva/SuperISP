@@ -5,9 +5,6 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  // CardDescription, // Removed
-  // CardHeader, // Removed
-  // CardTitle, // Removed
 } from "@/components/ui/card";
 import {
   Table,
@@ -17,9 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, RefreshCw, Edit, Trash2, Loader2, ChevronDown } from 'lucide-react'; // Added ChevronDown
+import { PlusCircle, RefreshCw, Edit, Trash2, Loader2, ChevronDown, Share2 } from 'lucide-react'; 
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -53,7 +50,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; // Added DropdownMenu components
+} from "@/components/ui/dropdown-menu"; 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -87,7 +84,7 @@ export default function CgnatPage() {
   const { toast } = useToast();
   const [rules, setRules] = React.useState<CgnatRule[]>(placeholderCgnatRules);
   const [isAddRuleDialogOpen, setIsAddRuleDialogOpen] = React.useState(false);
-  const iconSize = "h-3 w-3";
+  const iconSize = "h-2.5 w-2.5"; // Reduced icon size
 
   const form = useForm<CgnatRuleFormData>({
     resolver: zodResolver(cgnatRuleSchema),
@@ -134,7 +131,10 @@ export default function CgnatPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-base font-semibold">{t('cgnat_page.title', 'CGNAT Configuration')}</h1>
+        <h1 className="text-base font-semibold flex items-center gap-2">
+          <Share2 className={`${iconSize} text-primary`} /> {/* Icon added */}
+          {t('cgnat_page.title', 'CGNAT Configuration')}
+        </h1>
         <div className="flex items-center gap-2">
             <Button variant="default" className="bg-primary hover:bg-primary/90">
                 <RefreshCw className={`mr-2 ${iconSize}`} /> {t('cgnat_page.refresh_button', 'Refresh')}
@@ -286,8 +286,7 @@ export default function CgnatPage() {
       </div>
 
       <Card>
-        {/* CardHeader removed */}
-        <CardContent className="pt-6"> {/* Added pt-6 to give some space since CardHeader was removed */}
+        <CardContent className="pt-6"> 
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -299,7 +298,7 @@ export default function CgnatPage() {
                   <TableHead className="text-xs">{t('cgnat_page.table_header_num_ports', '# of Ports')}</TableHead>
                   <TableHead className="text-xs">{t('cgnat_page.table_header_protocol', 'Protocol')}</TableHead>
                   <TableHead className="text-xs">{t('cgnat_page.table_header_status', 'Status')}</TableHead>
-                  <TableHead className="w-32 text-xs text-right">{t('cgnat_page.table_header_actions', 'Actions')}</TableHead> {/* Increased width for actions */}
+                  <TableHead className="w-32 text-xs text-right">{t('cgnat_page.table_header_actions', 'Actions')}</TableHead> 
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -318,7 +317,7 @@ export default function CgnatPage() {
                          </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end space-x-1"> {/* Added flex container */}
+                        <div className="flex items-center justify-end space-x-1"> 
                             <Button variant="ghost" size="icon" className="h-7 w-7">
                                 <Edit className={iconSize} />
                                 <span className="sr-only">{t('cgnat_page.action_edit', 'Edit')}</span>
@@ -362,4 +361,3 @@ export default function CgnatPage() {
     </div>
   );
 }
-

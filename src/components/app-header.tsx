@@ -53,8 +53,8 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
-  const iconSize = "h-4 w-4"; 
-  const smallIconSize = "h-3 w-3";
+  const iconSize = "h-3 w-3"; 
+  const smallIconSize = "h-2.5 w-2.5";
 
   React.useEffect(() => setMounted(true), []);
 
@@ -114,14 +114,11 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
 
   return (
     <header 
-      className="sticky top-0 z-30 flex h-14 items-center justify-between px-4 text-white shadow-sm md:px-6"
-      style={{ backgroundColor: '#1A237E' }} // Specific dark blue for header
+      className="sticky top-0 z-30 flex h-14 items-center justify-between px-4 shadow-sm md:px-6 bg-card text-card-foreground dark:bg-background dark:text-foreground"
     >
       <div className="flex items-center">
-        {/* ProlterLogo component was removed, ensure it's re-added or replaced if needed */}
-        {/* <ProlterLogo /> */}
         <span className="sr-only">Prolter Home</span>
-        <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
+        <Button variant="ghost" size="icon" className="md:hidden text-inherit hover:bg-muted/50" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
             <MenuIcon className={`${iconSize}`} />
         </Button>
       </div>
@@ -134,7 +131,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
                     ref={inputRef}
                     type="search"
                     placeholder={t('search.placeholder', 'Search clients, equipment, elements...')}
-                    className="h-8 w-full rounded-full bg-background pl-8 text-xs text-foreground" // Ensure text color is visible
+                    className="h-8 w-full rounded-full bg-background pl-8 text-xs text-foreground" 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onFocus={() => searchTerm.length > 1 && setIsPopoverOpen(true)}
@@ -196,13 +193,13 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
       </div>
 
        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('header.toggle_theme', 'Toggle theme')} className="text-white hover:bg-white/10">
+          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('header.toggle_theme', 'Toggle theme')} className="text-inherit hover:bg-muted/50">
             {mounted ? (theme === 'light' ? <Moon className={iconSize} /> : <Sun className={iconSize} />) : <Settings className={iconSize} /> }
           </Button>
 
          <DropdownMenu>
            <DropdownMenuTrigger asChild>
-             <Button variant="ghost" size="icon" aria-label={t('header.changelog', 'Changelog')} className="text-white hover:bg-white/10">
+             <Button variant="ghost" size="icon" aria-label={t('header.changelog', 'Changelog')} className="text-inherit hover:bg-muted/50">
                 <Info className={`${iconSize}`}/>
              </Button>
            </DropdownMenuTrigger>
@@ -219,7 +216,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
 
           <DropdownMenu>
              <DropdownMenuTrigger asChild>
-               <Button variant="ghost" size="icon" aria-label={t('header.profile', 'User Profile')} className="text-white hover:bg-white/10">
+               <Button variant="ghost" size="icon" aria-label={t('header.profile', 'User Profile')} className="text-inherit hover:bg-muted/50">
                 <User className={`${iconSize}`}/>
                </Button>
              </DropdownMenuTrigger>

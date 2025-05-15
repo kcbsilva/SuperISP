@@ -1,4 +1,3 @@
-
 // src/app/settings/network/vlan/page.tsx
 'use client';
 
@@ -53,7 +52,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger, 
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Edit, Trash2, Loader2, RefreshCw } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Loader2, RefreshCw, Split } from 'lucide-react'; // Added Split
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
@@ -97,7 +96,7 @@ export default function VlanManagementPage() {
   const [isAddVlanDialogOpen, setIsAddVlanDialogOpen] = React.useState(false);
   const [vlans, setVlans] = React.useState<Vlan[]>(placeholderVlans);
   const [vlanToDelete, setVlanToDelete] = React.useState<Vlan | null>(null);
-  const iconSize = "h-3 w-3";
+  const iconSize = "h-2.5 w-2.5"; // Reduced icon size
 
   const { data: pops = [], isLoading: isLoadingPops, error: popsError } = useQuery<Pop[], Error>({
     queryKey: ['pops'],
@@ -155,7 +154,10 @@ export default function VlanManagementPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-base font-semibold">{t('vlan_page.title', 'Virtual Local Area Network (VLAN)')}</h1>
+        <h1 className="text-base font-semibold flex items-center gap-2">
+          <Split className={`${iconSize} text-primary`} /> {/* Icon added */}
+          {t('vlan_page.title', 'Virtual Local Area Network (VLAN)')}
+        </h1>
         <div className="flex items-center gap-2">
             <Button variant="default" className="bg-primary hover:bg-primary/90">
                 <RefreshCw className={`mr-2 ${iconSize}`} /> {t('vlan_page.refresh_button', 'Refresh')}
@@ -392,4 +394,3 @@ export default function VlanManagementPage() {
     </div>
   );
 }
-
