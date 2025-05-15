@@ -51,7 +51,7 @@ import {
   List as ServiceTypesIcon,
   ChevronRight,
   Menu as MenuIcon,
-  ListTree, // Added for Elements
+  ListTree,
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -91,19 +91,17 @@ const ProlterLogo = () => {
     setIsMounted(true);
   }, []);
 
-  // Fallback fill color for SSR or before theme is determined
-  const ssrFillColor = '#14213D'; // Default to dark color
-  const fillColor = isMounted ? (theme === 'dark' ? 'hsl(var(--accent))' : '#14213D') : ssrFillColor;
+  const fillColor = isMounted ? (theme === 'dark' ? 'hsl(var(--accent))' : '#14213D') : '#14213D';
 
 
   return (
     <svg
-      width="100%"
-      height="100%"
+      width="131px"
+      height="32px"
       viewBox="0 0 131 32"
       xmlns="http://www.w3.org/2000/svg"
       fill={fillColor}
-      style={{ maxWidth: '131px', height: '32px' }} // Ensure specific dimensions
+      style={{ maxWidth: '131px', height: '32px' }}
     >
       <path d="M21.0938 18.375H18.2188V27H15.25V18.375H12.375V15.875H15.25V11.6562C15.25 9.5625 16.3438 8.03125 18.5312 8.03125L21.25 8.0625V10.625H19.5C18.8125 10.625 18.2188 10.9688 18.2188 11.8438V15.875H21.2188L21.0938 18.375Z" />
       <path d="M33.2812 20.0625C33.1875 20.0938 33.0938 20.0938 33 20.125C31.6562 20.7812 30.0938 21.125 28.3438 21.125C24.5312 21.125 22.1562 18.5312 22.1562 14.5312C22.1562 10.5312 24.5312 7.9375 28.3438 7.9375C30.0938 7.9375 31.6562 8.28125 33 8.9375C33.0938 8.96875 33.1875 8.96875 33.2812 9V11.4375C33.1875 11.4062 33.0938 11.4062 33 11.375C32.0312 10.9062 30.8438 10.5 29.5312 10.5C27.2812 10.5 26.0312 12.0312 26.0312 14.5312C26.0312 17.0312 27.2812 18.5625 29.5312 18.5625C30.8438 18.5625 32.0312 18.1562 33 17.6875C33.0938 17.6562 33.1875 17.6562 33.2812 17.625V20.0625Z" />
@@ -135,12 +133,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
   const { t } = useLocale();
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
-  const isMobile = useIsMobile();
-  const { collapsed, setCollapsed, collapsible } = useSidebar();
+  const { isMobile, isOpenMobile, setIsOpenMobile, collapsed, setCollapsed, collapsible } = useSidebar();
 
 
-  const toggleMobileSidebar = () => setIsMobileSidebarOpen(!isMobileSidebarOpen);
+  const toggleMobileSidebar = () => setIsOpenMobile(!isOpenMobile);
 
   const toggleDesktopSidebar = () => {
     if (collapsible !== 'none') {
@@ -150,10 +146,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
 
   React.useEffect(() => {
-    if (!isMobile && isMobileSidebarOpen) {
-      setIsMobileSidebarOpen(false);
+    if (!isMobile && isOpenMobile) {
+      setIsOpenMobile(false);
     }
-  }, [isMobile, isMobileSidebarOpen]);
+  }, [isMobile, isOpenMobile, setIsOpenMobile]);
 
 
   React.useEffect(() => {
@@ -184,7 +180,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const isActive = (href: string) => {
     const cleanHref = href.split('?')[0];
     const cleanPathname = pathname.split('?')[0];
-    // Ensure exact match for home, prefix match for others
     if (cleanHref === '/') return cleanPathname === '/';
     return cleanPathname.startsWith(cleanHref);
   };
@@ -193,546 +188,549 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const isMapPage = pathname === '/maps/map';
 
   return (
-    <div className="flex h-full">
-      <Sidebar>
-        <SidebarHeader>
-            <Link href="/" className="flex items-center justify-center w-full h-full" style={{ textDecoration: 'none' }}>
-              <ProlterLogo />
-            </Link>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarMenu>
-          {/* Dashboard */}
-          <SidebarMenuItem>
-            <SidebarMenuButton href="/" isActive={isActive('/')} tooltip={t('sidebar.dashboard')}>
-                <LayoutDashboard />
-                <span className="truncate">{t('sidebar.dashboard')}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+    <div className="flex flex-col h-screen">
+      {!isMapPage && <AppHeader onToggleSidebar={toggleMobileSidebar} />}
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar>
+          <SidebarHeader>
+              <Link href="/" className="flex items-center justify-center w-full h-full" style={{ textDecoration: 'none' }}>
+                <ProlterLogo />
+              </Link>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarMenu>
+            {/* Dashboard */}
+            <SidebarMenuItem>
+              <SidebarMenuButton href="/" isActive={isActive('/')} tooltip={t('sidebar.dashboard')}>
+                  <LayoutDashboard />
+                  <span className="truncate">{t('sidebar.dashboard')}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
 
-          {/* Subscribers Menu - Direct Link */}
-          <SidebarMenuItem>
-            <SidebarMenuButton href="/subscribers/list" isActive={isActive('/subscribers/list')} tooltip={t('sidebar.subscribers')}>
-                <Users />
-                <span className="truncate">{t('sidebar.subscribers')}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+            {/* Subscribers Menu - Direct Link */}
+            <SidebarMenuItem>
+              <SidebarMenuButton href="/subscribers/list" isActive={isActive('/subscribers/list')} tooltip={t('sidebar.subscribers')}>
+                  <Users />
+                  <span className="truncate">{t('sidebar.subscribers')}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
 
-          {/* Maps Menu */}
-          <SidebarMenuItem>
-            <SidebarMenuSub>
-                <SidebarMenuSubTrigger tooltip={t('sidebar.maps')} isActive={isActive('/maps')}>
-                  <div className="flex items-center gap-2 cursor-pointer">
-                    <MapPin />
-                    <span className="truncate">{t('sidebar.maps')}</span>
-                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                  </div>
-                </SidebarMenuSubTrigger>
-              <SidebarMenuSubContent>
-                 <SidebarMenuItem>
-                    <SidebarMenuButton href="/maps/projects" isActive={isActive('/maps/projects')} size="sm">
-                        <FileCode className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.maps_projects')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuSub>
-                       <SidebarMenuSubTrigger tooltip={t('sidebar.maps_elements')} isActive={isActive('/maps/elements')} size="sm">
-                          <div className="flex items-center gap-2 cursor-pointer">
-                            <ListTree className="h-4 w-4 text-muted-foreground"/>
-                            <span className="truncate">{t('sidebar.maps_elements')}</span>
-                            <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                          </div>
-                       </SidebarMenuSubTrigger>
-                    <SidebarMenuSubContent>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton href="/maps/elements/polls" isActive={isActive('/maps/elements/polls')} size="sm">
-                                <Power className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.maps_elements_polls')}</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton href="/maps/elements/fdhs" isActive={isActive('/maps/elements/fdhs')} size="sm">
-                                <Box className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.maps_elements_fdhs')}</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton href="/maps/elements/foscs" isActive={isActive('/maps/elements/foscs')} size="sm">
-                                <Warehouse className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.maps_elements_foscs')}</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="/maps/elements/peds" isActive={isActive('/maps/elements/peds')} size="sm">
-                                <Box className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.maps_elements_peds')}</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton href="/maps/elements/accessories" isActive={isActive('/maps/elements/accessories')} size="sm">
-                                <Puzzle className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.maps_elements_accessories')}</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                         <SidebarMenuItem>
-                            <SidebarMenuButton href="/maps/elements/splitters" isActive={isActive('/maps/elements/splitters')} size="sm">
-                                <Split className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.maps_elements_splitters')}</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton href="/maps/elements/towers" isActive={isActive('/maps/elements/towers')} size="sm">
-                                <TowerControl className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.maps_elements_towers')}</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton href="/maps/elements/cables" isActive={isActive('/maps/elements/cables')} size="sm">
-                                <Cable className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.maps_elements_cables')}</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    </SidebarMenuSubContent>
-                  </SidebarMenuSub>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <SidebarMenuButton href="/maps/map" isActive={isActive('/maps/map')} size="sm">
-                        <Globe className="h-4 w-4 text-muted-foreground"/>
-                        <span className="truncate">{t('sidebar.maps_map')}</span>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenuSubContent>
-            </SidebarMenuSub>
-          </SidebarMenuItem>
-
-          {/* FTTx Menu */}
-          <SidebarMenuItem>
+            {/* Maps Menu */}
+            <SidebarMenuItem>
               <SidebarMenuSub>
-                <SidebarMenuSubTrigger tooltip={t('sidebar.fttx')} isActive={isActive('/fttx')}>
-                  <div className="flex items-center gap-2 cursor-pointer">
-                    <GitBranch />
-                    <span className="truncate">{t('sidebar.fttx')}</span>
-                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                  </div>
-                </SidebarMenuSubTrigger>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.maps')} isActive={isActive('/maps')}>
+                    <div className="flex items-center gap-2 cursor-pointer">
+                      <MapPin />
+                      <span className="truncate">{t('sidebar.maps')}</span>
+                      <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                    </div>
+                  </SidebarMenuSubTrigger>
                 <SidebarMenuSubContent>
                   <SidebarMenuItem>
-                    <SidebarMenuButton href="/fttx/dashboard" isActive={isActive('/fttx/dashboard')} size="sm">
-                        <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.fttx_dashboard')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/fttx/olts" isActive={isActive('/fttx/olts')} size="sm">
-                        <Network className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.fttx_olts')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/fttx/onx-templates" isActive={isActive('/fttx/onx-templates')} size="sm">
-                        <FileTextIcon className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.fttx_onx_templates')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenuSubContent>
-              </SidebarMenuSub>
-          </SidebarMenuItem>
-
-          {/* Finances Menu */}
-          <SidebarMenuItem>
-              <SidebarMenuSub>
-                <SidebarMenuSubTrigger tooltip={t('sidebar.finances')} isActive={isActive('/finances')}>
-                  <div className="flex items-center gap-2 cursor-pointer">
-                    <DollarSign />
-                    <span className="truncate">{t('sidebar.finances')}</span>
-                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                  </div>
-                </SidebarMenuSubTrigger>
-                <SidebarMenuSubContent>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/finances/cash-book" isActive={isActive('/finances/cash-book')} size="sm">
-                        <BookOpen className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.finances_cash_book')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/finances/entry-categories" isActive={isActive('/finances/entry-categories')} size="sm">
-                        <ListFilter className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.finances_entry_categories')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenuSubContent>
-              </SidebarMenuSub>
-          </SidebarMenuItem>
-
-            {/* Inventory Menu */}
-          <SidebarMenuItem>
-              <SidebarMenuSub>
-                <SidebarMenuSubTrigger tooltip={t('sidebar.inventory')} isActive={isActive('/inventory')}>
-                  <div className="flex items-center gap-2 cursor-pointer">
-                    <Archive />
-                    <span className="truncate">{t('sidebar.inventory')}</span>
-                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                  </div>
-                </SidebarMenuSubTrigger>
-                <SidebarMenuSubContent>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/inventory/categories" isActive={isActive('/inventory/categories')} size="sm">
-                        <ListFilter className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.inventory_categories')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/inventory/manufacturers" isActive={isActive('/inventory/manufacturers')} size="sm">
-                        <Factory className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.inventory_manufacturers')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/inventory/suppliers" isActive={isActive('/inventory/suppliers')} size="sm">
-                        <Truck className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.inventory_suppliers')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/inventory/products" isActive={isActive('/inventory/products')} size="sm">
-                        <PackageIcon className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.inventory_products')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/inventory/warehouses" isActive={isActive('/inventory/warehouses')} size="sm">
-                        <Warehouse className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.inventory_warehouses')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton href="/inventory/vehicles" isActive={isActive('/inventory/vehicles')} size="sm">
-                        <Bus className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.inventory_vehicles')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenuSubContent>
-              </SidebarMenuSub>
-          </SidebarMenuItem>
-          
-          {/* Service Calls Menu */}
-          <SidebarMenuItem>
-            <SidebarMenuSub>
-              <SidebarMenuSubTrigger tooltip={t('sidebar.service_calls')} isActive={isActive('/service-calls')}>
-                <div className="flex items-center gap-2 cursor-pointer">
-                  <Wrench />
-                  <span className="truncate">{t('sidebar.service_calls')}</span>
-                  <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                </div>
-              </SidebarMenuSubTrigger>
-              <SidebarMenuSubContent>
-                <SidebarMenuItem>
-                  <SidebarMenuButton href="/service-calls/dashboard" isActive={isActive('/service-calls/dashboard')} size="sm">
-                      <ServiceDashboardIcon className="h-4 w-4 text-muted-foreground" />
-                      <span className="truncate">{t('sidebar.service_calls_dashboard')}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton href="/service-calls/service-types" isActive={isActive('/service-calls/service-types')} size="sm">
-                      <ServiceTypesIcon className="h-4 w-4 text-muted-foreground" />
-                      <span className="truncate">{t('sidebar.service_calls_service_types')}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenuSubContent>
-            </SidebarMenuSub>
-          </SidebarMenuItem>
-
-          {/* Reports */}
-          <SidebarMenuItem>
-            <SidebarMenuButton href="/reports" isActive={isActive('/reports')} tooltip={t('sidebar.reports')}>
-                <BarChart3 />
-                <span className="truncate">{t('sidebar.reports')}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-
-          {/* HR Menu */}
-          <SidebarMenuItem>
-              <SidebarMenuSub>
-                <SidebarMenuSubTrigger tooltip={t('sidebar.hr')} isActive={isActive('/hr')}>
-                  <div className="flex items-center gap-2 cursor-pointer">
-                    <BriefcaseBusiness />
-                    <span className="truncate">{t('sidebar.hr')}</span>
-                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                  </div>
-                </SidebarMenuSubTrigger>
-                <SidebarMenuSubContent>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/hr/employees" isActive={isActive('/hr/employees')} size="sm">
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.hr_employees')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenuSubContent>
-              </SidebarMenuSub>
-          </SidebarMenuItem>
-
-
-          {/* Settings Menu */}
-          <SidebarMenuItem>
-              <SidebarMenuSub>
-                <SidebarMenuSubTrigger tooltip={t('sidebar.settings')} isActive={isActive('/settings')}>
-                  <div className="flex items-center gap-2 cursor-pointer">
-                    <Settings />
-                    <span className="truncate">{t('sidebar.settings')}</span>
-                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                  </div>
-                </SidebarMenuSubTrigger>
-                <SidebarMenuSubContent>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/settings/global" isActive={isActive('/settings/global')} size="sm">
-                        <Cog className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.settings_global')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  {/* Business Sub-Accordion */}
-                  <SidebarMenuItem>
-                      <SidebarMenuSub>
-                        <SidebarMenuSubTrigger tooltip={t('sidebar.settings_business')} isActive={isActive('/settings/business')} size="sm">
-                            <div className="flex items-center gap-2 cursor-pointer">
-                                <Briefcase className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{t('sidebar.settings_business')}</span>
-                                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                            </div>
-                        </SidebarMenuSubTrigger>
-                        <SidebarMenuSubContent>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/settings/business/pops" isActive={isActive('/settings/business/pops')} size="sm">
-                                <Building className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{t('sidebar.settings_business_pops')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        </SidebarMenuSubContent>
-                      </SidebarMenuSub>
-                  </SidebarMenuItem>
-                  {/* Plans Sub-Accordion */}
-                  <SidebarMenuItem>
-                      <SidebarMenuSub>
-                        <SidebarMenuSubTrigger tooltip={t('sidebar.settings_plans')} isActive={isActive('/settings/plans')} size="sm">
-                            <div className="flex items-center gap-2 cursor-pointer">
-                                <ListChecks className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{t('sidebar.settings_plans')}</span>
-                                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                            </div>
-                        </SidebarMenuSubTrigger>
-                        <SidebarMenuSubContent>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/settings/plans/internet" isActive={isActive('/settings/plans/internet')} size="sm">
-                                <Wifi className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{t('sidebar.settings_plans_internet')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/settings/plans/tv" isActive={isActive('/settings/plans/tv')} size="sm">
-                                <Tv className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{t('sidebar.settings_plans_tv')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/settings/plans/mobile" isActive={isActive('/settings/plans/mobile')} size="sm">
-                                <Smartphone className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{t('sidebar.settings_plans_mobile')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/settings/plans/landline" isActive={isActive('/settings/plans/landline')} size="sm">
-                                <Phone className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{t('sidebar.settings_plans_landline')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/settings/plans/combos" isActive={isActive('/settings/plans/combos')} size="sm">
-                                <Combine className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{t('sidebar.settings_plans_combos')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        </SidebarMenuSubContent>
-                      </SidebarMenuSub>
-                  </SidebarMenuItem>
-                  {/* Network (moved under settings) */}
+                      <SidebarMenuButton href="/maps/projects" isActive={isActive('/maps/projects')} size="sm">
+                          <FileCode className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.maps_projects')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuSub>
-                      <SidebarMenuSubTrigger tooltip={t('sidebar.network')} isActive={isActive('/settings/network')} size="sm">
-                          <div className="flex items-center gap-2 cursor-pointer">
-                              <Network className="h-4 w-4 text-muted-foreground" />
-                              <span className="truncate">{t('sidebar.network')}</span>
+                         <SidebarMenuSubTrigger tooltip={t('sidebar.maps_elements')} isActive={isActive('/maps/elements')} size="sm">
+                            <div className="flex items-center gap-2 cursor-pointer">
+                              <ListTree className="h-4 w-4 text-muted-foreground"/>
+                              <span className="truncate">{t('sidebar.maps_elements')}</span>
                               <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                          </div>
-                      </SidebarMenuSubTrigger>
+                            </div>
+                         </SidebarMenuSubTrigger>
                       <SidebarMenuSubContent>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton href="/settings/network/ip" isActive={isActive('/settings/network/ip')} size="sm">
-                              <Code className="h-4 w-4 text-muted-foreground"/>
-                              <span className="truncate">{t('sidebar.network_ip')}</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton href="/settings/network/devices" isActive={isActive('/settings/network/devices')} size="sm">
-                              <RouterIcon className="h-4 w-4 text-muted-foreground"/>
-                              <span className="truncate">{t('sidebar.network_devices')}</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton href="/settings/network/cgnat" isActive={isActive('/settings/network/cgnat')} size="sm">
-                              <Share2 className="h-4 w-4 text-muted-foreground"/>
-                              <span className="truncate">{t('sidebar.network_cgnat')}</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton href="/settings/network/radius" isActive={isActive('/settings/network/radius')} size="sm">
-                              <ServerIcon className="h-4 w-4 text-muted-foreground"/>
-                              <span className="truncate">{t('sidebar.network_radius')}</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton href="/settings/network/vlan" isActive={isActive('/settings/network/vlan')} size="sm">
-                              <Split className="h-4 w-4 text-muted-foreground"/>
-                              <span className="truncate">{t('sidebar.network_vlan')}</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
+                          <SidebarMenuItem>
+                              <SidebarMenuButton href="/maps/elements/polls" isActive={isActive('/maps/elements/polls')} size="sm">
+                                  <Power className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.maps_elements_polls')}</span>
+                              </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                              <SidebarMenuButton href="/maps/elements/fdhs" isActive={isActive('/maps/elements/fdhs')} size="sm">
+                                  <Box className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.maps_elements_fdhs')}</span>
+                              </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                              <SidebarMenuButton href="/maps/elements/foscs" isActive={isActive('/maps/elements/foscs')} size="sm">
+                                  <Warehouse className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.maps_elements_foscs')}</span>
+                              </SidebarMenuButton>
+                          </SidebarMenuItem>
+                           <SidebarMenuItem>
+                              <SidebarMenuButton href="/maps/elements/peds" isActive={isActive('/maps/elements/peds')} size="sm">
+                                  <Box className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.maps_elements_peds')}</span>
+                              </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                              <SidebarMenuButton href="/maps/elements/accessories" isActive={isActive('/maps/elements/accessories')} size="sm">
+                                  <Puzzle className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.maps_elements_accessories')}</span>
+                              </SidebarMenuButton>
+                          </SidebarMenuItem>
+                           <SidebarMenuItem>
+                              <SidebarMenuButton href="/maps/elements/splitters" isActive={isActive('/maps/elements/splitters')} size="sm">
+                                  <Split className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.maps_elements_splitters')}</span>
+                              </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                              <SidebarMenuButton href="/maps/elements/towers" isActive={isActive('/maps/elements/towers')} size="sm">
+                                  <TowerControl className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.maps_elements_towers')}</span>
+                              </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                              <SidebarMenuButton href="/maps/elements/cables" isActive={isActive('/maps/elements/cables')} size="sm">
+                                  <Cable className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.maps_elements_cables')}</span>
+                              </SidebarMenuButton>
+                          </SidebarMenuItem>
                       </SidebarMenuSubContent>
                     </SidebarMenuSub>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton href="/settings/finances/configurations" isActive={isActive('/settings/finances/configurations')} size="sm">
-                        <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.finances_config')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/settings/security" isActive={isActive('/settings/security')} size="sm">
-                        <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.security')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/settings/system-monitor" isActive={isActive('/settings/system-monitor')} size="sm">
-                        <RouterIcon className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.settings_system_monitor')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  {/* Integrations Sub-Accordion */}
-                  <SidebarMenuItem>
-                      <SidebarMenuSub>
-                        <SidebarMenuSubTrigger tooltip={t('sidebar.settings_integrations')} isActive={isActive('/settings/integrations')} size="sm">
-                            <div className="flex items-center gap-2 cursor-pointer">
-                                <Plug className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{t('sidebar.settings_integrations')}</span>
-                                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                            </div>
-                        </SidebarMenuSubTrigger>
-                        <SidebarMenuSubContent>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/settings/integrations/whatsapp" isActive={isActive('/settings/integrations/whatsapp')} size="sm">
-                                <MessageSquare className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.settings_integrations_whatsapp')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/settings/integrations/telegram" isActive={isActive('/settings/integrations/telegram')} size="sm">
-                                <MessageSquare className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.settings_integrations_telegram')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/settings/integrations/meta" isActive={isActive('/settings/integrations/meta')} size="sm">
-                                <MessageSquare className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.settings_integrations_meta')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/settings/integrations/sms" isActive={isActive('/settings/integrations/sms')} size="sm">
-                                <Text className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.settings_integrations_sms')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        </SidebarMenuSubContent>
-                      </SidebarMenuSub>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton href="/settings/users" isActive={isActive('/settings/users')} size="sm">
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{t('sidebar.settings_users')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  {/* MySQL Sub-Accordion */}
-                  <SidebarMenuItem>
-                      <SidebarMenuSub>
-                        <SidebarMenuSubTrigger tooltip={t('sidebar.mysql')} isActive={isActive('/settings/mysql')} size="sm">
-                            <div className="flex items-center gap-2 cursor-pointer">
-                                <Database className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{t('sidebar.mysql')}</span>
-                                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                            </div>
-                        </SidebarMenuSubTrigger>
-                        <SidebarMenuSubContent>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/mysql/databases" isActive={isActive('/mysql/databases')} size="sm">
-                                <Database className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.mysql_databases')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton href="/mysql/cli" isActive={isActive('/mysql/cli')} size="sm">
-                                <Code className="h-4 w-4 text-muted-foreground"/>
-                                <span className="truncate">{t('sidebar.mysql_cli')}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        </SidebarMenuSubContent>
-                      </SidebarMenuSub>
+                      <SidebarMenuButton href="/maps/map" isActive={isActive('/maps/map')} size="sm">
+                          <Globe className="h-4 w-4 text-muted-foreground"/>
+                          <span className="truncate">{t('sidebar.maps_map')}</span>
+                      </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenuSubContent>
               </SidebarMenuSub>
-          </SidebarMenuItem>
+            </SidebarMenuItem>
 
-          {/* Separator */}
-          <SidebarSeparator />
+            {/* FTTx Menu */}
+            <SidebarMenuItem>
+                <SidebarMenuSub>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.fttx')} isActive={isActive('/fttx')}>
+                    <div className="flex items-center gap-2 cursor-pointer">
+                      <GitBranch />
+                      <span className="truncate">{t('sidebar.fttx')}</span>
+                      <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                    </div>
+                  </SidebarMenuSubTrigger>
+                  <SidebarMenuSubContent>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/fttx/dashboard" isActive={isActive('/fttx/dashboard')} size="sm">
+                          <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.fttx_dashboard')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/fttx/olts" isActive={isActive('/fttx/olts')} size="sm">
+                          <Network className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.fttx_olts')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/fttx/onx-templates" isActive={isActive('/fttx/onx-templates')} size="sm">
+                          <FileTextIcon className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.fttx_onx_templates')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenuSubContent>
+                </SidebarMenuSub>
+            </SidebarMenuItem>
 
-          {/* PilotView */}
-          <SidebarMenuItem>
-            <SidebarMenuButton href="/pilotview" isActive={isActive('/pilotview')} tooltip={t('sidebar.pilotview')}>
-                <TbDeviceImacStar />
-                <span className="truncate">{t('sidebar.pilotview')}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+            {/* Finances Menu */}
+            <SidebarMenuItem>
+                <SidebarMenuSub>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.finances')} isActive={isActive('/finances')}>
+                    <div className="flex items-center gap-2 cursor-pointer">
+                      <DollarSign />
+                      <span className="truncate">{t('sidebar.finances')}</span>
+                      <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                    </div>
+                  </SidebarMenuSubTrigger>
+                  <SidebarMenuSubContent>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/finances/cash-book" isActive={isActive('/finances/cash-book')} size="sm">
+                          <BookOpen className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.finances_cash_book')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/finances/entry-categories" isActive={isActive('/finances/entry-categories')} size="sm">
+                          <ListFilter className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.finances_entry_categories')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenuSubContent>
+                </SidebarMenuSub>
+            </SidebarMenuItem>
 
-          {/* TransitOS */}
-          <SidebarMenuItem>
-            <SidebarMenuButton href="/transitos" isActive={isActive('/transitos')} tooltip={t('sidebar.transitos')}>
-                <SiReactrouter />
-                <span className="truncate">{t('sidebar.transitos')}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+              {/* Inventory Menu */}
+            <SidebarMenuItem>
+                <SidebarMenuSub>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.inventory')} isActive={isActive('/inventory')}>
+                    <div className="flex items-center gap-2 cursor-pointer">
+                      <Archive />
+                      <span className="truncate">{t('sidebar.inventory')}</span>
+                      <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                    </div>
+                  </SidebarMenuSubTrigger>
+                  <SidebarMenuSubContent>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/inventory/categories" isActive={isActive('/inventory/categories')} size="sm">
+                          <ListFilter className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.inventory_categories')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/inventory/manufacturers" isActive={isActive('/inventory/manufacturers')} size="sm">
+                          <Factory className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.inventory_manufacturers')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/inventory/suppliers" isActive={isActive('/inventory/suppliers')} size="sm">
+                          <Truck className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.inventory_suppliers')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/inventory/products" isActive={isActive('/inventory/products')} size="sm">
+                          <PackageIcon className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.inventory_products')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/inventory/warehouses" isActive={isActive('/inventory/warehouses')} size="sm">
+                          <Warehouse className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.inventory_warehouses')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                      <SidebarMenuItem>
+                      <SidebarMenuButton href="/inventory/vehicles" isActive={isActive('/inventory/vehicles')} size="sm">
+                          <Bus className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.inventory_vehicles')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenuSubContent>
+                </SidebarMenuSub>
+            </SidebarMenuItem>
+            
+            {/* Service Calls Menu */}
+            <SidebarMenuItem>
+              <SidebarMenuSub>
+                <SidebarMenuSubTrigger tooltip={t('sidebar.service_calls')} isActive={isActive('/service-calls')}>
+                  <div className="flex items-center gap-2 cursor-pointer">
+                    <Wrench />
+                    <span className="truncate">{t('sidebar.service_calls')}</span>
+                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                  </div>
+                </SidebarMenuSubTrigger>
+                <SidebarMenuSubContent>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton href="/service-calls/dashboard" isActive={isActive('/service-calls/dashboard')} size="sm">
+                        <ServiceDashboardIcon className="h-4 w-4 text-muted-foreground" />
+                        <span className="truncate">{t('sidebar.service_calls_dashboard')}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton href="/service-calls/service-types" isActive={isActive('/service-calls/service-types')} size="sm">
+                        <ServiceTypesIcon className="h-4 w-4 text-muted-foreground" />
+                        <span className="truncate">{t('sidebar.service_calls_service_types')}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenuSubContent>
+              </SidebarMenuSub>
+            </SidebarMenuItem>
 
-          {/* Zones (DNS) */}
-          <SidebarMenuItem>
-            <SidebarMenuButton href="/zones" isActive={isActive('/zones')} tooltip={t('sidebar.zones')}>
-                <SiNextdns />
-                <span className="truncate">{t('sidebar.zones')}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-           {/* Footer content can be added here if needed */}
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset noMargin={isMapPage}>
-        <div className="fixed top-0 left-0 w-full h-1 z-50">
-          {isLoading && <Progress value={progress} className="w-full h-full rounded-none bg-transparent [&>div]:bg-accent" />}
-        </div>
-        {!isMapPage && <AppHeader onToggleSidebar={toggleMobileSidebar} />}
-        <div className={isMapPage ? "p-0" : "p-4 md:p-6"}>
-          {children}
-        </div>
-        <Toaster />
-      </SidebarInset>
+            {/* Reports */}
+            <SidebarMenuItem>
+              <SidebarMenuButton href="/reports" isActive={isActive('/reports')} tooltip={t('sidebar.reports')}>
+                  <BarChart3 />
+                  <span className="truncate">{t('sidebar.reports')}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            {/* HR Menu */}
+            <SidebarMenuItem>
+                <SidebarMenuSub>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.hr')} isActive={isActive('/hr')}>
+                    <div className="flex items-center gap-2 cursor-pointer">
+                      <BriefcaseBusiness />
+                      <span className="truncate">{t('sidebar.hr')}</span>
+                      <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                    </div>
+                  </SidebarMenuSubTrigger>
+                  <SidebarMenuSubContent>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/hr/employees" isActive={isActive('/hr/employees')} size="sm">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.hr_employees')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenuSubContent>
+                </SidebarMenuSub>
+            </SidebarMenuItem>
+
+
+            {/* Settings Menu */}
+            <SidebarMenuItem>
+                <SidebarMenuSub>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.settings')} isActive={isActive('/settings')}>
+                    <div className="flex items-center gap-2 cursor-pointer">
+                      <Settings />
+                      <span className="truncate">{t('sidebar.settings')}</span>
+                      <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                    </div>
+                  </SidebarMenuSubTrigger>
+                  <SidebarMenuSubContent>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/settings/global" isActive={isActive('/settings/global')} size="sm">
+                          <Cog className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.settings_global')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    {/* Business Sub-Accordion */}
+                    <SidebarMenuItem>
+                        <SidebarMenuSub>
+                          <SidebarMenuSubTrigger tooltip={t('sidebar.settings_business')} isActive={isActive('/settings/business')} size="sm">
+                              <div className="flex items-center gap-2 cursor-pointer">
+                                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                                  <span className="truncate">{t('sidebar.settings_business')}</span>
+                                  <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                              </div>
+                          </SidebarMenuSubTrigger>
+                          <SidebarMenuSubContent>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/settings/business/pops" isActive={isActive('/settings/business/pops')} size="sm">
+                                  <Building className="h-4 w-4 text-muted-foreground" />
+                                  <span className="truncate">{t('sidebar.settings_business_pops')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          </SidebarMenuSubContent>
+                        </SidebarMenuSub>
+                    </SidebarMenuItem>
+                    {/* Plans Sub-Accordion */}
+                    <SidebarMenuItem>
+                        <SidebarMenuSub>
+                          <SidebarMenuSubTrigger tooltip={t('sidebar.settings_plans')} isActive={isActive('/settings/plans')} size="sm">
+                              <div className="flex items-center gap-2 cursor-pointer">
+                                  <ListChecks className="h-4 w-4 text-muted-foreground" />
+                                  <span className="truncate">{t('sidebar.settings_plans')}</span>
+                                  <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                              </div>
+                          </SidebarMenuSubTrigger>
+                          <SidebarMenuSubContent>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/settings/plans/internet" isActive={isActive('/settings/plans/internet')} size="sm">
+                                  <Wifi className="h-4 w-4 text-muted-foreground" />
+                                  <span className="truncate">{t('sidebar.settings_plans_internet')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/settings/plans/tv" isActive={isActive('/settings/plans/tv')} size="sm">
+                                  <Tv className="h-4 w-4 text-muted-foreground" />
+                                  <span className="truncate">{t('sidebar.settings_plans_tv')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/settings/plans/mobile" isActive={isActive('/settings/plans/mobile')} size="sm">
+                                  <Smartphone className="h-4 w-4 text-muted-foreground" />
+                                  <span className="truncate">{t('sidebar.settings_plans_mobile')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/settings/plans/landline" isActive={isActive('/settings/plans/landline')} size="sm">
+                                  <Phone className="h-4 w-4 text-muted-foreground" />
+                                  <span className="truncate">{t('sidebar.settings_plans_landline')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/settings/plans/combos" isActive={isActive('/settings/plans/combos')} size="sm">
+                                  <Combine className="h-4 w-4 text-muted-foreground" />
+                                  <span className="truncate">{t('sidebar.settings_plans_combos')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          </SidebarMenuSubContent>
+                        </SidebarMenuSub>
+                    </SidebarMenuItem>
+                    {/* Network (moved under settings) */}
+                    <SidebarMenuItem>
+                      <SidebarMenuSub>
+                        <SidebarMenuSubTrigger tooltip={t('sidebar.network')} isActive={isActive('/settings/network')} size="sm">
+                            <div className="flex items-center gap-2 cursor-pointer">
+                                <Network className="h-4 w-4 text-muted-foreground" />
+                                <span className="truncate">{t('sidebar.network')}</span>
+                                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                            </div>
+                        </SidebarMenuSubTrigger>
+                        <SidebarMenuSubContent>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton href="/settings/network/ip" isActive={isActive('/settings/network/ip')} size="sm">
+                                <Code className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.network_ip')}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton href="/settings/network/devices" isActive={isActive('/settings/network/devices')} size="sm">
+                                <RouterIcon className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.network_devices')}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton href="/settings/network/cgnat" isActive={isActive('/settings/network/cgnat')} size="sm">
+                                <Share2 className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.network_cgnat')}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton href="/settings/network/radius" isActive={isActive('/settings/network/radius')} size="sm">
+                                <ServerIcon className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.network_radius')}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton href="/settings/network/vlan" isActive={isActive('/settings/network/vlan')} size="sm">
+                                <Split className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.network_vlan')}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        </SidebarMenuSubContent>
+                      </SidebarMenuSub>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/settings/finances/configurations" isActive={isActive('/settings/finances/configurations')} size="sm">
+                          <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.finances_config')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/settings/security" isActive={isActive('/settings/security')} size="sm">
+                          <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.security')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/settings/system-monitor" isActive={isActive('/settings/system-monitor')} size="sm">
+                          <RouterIcon className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.settings_system_monitor')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    {/* Integrations Sub-Accordion */}
+                    <SidebarMenuItem>
+                        <SidebarMenuSub>
+                          <SidebarMenuSubTrigger tooltip={t('sidebar.settings_integrations')} isActive={isActive('/settings/integrations')} size="sm">
+                              <div className="flex items-center gap-2 cursor-pointer">
+                                  <Plug className="h-4 w-4 text-muted-foreground" />
+                                  <span className="truncate">{t('sidebar.settings_integrations')}</span>
+                                  <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                              </div>
+                          </SidebarMenuSubTrigger>
+                          <SidebarMenuSubContent>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/settings/integrations/whatsapp" isActive={isActive('/settings/integrations/whatsapp')} size="sm">
+                                  <MessageSquare className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.settings_integrations_whatsapp')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/settings/integrations/telegram" isActive={isActive('/settings/integrations/telegram')} size="sm">
+                                  <MessageSquare className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.settings_integrations_telegram')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/settings/integrations/meta" isActive={isActive('/settings/integrations/meta')} size="sm">
+                                  <MessageSquare className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.settings_integrations_meta')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/settings/integrations/sms" isActive={isActive('/settings/integrations/sms')} size="sm">
+                                  <Text className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.settings_integrations_sms')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          </SidebarMenuSubContent>
+                        </SidebarMenuSub>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton href="/settings/users" isActive={isActive('/settings/users')} size="sm">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <span className="truncate">{t('sidebar.settings_users')}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    {/* MySQL Sub-Accordion */}
+                    <SidebarMenuItem>
+                        <SidebarMenuSub>
+                          <SidebarMenuSubTrigger tooltip={t('sidebar.mysql')} isActive={isActive('/settings/mysql')} size="sm">
+                              <div className="flex items-center gap-2 cursor-pointer">
+                                  <Database className="h-4 w-4 text-muted-foreground" />
+                                  <span className="truncate">{t('sidebar.mysql')}</span>
+                                  <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                              </div>
+                          </SidebarMenuSubTrigger>
+                          <SidebarMenuSubContent>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/mysql/databases" isActive={isActive('/mysql/databases')} size="sm">
+                                  <Database className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.mysql_databases')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                              <SidebarMenuButton href="/mysql/cli" isActive={isActive('/mysql/cli')} size="sm">
+                                  <Code className="h-4 w-4 text-muted-foreground"/>
+                                  <span className="truncate">{t('sidebar.mysql_cli')}</span>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          </SidebarMenuSubContent>
+                        </SidebarMenuSub>
+                    </SidebarMenuItem>
+                  </SidebarMenuSubContent>
+                </SidebarMenuSub>
+            </SidebarMenuItem>
+
+            {/* Separator */}
+            <SidebarSeparator />
+
+            {/* PilotView */}
+            <SidebarMenuItem>
+              <SidebarMenuButton href="/pilotview" isActive={isActive('/pilotview')} tooltip={t('sidebar.pilotview')}>
+                  <TbDeviceImacStar />
+                  <span className="truncate">{t('sidebar.pilotview')}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            {/* TransitOS */}
+            <SidebarMenuItem>
+              <SidebarMenuButton href="/transitos" isActive={isActive('/transitos')} tooltip={t('sidebar.transitos')}>
+                  <SiReactrouter />
+                  <span className="truncate">{t('sidebar.transitos')}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            {/* Zones (DNS) */}
+            <SidebarMenuItem>
+              <SidebarMenuButton href="/zones" isActive={isActive('/zones')} tooltip={t('sidebar.zones')}>
+                  <SiNextdns />
+                  <span className="truncate">{t('sidebar.zones')}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter>
+             {/* Footer content can be added here if needed */}
+          </SidebarFooter>
+        </Sidebar>
+        
+        <SidebarInset noMargin={isMapPage}>
+          <div className="fixed top-0 left-0 w-full h-1 z-50">
+            {isLoading && <Progress value={progress} className="w-full h-full rounded-none bg-transparent [&>div]:bg-accent" />}
+          </div>
+          <div className={isMapPage ? "p-0 h-full" : "p-4 md:p-6 h-[calc(100%-theme(space.12))] overflow-y-auto"}>
+            {children}
+          </div>
+          <Toaster />
+        </SidebarInset>
+      </div>
     </div>
   );
 }
@@ -757,7 +755,7 @@ export default function RootLayout({
         >
           <QueryClientProvider client={queryClient}>
             <LocaleProvider>
-              <TooltipProvider>
+              <TooltipProvider delayDuration={0}>
                 <SidebarProvider side="left" collapsible="none">
                   <AppLayout>{children}</AppLayout>
                 </SidebarProvider>
