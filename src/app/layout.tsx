@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import * as React from 'react'; // Ensure React is imported for useState, useEffect
+import * as React from 'react';
 import type { ReactNode } from 'react';
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, ChevronDown, Dot, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
@@ -51,6 +51,7 @@ import {
   List as ServiceTypesIcon,
   ChevronRight,
   Menu as MenuIcon,
+  ListTree, // Added for Elements
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -90,19 +91,17 @@ const ProlterLogo = () => {
     setIsMounted(true);
   }, []);
 
-  // Default fill color for server-side rendering and before client-side theme is determined
-  // This default should match one of your theme's expected initial states (e.g., light theme)
-  const ssrFillColor = '#14213D'; // Default to light theme color for SSR
-
+  const ssrFillColor = '#14213D'; 
   const fillColor = isMounted ? (theme === 'dark' ? 'hsl(var(--accent))' : '#14213D') : ssrFillColor;
 
   return (
     <svg
-      width="100%"
+      width="100%" 
       height="100%"
       viewBox="0 0 131 32"
       xmlns="http://www.w3.org/2000/svg"
       fill={fillColor}
+      style={{ maxWidth: '131px', height: '32px' }} // Ensure specific dimensions
     >
       <path d="M21.0938 18.375H18.2188V27H15.25V18.375H12.375V15.875H15.25V11.6562C15.25 9.5625 16.3438 8.03125 18.5312 8.03125L21.25 8.0625V10.625H19.5C18.8125 10.625 18.2188 10.9688 18.2188 11.8438V15.875H21.2188L21.0938 18.375Z" />
       <path d="M33.2812 20.0625C33.1875 20.0938 33.0938 20.0938 33 20.125C31.6562 20.7812 30.0938 21.125 28.3438 21.125C24.5312 21.125 22.1562 18.5312 22.1562 14.5312C22.1562 10.5312 24.5312 7.9375 28.3438 7.9375C30.0938 7.9375 31.6562 8.28125 33 8.9375C33.0938 8.96875 33.1875 8.96875 33.2812 9V11.4375C33.1875 11.4062 33.0938 11.4062 33 11.375C32.0312 10.9062 30.8438 10.5 29.5312 10.5C27.2812 10.5 26.0312 12.0312 26.0312 14.5312C26.0312 17.0312 27.2812 18.5625 29.5312 18.5625C30.8438 18.5625 32.0312 18.1562 33 17.6875C33.0938 17.6562 33.1875 17.6562 33.2812 17.625V20.0625Z" />
@@ -134,7 +133,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
   const { t } = useLocale();
-  // const { theme, setTheme } = useTheme(); // theme and setTheme are in AppHeader now
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
   const isMobile = useIsMobile();
   const { collapsed, setCollapsed, collapsible } = useSidebar();
@@ -184,7 +182,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const isActive = (href: string) => {
     const cleanHref = href.split('?')[0];
     const cleanPathname = pathname.split('?')[0];
-    return cleanPathname === href || (cleanHref !== '/' && cleanPathname.startsWith(cleanHref));
+    // Ensure exact match for home, prefix match for others
+    if (cleanHref === '/') return cleanPathname === '/';
+    return cleanPathname.startsWith(cleanHref);
   };
 
 
@@ -194,7 +194,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex h-full">
       <Sidebar>
         <SidebarHeader>
-            <Link href="/" className="flex items-center gap-2 text-lg font-semibold" style={{ width: '131px', height: '32px' }}>
+            <Link href="/" className="flex items-center justify-center w-full h-full" style={{ textDecoration: 'none' }}>
               <ProlterLogo />
             </Link>
         </SidebarHeader>
@@ -214,6 +214,108 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 <Users />
                 <span className="truncate">{t('sidebar.subscribers')}</span>
             </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          {/* Maps Menu */}
+          <SidebarMenuItem>
+            <SidebarMenuSub>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuSubTrigger tooltip={t('sidebar.maps')} isActive={isActive('/maps')}>
+                      <div className="flex items-center gap-2 cursor-pointer">
+                        <MapPin />
+                        <span className="truncate">{t('sidebar.maps')}</span>
+                        <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                      </div>
+                    </SidebarMenuSubTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" align="center">{t('sidebar.maps')}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <SidebarMenuSubContent>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton href="/maps/projects" isActive={isActive('/maps/projects')} size="sm">
+                        <FileCode className="h-4 w-4 text-muted-foreground" />
+                        <span className="truncate">{t('sidebar.maps_projects')}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuSub>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                           <SidebarMenuSubTrigger tooltip={t('sidebar.maps_elements')} isActive={isActive('/maps/elements')} size="sm">
+                              <div className="flex items-center gap-2 cursor-pointer">
+                                <ListTree className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.maps_elements')}</span>
+                                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                              </div>
+                           </SidebarMenuSubTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" align="center">{t('sidebar.maps_elements')}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <SidebarMenuSubContent>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton href="/maps/elements/polls" isActive={isActive('/maps/elements/polls')} size="sm">
+                                <Power className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.maps_elements_polls')}</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton href="/maps/elements/fdhs" isActive={isActive('/maps/elements/fdhs')} size="sm">
+                                <Box className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.maps_elements_fdhs')}</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton href="/maps/elements/foscs" isActive={isActive('/maps/elements/foscs')} size="sm">
+                                <Warehouse className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.maps_elements_foscs')}</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                         <SidebarMenuItem>
+                            <SidebarMenuButton href="/maps/elements/peds" isActive={isActive('/maps/elements/peds')} size="sm">
+                                <Box className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.maps_elements_peds')}</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton href="/maps/elements/accessories" isActive={isActive('/maps/elements/accessories')} size="sm">
+                                <Puzzle className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.maps_elements_accessories')}</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton href="/maps/elements/towers" isActive={isActive('/maps/elements/towers')} size="sm">
+                                <TowerControl className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.maps_elements_towers')}</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton href="/maps/elements/cables" isActive={isActive('/maps/elements/cables')} size="sm">
+                                <Cable className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.maps_elements_cables')}</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                         <SidebarMenuItem>
+                            <SidebarMenuButton href="/maps/elements/splitters" isActive={isActive('/maps/elements/splitters')} size="sm">
+                                <Split className="h-4 w-4 text-muted-foreground"/>
+                                <span className="truncate">{t('sidebar.maps_elements_splitters')}</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    </SidebarMenuSubContent>
+                  </SidebarMenuSub>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton href="/maps/map" isActive={isActive('/maps/map')} size="sm">
+                        <Globe className="h-4 w-4 text-muted-foreground"/>
+                        <span className="truncate">{t('sidebar.maps_map')}</span>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenuSubContent>
+            </SidebarMenuSub>
           </SidebarMenuItem>
 
           {/* FTTx Menu */}
@@ -347,7 +449,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuSubContent>
               </SidebarMenuSub>
           </SidebarMenuItem>
-
+          
           {/* Service Calls Menu */}
           <SidebarMenuItem>
             <SidebarMenuSub>
@@ -707,7 +809,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-          {/* Footer content can go here if needed */}
+           {/* Removed Collapse Button as per user request to match image */}
         </SidebarFooter>
       </Sidebar>
       <SidebarInset noMargin={isMapPage}>
@@ -745,7 +847,7 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <LocaleProvider>
               <TooltipProvider>
-                <SidebarProvider side="left" collapsible="none">
+                <SidebarProvider side="left" collapsible="none"> {/* Changed to collapsible="none" to match image */}
                   <AppLayout>{children}</AppLayout>
                 </SidebarProvider>
               </TooltipProvider>
