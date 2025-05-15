@@ -113,13 +113,14 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
 
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between bg-[#1A237E] px-4 text-white shadow-sm md:px-6">
+    <header 
+      className="sticky top-0 z-30 flex h-14 items-center justify-between px-4 text-white shadow-sm md:px-6"
+      style={{ backgroundColor: '#1A237E' }} // Specific dark blue for header
+    >
       <div className="flex items-center">
-        <Link href="/" className="mr-4 flex items-center">
-          {/* ProlterLogo component was removed, ensure it's re-added or replaced if needed */}
-          {/* <ProlterLogo /> */}
-          <span className="sr-only">Prolter Home</span>
-        </Link>
+        {/* ProlterLogo component was removed, ensure it's re-added or replaced if needed */}
+        {/* <ProlterLogo /> */}
+        <span className="sr-only">Prolter Home</span>
         <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
             <MenuIcon className={`${iconSize}`} />
         </Button>
@@ -226,11 +227,11 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
                <DropdownMenuLabel className="text-xs">{t('header.my_account', 'My Account')}</DropdownMenuLabel>
                <DropdownMenuSeparator />
                <DropdownMenuItem onSelect={handleProfileClick} className="text-xs">
-                 <UserCircle className={`${smallIconSize} mr-2`} /> {/* Added mr-2 */}
+                 <UserCircle className={`${smallIconSize} mr-2`} />
                  <span>{t('header.profile_menu_item', 'Profile')}</span>
                </DropdownMenuItem>
                <DropdownMenuItem onSelect={handleLogoutClick} className="text-xs">
-                 <LogOut className={`${smallIconSize} mr-2`} /> {/* Added mr-2 */}
+                 <LogOut className={`${smallIconSize} mr-2`} />
                  <span>{t('header.logout_menu_item', 'Logout')}</span>
                </DropdownMenuItem>
              </DropdownMenuContent>
