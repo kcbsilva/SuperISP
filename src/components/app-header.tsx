@@ -116,12 +116,13 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
     <header
       className={cn(
         "sticky top-0 z-30 flex h-14 items-center justify-between px-4 shadow-sm md:px-6",
-        "bg-muted text-card-foreground", // Light theme: grey header bar, dark blue text
+        "bg-background text-foreground", // Light theme: Use main background color, main foreground text
         "dark:bg-background dark:text-foreground" // Dark theme: page background header, light text
       )}
     >
       <div className="flex items-center">
-        <Button variant="ghost" size="icon" className="md:hidden text-inherit hover:bg-muted/50" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
+        {/* Mobile sidebar toggle - ensure text color is appropriate for header background */}
+        <Button variant="ghost" size="icon" className="md:hidden text-foreground hover:bg-muted/50" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
             <MenuIcon className={iconSize} />
         </Button>
       </div>
@@ -136,8 +137,8 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
                     placeholder={t('search.placeholder', 'Search clients, equipment, elements...')}
                     className={cn(
                       "h-8 w-full rounded-full pl-8 text-xs",
-                      "bg-card text-foreground", // Light theme: white search bar, dark text
-                      "dark:bg-muted/80 dark:text-foreground" // Dark theme: muted search bar, light text
+                      "bg-card text-foreground", // Light theme search input (white background, dark text)
+                      "dark:bg-muted/80 dark:text-foreground" // Dark theme search input
                     )}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -200,13 +201,14 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
       </div>
 
        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('header.toggle_theme', 'Toggle theme')} className="text-inherit hover:bg-muted/50">
+          {/* Ensure button text color contrasts with header background */}
+          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('header.toggle_theme', 'Toggle theme')} className="text-foreground hover:bg-muted/50">
             {mounted ? (theme === 'light' ? <Moon className={iconSize} /> : <Sun className={iconSize} />) : <Settings className={iconSize} /> }
           </Button>
 
          <DropdownMenu>
            <DropdownMenuTrigger asChild>
-             <Button variant="ghost" size="icon" aria-label={t('header.changelog', 'Changelog')} className="text-inherit hover:bg-muted/50">
+             <Button variant="ghost" size="icon" aria-label={t('header.changelog', 'Changelog')} className="text-foreground hover:bg-muted/50">
                 <Info className={iconSize}/>
              </Button>
            </DropdownMenuTrigger>
@@ -223,7 +225,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
 
           <DropdownMenu>
              <DropdownMenuTrigger asChild>
-               <Button variant="ghost" size="icon" aria-label={t('header.profile', 'User Profile')} className="text-inherit hover:bg-muted/50">
+               <Button variant="ghost" size="icon" aria-label={t('header.profile', 'User Profile')} className="text-foreground hover:bg-muted/50">
                 <User className={iconSize}/>
                </Button>
              </DropdownMenuTrigger>
