@@ -52,6 +52,8 @@ import {
   ChevronRight,
   Menu as MenuIcon,
   ListTree,
+  Users2,
+  UserPlus
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -91,17 +93,17 @@ const ProlterLogo = () => {
     setIsMounted(true);
   }, []);
 
-  const fillColor = isMounted ? (theme === 'dark' ? 'hsl(var(--accent))' : '#14213D') : '#14213D';
-
+  const fillColor = !isMounted ? '#14213D' : theme === 'dark' ? 'hsl(var(--accent))' : '#14213D';
 
   return (
     <svg
-      width="131px"
-      height="32px"
+      width="100%"
+      height="100%"
       viewBox="0 0 131 32"
       xmlns="http://www.w3.org/2000/svg"
       fill={fillColor}
-      style={{ maxWidth: '131px', height: '32px' }}
+      style={{ maxWidth: '131px', height: '32px' }} // Ensures correct aspect ratio and max size
+      preserveAspectRatio="xMidYMid meet" // Ensures the SVG scales correctly
     >
       <path d="M21.0938 18.375H18.2188V27H15.25V18.375H12.375V15.875H15.25V11.6562C15.25 9.5625 16.3438 8.03125 18.5312 8.03125L21.25 8.0625V10.625H19.5C18.8125 10.625 18.2188 10.9688 18.2188 11.8438V15.875H21.2188L21.0938 18.375Z" />
       <path d="M33.2812 20.0625C33.1875 20.0938 33.0938 20.0938 33 20.125C31.6562 20.7812 30.0938 21.125 28.3438 21.125C24.5312 21.125 22.1562 18.5312 22.1562 14.5312C22.1562 10.5312 24.5312 7.9375 28.3438 7.9375C30.0938 7.9375 31.6562 8.28125 33 8.9375C33.0938 8.96875 33.1875 8.96875 33.2812 9V11.4375C33.1875 11.4062 33.0938 11.4062 33 11.375C32.0312 10.9062 30.8438 10.5 29.5312 10.5C27.2812 10.5 26.0312 12.0312 26.0312 14.5312C26.0312 17.0312 27.2812 18.5625 29.5312 18.5625C30.8438 18.5625 32.0312 18.1562 33 17.6875C33.0938 17.6562 33.1875 17.6562 33.2812 17.625V20.0625Z" />
@@ -138,11 +140,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
   const toggleMobileSidebar = () => setIsOpenMobile(!isOpenMobile);
 
-  const toggleDesktopSidebar = () => {
-    if (collapsible !== 'none') {
-      setCollapsed(!collapsed);
-    }
-  };
+  // This function is not used since collapsible is 'none'
+  // const toggleDesktopSidebar = () => {
+  //   if (collapsible !== 'none') {
+  //     setCollapsed(!collapsed);
+  //   }
+  // };
 
 
   React.useEffect(() => {
@@ -188,9 +191,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const isMapPage = pathname === '/maps/map';
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen"> {/* Outer container: vertical flex, full height */}
+      {/* Header: Spans full width at the top */}
       {!isMapPage && <AppHeader onToggleSidebar={toggleMobileSidebar} />}
-      <div className="flex flex-1 overflow-hidden">
+      
+      {/* Container for Sidebar and Main Content: horizontal flex, takes remaining height */}
+      <div className="flex flex-1 overflow-hidden"> 
         <Sidebar>
           <SidebarHeader>
               <Link href="/" className="flex items-center justify-center w-full h-full" style={{ textDecoration: 'none' }}>
@@ -231,7 +237,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                           <FileCode className="h-4 w-4 text-muted-foreground" />
                           <span className="truncate">{t('sidebar.maps_projects')}</span>
                       </SidebarMenuButton>
-                    </SidebarMenuItem>
+                  </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuSub>
                          <SidebarMenuSubTrigger tooltip={t('sidebar.maps_elements')} isActive={isActive('/maps/elements')} size="sm">
@@ -722,10 +728,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         </Sidebar>
         
         <SidebarInset noMargin={isMapPage}>
+          {/* Loading Progress Bar */}
           <div className="fixed top-0 left-0 w-full h-1 z-50">
             {isLoading && <Progress value={progress} className="w-full h-full rounded-none bg-transparent [&>div]:bg-accent" />}
           </div>
-          <div className={isMapPage ? "p-0 h-full" : "p-4 md:p-6 h-[calc(100%-theme(space.12))] overflow-y-auto"}>
+          
+          {/* Actual content area with padding */}
+          {/* The p-5 class ensures a 20px padding around the content like the dashboard */}
+          <div className={isMapPage ? "p-0 h-full" : "p-5 h-[calc(100%-theme(space.12))] overflow-y-auto"}>
             {children}
           </div>
           <Toaster />
@@ -756,7 +766,7 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <LocaleProvider>
               <TooltipProvider delayDuration={0}>
-                <SidebarProvider side="left" collapsible="none">
+                <SidebarProvider side="left" collapsible="none"> {/* Ensure sidebar is non-collapsible */}
                   <AppLayout>{children}</AppLayout>
                 </SidebarProvider>
               </TooltipProvider>
