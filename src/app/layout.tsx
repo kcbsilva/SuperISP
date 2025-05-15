@@ -93,9 +93,7 @@ const ProlterLogo = () => {
     setIsMounted(true);
   }, []);
 
-  // Ensure fillColor is always defined, even before mount
-  const fillColor = !isMounted ? '#14213D' : (theme === 'dark' ? 'hsl(var(--accent))' : '#14213D');
-
+  const fillColor = !isMounted ? '#14213D' : (theme === 'dark' ? 'hsl(var(--accent))' : 'hsl(var(--foreground))');
 
   return (
     <svg
@@ -104,7 +102,7 @@ const ProlterLogo = () => {
       viewBox="0 0 131 32"
       xmlns="http://www.w3.org/2000/svg"
       fill={fillColor}
-      style={{ maxWidth: '131px', height: '32px' }} // Adjusted to 131x32
+      style={{ maxWidth: '131px', height: '32px' }}
       preserveAspectRatio="xMidYMid meet"
     >
       <path d="M21.0938 18.375H18.2188V27H15.25V18.375H12.375V15.875H15.25V11.6562C15.25 9.5625 16.3438 8.03125 18.5312 8.03125L21.25 8.0625V10.625H19.5C18.8125 10.625 18.2188 10.9688 18.2188 11.8438V15.875H21.2188L21.0938 18.375Z" />
@@ -125,9 +123,10 @@ const ProlterLogo = () => {
       <path d="M0.5 24.5H4.5V28.5H0.5V24.5Z" />
       <path d="M8.5 0.5H12.5V4.5H8.5V0.5Z" />
       <path d="M8.5 8.5H12.5V12.5H8.5V8.5Z" />
-  </svg>
+    </svg>
   );
 };
+
 
 const queryClient = new QueryClient();
 
@@ -222,7 +221,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                   </SidebarMenuSubTrigger>
                 <SidebarMenuSubContent>
-                  <SidebarMenuItem>
+                   <SidebarMenuItem>
                       <SidebarMenuButton href="/maps/projects" isActive={isActive('/maps/projects')} size="sm">
                           <FileCode className="h-4 w-4 text-muted-foreground" />
                           <span className="truncate">{t('sidebar.maps_projects')}</span>
@@ -697,7 +696,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="fixed top-0 left-0 w-full h-1 z-50">
             {isLoading && <Progress value={progress} className="w-full h-full rounded-none bg-transparent [&>div]:bg-accent" />}
           </div>
-          <div className={isMapPage ? "p-0 h-full" : "p-5 h-[calc(100%-theme(space.12))] overflow-y-auto"}>
+          <div className={isMapPage ? "p-0 h-full" : "p-4 h-[calc(100%-theme(space.12))] overflow-y-auto"}> {/* Changed p-5 to p-4 */}
             {children}
           </div>
           <Toaster />
@@ -716,7 +715,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`antialiased min-h-screen flex flex-col h-full`}
+        className={`antialiased`}
         suppressHydrationWarning
       >
         <NextThemesProvider
@@ -739,3 +738,4 @@ export default function RootLayout({
     </html>
   );
 }
+
