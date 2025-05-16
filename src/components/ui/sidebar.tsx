@@ -5,7 +5,7 @@ import * as React from "react"
 import Link, { type LinkProps } from "next/link";
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { ChevronDown, ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronDown, ChevronLeft, ChevronRight, Dot, type LucideIcon } from "lucide-react" // Added Dot
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -16,9 +16,9 @@ const sidebarVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-card text-card-foreground", // Changed from bg-background
-        inset: "m-2 rounded-lg border bg-card text-card-foreground shadow-lg", // Changed from bg-background
-        floating: "m-2 rounded-lg border bg-card text-card-foreground shadow-lg", // Changed from bg-background
+        default: "bg-card text-card-foreground",
+        inset: "m-2 rounded-lg border bg-card text-card-foreground shadow-lg",
+        floating: "m-2 rounded-lg border bg-card text-card-foreground shadow-lg",
       },
       side: {
         left: "inset-y-0 left-0 border-r",
@@ -39,7 +39,7 @@ const sidebarVariants = cva(
 )
 
 const sidebarMobileVariants = cva(
-  "fixed inset-y-0 z-50 h-full text-card-foreground bg-card border-border shadow-xl transition-transform duration-300 ease-in-out data-[state=open]:translate-x-0 data-[state=closed]:-translate-x-full", // Changed to bg-card
+  "fixed inset-y-0 z-50 h-full text-card-foreground bg-card border-border shadow-xl transition-transform duration-300 ease-in-out data-[state=open]:translate-x-0 data-[state=closed]:-translate-x-full",
   {
     variants: {
       side: {
@@ -105,7 +105,7 @@ const SidebarProvider = React.forwardRef<
     ref
   ) => {
     const isMobile = useIsMobile()
-    const [collapsed, setCollapsed] = React.useState(collapsible === 'none' ? false : (defaultCollapsed ?? true))
+    const [collapsed, setCollapsed] = React.useState(collapsible === 'none' ? false : (defaultCollapsed ?? false)) // Default to not collapsed
     const [isOpenMobile, setIsOpenMobile] = React.useState(defaultOpenMobile ?? false)
 
     React.useEffect(() => {
@@ -208,8 +208,8 @@ const SidebarHeader = React.forwardRef<
       ref={ref}
       data-sidebar="header"
       className={cn(
-        "flex items-center border-b p-2 shrink-0 h-14", 
-        collapsed ? "justify-center px-1" : "justify-center px-3", // Centered content
+        "flex items-center p-2 shrink-0 h-14", // Removed border-b
+        collapsed ? "justify-center px-1" : "justify-center px-3",
         className
       )}
       {...props}
@@ -308,7 +308,7 @@ const sidebarMenuButtonVariants = cva(
         lg: "px-3 py-2 text-sm",
       },
       isCollapsed: {
-        true: "justify-center [&>span:not(.sr-only)]:sr-only [&svg~svg:not(.lucide-chevron-down,.lucide-chevron-right)]:hidden",
+        true: "justify-center [&>span:not(.sr-only)]:sr-only [&>svg~svg:not(.lucide-chevron-down,.lucide-chevron-right)]:hidden",
         false: "",
       },
     },
@@ -354,11 +354,7 @@ const SidebarMenuButton = React.memo(React.forwardRef<
         href={href}
         {...props}
       >
-        {React.Children.map(children, child =>
-            React.isValidElement(child) && (child.type as any).displayName === 'ChevronDown'
-            ? React.cloneElement(child as React.ReactElement<any>, { className: cn(child.props.className, "ml-auto h-3 w-3 transition-transform group-data-[state=open]:rotate-180")})
-            : child
-        )}
+        {children}
       </Comp>
     );
 
@@ -472,11 +468,7 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
         disabled={isParentEffectivelyCollapsed}
         {...props}
       >
-        {React.Children.map(children, child =>
-            React.isValidElement(child) && (child.type as any).displayName === 'ChevronDown'
-            ? React.cloneElement(child as React.ReactElement<any>, { className: cn(child.props.className, "ml-auto h-3 w-3 transition-transform group-data-[state=open]:rotate-180")})
-            : child
-        )}
+        {children}
       </button>
     )
 
@@ -590,3 +582,4 @@ export {
   SidebarInset,
   useSidebar,
 };
+
