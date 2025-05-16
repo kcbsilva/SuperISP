@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   allowedDevOrigins: ['9003-idx-studio-1746297214025.cluster-uf6urqn4lned4spwk4xorq6bpo.cloudworkstations.dev'],
