@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Power, Edit, Trash2, FileText as FileTextIcon, Loader2, FilePlus2, List } from 'lucide-react';
+import { Power, Edit, Trash2, FileText as FileTextIcon, Loader2, FilePlus2, List, MapPin as MapPinIcon } from 'lucide-react'; // Added MapPinIcon
 import { useLocale } from '@/contexts/LocaleContext';
 import {
   Table,
@@ -46,6 +46,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils'; // Added cn
 
 interface HydroPoll {
   id: string;
@@ -89,6 +90,8 @@ export default function HydroPollsPage() {
   const { toast } = useToast();
   const iconSize = "h-3 w-3";
   const [isAddTemplateModalOpen, setIsAddTemplateModalOpen] = React.useState(false);
+  const [selectedPoll, setSelectedPoll] = React.useState<HydroPoll | null>(null);
+  const [isPollModalOpen, setIsPollModalOpen] = React.useState(false);
 
   const templateForm = useForm<PollTemplateFormData>({
     resolver: zodResolver(pollTemplateSchema),
@@ -112,11 +115,21 @@ export default function HydroPollsPage() {
     setIsAddTemplateModalOpen(false);
   };
 
-  const handlePollIdClick = (pollId: string) => {
-    toast({
-      title: t('maps_elements.poll_profile_not_implemented_title', 'Poll Profile (Not Implemented)'),
-      description: t('maps_elements.poll_profile_not_implemented_desc', 'Viewing profile for poll {id} is not yet available.').replace('{id}', pollId),
-    });
+  const handlePollIdClick = (poll: HydroPoll) => {
+    setSelectedPoll(poll);
+    setIsPollModalOpen(true);
+  };
+
+  const handleEditPoll = (pollId: string) => {
+    toast({ title: t('maps_elements.action_edit_poll', 'Edit Poll (Not Implemented)'), description: `Editing poll ${pollId} is not yet available.` });
+  };
+
+  const handleDeletePoll = (pollId: string) => {
+    toast({ title: t('maps_elements.action_delete_poll', 'Delete Poll (Not Implemented)'), description: `Deleting poll ${pollId} is not yet available.`, variant: 'destructive' });
+  };
+
+  const handleSeeInMap = (pollId: string) => {
+    toast({ title: t('maps_elements.action_see_in_map', 'See in Map (Not Implemented)'), description: `Showing poll ${pollId} on map is not yet available.` });
   };
 
   return (
@@ -278,7 +291,7 @@ export default function HydroPollsPage() {
                   {placeholderPolls.map((poll) => (
                     <TableRow key={poll.id}>
                       <TableCell className="font-mono text-muted-foreground text-xs text-center">
-                         <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => handlePollIdClick(poll.id)}>
+                         <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => handlePollIdClick(poll)}>
                             {poll.id}
                         </Button>
                       </TableCell>
@@ -305,6 +318,72 @@ export default function HydroPollsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Poll Profile Modal */}
+      <Dialog open={isPollModalOpen} onOpenChange={setIsPollModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-sm">{t('maps_elements.poll_profile_title', 'Poll Profile: {id}').replace('{id}', selectedPoll?.id || 'N/A')}</DialogTitle>
+            <DialogDescriptionComponent className="text-xs">{t('maps_elements.poll_profile_description', 'Details of the selected hydro poll.')}</DialogDescriptionComponent>
+          </DialogHeader>
+          {selectedPoll && (
+            <div className="grid gap-3 py-4 text-xs">
+              <div className="grid grid-cols-3 items-center gap-3">
+                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_id_label', 'ID')}:</span>
+                <span className="col-span-2 font-medium">{selectedPoll.id}</span>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-3">
+                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_description_label', 'Description')}:</span>
+                <span className="col-span-2">{selectedPoll.description}</span>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-3">
+                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_project_label', 'Project')}:</span>
+                <span className="col-span-2">{selectedPoll.project || '-'}</span>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-3">
+                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_height_label', 'Height')}:</span>
+                <span className="col-span-2">{selectedPoll.height}</span>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-3">
+                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_type_label', 'Type')}:</span>
+                <span className="col-span-2">{selectedPoll.type}</span>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-3">
+                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_address_label', 'Address')}:</span>
+                <span className="col-span-2">{selectedPoll.address}</span>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-3">
+                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_gps_label', 'GPS Coordinates')}:</span>
+                <span className="col-span-2">{selectedPoll.gpsCoordinates}</span>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-3">
+                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_transformer_label', 'Transformer')}:</span>
+                <span className="col-span-2">
+                  <Badge variant={selectedPoll.transformer === 'Yes' ? 'destructive' : 'default'} className={`text-xs ${selectedPoll.transformer === 'Yes' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                    {selectedPoll.transformer}
+                  </Badge>
+                </span>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="gap-2 sm:justify-end">
+            <Button variant="outline" size="sm" onClick={() => handleEditPoll(selectedPoll?.id || '')} disabled={!selectedPoll}>
+                <Edit className={`mr-2 ${iconSize}`} /> {t('maps_elements.action_edit_poll', 'Edit')}
+            </Button>
+            <Button variant="destructive" size="sm" onClick={() => handleDeletePoll(selectedPoll?.id || '')} disabled={!selectedPoll}>
+                <Trash2 className={`mr-2 ${iconSize}`} /> {t('maps_elements.action_delete_poll', 'Delete')}
+            </Button>
+            <Button variant="secondary" size="sm" onClick={() => handleSeeInMap(selectedPoll?.id || '')} disabled={!selectedPoll}>
+                <MapPinIcon className={`mr-2 ${iconSize}`} /> {t('maps_elements.action_see_in_map', 'See in Map')}
+            </Button>
+            <DialogClose asChild>
+              <Button type="button" variant="outline" size="sm">{t('maps_elements.poll_modal_close_button', 'Close')}</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
+
