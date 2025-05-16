@@ -1,10 +1,12 @@
+
 // src/app/maps/elements/fdhs/page.tsx
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image'; // Import next/image
 import { Card, CardContent } from "@/components/ui/card";
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Box, Edit, Trash2, FileText as FileTextIcon, Loader2, FilePlus2, List } from 'lucide-react';
+import { Box, Edit, Trash2, FileText as FileTextIcon, Loader2, FilePlus2, List, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import {
   Table,
@@ -22,6 +24,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription as DialogDescriptionComponent, // Aliasing for clarity
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
@@ -41,6 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Import Tabs components
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -55,12 +59,37 @@ interface Fdh {
   pon: string;
   status: 'Active' | 'Inactive';
   brand: string;
+  // Example client data for the modal, in a real app this would be fetched based on FDH ID
+  clients?: { id: string; name: string; lightLevelRx: string; lightLevelTx: string }[];
+  spliceLogs?: { id: string; date: string; technician: string; fiberA: string; fiberB: string; notes: string }[];
 }
 
 const placeholderFdhs: Fdh[] = [
-  { id: 'fdh-001', gpsCoordinates: '40.7128° N, 74.0060° W', type: 'Aerial', ports: 16, project: 'Downtown Expansion', pon: '1/1/1', status: 'Active', brand: 'Corning' },
-  { id: 'fdh-002', gpsCoordinates: '34.0522° N, 118.2437° W', type: 'Underground', ports: 32, project: 'Suburb Rollout', pon: '1/1/2', status: 'Active', brand: 'CommScope' },
-  { id: 'fdh-003', gpsCoordinates: '41.8781° N, 87.6298° W', type: 'Aerial', ports: 8, project: 'Industrial Park', pon: '1/2/1', status: 'Inactive', brand: 'Prysmian' },
+  { 
+    id: 'fdh-001', 
+    gpsCoordinates: '40.7128° N, 74.0060° W', 
+    type: 'Aerial', 
+    ports: 16, 
+    project: 'Downtown Expansion', 
+    pon: '1/1/1', 
+    status: 'Active', 
+    brand: 'Corning',
+    clients: Array.from({ length: 30 }, (_, i) => ({ id: `client-${i+1}`, name: `Client ${i+1} (FDH-001)`, lightLevelRx: `${-(18 + Math.random()*5).toFixed(1)} dBm`, lightLevelTx: `+${(2 + Math.random()).toFixed(1)} dBm`})),
+    spliceLogs: [{id: 'log-a1', date: '2024-07-10', technician: 'Jane Doe', fiberA: '1-Blue', fiberB: '2-Orange', notes: 'Initial connection for client A.'}]
+  },
+  { 
+    id: 'fdh-002', 
+    gpsCoordinates: '34.0522° N, 118.2437° W', 
+    type: 'Underground', 
+    ports: 32, 
+    project: 'Suburb Rollout', 
+    pon: '1/1/2', 
+    status: 'Active', 
+    brand: 'CommScope',
+    clients: Array.from({ length: 15 }, (_, i) => ({ id: `client-${i+100}`, name: `Business Customer ${i+1} (FDH-002)`, lightLevelRx: `${-(17 + Math.random()*3).toFixed(1)} dBm`, lightLevelTx: `+${(2.5 + Math.random()).toFixed(1)} dBm`})),
+    spliceLogs: [{id: 'log-b1', date: '2024-07-11', technician: 'John Smith', fiberA: '3-Green', fiberB: '4-Brown', notes: 'Network expansion splice.'}]
+  },
+  { id: 'fdh-003', gpsCoordinates: '41.8781° N, 87.6298° W', type: 'Aerial', ports: 8, project: 'Industrial Park', pon: '1/2/1', status: 'Inactive', brand: 'Prysmian', clients: [], spliceLogs: [] },
 ];
 
 const fdhTemplateSchema = z.object({
@@ -89,6 +118,14 @@ export default function FdhsPage() {
   const iconSize = "h-3 w-3";
   const [isAddTemplateModalOpen, setIsAddTemplateModalOpen] = React.useState(false);
 
+  // State for FDH Detail Modal
+  const [selectedFdh, setSelectedFdh] = React.useState<Fdh | null>(null);
+  const [isFdhModalOpen, setIsFdhModalOpen] = React.useState(false);
+  const [activeModalTab, setActiveModalTab] = React.useState('clients');
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const clientsPerPage = 24;
+
+
   const templateForm = useForm<FdhTemplateFormData>({
     resolver: zodResolver(fdhTemplateSchema),
     defaultValues: {
@@ -115,6 +152,24 @@ export default function FdhsPage() {
     setIsAddTemplateModalOpen(false);
   };
 
+  const handleFdhClick = (fdh: Fdh) => {
+    setSelectedFdh(fdh);
+    setActiveModalTab('clients'); 
+    setCurrentPage(1); 
+    setIsFdhModalOpen(true);
+  };
+
+  const paginatedClients = React.useMemo(() => {
+    if (!selectedFdh || !selectedFdh.clients) return [];
+    return selectedFdh.clients.slice((currentPage - 1) * clientsPerPage, currentPage * clientsPerPage);
+  }, [selectedFdh, currentPage, clientsPerPage]);
+
+  const totalClientPages = React.useMemo(() => {
+    if (!selectedFdh || !selectedFdh.clients) return 0;
+    return Math.ceil(selectedFdh.clients.length / clientsPerPage);
+  }, [selectedFdh, clientsPerPage]);
+
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
@@ -128,7 +183,7 @@ export default function FdhsPage() {
                     <FileTextIcon className={`mr-2 ${iconSize}`} /> {t('maps_elements.fdh_template_button', 'FDH Templates')}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-3xl">
+            <DialogContent className="sm:max-w-3xl"> {/* Increased width */}
                 <DialogHeader>
                     <DialogTitle className="text-sm">{t('maps_elements.fdh_manage_templates_title', 'Manage FDH Templates')}</DialogTitle>
                 </DialogHeader>
@@ -255,33 +310,37 @@ export default function FdhsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs">ID</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.fdh_table_header_gps', 'GPS Coordinates')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.fdh_table_header_type', 'Type')}</TableHead>
+                    <TableHead className="text-xs text-center">ID</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.fdh_table_header_gps', 'GPS Coordinates')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.fdh_table_header_type', 'Type')}</TableHead>
                     <TableHead className="text-xs text-center">{t('maps_elements.fdh_table_header_ports', 'Ports')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.table_header_project', 'Project')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.fdh_table_header_pon', 'PON')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.fdh_table_header_status', 'Status')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.fdh_table_header_brand', 'Brand')}</TableHead>
-                    <TableHead className="text-xs text-right">{t('maps_elements.project_table_header_actions', 'Actions')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.table_header_project', 'Project')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.fdh_table_header_pon', 'PON')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.fdh_table_header_status', 'Status')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.fdh_table_header_brand', 'Brand')}</TableHead>
+                    <TableHead className="text-xs text-right text-center">{t('maps_elements.project_table_header_actions', 'Actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {placeholderFdhs.map((fdh) => (
                     <TableRow key={fdh.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs">{fdh.id}</TableCell>
-                      <TableCell className="text-xs">{fdh.gpsCoordinates}</TableCell>
-                      <TableCell className="text-xs">{t(`maps_elements.fdh_type_${fdh.type.toLowerCase()}` as any, fdh.type)}</TableCell>
+                      <TableCell className="font-mono text-muted-foreground text-xs text-center">
+                        <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => handleFdhClick(fdh)}>
+                            {fdh.id}
+                        </Button>
+                      </TableCell>
+                      <TableCell className="text-xs text-center">{fdh.gpsCoordinates}</TableCell>
+                      <TableCell className="text-xs text-center">{t(`maps_elements.fdh_type_${fdh.type.toLowerCase()}` as any, fdh.type)}</TableCell>
                       <TableCell className="text-xs text-center">{fdh.ports}</TableCell>
-                      <TableCell className="text-xs">{fdh.project || '-'}</TableCell>
-                      <TableCell className="text-xs">{fdh.pon}</TableCell>
-                      <TableCell className="text-xs">
+                      <TableCell className="text-xs text-center">{fdh.project || '-'}</TableCell>
+                      <TableCell className="text-xs text-center">{fdh.pon}</TableCell>
+                      <TableCell className="text-xs text-center">
                         <Badge variant="outline" className={`text-xs ${getStatusBadgeVariant(fdh.status)} border-transparent`}>
                           {t(`maps_elements.fdh_status_${fdh.status.toLowerCase()}` as any, fdh.status)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-xs">{fdh.brand}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-xs text-center">{fdh.brand}</TableCell>
+                      <TableCell className="text-right text-center">
                         <Button variant="ghost" size="icon" className="h-7 w-7">
                           <Edit className={iconSize} />
                           <span className="sr-only">{t('maps_elements.action_edit_fdh', 'Edit FDH')}</span>
@@ -303,6 +362,122 @@ export default function FdhsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* FDH Detail Modal */}
+      <Dialog open={isFdhModalOpen} onOpenChange={setIsFdhModalOpen}>
+        <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-sm">
+                {t('maps_elements.fdh_modal_title', 'FDH Details: {id}').replace('{id}', selectedFdh?.id || 'N/A')}
+            </DialogTitle>
+            {selectedFdh && (
+              <DialogDescriptionComponent className="text-xs space-y-1 pt-2 border-b pb-3 mb-2">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
+                    <p><strong>{t('maps_elements.fdh_table_header_gps', 'GPS')}:</strong> {selectedFdh.gpsCoordinates}</p>
+                    <p><strong>{t('maps_elements.fdh_table_header_type', 'Type')}:</strong> {t(`maps_elements.fdh_type_${selectedFdh.type.toLowerCase()}` as any, selectedFdh.type)}</p>
+                    <p><strong>{t('maps_elements.fdh_table_header_ports', 'Ports')}:</strong> {selectedFdh.ports}</p>
+                    <p><strong>{t('maps_elements.fdh_table_header_brand', 'Brand')}:</strong> {selectedFdh.brand}</p>
+                    <p><strong>{t('maps_elements.table_header_project', 'Project')}:</strong> {selectedFdh.project || '-'}</p>
+                    <p><strong>{t('maps_elements.fdh_table_header_pon', 'PON')}:</strong> {selectedFdh.pon}</p>
+                    <p><strong>{t('maps_elements.fdh_table_header_status', 'Status')}:</strong>
+                        <Badge variant="outline" className={`ml-1 text-xs ${getStatusBadgeVariant(selectedFdh.status)} border-transparent`}>
+                        {t(`maps_elements.fdh_status_${selectedFdh.status.toLowerCase()}` as any, selectedFdh.status)}
+                        </Badge>
+                    </p>
+                </div>
+              </DialogDescriptionComponent>
+            )}
+          </DialogHeader>
+
+          <Tabs value={activeModalTab} onValueChange={setActiveModalTab} className="w-full flex-grow flex flex-col overflow-hidden">
+            <TabsList className="grid w-full grid-cols-3 shrink-0">
+              <TabsTrigger value="clients">{t('maps_elements.fdh_modal_tab_clients', 'Client List')}</TabsTrigger>
+              <TabsTrigger value="diagram">{t('maps_elements.fdh_modal_tab_diagram', 'Splice Diagram')}</TabsTrigger>
+              <TabsTrigger value="log">{t('maps_elements.fdh_modal_tab_log', 'Splice Log')}</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="clients" className="mt-2 flex-grow overflow-y-auto">
+              {selectedFdh?.clients && selectedFdh.clients.length > 0 ? (
+                <>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_client_name', 'Client Name')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_light_rx', 'Light RX')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_light_tx', 'Light TX')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paginatedClients.map(client => (
+                        <TableRow key={client.id}>
+                          <TableCell className="text-xs text-center">{client.name}</TableCell>
+                          <TableCell className="text-xs text-center">{client.lightLevelRx}</TableCell>
+                          <TableCell className="text-xs text-center">{client.lightLevelTx}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  {totalClientPages > 1 && (
+                    <div className="flex items-center justify-end space-x-2 py-3 border-t">
+                      <span className="text-xs text-muted-foreground">
+                        {t('maps_elements.fdh_modal_pagination_page', 'Page {currentPage} of {totalPages}').replace('{currentPage}', currentPage.toString()).replace('{totalPages}', totalClientPages.toString())}
+                      </span>
+                      <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
+                        <ChevronLeft className={iconSize} /> {t('maps_elements.fdh_modal_pagination_prev', 'Previous')}
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalClientPages, p + 1))} disabled={currentPage === totalClientPages}>
+                        {t('maps_elements.fdh_modal_pagination_next', 'Next')} <ChevronRight className={iconSize} />
+                      </Button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.fdh_modal_no_clients', 'No clients connected to this FDH.')}</p>
+              )}
+            </TabsContent>
+
+            <TabsContent value="diagram" className="mt-2 flex-grow flex justify-center items-center overflow-hidden">
+              <Image src="https://placehold.co/600x400.png" alt="Splice Diagram Placeholder" width={550} height={350} data-ai-hint="fiber splice diagram" className="object-contain" />
+            </TabsContent>
+
+            <TabsContent value="log" className="mt-2 flex-grow overflow-y-auto">
+             {selectedFdh?.spliceLogs && selectedFdh.spliceLogs.length > 0 ? (
+                <Table>
+                    <TableHeader>
+                    <TableRow>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_date', 'Date')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_technician', 'Technician')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_fiber_a', 'Fiber A')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_fiber_b', 'Fiber B')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_notes', 'Notes')}</TableHead>
+                    </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                    {selectedFdh.spliceLogs.map(log => (
+                        <TableRow key={log.id}>
+                        <TableCell className="text-xs text-center">{log.date}</TableCell>
+                        <TableCell className="text-xs text-center">{log.technician}</TableCell>
+                        <TableCell className="text-xs text-center">{log.fiberA}</TableCell>
+                        <TableCell className="text-xs text-center">{log.fiberB}</TableCell>
+                        <TableCell className="text-xs text-center">{log.notes}</TableCell>
+                        </TableRow>
+                    ))}
+                    </TableBody>
+                </Table>
+             ) : (
+                <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.fdh_modal_no_logs', 'No splice logs available for this FDH.')}</p>
+             )}
+            </TabsContent>
+          </Tabs>
+
+          <DialogFooter className="mt-auto pt-4 border-t">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">{t('maps_elements.fdh_modal_close_button', 'Close')}</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
