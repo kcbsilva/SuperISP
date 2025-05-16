@@ -23,7 +23,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle, // Ensure DialogTitle is imported
   DialogDescription as DialogDescriptionComponent, // Aliasing for clarity
   DialogTrigger,
   DialogClose,
@@ -49,7 +49,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface ClientInfo {
   id: string;
@@ -103,7 +103,7 @@ const placeholderFdhs: Fdh[] = [
     pon: '1/1/2',
     status: 'Active',
     brand: 'CommScope',
-    clients: Array.from({ length: 15 }, (_, i) => ({ port: i + 1, id: `client-${i+100}`, name: `Business ${i+1} (FDH-002)`, lightLevelRx: `${-(17 + Math.random()*3).toFixed(1)}dBm`, lightLevelTx: `+${(2.5 + Math.random()).toFixed(1)}dBm`})),
+    clients: Array.from({ length: 15 }, (_, i) => ({ port: i + 100, id: `client-${i+100}`, name: `Business ${i+1} (FDH-002)`, lightLevelRx: `${-(17 + Math.random()*3).toFixed(1)}dBm`, lightLevelTx: `+${(2.5 + Math.random()).toFixed(1)}dBm`})),
     spliceLogs: [{id: 'log-b1', date: '2024-07-11', technician: 'John Smith', fiberA: '3-Green', fiberB: '4-Brown', notes: 'Network expansion splice.'}]
   },
   { id: 'fdh-003', gpsCoordinates: '41.8781° N, 87.6298° W', type: 'Aerial', ports: 8, project: 'Industrial Park', pon: '1/2/1', status: 'Inactive', brand: 'Prysmian', clients: [], spliceLogs: [] },
@@ -384,6 +384,10 @@ export default function FdhsPage() {
       <Dialog open={isFdhModalOpen} onOpenChange={setIsFdhModalOpen}>
         <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl h-[80vh] flex flex-col">
           <DialogHeader className="relative p-4 border-b">
+             {/* Added DialogTitle for accessibility */}
+            <DialogTitle className="sr-only">
+                {t('maps_elements.fdh_modal_title', 'FDH Details: {id}').replace('{id}', selectedFdh?.id || 'N/A')}
+            </DialogTitle>
              <fieldset className="border border-border rounded-md p-4 pt-1">
                 <legend className="text-sm font-semibold px-2 flex items-center gap-2 -ml-2">
                     <Box className={`${modalIconSize} text-primary`} />
