@@ -170,7 +170,7 @@ const getSubscriberData = (id: string | string[] | undefined): Subscriber | null
     history: [],
   };
 
-  if (id === 'sub-1' || id === '1') {
+  if (id === '1') { // Changed from 'sub-1' to match common ID format
     baseData.id = 1;
     baseData.subscriberType = 'Residential';
     baseData.fullName = 'Alice Wonderland';
@@ -196,7 +196,7 @@ const getSubscriberData = (id: string | string[] | undefined): Subscriber | null
     baseData.billing.promisesToPay = [
       { id: 'ptp-alice-01', promiseDate: '2024-08-25', amount: 50.00, status: 'Pending' },
     ];
-  } else if (id === 'sub-2' || id === '2') {
+  } else if (id === '2') { // Changed from 'sub-2'
     baseData.id = 2;
     baseData.subscriberType = 'Commercial';
     baseData.companyName = 'Bob The Builder Inc.';
@@ -617,36 +617,39 @@ export default function SubscriberProfilePage() {
         <TabsContent value="overview">
           <Card>
             <CardContent className="space-y-6 pt-6">
-              <OverviewSection
-                titleKey="subscriber_profile.personal_info_section"
-                icon={subscriber.subscriberType === 'Residential' ? User : Briefcase}
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                  <OverviewDetailItem icon={User} labelKey="subscriber_profile.overview_name" value={subscriber.subscriberType === 'Residential' ? subscriber.fullName : subscriber.companyName} />
-                  {subscriber.subscriberType === 'Residential' && subscriber.birthday && (
-                    <OverviewDetailItem icon={CalendarDays} labelKey="subscriber_profile.overview_birthday" value={subscriber.birthday} />
-                  )}
-                  {subscriber.subscriberType === 'Commercial' && subscriber.establishedDate && (
-                    <OverviewDetailItem icon={CalendarDays} labelKey="subscriber_profile.overview_established_date" value={subscriber.establishedDate} />
-                  )}
-                  <OverviewDetailItem icon={Fingerprint} labelKey={subscriber.subscriberType === 'Residential' ? 'subscriber_profile.overview_tax_id' : 'subscriber_profile.overview_business_number'} value={subscriber.subscriberType === 'Residential' ? subscriber.taxId : subscriber.businessNumber} />
-                  <OverviewDetailItem icon={Fingerprint} labelKey="subscriber_profile.overview_id_number" value={(subscriber as any).idNumber} />
-                  <OverviewDetailItem icon={CalendarDays} labelKey="subscriber_profile.overview_signup_date" value={subscriber.signupDate} />
-                </div>
-              </OverviewSection>
+              <div className="grid md:grid-cols-2 gap-6"> {/* Parent grid for Personal and Contact Info */}
+                <OverviewSection
+                  titleKey="subscriber_profile.personal_info_section"
+                  icon={subscriber.subscriberType === 'Residential' ? User : Briefcase}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <OverviewDetailItem icon={User} labelKey="subscriber_profile.overview_name" value={subscriber.subscriberType === 'Residential' ? subscriber.fullName : subscriber.companyName} />
+                    {subscriber.subscriberType === 'Residential' && subscriber.birthday && (
+                      <OverviewDetailItem icon={CalendarDays} labelKey="subscriber_profile.overview_birthday" value={subscriber.birthday} />
+                    )}
+                    {subscriber.subscriberType === 'Commercial' && subscriber.establishedDate && (
+                      <OverviewDetailItem icon={CalendarDays} labelKey="subscriber_profile.overview_established_date" value={subscriber.establishedDate} />
+                    )}
+                    <OverviewDetailItem icon={Fingerprint} labelKey={subscriber.subscriberType === 'Residential' ? 'subscriber_profile.overview_tax_id' : 'subscriber_profile.overview_business_number'} value={subscriber.subscriberType === 'Residential' ? subscriber.taxId : subscriber.businessNumber} />
+                    <OverviewDetailItem icon={Fingerprint} labelKey="subscriber_profile.overview_id_number" value={(subscriber as any).idNumber} />
+                    <OverviewDetailItem icon={CalendarDays} labelKey="subscriber_profile.overview_signup_date" value={subscriber.signupDate} />
+                  </div>
+                </OverviewSection>
 
+                <OverviewSection titleKey="subscriber_profile.contact_info_section" icon={PhoneCall}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <OverviewDetailItem icon={PhoneCall} labelKey="subscriber_profile.overview_phone" value={subscriber.phoneNumber} />
+                    {subscriber.mobileNumber && <OverviewDetailItem icon={Smartphone} labelKey="subscriber_profile.overview_landline" value={subscriber.mobileNumber} />}
+                    <OverviewDetailItem icon={Mail} labelKey="subscriber_profile.overview_email" value={subscriber.email} />
+                  </div>
+                </OverviewSection>
+              </div>
+
+              {/* Address section now below the two-column layout */}
               <OverviewSection titleKey="subscriber_profile.address_section" icon={MapPinIcon}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <OverviewDetailItem icon={Home} labelKey="subscriber_profile.overview_address" value={subscriber.address} />
                   <OverviewDetailItem icon={Landmark} labelKey="subscriber_profile.overview_point_of_reference" value={subscriber.pointOfReference} />
-                </div>
-              </OverviewSection>
-
-              <OverviewSection titleKey="subscriber_profile.contact_info_section" icon={PhoneCall}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                  <OverviewDetailItem icon={PhoneCall} labelKey="subscriber_profile.overview_phone" value={subscriber.phoneNumber} />
-                  {subscriber.mobileNumber && <OverviewDetailItem icon={Smartphone} labelKey="subscriber_profile.overview_landline" value={subscriber.mobileNumber} />}
-                  <OverviewDetailItem icon={Mail} labelKey="subscriber_profile.overview_email" value={subscriber.email} />
                 </div>
               </OverviewSection>
             </CardContent>
@@ -715,7 +718,7 @@ export default function SubscriberProfilePage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleServiceAction('sign_contract', service.id)}>{t('subscriber_profile.service_action_sign')}</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleServiceAction('cancel_contract', service.id)}>{t('subscriber_profile.service_action_cancel')}</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service.id)}>{t('subscriber_profile.service_action_transfer_contract')}</DropdownMenuItem>
+                         <DropdownMenuItem onClick={() => handleServiceAction('transfer_contract', service.id)}>{t('subscriber_profile.service_action_transfer_contract')}</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => handleServiceAction('print_service_contract', service.id)}>{t('subscriber_profile.service_action_print_service_contract')}</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleServiceAction('print_responsibility_term', service.id)}>{t('subscriber_profile.service_action_print_responsibility_term')}</DropdownMenuItem>
