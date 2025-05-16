@@ -59,7 +59,6 @@ import {
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
 import { SiReactrouter } from "react-icons/si";
-// Removed direct SVG import: import ProlterLogoSvg from '@/app/assets/prolter-logo.svg';
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -87,6 +86,7 @@ import { LocaleProvider, useLocale, type Locale as AppLocale } from '@/contexts/
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 import { useIsMobile } from '@/hooks/use-mobile';
 
+
 // Inlined ProlterLogo component
 const ProlterLogo = () => {
   const { theme } = useTheme();
@@ -104,34 +104,26 @@ const ProlterLogo = () => {
     return <div style={{ width: '131px', height: '32px' }} />;
   }
 
-  // **IMPORTANT:** Replace the content of this <svg> with your actual prolter-logo.svg code.
-  // Ensure paths/shapes you want themed use fill="currentColor" or stroke="currentColor".
   return (
     <div style={{ width: '131px', height: '32px', color: fillColor }} className="flex items-center justify-center">
       <svg
         width="100%"
         height="100%"
-        viewBox="0 0 131 32" // Keep your original viewBox
+        viewBox="0 0 131 32"
         xmlns="http://www.w3.org/2000/svg"
-        // Remove fill from here if you want child elements to use currentColor based on the parent div's color
       >
-        {/* Placeholder Text - REPLACE THIS with your SVG's <path>, <rect>, etc. elements */}
-        {/* Make sure to use fill="currentColor" or stroke="currentColor" on elements to be themed */}
         <text
           x="50%"
           y="50%"
           fontFamily="Arial, sans-serif"
-          fontSize="20" // Adjust as needed
+          fontSize="20"
           fontWeight="bold"
           textAnchor="middle"
           dominantBaseline="middle"
-          fill="currentColor" // This will inherit from the parent div's 'color' style
+          fill="currentColor"
         >
           PROLTER
         </text>
-        {/* Example of a path that would use currentColor:
-        <path d="M10 10 H 90 V 90 H 10 Z" fill="currentColor" />
-        */}
       </svg>
     </div>
   );
@@ -158,19 +150,19 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     if (pathname) {
       setIsLoading(true);
-      setProgress(20);
+      setProgress(20); 
 
       const timer = setTimeout(() => {
         setProgress(90);
-      }, 50);
+      }, 30); 
       const finishTimer = setTimeout(() => {
         setProgress(100);
         const hideTimer = setTimeout(() => {
           setIsLoading(false);
           setProgress(0);
-        }, 200);
+        }, 150); 
         return () => clearTimeout(hideTimer);
-      }, 200);
+      }, 150);
 
       return () => {
         clearTimeout(timer);
@@ -199,6 +191,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <ProlterLogo />
           </Link>
         </SidebarHeader>
+        {/* Removed SidebarSeparator from here */}
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -348,6 +341,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                       <span className="truncate">{t('sidebar.finances_entry_categories')}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton href="/settings/finances/configurations" isActive={isActive('/settings/finances/configurations')} size="sm">
+                      <SlidersHorizontal className={`${iconSize} text-muted-foreground`} />
+                      <span className="truncate">{t('sidebar.finances_config')}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                 </SidebarMenuSubContent>
               </SidebarMenuSub>
             </SidebarMenuItem>
@@ -399,7 +398,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuSubContent>
               </SidebarMenuSub>
             </SidebarMenuItem>
-
+            
             <SidebarMenuItem>
               <SidebarMenuSub defaultOpen={isActive('/service-calls')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.service_calls')} isActive={isActive('/service-calls')}>
@@ -563,12 +562,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuSub>
                   </SidebarMenuItem>
                   <SidebarMenuItem>
-                    <SidebarMenuButton href="/settings/finances/configurations" isActive={isActive('/settings/finances/configurations')} size="sm">
-                      <SlidersHorizontal className={`${iconSize} text-muted-foreground`} />
-                      <span className="truncate">{t('sidebar.finances_config')}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
                     <SidebarMenuButton href="/settings/security" isActive={isActive('/settings/security')} size="sm">
                       <ShieldCheck className={`${iconSize} text-muted-foreground`} />
                       <span className="truncate">{t('sidebar.security')}</span>
@@ -647,7 +640,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuSubContent>
               </SidebarMenuSub>
             </SidebarMenuItem>
-
+            
+            {/* Separator and Additional Links */}
+            <SidebarSeparator />
             <SidebarMenuItem>
               <SidebarMenuButton href="/pilotview" isActive={isActive('/pilotview')} tooltip={t('sidebar.pilotview')}>
                 <TbDeviceImacStar className={iconSize} />
@@ -668,16 +663,18 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 <span className="truncate">{t('sidebar.zones')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
+            {/* Removed second separator */}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
+          {/* Footer content if any */}
         </SidebarFooter>
       </Sidebar>
       <div className="flex flex-col flex-1 overflow-hidden">
         {!isMapPage && <AppHeader onToggleSidebar={toggleMobileSidebar} />}
         <SidebarInset noMargin={isMapPage}>
           <div className="fixed top-0 left-[var(--sidebar-width)] w-[calc(100%-var(--sidebar-width))] h-1 z-50">
-            {isLoading && <Progress value={progress} className="w-full h-full rounded-none bg-transparent [&>div]:bg-accent" />}
+            {isLoading && <Progress value={progress} indicatorClassName="bg-accent" className="w-full h-full rounded-none bg-transparent" />}
           </div>
           <div className={isMapPage ? "p-0 h-full" : "p-2 h-[calc(100%-theme(space.12))] overflow-y-auto"}>
             {children}
@@ -709,7 +706,7 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <LocaleProvider>
               <TooltipProvider delayDuration={0}>
-                <SidebarProvider side="left" collapsible="none">
+                <SidebarProvider side="left" collapsible="none"> {/* Ensures sidebar is not collapsible */}
                   <AppLayout>{children}</AppLayout>
                 </SidebarProvider>
               </TooltipProvider>
