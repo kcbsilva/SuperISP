@@ -1,3 +1,4 @@
+
 // src/app/layout.tsx
 'use client';
 
@@ -49,16 +50,16 @@ import {
   ListTree,
   Menu as MenuIcon,
   Dot,
-  BookOpen, // Added BookOpen
-  SlidersHorizontal, // Added SlidersHorizontal
-  Briefcase, // Added Briefcase
-  Building, // Added Building
-  Cog, // Added Cog
+  BookOpen,
+  SlidersHorizontal,
+  Briefcase,
+  Building,
+  Cog,
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
 import { SiReactrouter } from "react-icons/si";
-import ProlterLogoSvg from '@/app/assets/prolter-logo.svg'; // Import the SVG as a React component
+// Removed direct SVG import: import ProlterLogoSvg from '@/app/assets/prolter-logo.svg';
 
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -86,6 +87,7 @@ import { LocaleProvider, useLocale, type Locale as AppLocale } from '@/contexts/
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 import { useIsMobile } from '@/hooks/use-mobile';
 
+// Inlined ProlterLogo component
 const ProlterLogo = () => {
   const { theme } = useTheme();
   const [isMounted, setIsMounted] = React.useState(false);
@@ -94,6 +96,7 @@ const ProlterLogo = () => {
     setIsMounted(true);
   }, []);
 
+  // Determine fill color based on theme
   const fillColor = !isMounted ? 'hsl(var(--card-foreground))' : (theme === 'dark' ? 'hsl(var(--accent))' : '#14213D');
 
   if (!isMounted) {
@@ -101,9 +104,35 @@ const ProlterLogo = () => {
     return <div style={{ width: '131px', height: '32px' }} />;
   }
 
+  // **IMPORTANT:** Replace the content of this <svg> with your actual prolter-logo.svg code.
+  // Ensure paths/shapes you want themed use fill="currentColor" or stroke="currentColor".
   return (
-    <div style={{ width: '131px', height: '32px' }} className="flex items-center justify-center">
-      <ProlterLogoSvg fill={fillColor} width="100%" height="100%" />
+    <div style={{ width: '131px', height: '32px', color: fillColor }} className="flex items-center justify-center">
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 131 32" // Keep your original viewBox
+        xmlns="http://www.w3.org/2000/svg"
+        // Remove fill from here if you want child elements to use currentColor based on the parent div's color
+      >
+        {/* Placeholder Text - REPLACE THIS with your SVG's <path>, <rect>, etc. elements */}
+        {/* Make sure to use fill="currentColor" or stroke="currentColor" on elements to be themed */}
+        <text
+          x="50%"
+          y="50%"
+          fontFamily="Arial, sans-serif"
+          fontSize="20" // Adjust as needed
+          fontWeight="bold"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="currentColor" // This will inherit from the parent div's 'color' style
+        >
+          PROLTER
+        </text>
+        {/* Example of a path that would use currentColor:
+        <path d="M10 10 H 90 V 90 H 10 Z" fill="currentColor" />
+        */}
+      </svg>
     </div>
   );
 };
@@ -129,19 +158,19 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     if (pathname) {
       setIsLoading(true);
-      setProgress(20); 
+      setProgress(20);
 
       const timer = setTimeout(() => {
         setProgress(90);
-      }, 50); 
+      }, 50);
       const finishTimer = setTimeout(() => {
         setProgress(100);
         const hideTimer = setTimeout(() => {
           setIsLoading(false);
           setProgress(0);
-        }, 200); 
+        }, 200);
         return () => clearTimeout(hideTimer);
-      }, 200); 
+      }, 200);
 
       return () => {
         clearTimeout(timer);
@@ -158,8 +187,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     return cleanPathname.startsWith(cleanHref);
   };
 
-  const isMapPage = pathname === '/maps/map';
   const iconSize = "h-3 w-3";
+  const isMapPage = pathname === '/maps/map';
+
 
   return (
     <div className="flex h-screen">
@@ -178,7 +208,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
 
-            {/* Subscribers Menu - Direct Link */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/subscribers/list" isActive={isActive('/subscribers/list')} tooltip={t('sidebar.subscribers')}>
                 <Users className={iconSize} />
@@ -186,7 +215,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
 
-            {/* Maps Menu */}
             <SidebarMenuItem>
               <SidebarMenuSub defaultOpen={isActive('/maps')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.maps')} isActive={isActive('/maps')}>
@@ -270,7 +298,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuSub>
             </SidebarMenuItem>
 
-            {/* FTTx Menu */}
             <SidebarMenuItem>
               <SidebarMenuSub defaultOpen={isActive('/fttx')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.fttx')} isActive={isActive('/fttx')}>
@@ -301,7 +328,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuSub>
             </SidebarMenuItem>
 
-            {/* Finances Menu */}
             <SidebarMenuItem>
               <SidebarMenuSub defaultOpen={isActive('/finances')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.finances')} isActive={isActive('/finances')}>
@@ -326,7 +352,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuSub>
             </SidebarMenuItem>
 
-            {/* Inventory Menu */}
             <SidebarMenuItem>
               <SidebarMenuSub defaultOpen={isActive('/inventory')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.inventory')} isActive={isActive('/inventory')}>
@@ -375,7 +400,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuSub>
             </SidebarMenuItem>
 
-            {/* Service Calls Menu */}
             <SidebarMenuItem>
               <SidebarMenuSub defaultOpen={isActive('/service-calls')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.service_calls')} isActive={isActive('/service-calls')}>
@@ -400,7 +424,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuSub>
             </SidebarMenuItem>
 
-            {/* Reports */}
             <SidebarMenuItem>
               <SidebarMenuButton href="/reports" isActive={isActive('/reports')} tooltip={t('sidebar.reports')}>
                 <BarChart3 className={iconSize} />
@@ -408,7 +431,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
 
-            {/* HR Menu */}
             <SidebarMenuItem>
               <SidebarMenuSub defaultOpen={isActive('/hr')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.hr')} isActive={isActive('/hr')}>
@@ -427,7 +449,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuSub>
             </SidebarMenuItem>
 
-            {/* Settings Menu */}
             <SidebarMenuItem>
               <SidebarMenuSub defaultOpen={isActive('/settings')}>
                 <SidebarMenuSubTrigger tooltip={t('sidebar.settings')} isActive={isActive('/settings')}>
@@ -627,8 +648,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuSub>
             </SidebarMenuItem>
 
-            <SidebarSeparator />
-
             <SidebarMenuItem>
               <SidebarMenuButton href="/pilotview" isActive={isActive('/pilotview')} tooltip={t('sidebar.pilotview')}>
                 <TbDeviceImacStar className={iconSize} />
@@ -652,10 +671,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-          {/* Footer content can be added here if needed */}
         </SidebarFooter>
       </Sidebar>
-        
       <div className="flex flex-col flex-1 overflow-hidden">
         {!isMapPage && <AppHeader onToggleSidebar={toggleMobileSidebar} />}
         <SidebarInset noMargin={isMapPage}>
@@ -703,3 +720,4 @@ export default function RootLayout({
     </html>
   );
 }
+    
