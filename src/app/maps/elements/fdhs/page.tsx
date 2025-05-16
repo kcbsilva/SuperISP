@@ -1,12 +1,11 @@
-
 // src/app/maps/elements/fdhs/page.tsx
 'use client';
 
 import * as React from 'react';
-import Image from 'next/image'; // Import next/image
+import Image from 'next/image';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Box, Edit, Trash2, FileText as FileTextIcon, Loader2, FilePlus2, List, ChevronLeft, ChevronRight, Users2, GitMerge, ListChecks } from 'lucide-react';
+import { Box, Edit, Trash2, FileText as FileTextIcon, Loader2, FilePlus2, List, ChevronLeft, ChevronRight, Users2, GitMerge, ListChecks, Cable, AlertTriangle } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import {
   Table,
@@ -23,8 +22,8 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle, // Ensure DialogTitle is imported
-  DialogDescription as DialogDescriptionComponent, // Aliasing for clarity
+  DialogTitle,
+  DialogDescription as DialogDescriptionComponent,
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
@@ -44,7 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Import Tabs components
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -56,29 +55,54 @@ interface ClientInfo {
   name: string;
   lightLevelRx: string;
   lightLevelTx: string;
-  port: number; // Port number this client is connected to
+  port: number;
 }
 
 interface SpliceLogEntry {
   id: string;
   date: string;
   technician: string;
-  fiberA: string;
-  fiberB: string;
-  notes: string;
+  tubeIdA: string;
+  fiberNumberA: string;
+  tubeIdB: string;
+  fiberNumberB: string;
+  tray: string;
+  slot: string;
+  description: string;
+}
+
+interface CableInfo {
+  id: string;
+  cableNumber: string;
+  serialNumber?: string;
+  count: string; // e.g., "12F", "24F"
+  manufacturer: string;
+  description: string;
+  tubeIds: string; // e.g., "1-4" or "Blue, Orange"
+  meterMark?: string;
+}
+
+interface FdhHistoryEntry {
+  id: string;
+  date: string;
+  user: string;
+  action: string;
+  details?: string;
 }
 
 interface Fdh {
   id: string;
   gpsCoordinates: string;
   type: 'Aerial' | 'Underground';
-  ports: number; // Total number of ports
+  ports: number;
   project?: string;
   pon: string;
   status: 'Active' | 'Inactive';
   brand: string;
   clients?: ClientInfo[];
   spliceLogs?: SpliceLogEntry[];
+  cableInfo?: CableInfo[];
+  history?: FdhHistoryEntry[];
 }
 
 const placeholderFdhs: Fdh[] = [
@@ -92,7 +116,9 @@ const placeholderFdhs: Fdh[] = [
     status: 'Active',
     brand: 'Corning',
     clients: Array.from({ length: 8 }, (_, i) => ({ port: i + 1, id: `client-${i+1}`, name: `Client ${i+1} (FDH-001)`, lightLevelRx: `${-(18 + Math.random()*5).toFixed(1)}dBm`, lightLevelTx: `+${(2 + Math.random()).toFixed(1)}dBm`})),
-    spliceLogs: [{id: 'log-a1', date: '2024-07-10', technician: 'Jane Doe', fiberA: '1-Blue', fiberB: '2-Orange', notes: 'Initial connection for client A.'}]
+    spliceLogs: [{id: 'log-a1', date: '2024-07-10', technician: 'Jane Doe', tubeIdA: 'Tube 1', fiberNumberA: 'Blue', tubeIdB: 'Tube 2', fiberNumberB: 'Orange', tray: '1A', slot: 'S1', description: 'Initial connection for client A.'}],
+    cableInfo: [{id: 'cable-1', cableNumber: 'CB-001', serialNumber: 'SN-CB-001', count: '12F', manufacturer: 'Corning', description: 'Main feeder cable', tubeIds: '1-4', meterMark: '150m'}],
+    history: [{id: 'hist-1', date: '2024-07-01', user: 'Admin', action: 'Created FDH'}]
   },
   {
     id: 'fdh-002',
@@ -104,9 +130,8 @@ const placeholderFdhs: Fdh[] = [
     status: 'Active',
     brand: 'CommScope',
     clients: Array.from({ length: 15 }, (_, i) => ({ port: i + 100, id: `client-${i+100}`, name: `Business ${i+1} (FDH-002)`, lightLevelRx: `${-(17 + Math.random()*3).toFixed(1)}dBm`, lightLevelTx: `+${(2.5 + Math.random()).toFixed(1)}dBm`})),
-    spliceLogs: [{id: 'log-b1', date: '2024-07-11', technician: 'John Smith', fiberA: '3-Green', fiberB: '4-Brown', notes: 'Network expansion splice.'}]
   },
-  { id: 'fdh-003', gpsCoordinates: '41.8781° N, 87.6298° W', type: 'Aerial', ports: 8, project: 'Industrial Park', pon: '1/2/1', status: 'Inactive', brand: 'Prysmian', clients: [], spliceLogs: [] },
+  { id: 'fdh-003', gpsCoordinates: '41.8781° N, 87.6298° W', type: 'Aerial', ports: 8, project: 'Industrial Park', pon: '1/2/1', status: 'Inactive', brand: 'Prysmian', clients: [] },
 ];
 
 const fdhTemplateSchema = z.object({
@@ -138,7 +163,7 @@ export default function FdhsPage() {
 
   const [selectedFdh, setSelectedFdh] = React.useState<Fdh | null>(null);
   const [isFdhModalOpen, setIsFdhModalOpen] = React.useState(false);
-  const [activeModalTab, setActiveModalTab] = React.useState('clients');
+  const [activeModalTab, setActiveModalTab] = React.useState('port-list'); // Changed from clients to port-list
   const [currentPage, setCurrentPage] = React.useState(1);
   const portsPerPage = 24;
 
@@ -171,7 +196,7 @@ export default function FdhsPage() {
 
   const handleFdhClick = (fdh: Fdh) => {
     setSelectedFdh(fdh);
-    setActiveModalTab('clients');
+    setActiveModalTab('port-list'); // Changed from clients to port-list
     setCurrentPage(1);
     setIsFdhModalOpen(true);
   };
@@ -336,7 +361,6 @@ export default function FdhsPage() {
                     <TableHead className="text-xs text-center">{t('maps_elements.fdh_table_header_pon', 'PON')}</TableHead>
                     <TableHead className="text-xs text-center">{t('maps_elements.fdh_table_header_status', 'Status')}</TableHead>
                     <TableHead className="text-xs text-center">{t('maps_elements.fdh_table_header_brand', 'Brand')}</TableHead>
-                    <TableHead className="text-xs text-right text-center">{t('maps_elements.project_table_header_actions', 'Actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -358,16 +382,6 @@ export default function FdhsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-xs text-center">{fdh.brand}</TableCell>
-                      <TableCell className="text-right text-center">
-                        <Button variant="ghost" size="icon" className="h-7 w-7">
-                          <Edit className={iconSize} />
-                          <span className="sr-only">{t('maps_elements.action_edit_fdh', 'Edit FDH')}</span>
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive">
-                          <Trash2 className={iconSize} />
-                          <span className="sr-only">{t('maps_elements.action_delete_fdh', 'Delete FDH')}</span>
-                        </Button>
-                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -384,7 +398,6 @@ export default function FdhsPage() {
       <Dialog open={isFdhModalOpen} onOpenChange={setIsFdhModalOpen}>
         <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl h-[80vh] flex flex-col">
           <DialogHeader className="relative p-4 border-b">
-             {/* Added DialogTitle for accessibility */}
             <DialogTitle className="sr-only">
                 {t('maps_elements.fdh_modal_title', 'FDH Details: {id}').replace('{id}', selectedFdh?.id || 'N/A')}
             </DialogTitle>
@@ -412,13 +425,15 @@ export default function FdhsPage() {
           </DialogHeader>
 
           <Tabs value={activeModalTab} onValueChange={setActiveModalTab} className="w-full flex-grow flex flex-col overflow-hidden">
-            <TabsList className="grid w-full grid-cols-3 shrink-0">
-              <TabsTrigger value="clients"><Users2 className={`mr-1.5 ${modalIconSize}`} />{t('maps_elements.fdh_modal_tab_clients', 'Client List')}</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-5 shrink-0"> {/* Updated to 5 columns */}
+              <TabsTrigger value="port-list"><Users2 className={`mr-1.5 ${modalIconSize}`} />{t('maps_elements.fdh_modal_tab_port_list', 'Port List')}</TabsTrigger>
+              <TabsTrigger value="cable-info"><Cable className={`mr-1.5 ${modalIconSize}`} />{t('maps_elements.fdh_modal_tab_cable_info', 'Cable Info')}</TabsTrigger>
               <TabsTrigger value="diagram"><GitMerge className={`mr-1.5 ${modalIconSize}`} />{t('maps_elements.fdh_modal_tab_diagram', 'Splice Diagram')}</TabsTrigger>
               <TabsTrigger value="log"><ListChecks className={`mr-1.5 ${modalIconSize}`} />{t('maps_elements.fdh_modal_tab_log', 'Splice Log')}</TabsTrigger>
+              <TabsTrigger value="history"><AlertTriangle className={`mr-1.5 ${modalIconSize}`} />{t('maps_elements.fdh_modal_tab_history', 'History')}</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="clients" className="mt-2 flex-grow overflow-y-auto">
+            <TabsContent value="port-list" className="mt-2 flex-grow overflow-y-auto">
               {selectedFdh && paginatedPorts.length > 0 ? (
                 <>
                   <Table>
@@ -435,7 +450,7 @@ export default function FdhsPage() {
                         return (
                           <TableRow key={`port-${portNumber}`}>
                             <TableCell className="text-xs text-center">{portNumber}</TableCell>
-                            <TableCell className="text-xs text-center">{client ? client.name : t('maps_elements.fdh_modal_port_empty', 'None')}</TableCell>
+                            <TableCell className="text-xs text-center">{client ? client.name : t('maps_elements.fdh_modal_port_free', 'Free')}</TableCell>
                             <TableCell className="text-xs text-center">{client ? `${client.lightLevelRx} / ${client.lightLevelTx}` : '-'}</TableCell>
                           </TableRow>
                         );
@@ -461,6 +476,39 @@ export default function FdhsPage() {
               )}
             </TabsContent>
 
+            <TabsContent value="cable-info" className="mt-2 flex-grow overflow-y-auto">
+              {selectedFdh?.cableInfo && selectedFdh.cableInfo.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_cable_info_number', '#')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_cable_info_serial', 'Serial #')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_cable_info_count', 'Count')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_cable_info_manufacturer', 'Manufacturer')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_cable_info_description', 'Description')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_cable_info_tube_ids', 'Tube IDs')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_cable_info_meter_mark', 'Meter Mark')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {selectedFdh.cableInfo.map(cable => (
+                      <TableRow key={cable.id}>
+                        <TableCell className="text-xs text-center">{cable.cableNumber}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.serialNumber || '-'}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.count}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.manufacturer}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.description}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.tubeIds}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.meterMark || '-'}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                 <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.fdh_modal_no_cable_info', 'No cable information available for this FDH.')}</p>
+              )}
+            </TabsContent>
+
             <TabsContent value="diagram" className="mt-2 flex-grow flex justify-center items-center overflow-hidden">
               <Image src="https://placehold.co/600x400.png" alt="Splice Diagram Placeholder" width={550} height={350} data-ai-hint="fiber splice diagram" className="object-contain" />
             </TabsContent>
@@ -472,9 +520,13 @@ export default function FdhsPage() {
                     <TableRow>
                         <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_date', 'Date')}</TableHead>
                         <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_technician', 'Technician')}</TableHead>
-                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_fiber_a', 'Fiber A')}</TableHead>
-                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_fiber_b', 'Fiber B')}</TableHead>
-                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_notes', 'Notes')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_tube_a', 'Tube ID (A)')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_fiber_a', 'Fiber # (A)')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_tube_b', 'Tube ID (B)')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_fiber_b', 'Fiber # (B)')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_tray', 'Tray')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_slot', 'Slot')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_notes', 'Description')}</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -482,9 +534,13 @@ export default function FdhsPage() {
                         <TableRow key={log.id}>
                         <TableCell className="text-xs text-center">{log.date}</TableCell>
                         <TableCell className="text-xs text-center">{log.technician}</TableCell>
-                        <TableCell className="text-xs text-center">{log.fiberA}</TableCell>
-                        <TableCell className="text-xs text-center">{log.fiberB}</TableCell>
-                        <TableCell className="text-xs text-center">{log.notes}</TableCell>
+                        <TableCell className="text-xs text-center">{log.tubeIdA}</TableCell>
+                        <TableCell className="text-xs text-center">{log.fiberNumberA}</TableCell>
+                        <TableCell className="text-xs text-center">{log.tubeIdB}</TableCell>
+                        <TableCell className="text-xs text-center">{log.fiberNumberB}</TableCell>
+                        <TableCell className="text-xs text-center">{log.tray}</TableCell>
+                        <TableCell className="text-xs text-center">{log.slot}</TableCell>
+                        <TableCell className="text-xs text-center">{log.description}</TableCell>
                         </TableRow>
                     ))}
                     </TableBody>
@@ -492,6 +548,33 @@ export default function FdhsPage() {
              ) : (
                 <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.fdh_modal_no_logs', 'No splice logs available for this FDH.')}</p>
              )}
+            </TabsContent>
+
+            <TabsContent value="history" className="mt-2 flex-grow overflow-y-auto">
+               {selectedFdh?.history && selectedFdh.history.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_history_date', 'Date')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_history_user', 'User')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_history_action', 'Action')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_history_details', 'Details')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {selectedFdh.history.map(entry => (
+                      <TableRow key={entry.id}>
+                        <TableCell className="text-xs text-center">{entry.date}</TableCell>
+                        <TableCell className="text-xs text-center">{entry.user}</TableCell>
+                        <TableCell className="text-xs text-center">{entry.action}</TableCell>
+                        <TableCell className="text-xs text-center">{entry.details || '-'}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.fdh_modal_no_history', 'No history available for this FDH.')}</p>
+              )}
             </TabsContent>
           </Tabs>
 
@@ -506,4 +589,3 @@ export default function FdhsPage() {
     </div>
   );
 }
-

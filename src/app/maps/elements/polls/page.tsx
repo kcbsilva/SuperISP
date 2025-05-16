@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent } from "@/components/ui/card"; // Removed CardHeader
+import { Card, CardContent } from "@/components/ui/card";
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Power, Edit, Trash2, FileText as FileTextIcon, Loader2, FilePlus2, List } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -42,16 +42,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle as AlertDialogTitleComponent, // Renamed to avoid conflict
-} from "@/components/ui/alert-dialog";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -75,7 +65,7 @@ const placeholderPolls: HydroPoll[] = [
 
 const pollTemplateSchema = z.object({
   manufacturer: z.string().optional(),
-  material: z.string().min(1, "Material is required."), // e.g., Concrete, Wood, Steel
+  material: z.string().min(1, "Material is required."),
   height: z.string().min(1, "Height description is required (e.g., 12m Concrete Pole)."),
   type: z.enum(['Circular', 'Square'], { required_error: "Poll type is required."}),
 });
@@ -120,6 +110,13 @@ export default function HydroPollsPage() {
     });
     templateForm.reset();
     setIsAddTemplateModalOpen(false);
+  };
+
+  const handlePollIdClick = (pollId: string) => {
+    toast({
+      title: t('maps_elements.poll_profile_not_implemented_title', 'Poll Profile (Not Implemented)'),
+      description: t('maps_elements.poll_profile_not_implemented_desc', 'Viewing profile for poll {id} is not yet available.').replace('{id}', pollId),
+    });
   };
 
   return (
@@ -275,13 +272,16 @@ export default function HydroPollsPage() {
                     <TableHead className="text-xs text-center">Address</TableHead>
                     <TableHead className="text-xs text-center">GPS Coordinates</TableHead>
                     <TableHead className="text-xs text-center">Transformer</TableHead>
-                    <TableHead className="text-xs text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {placeholderPolls.map((poll) => (
                     <TableRow key={poll.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{poll.id}</TableCell>
+                      <TableCell className="font-mono text-muted-foreground text-xs text-center">
+                         <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => handlePollIdClick(poll.id)}>
+                            {poll.id}
+                        </Button>
+                      </TableCell>
                       <TableCell className="text-xs text-center">{poll.description}</TableCell>
                       <TableCell className="text-xs text-center">{poll.project || '-'}</TableCell>
                       <TableCell className="text-xs text-center">{poll.height}</TableCell>
@@ -292,16 +292,6 @@ export default function HydroPollsPage() {
                         <Badge variant={poll.transformer === 'Yes' ? 'destructive' : 'default'} className={`text-xs ${poll.transformer === 'Yes' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                           {poll.transformer}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" className="h-7 w-7">
-                          <Edit className={iconSize} />
-                          <span className="sr-only">Edit</span>
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive">
-                          <Trash2 className={iconSize} />
-                          <span className="sr-only">Delete</span>
-                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -318,4 +308,3 @@ export default function HydroPollsPage() {
     </div>
   );
 }
-

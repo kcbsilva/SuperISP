@@ -2,9 +2,10 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Warehouse, Edit, Trash2, PlusCircle, FileText as FileTextIcon, Loader2, FilePlus2, List } from 'lucide-react'; // Added List icon
+import { Warehouse, Edit, Trash2, PlusCircle, FileText as FileTextIcon, Loader2, FilePlus2, List, Cable, GitMerge, ListChecks, AlertTriangle } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -22,6 +23,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription as DialogDescriptionComponent,
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
@@ -41,37 +43,66 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle as AlertDialogTitleComponent,
-} from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from "@/lib/utils";
 
+interface SpliceLogEntryFosc {
+  id: string;
+  date: string;
+  technician: string;
+  tubeIdA: string;
+  fiberNumberA: string;
+  tubeIdB: string;
+  fiberNumberB: string;
+  tray: string;
+  slot: string;
+  description: string;
+}
 
+interface CableInfoFosc {
+  id: string;
+  cableNumber: string;
+  serialNumber?: string;
+  count: string;
+  manufacturer: string;
+  description: string;
+  tubeIds: string;
+  meterMark?: string;
+}
+
+interface FoscHistoryEntry {
+  id: string;
+  date: string;
+  user: string;
+  action: string;
+  details?: string;
+}
 interface Fosc {
   id: string;
   gpsCoordinates: string;
   type: 'Aerial' | 'Underground';
   trays: string;
   project?: string;
-  cableCount: string; // Format "current/max"
+  cableCount: string;
   status: 'Active' | 'Inactive' | 'Planned';
-  brand: string;
+  manufacturer: string; // Changed from brand
+  cableInfo?: CableInfoFosc[];
+  spliceLogs?: SpliceLogEntryFosc[];
+  history?: FoscHistoryEntry[];
 }
 
 const placeholderFoscs: Fosc[] = [
-  { id: 'fosc-001', gpsCoordinates: '39.9526° N, 75.1652° W', type: 'Aerial', trays: '6/12', project: 'Center City Fiber', cableCount: '4/6', status: 'Active', brand: 'TE Connectivity' },
-  { id: 'fosc-002', gpsCoordinates: '34.0522° N, 118.2437° W', type: 'Underground', trays: '10/24', project: 'LA Downtown Grid', cableCount: '8/12', status: 'Active', brand: 'Furukawa' },
-  { id: 'fosc-003', gpsCoordinates: '40.7128° N, 74.0060° W', type: 'Aerial', trays: '2/4', project: 'NYC Soho Link', cableCount: '1/2', status: 'Planned', brand: 'Corning' },
+  { id: 'fosc-001', gpsCoordinates: '39.9526° N, 75.1652° W', type: 'Aerial', trays: '6/12', project: 'Center City Fiber', cableCount: '4/6', status: 'Active', manufacturer: 'TE Connectivity',
+    cableInfo: Array.from({length: 3}, (_, i) => ({ id: `cb-${i+1}`, cableNumber: `Cable ${i+1}`, count: "12F", manufacturer: "Corning", description: `Feeder ${i+1}`, tubeIds: `T${i+1}-T${i+4}`})),
+    spliceLogs: [{id: 'log-f1', date: '2024-07-15', technician: 'Mike W.', tubeIdA: 'T1', fiberNumberA: '1-Blue', tubeIdB: 'T2', fiberNumberB: '1-Orange', tray: 'A1', slot:'1', description: 'Main splice'}],
+    history: [{id: 'hist-f1', date: '2024-07-01', user: 'Admin', action: 'Created FOSC'}]
+  },
+  { id: 'fosc-002', gpsCoordinates: '34.0522° N, 118.2437° W', type: 'Underground', trays: '10/24', project: 'LA Downtown Grid', cableCount: '8/12', status: 'Active', manufacturer: 'Furukawa' },
+  { id: 'fosc-003', gpsCoordinates: '40.7128° N, 74.0060° W', type: 'Aerial', trays: '2/4', project: 'NYC Soho Link', cableCount: '1/2', status: 'Planned', manufacturer: 'Corning' },
 ];
 
 const foscTemplateSchema = z.object({
@@ -100,7 +131,12 @@ export default function FoscsPage() {
   const { t } = useLocale();
   const { toast } = useToast();
   const iconSize = "h-3 w-3";
+  const modalIconSize = "h-2.5 w-2.5";
   const [isAddTemplateModalOpen, setIsAddTemplateModalOpen] = React.useState(false);
+  const [selectedFosc, setSelectedFosc] = React.useState<Fosc | null>(null);
+  const [isFoscModalOpen, setIsFoscModalOpen] = React.useState(false);
+  const [activeFoscModalTab, setActiveFoscModalTab] = React.useState('cable-info');
+
 
   const templateForm = useForm<FoscTemplateFormData>({
     resolver: zodResolver(foscTemplateSchema),
@@ -134,6 +170,12 @@ export default function FoscsPage() {
     setIsAddTemplateModalOpen(false);
   };
 
+  const handleFoscIdClick = (fosc: Fosc) => {
+    setSelectedFosc(fosc);
+    setActiveFoscModalTab('cable-info');
+    setIsFoscModalOpen(true);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
@@ -147,7 +189,7 @@ export default function FoscsPage() {
                     <FileTextIcon className={`mr-2 ${iconSize}`} /> {t('maps_elements.fosc_template_button', 'FOSC Templates')}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-3xl"> {/* Increased width for better layout */}
+            <DialogContent className="sm:max-w-3xl">
                 <DialogHeader>
                     <DialogTitle className="text-sm">{t('maps_elements.fosc_manage_templates_title', 'Manage FOSC Templates')}</DialogTitle>
                 </DialogHeader>
@@ -279,42 +321,35 @@ export default function FoscsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs">ID</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.fosc_table_header_gps', 'GPS Coordinates')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.fosc_table_header_type', 'Type')}</TableHead>
+                    <TableHead className="text-xs text-center">ID</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.fosc_table_header_gps', 'GPS Coordinates')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.fosc_table_header_type', 'Type')}</TableHead>
                     <TableHead className="text-xs text-center">{t('maps_elements.fosc_table_header_trays', 'Trays (Used/Max)')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.table_header_project', 'Project')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.table_header_project', 'Project')}</TableHead>
                     <TableHead className="text-xs text-center">{t('maps_elements.fosc_table_header_cable_count', 'Cable Count (In/Out)')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.fosc_table_header_status', 'Status')}</TableHead>
-                    <TableHead className="text-xs">{t('maps_elements.fosc_table_header_brand', 'Brand')}</TableHead>
-                    <TableHead className="text-xs text-right">{t('maps_elements.project_table_header_actions', 'Actions')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.fosc_table_header_status', 'Status')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('maps_elements.fosc_table_header_manufacturer', 'Manufacturer')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {placeholderFoscs.map((fosc) => (
                     <TableRow key={fosc.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs">{fosc.id}</TableCell>
-                      <TableCell className="text-xs">{fosc.gpsCoordinates}</TableCell>
-                      <TableCell className="text-xs">{t(`maps_elements.fosc_type_${fosc.type.toLowerCase()}` as any, fosc.type)}</TableCell>
+                      <TableCell className="font-mono text-muted-foreground text-xs text-center">
+                        <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => handleFoscIdClick(fosc)}>
+                            {fosc.id}
+                        </Button>
+                      </TableCell>
+                      <TableCell className="text-xs text-center">{fosc.gpsCoordinates}</TableCell>
+                      <TableCell className="text-xs text-center">{t(`maps_elements.fosc_type_${fosc.type.toLowerCase()}` as any, fosc.type)}</TableCell>
                       <TableCell className="text-xs text-center">{fosc.trays}</TableCell>
-                      <TableCell className="text-xs">{fosc.project || '-'}</TableCell>
+                      <TableCell className="text-xs text-center">{fosc.project || '-'}</TableCell>
                       <TableCell className="text-xs text-center">{fosc.cableCount}</TableCell>
-                      <TableCell className="text-xs">
+                      <TableCell className="text-xs text-center">
                         <Badge variant="outline" className={`text-xs ${getStatusBadgeVariant(fosc.status)} border-transparent`}>
                           {t(`maps_elements.fosc_status_${fosc.status.toLowerCase()}` as any, fosc.status)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-xs">{fosc.brand}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" className="h-7 w-7">
-                          <Edit className={iconSize} />
-                          <span className="sr-only">{t('maps_elements.action_edit_fosc', 'Edit FOSC')}</span>
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive">
-                          <Trash2 className={iconSize} />
-                          <span className="sr-only">{t('maps_elements.action_delete_fosc', 'Delete FOSC')}</span>
-                        </Button>
-                      </TableCell>
+                      <TableCell className="text-xs text-center">{fosc.manufacturer}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -327,7 +362,148 @@ export default function FoscsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* FOSC Profile Modal */}
+      <Dialog open={isFoscModalOpen} onOpenChange={setIsFoscModalOpen}>
+        <DialogContent className="sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl h-[80vh] flex flex-col">
+          <DialogHeader className="relative p-4 border-b">
+            <DialogTitle className="sr-only">
+                {t('maps_elements.fosc_modal_title', 'FOSC Details: {id}').replace('{id}', selectedFosc?.id || 'N/A')}
+            </DialogTitle>
+            <fieldset className="border border-border rounded-md p-4 pt-1">
+                <legend className="text-sm font-semibold px-2 flex items-center gap-2 -ml-2">
+                    <Warehouse className={`${modalIconSize} text-primary`} />
+                    {t('maps_elements.fosc_modal_title', 'FOSC Details: {id}').replace('{id}', selectedFosc?.id || 'N/A')}
+                </legend>
+                {selectedFosc && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-1 text-xs pt-2">
+                      <p><strong>{t('maps_elements.fosc_table_header_gps', 'GPS')}:</strong> {selectedFosc.gpsCoordinates}</p>
+                      <p><strong>{t('maps_elements.fosc_table_header_type', 'Type')}:</strong> {t(`maps_elements.fosc_type_${selectedFosc.type.toLowerCase()}` as any, selectedFosc.type)}</p>
+                      <p><strong>{t('maps_elements.fosc_table_header_trays', 'Trays')}:</strong> {selectedFosc.trays}</p>
+                      <p><strong>{t('maps_elements.fosc_table_header_manufacturer', 'Manufacturer')}:</strong> {selectedFosc.manufacturer}</p>
+                      <p><strong>{t('maps_elements.table_header_project', 'Project')}:</strong> {selectedFosc.project || '-'}</p>
+                       <p><strong>{t('maps_elements.fosc_table_header_cable_count', 'Cables')}:</strong> {selectedFosc.cableCount}</p>
+                      <p><strong>{t('maps_elements.fosc_table_header_status', 'Status')}:</strong>
+                          <Badge variant="outline" className={cn("ml-1 text-xs border-transparent", getStatusBadgeVariant(selectedFosc.status))}>
+                          {t(`maps_elements.fosc_status_${selectedFosc.status.toLowerCase()}` as any, selectedFosc.status)}
+                          </Badge>
+                      </p>
+                  </div>
+                )}
+            </fieldset>
+          </DialogHeader>
+          <Tabs value={activeFoscModalTab} onValueChange={setActiveFoscModalTab} className="w-full flex-grow flex flex-col overflow-hidden">
+             <TabsList className="grid w-full grid-cols-4 shrink-0">
+                <TabsTrigger value="cable-info"><Cable className={`mr-1.5 ${modalIconSize}`} />{t('maps_elements.fosc_modal_tab_cable_info', 'Cable Info')}</TabsTrigger>
+                <TabsTrigger value="diagram"><GitMerge className={`mr-1.5 ${modalIconSize}`} />{t('maps_elements.fosc_modal_tab_splice_diagram', 'Splice Diagram')}</TabsTrigger>
+                <TabsTrigger value="log"><ListChecks className={`mr-1.5 ${modalIconSize}`} />{t('maps_elements.fosc_modal_tab_splice_log', 'Splice Log')}</TabsTrigger>
+                <TabsTrigger value="history"><AlertTriangle className={`mr-1.5 ${modalIconSize}`} />{t('maps_elements.fosc_modal_tab_history', 'History')}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="cable-info" className="mt-2 flex-grow overflow-y-auto">
+              {selectedFosc?.cableInfo && selectedFosc.cableInfo.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fosc_modal_cable_info_number', '#')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fosc_modal_cable_info_serial', 'Serial #')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fosc_modal_cable_info_count', 'Count')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fosc_modal_cable_info_manufacturer', 'Manufacturer')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fosc_modal_cable_info_description', 'Description')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fosc_modal_cable_info_tube_ids', 'Tube IDs')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fosc_modal_cable_info_meter_mark', 'Meter Mark')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {selectedFosc.cableInfo.slice(0, 7).map(cable => ( // Show up to 7 cables
+                      <TableRow key={cable.id}>
+                        <TableCell className="text-xs text-center">{cable.cableNumber}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.serialNumber || '-'}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.count}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.manufacturer}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.description}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.tubeIds}</TableCell>
+                        <TableCell className="text-xs text-center">{cable.meterMark || '-'}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                 <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.fosc_modal_no_cable_info', 'No cable information available.')}</p>
+              )}
+            </TabsContent>
+            <TabsContent value="diagram" className="mt-2 flex-grow flex justify-center items-center overflow-hidden">
+              <Image src="https://placehold.co/600x400.png" alt="Splice Diagram Placeholder" width={550} height={350} data-ai-hint="fiber splice diagram" className="object-contain" />
+            </TabsContent>
+            <TabsContent value="log" className="mt-2 flex-grow overflow-y-auto">
+             {selectedFosc?.spliceLogs && selectedFosc.spliceLogs.length > 0 ? (
+                <Table>
+                    <TableHeader>
+                    <TableRow>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_date', 'Date')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_technician', 'Technician')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_tube_a', 'Tube ID (A)')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_fiber_a', 'Fiber # (A)')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_tube_b', 'Tube ID (B)')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_fiber_b', 'Fiber # (B)')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_tray', 'Tray')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_slot', 'Slot')}</TableHead>
+                        <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_log_notes', 'Description')}</TableHead>
+                    </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                    {selectedFosc.spliceLogs.map(log => (
+                        <TableRow key={log.id}>
+                        <TableCell className="text-xs text-center">{log.date}</TableCell>
+                        <TableCell className="text-xs text-center">{log.technician}</TableCell>
+                        <TableCell className="text-xs text-center">{log.tubeIdA}</TableCell>
+                        <TableCell className="text-xs text-center">{log.fiberNumberA}</TableCell>
+                        <TableCell className="text-xs text-center">{log.tubeIdB}</TableCell>
+                        <TableCell className="text-xs text-center">{log.fiberNumberB}</TableCell>
+                        <TableCell className="text-xs text-center">{log.tray}</TableCell>
+                        <TableCell className="text-xs text-center">{log.slot}</TableCell>
+                        <TableCell className="text-xs text-center">{log.description}</TableCell>
+                        </TableRow>
+                    ))}
+                    </TableBody>
+                </Table>
+             ) : (
+                <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.fosc_modal_no_splice_logs', 'No splice logs available.')}</p>
+             )}
+            </TabsContent>
+             <TabsContent value="history" className="mt-2 flex-grow overflow-y-auto">
+               {selectedFosc?.history && selectedFosc.history.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_history_date', 'Date')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_history_user', 'User')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_history_action', 'Action')}</TableHead>
+                      <TableHead className="text-xs text-center">{t('maps_elements.fdh_modal_history_details', 'Details')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {selectedFosc.history.map(entry => (
+                      <TableRow key={entry.id}>
+                        <TableCell className="text-xs text-center">{entry.date}</TableCell>
+                        <TableCell className="text-xs text-center">{entry.user}</TableCell>
+                        <TableCell className="text-xs text-center">{entry.action}</TableCell>
+                        <TableCell className="text-xs text-center">{entry.details || '-'}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.fosc_modal_no_history', 'No history available.')}</p>
+              )}
+            </TabsContent>
+          </Tabs>
+          <DialogFooter className="mt-auto pt-4 border-t">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">{t('maps_elements.fdh_modal_close_button', 'Close')}</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-
