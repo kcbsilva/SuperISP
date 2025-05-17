@@ -1,5 +1,26 @@
 // src/translations/pt.ts
 const pt = {
+  // Login Page Translations
+  login: {
+    loading: "Carregando...",
+    welcome_title: "Bem-vindo à Prolter ISP",
+    welcome_subtitle: "Gerencie seus serviços eficientemente.",
+    title: "Login de Administrador",
+    description: "Insira suas credenciais para acessar o painel de administrador.",
+    username_label: "Usuário",
+    username_placeholder: "Digite seu usuário",
+    password_label: "Senha",
+    password_placeholder: "Digite sua senha",
+    submit_button: "Entrar",
+    error_failed: "Falha no login. Verifique suas credenciais.", // Example error message
+    error_unknown: "Ocorreu um erro desconhecido.", // Example error message
+  },
+
+  // Auth related translations (from layout.tsx)
+  auth: {
+    redirecting: "Redirecionando para o login...",
+    loading: "Carregando autenticação...",
+  },
   // Sidebar
   sidebar: {
     dashboard: 'Painel',
@@ -12,9 +33,15 @@ const pt = {
     network_cgnat: 'CGNAT',
     network_radius: 'RADIUS(NAS)',
     network_vlan: 'VLAN',
+    noc: 'NOC',
+    noc_wireless: 'Wireless',
+    noc_wireless_aps: 'Pontos de Acesso',
+    noc_wireless_clients: 'CPEs ',
+    noc_wireless_dashboard: 'Painel',
+    noc_overview: 'Visão Geral',
     maps: 'Mapas',
     maps_elements: 'Elementos',
-    maps_elements_polls: 'Postes Hidro',
+    maps_elements_polls: 'Postes',
     maps_elements_fdhs: 'CTOs',
     maps_elements_foscs: 'CEOs',
     maps_elements_peds: 'PEDs',
@@ -40,7 +67,7 @@ const pt = {
     inventory_products: 'Produtos',
     inventory_vehicles: 'Veículos',
     inventory_warehouses: 'Armazéns',
-    service_calls: 'Chamados de Serviço',
+    service_calls: 'Ordens de Serviço',
     service_calls_dashboard: 'Painel',
     service_calls_service_types: 'Tipos de Serviço',
     hr: 'RH',

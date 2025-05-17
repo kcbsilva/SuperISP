@@ -34,7 +34,7 @@ const getTranslationValue = (dict: TranslationDict, key: string): string | undef
 
 
 export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [locale, setLocaleState] = useState<Locale>('en'); // Default to English
+  const [locale, setLocaleState] = useState<Locale>('pt'); // Default to Portuguese
   const [isMounted, setIsMounted] = useState(false); // Prevent hydration mismatch
 
   useEffect(() => {

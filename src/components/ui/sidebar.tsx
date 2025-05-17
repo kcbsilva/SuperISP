@@ -321,8 +321,15 @@ const SidebarMenuButton = React.memo(React.forwardRef<
     { className, isActive, children, tooltip, size = "default", asChild, href, ...props },
     ref
   ) => {
-    // const { isMobile } = useSidebar(); // isMobile not used for text hiding if always expanded
+    const { isMobile, setIsOpenMobile } = useSidebar(); // Get isMobile and setIsOpenMobile
     const Comp = asChild ? Slot : Link;
+
+    const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+      if (isMobile) {
+        setIsOpenMobile(false);
+      }
+      // If you had an external onClick prop you wanted to preserve: props.onClick?.(event);
+    };
 
     // Since sidebar is not collapsible, hideText logic for desktop is removed.
     // Text is always visible on desktop.
@@ -343,6 +350,7 @@ const SidebarMenuButton = React.memo(React.forwardRef<
           className
         )}
         href={href}
+        onClick={handleClick} // Add the click handler
         {...props}
       >
         {buttonChildren}
