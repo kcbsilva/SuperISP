@@ -17,6 +17,12 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/ui/tabs";
+import {
   Dialog,
   DialogContent,
   DialogFooter,
@@ -48,6 +54,20 @@ import * as z from 'zod';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils'; // Added cn
 
+interface CableInfoPoll {
+ id: string;
+ name: string;
+ fiberCount?: number;
+}
+
+interface PollHistoryEntry {
+ id: string;
+ date: string;
+ user: string;
+ description: string;
+ details?: string;
+}
+
 interface HydroPoll {
   id: string;
   description: string;
@@ -57,11 +77,21 @@ interface HydroPoll {
   gpsCoordinates: string;
   transformer: 'Yes' | 'No';
   project?: string;
+  history?: PollHistoryEntry[];
+  cablesPassed?: CableInfoPoll[];
+  attachedFoscs?: string[];
+  attachedFdhs?: string[];
 }
 
+
 const placeholderPolls: HydroPoll[] = [
-  { id: 'poll-001', description: 'Main Street - Corner Oak', height: '12m', type: 'Circular', address: '123 Main St, Anytown', gpsCoordinates: '40.7128° N, 74.0060° W', transformer: 'Yes', project: 'Downtown Expansion' },
-  { id: 'poll-002', description: 'Park Entrance', height: '10m', type: 'Square', address: '456 Park Ave, Anytown', gpsCoordinates: '40.7135° N, 74.0055° W', transformer: 'No', project: 'City Beautification' },
+  { id: 'poll-001', description: 'Main Street - Corner Oak', height: '12m', type: 'Circular', address: '123 Main St, Anytown', gpsCoordinates: '40.7128° N, 74.0060° W', transformer: 'Yes', project: 'Downtown Expansion',
+    history: [{id: 'hist-p1', date: '2023-01-10', user: 'Install Team', description: 'Pole installed'}, {id: 'hist-p2', date: '2023-05-20', user: 'Maintenance', description: 'Inspected for storm damage', details: 'Minor cosmetic scuffs'}],
+    cablesPassed: [{id: 'cable-p1', name: 'Feeder 1', fiberCount: 144}, {id: 'cable-p2', name: 'Distribution A', fiberCount: 48}],
+    attachedFoscs: ['fosc-001'],
+    attachedFdhs: []
+  },
+  { id: 'poll-002', description: 'Park Entrance', height: '10m', type: 'Square', address: '456 Park Ave, Anytown', gpsCoordinates: '40.7135° N, 74.0055° W', transformer: 'No', project: 'City Beautification', cablesPassed: [{id: 'cable-p3', name: 'Feeder 2', fiberCount: 72}], attachedFdhs: ['fdh-002', 'fdh-003'] },
 ];
 
 const pollTemplateSchema = z.object({
@@ -89,9 +119,11 @@ export default function HydroPollsPage() {
   const { t } = useLocale();
   const { toast } = useToast();
   const iconSize = "h-3 w-3";
+  const modalIconSize = "h-2.5 w-2.5";
   const [isAddTemplateModalOpen, setIsAddTemplateModalOpen] = React.useState(false);
   const [selectedPoll, setSelectedPoll] = React.useState<HydroPoll | null>(null);
   const [isPollModalOpen, setIsPollModalOpen] = React.useState(false);
+  const [activePollModalTab, setActivePollModalTab] = React.useState('details');
 
   const templateForm = useForm<PollTemplateFormData>({
     resolver: zodResolver(pollTemplateSchema),
@@ -117,6 +149,7 @@ export default function HydroPollsPage() {
 
   const handlePollIdClick = (poll: HydroPoll) => {
     setSelectedPoll(poll);
+    setActivePollModalTab('details');
     setIsPollModalOpen(true);
   };
 
@@ -326,46 +359,131 @@ export default function HydroPollsPage() {
             <DialogTitle className="text-sm">{t('maps_elements.poll_profile_title', 'Poll Profile: {id}').replace('{id}', selectedPoll?.id || 'N/A')}</DialogTitle>
             <DialogDescriptionComponent className="text-xs">{t('maps_elements.poll_profile_description', 'Details of the selected hydro poll.')}</DialogDescriptionComponent>
           </DialogHeader>
-          {selectedPoll && (
-            <div className="grid gap-3 py-4 text-xs">
-              <div className="grid grid-cols-3 items-center gap-3">
-                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_id_label', 'ID')}:</span>
-                <span className="col-span-2 font-medium">{selectedPoll.id}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center gap-3">
-                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_description_label', 'Description')}:</span>
-                <span className="col-span-2">{selectedPoll.description}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center gap-3">
-                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_project_label', 'Project')}:</span>
-                <span className="col-span-2">{selectedPoll.project || '-'}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center gap-3">
-                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_height_label', 'Height')}:</span>
-                <span className="col-span-2">{selectedPoll.height}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center gap-3">
-                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_type_label', 'Type')}:</span>
-                <span className="col-span-2">{selectedPoll.type}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center gap-3">
-                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_address_label', 'Address')}:</span>
-                <span className="col-span-2">{selectedPoll.address}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center gap-3">
-                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_gps_label', 'GPS Coordinates')}:</span>
-                <span className="col-span-2">{selectedPoll.gpsCoordinates}</span>
-              </div>
-              <div className="grid grid-cols-3 items-center gap-3">
-                <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_transformer_label', 'Transformer')}:</span>
-                <span className="col-span-2">
-                  <Badge variant={selectedPoll.transformer === 'Yes' ? 'destructive' : 'default'} className={`text-xs ${selectedPoll.transformer === 'Yes' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                    {selectedPoll.transformer}
-                  </Badge>
-                </span>
-              </div>
-            </div>
-          )}
+         <Tabs value={activePollModalTab} onValueChange={setActivePollModalTab} className="w-full flex-grow flex flex-col overflow-hidden">
+           <TabsList className="grid w-full grid-cols-4 shrink-0">
+             <TabsTrigger value="details">{t('maps_elements.poll_modal_tab_details', 'Details')}</TabsTrigger>
+             <TabsTrigger value="cables">{t('maps_elements.poll_modal_tab_cables', 'Cables Passed')}</TabsTrigger>
+             <TabsTrigger value="enclosures">{t('maps_elements.poll_modal_tab_enclosures', 'Enclosures')}</TabsTrigger>
+             <TabsTrigger value="history">{t('maps_elements.poll_modal_tab_history', 'History')}</TabsTrigger>
+           </TabsList>
+           <TabsContent value="details" className="mt-2 flex-grow overflow-y-auto">
+              {selectedPoll && (
+               <div className="grid gap-3 py-2 text-xs">
+                 <div className="grid grid-cols-3 items-center gap-3">
+                   <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_id_label', 'ID')}:</span>
+                   <span className="col-span-2 font-medium">{selectedPoll.id}</span>
+                 </div>
+                 <div className="grid grid-cols-3 items-center gap-3">
+                   <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_description_label', 'Description')}:</span>
+                   <span className="col-span-2">{selectedPoll.description}</span>
+                 </div>
+                 <div className="grid grid-cols-3 items-center gap-3">
+                   <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_project_label', 'Project')}:</span>
+                   <span className="col-span-2">{selectedPoll.project || '-'}</span>
+                 </div>
+                 <div className="grid grid-cols-3 items-center gap-3">
+                   <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_height_label', 'Height')}:</span>
+                   <span className="col-span-2">{selectedPoll.height}</span>
+                 </div>
+                 <div className="grid grid-cols-3 items-center gap-3">
+                   <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_type_label', 'Type')}:</span>
+                   <span className="col-span-2">{selectedPoll.type}</span>
+                 </div>
+                 <div className="grid grid-cols-3 items-center gap-3">
+                   <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_address_label', 'Address')}:</span>
+                   <span className="col-span-2">{selectedPoll.address}</span>
+                 </div>
+                 <div className="grid grid-cols-3 items-center gap-3">
+                   <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_gps_label', 'GPS Coordinates')}:</span>
+                   <span className="col-span-2">{selectedPoll.gpsCoordinates}</span>
+                 </div>
+                 <div className="grid grid-cols-3 items-center gap-3">
+                   <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_transformer_label', 'Transformer')}:</span>
+                   <span className="col-span-2">
+                     <Badge variant={selectedPoll.transformer === 'Yes' ? 'destructive' : 'default'} className={`text-xs ${selectedPoll.transformer === 'Yes' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                       {selectedPoll.transformer}
+                     </Badge>
+                   </span>
+                 </div>
+               </div>
+             )}
+           </TabsContent>
+           <TabsContent value="cables" className="mt-2 flex-grow overflow-y-auto text-xs">
+              <h3 className="text-sm font-semibold mb-2">{t('maps_elements.poll_modal_cables_passed_heading', 'Cables Passed')}</h3>
+             {selectedPoll?.cablesPassed && selectedPoll.cablesPassed.length > 0 ? (
+               <Table>
+                 <TableHeader>
+                   <TableRow>
+                     <TableHead className="text-xs text-center">ID/Name</TableHead>
+                     <TableHead className="text-xs text-center">Fiber Count</TableHead>
+                   </TableRow>
+                 </TableHeader>
+                 <TableBody>
+                   {selectedPoll.cablesPassed.map(cable => (
+                     <TableRow key={cable.id}>
+                       <TableCell className="text-xs text-center">{cable.name}</TableCell>
+                       <TableCell className="text-xs text-center">{cable.fiberCount || '-'}</TableCell>
+                     </TableRow>
+                   ))}
+                 </TableBody>
+               </Table>
+             ) : (
+                 <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.poll_modal_no_cables', 'No cables passed through this poll.')}</p>
+             )}
+           </TabsContent>
+           <TabsContent value="enclosures" className="mt-2 flex-grow overflow-y-auto text-xs">
+             <h3 className="text-sm font-semibold mb-2">{t('maps_elements.poll_modal_enclosures_heading', 'Attached Enclosures')}</h3>
+             <div className="grid grid-cols-2 gap-4">
+               <div>
+                 <h4 className="text-xs font-medium mb-1">{t('maps_elements.poll_modal_foscs_heading', 'FOSCs')}:</h4>
+                 {selectedPoll?.attachedFoscs && selectedPoll.attachedFoscs.length > 0 ? (
+                   <ul className="list-disc list-inside space-y-0.5">
+                     {selectedPoll.attachedFoscs.map(foscId => <li key={foscId}>{foscId}</li>)}
+                   </ul>
+                 ) : (
+                     <p className="text-xs text-muted-foreground">{t('maps_elements.poll_modal_no_foscs', 'No FOSCs attached.')}</p>
+                 )}
+               </div>
+               <div>
+                 <h4 className="text-xs font-medium mb-1">{t('maps_elements.poll_modal_fdhs_heading', 'FDHs')}:</h4>
+                 {selectedPoll?.attachedFdhs && selectedPoll.attachedFdhs.length > 0 ? (
+                   <ul className="list-disc list-inside space-y-0.5">
+                     {selectedPoll.attachedFdhs.map(fdhId => <li key={fdhId}>{fdhId}</li>)}
+                   </ul>
+                 ) : (
+                     <p className="text-xs text-muted-foreground">{t('maps_elements.poll_modal_no_fdhs', 'No FDHs attached.')}</p>
+                 )}
+               </div>
+             </div>
+           </TabsContent>
+           <TabsContent value="history" className="mt-2 flex-grow overflow-y-auto text-xs">
+               <h3 className="text-sm font-semibold mb-2">{t('maps_elements.poll_modal_history_heading', 'Poll History')}</h3>
+             {selectedPoll?.history && selectedPoll.history.length > 0 ? (
+               <Table>
+                 <TableHeader>
+                   <TableRow>
+                     <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_date', 'Date')}</TableHead>
+                     <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_user', 'User')}</TableHead>
+                     <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_description', 'Description')}</TableHead>
+                     <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_details', 'Details')}</TableHead>
+                   </TableRow>
+                 </TableHeader>
+                 <TableBody>
+                   {selectedPoll.history.map(entry => (
+                     <TableRow key={entry.id}>
+                       <TableCell className="text-xs text-center">{entry.date}</TableCell>
+                       <TableCell className="text-xs text-center">{entry.user}</TableCell>
+                       <TableCell className="text-xs text-center">{entry.description}</TableCell>
+                       <TableCell className="text-xs text-center">{entry.details || '-'}</TableCell>
+                     </TableRow>
+                   ))}
+                 </TableBody>
+               </Table>
+             ) : (
+                 <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.poll_modal_no_history', 'No history entries available.')}</p>
+             )}
+           </TabsContent>
+         </Tabs>
           <DialogFooter className="gap-2 sm:justify-end">
             <Button variant="outline" size="sm" onClick={() => handleEditPoll(selectedPoll?.id || '')} disabled={!selectedPoll}>
                 <Edit className={`mr-2 ${iconSize}`} /> {t('maps_elements.action_edit_poll', 'Edit')}
@@ -386,4 +504,3 @@ export default function HydroPollsPage() {
     </div>
   );
 }
-

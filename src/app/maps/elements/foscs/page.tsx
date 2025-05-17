@@ -92,6 +92,8 @@ interface Fosc {
   manufacturer: string; // Changed from brand
   cableInfo?: CableInfoFosc[];
   spliceLogs?: SpliceLogEntryFosc[];
+  vaultId?: string; // Assuming field name for Underground FOSC
+  postId?: string; // Assuming field name for Aerial FOSC
   history?: FoscHistoryEntry[];
 }
 
@@ -99,9 +101,9 @@ const placeholderFoscs: Fosc[] = [
   { id: 'fosc-001', gpsCoordinates: '39.9526° N, 75.1652° W', type: 'Aerial', trays: '6/12', project: 'Center City Fiber', cableCount: '4/6', status: 'Active', manufacturer: 'TE Connectivity',
     cableInfo: Array.from({length: 3}, (_, i) => ({ id: `cb-${i+1}`, cableNumber: `Cable ${i+1}`, count: "12F", manufacturer: "Corning", description: `Feeder ${i+1}`, tubeIds: `T${i+1}-T${i+4}`})),
     spliceLogs: [{id: 'log-f1', date: '2024-07-15', technician: 'Mike W.', tubeIdA: 'T1', fiberNumberA: '1-Blue', tubeIdB: 'T2', fiberNumberB: '1-Orange', tray: 'A1', slot:'1', description: 'Main splice'}],
-    history: [{id: 'hist-f1', date: '2024-07-01', user: 'Admin', action: 'Created FOSC'}]
+ history: [{id: 'hist-f1', date: '2024-07-01', user: 'Admin', action: 'Created FOSC'}], postId: 'P-1234'
   },
-  { id: 'fosc-002', gpsCoordinates: '34.0522° N, 118.2437° W', type: 'Underground', trays: '10/24', project: 'LA Downtown Grid', cableCount: '8/12', status: 'Active', manufacturer: 'Furukawa' },
+  { id: 'fosc-002', gpsCoordinates: '34.0522° N, 118.2437° W', type: 'Underground', trays: '10/24', project: 'LA Downtown Grid', cableCount: '8/12', status: 'Active', manufacturer: 'Furukawa', vaultId: 'V-5678' },
   { id: 'fosc-003', gpsCoordinates: '40.7128° N, 74.0060° W', type: 'Aerial', trays: '2/4', project: 'NYC Soho Link', cableCount: '1/2', status: 'Planned', manufacturer: 'Corning' },
 ];
 
@@ -385,6 +387,11 @@ export default function FoscsPage() {
                        <p><strong>{t('maps_elements.fosc_table_header_cable_count', 'Cables')}:</strong> {selectedFosc.cableCount}</p>
                       <p><strong>{t('maps_elements.fosc_table_header_status', 'Status')}:</strong>
                           <Badge variant="outline" className={cn("ml-1 text-xs border-transparent", getStatusBadgeVariant(selectedFosc.status))}>
+                      <p>
+                        <strong>Attached to:</strong>{' '}
+                        {selectedFosc.type === 'Underground' && selectedFosc.vaultId && `Vault ID: ${selectedFosc.vaultId}`}
+                        {selectedFosc.type === 'Aerial' && selectedFosc.postId && `Post ID: ${selectedFosc.postId}`}
+                      </p>
                           {t(`maps_elements.fosc_status_${selectedFosc.status.toLowerCase()}` as any, selectedFosc.status)}
                           </Badge>
                       </p>

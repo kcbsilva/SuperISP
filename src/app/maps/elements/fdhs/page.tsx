@@ -201,16 +201,13 @@ export default function FdhsPage() {
     setIsFdhModalOpen(true);
   };
 
-  const paginatedPorts = React.useMemo(() => {
-    if (!selectedFdh) return [];
-    const allPorts = Array.from({ length: selectedFdh.ports }, (_, i) => i + 1);
-    return allPorts.slice((currentPage - 1) * portsPerPage, currentPage * portsPerPage);
-  }, [selectedFdh, currentPage, portsPerPage]);
+  // Calculate paginatedPorts based on currentPage and portsPerPage
+  const indexOfLastPort = currentPage * portsPerPage; // Ensure currentPage is accessible here
+  const indexOfFirstPort = indexOfLastPort - portsPerPage;
+  const totalPortsArray = selectedFdh ? Array.from({ length: selectedFdh.ports }, (_, i) => i + 1) : [];
+  const paginatedPorts = totalPortsArray.slice(indexOfFirstPort, indexOfLastPort);
+  const totalPages = selectedFdh ? Math.ceil(selectedFdh.ports / portsPerPage) : 0;
 
-  const totalPortPages = React.useMemo(() => {
-    if (!selectedFdh) return 0;
-    return Math.ceil(selectedFdh.ports / portsPerPage);
-  }, [selectedFdh, portsPerPage]);
 
 
   return (
@@ -434,12 +431,12 @@ export default function FdhsPage() {
             </TabsList>
 
             <TabsContent value="port-list" className="mt-2 flex-grow overflow-y-auto">
-              {selectedFdh && paginatedPorts.length > 0 ? (
+              {selectedFdh && selectedFdh.ports > 0 ? (
                 <>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="text-xs text-center w-1/4">{t('maps_elements.fdh_modal_port_number', 'Port')}</TableHead>
+                        <TableHead className="text-xs text-center w-1/4">{t('maps_elements.fdh_modal_port_number', 'Port #')}</TableHead>
                         <TableHead className="text-xs text-center w-1/2">{t('maps_elements.fdh_modal_client_name', 'Client Name')}</TableHead>
                         <TableHead className="text-xs text-center w-1/4">{t('maps_elements.fdh_modal_light_levels_rx_tx', 'Light Levels (RX/TX)')}</TableHead>
                       </TableRow>
@@ -457,19 +454,7 @@ export default function FdhsPage() {
                       })}
                     </TableBody>
                   </Table>
-                  {totalPortPages > 1 && (
-                    <div className="flex items-center justify-end space-x-2 py-3 border-t">
-                      <span className="text-xs text-muted-foreground">
-                        {t('maps_elements.fdh_modal_pagination_page', 'Page {currentPage} of {totalPages}').replace('{currentPage}', currentPage.toString()).replace('{totalPages}', totalPortPages.toString())}
-                      </span>
-                      <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-                        <ChevronLeft className={iconSize} /> {t('maps_elements.fdh_modal_pagination_prev', 'Previous')}
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPortPages, p + 1))} disabled={currentPage === totalPortPages}>
-                        {t('maps_elements.fdh_modal_pagination_next', 'Next')} <ChevronRight className={iconSize} />
-                      </Button>
-                    </div>
-                  )}
+                 
                 </>
               ) : (
                 <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.fdh_modal_no_clients_or_ports', 'No ports or clients to display for this FDH.')}</p>

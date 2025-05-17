@@ -7,7 +7,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
+  CardDescription, // Although removed from header, kept for completeness
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Terminal, Play, Loader2, Ban } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
-import { executeMysqlQuery } from '@/services/mysql/execute-query';
+// Removed: import { executeMysqlQuery } from '@/services/mysql/execute-query'; // This is now handled by the API route
 import {
   Table,
   TableBody,
@@ -30,7 +30,7 @@ interface QueryResultDisplay {
   rows?: any[];
   fields?: { name: string; type: number }[];
   rowCount?: number;
-  command?: string;
+  command?: string; // You might want to include the command that was run
   error?: string;
   message?: string; // For general messages from the server
 }
@@ -55,26 +55,44 @@ export default function MysqlCliPage() {
     setIsLoading(true);
     setResult(null);
     try {
-      const queryResult = await executeMysqlQuery(sqlCommand);
-      if (queryResult.error) {
-        setResult({ error: queryResult.error });
+      const response = await fetch('/api/mysql', { // Corrected API endpoint path
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sqlCommand }),
+      });
+
+      if (!response.ok) {
+        // Handle non-OK responses (e.g., 400, 500 from the API)
+        let errorData;
+        try {
+          errorData = await response.json(); // Attempt to parse JSON error body
+        } catch (jsonError) {
+          // If response is not JSON, use status text
+          errorData = { error: `API Error: ${response.status} ${response.statusText}` };
+        }
+        setResult({ error: errorData.error || `API Error: ${response.status}` });
         toast({
           title: t('mysql_page.cli_execution_error_title'),
-          description: queryResult.error,
+          description: errorData.error || `API Error: ${response.status}`,
           variant: 'destructive',
         });
       } else {
-        setResult(queryResult);
+        // Handle successful response
+        const queryResult = await response.json();
+        setResult(queryResult); // Assuming API returns the result directly
         toast({
           title: t('mysql_page.cli_execution_success_title'),
-          description: queryResult.rows && queryResult.rows.length > 0
+          description: queryResult.rows && Array.isArray(queryResult.rows) && queryResult.rows.length > 0 // Added Array.isArray check
             ? `${queryResult.rows.length} row(s) returned.`
             : queryResult.rowCount !== undefined
             ? `${queryResult.rowCount} row(s) affected.`
-            : t('mysql_page.cli_execution_success_no_output_toast_desc')
+            : queryResult.message || t('mysql_page.cli_execution_success_no_output_toast_desc') // Added message display
         });
       }
     } catch (e: any) {
+      // Handle network errors or issues with initial response parsing
       setResult({ error: e.message || t('mysql_page.cli_unexpected_error_desc') });
       toast({
         title: t('mysql_page.cli_execution_error_title'),
@@ -126,12 +144,12 @@ export default function MysqlCliPage() {
                   <Ban className={`inline-block mr-2 ${iconSize} mb-0.5`} />Error: {result.error}
                 </div>
               )}
-              {result.message && (
-                <div className="text-xs font-mono whitespace-pre-wrap">
-                  {result.message}
+              {result.message && ( // Display general messages from the server
+                <div className="text-xs font-mono whitespace-pre-wrap text-green-600">
+                  <Terminal className={`inline-block mr-2 ${iconSize} mb-0.5`} />{result.message}
                 </div>
               )}
-              {result.rows && result.rows.length > 0 && result.fields && (
+              {result.rows && Array.isArray(result.rows) && result.rows.length > 0 && result.fields && ( // Added Array.isArray check
                 <Table className="text-xs">
                   <TableHeader>
                     <TableRow>
@@ -153,12 +171,12 @@ export default function MysqlCliPage() {
                   </TableBody>
                 </Table>
               )}
-              {result.rows && result.rows.length === 0 && !result.error && (
+              {result.rows && Array.isArray(result.rows) && result.rows.length === 0 && !result.error && !result.message && ( // Added Array.isArray check and message check
                 <p className="text-muted-foreground text-xs font-mono">
                   {t('mysql_page.cli_command_success_no_rows', {command: result.command || 'Command'})}
                 </p>
               )}
-               {result.rowCount !== undefined && (!result.rows || result.rows.length === 0) && !result.error && (
+               {result.rowCount !== undefined && (!result.rows || !Array.isArray(result.rows) || result.rows.length === 0) && !result.error && !result.message && ( // Added Array.isArray check and message check
                  <p className="text-muted-foreground text-xs font-mono">
                    {result.rowCount} row(s) affected.
                  </p>
