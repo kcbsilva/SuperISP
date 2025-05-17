@@ -399,16 +399,19 @@ const SidebarMenuSub = React.forwardRef<
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
   const pathname = usePathname();
 
-  React.useEffect(() => {
-    setIsOpen(defaultOpen);
-  }, [defaultOpen, pathname]); // Re-evaluate if defaultOpen changes or route changes
+  // Temporarily commented out to test click behavior
+  // React.useEffect(() => {
+  //   setIsOpen(defaultOpen);
+  // }, [defaultOpen, pathname]); // Re-evaluate if defaultOpen changes or route changes
 
   const contextValue = React.useMemo(() => ({
     isOpen,
     setIsOpen,
   }), [isOpen]);
 
-  return (
+  console.log("SidebarMenuSub isOpen:", isOpen);
+
+  return ( // Note: This is the return for the component, not the useMemo
     <SidebarMenuSubContext.Provider value={contextValue}>
       <div
         ref={ref}
@@ -432,12 +435,15 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
   (
     { className, children, isActive, tooltip, size = "default", ...props },
     ref
+
   ) => {
     const { isOpen, setIsOpen } = useSidebarMenuSub();
     // const { isMobile } = useSidebar(); // Not needed for text hiding if always expanded
+    console.log("SidebarMenuSubTrigger context:", { isOpen, setIsOpen });
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
+      console.log("Menu title clicked!"); // Add this line
       setIsOpen(!isOpen);
     };
 
