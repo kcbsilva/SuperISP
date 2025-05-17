@@ -2,7 +2,7 @@
 // src/app/layout.tsx
 'use client';
 
-import NextNProgress from 'nextjs-progressbar';
+// import NextNProgress from 'nextjs-progressbar'; // This was unused
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
@@ -187,8 +187,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden"> {/* Outermost container */}
-      <div className="flex flex-1 overflow-hidden"> {/* Container for Sidebar and the rest (Header + Content) */}
+    <div className="flex flex-col h-screen w-full overflow-hidden"> {/* Outermost container, ensure full width */}
+      <div className="flex flex-1 w-full overflow-hidden"> {/* Container for Sidebar and the rest, ensure full width */}
         <Sidebar>
           <SidebarHeader>
             <Link href="/" className="flex items-center justify-center w-full h-full" style={{ textDecoration: 'none' }}>
@@ -216,16 +216,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               {/* Maps Menu */}
               <SidebarMenuItem>
                 <SidebarMenuSub defaultOpen={isActive('/maps')}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SidebarMenuSubTrigger tooltip={t('sidebar.maps')} isActive={isActive('/maps')}>
-                        <MapPin className={iconSize} />
-                        <span className="truncate">{t('sidebar.maps')}</span>
-                        <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
-                      </SidebarMenuSubTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" align="center">{t('sidebar.maps')}</TooltipContent>
-                  </Tooltip>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.maps')} isActive={isActive('/maps')}>
+                    <MapPin className={iconSize} />
+                    <span className="truncate">{t('sidebar.maps')}</span>
+                    <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
+                  </SidebarMenuSubTrigger>
                   <SidebarMenuSubContent>
                      <SidebarMenuItem>
                       <SidebarMenuButton href="/maps/projects" isActive={isActive('/maps/projects')} size="sm">
@@ -241,16 +236,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuSub defaultOpen={isActive('/maps/elements')}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <SidebarMenuSubTrigger tooltip={t('sidebar.maps_elements')} isActive={isActive('/maps/elements')} size="sm">
-                              <ListTree className={`${iconSize} text-muted-foreground`} />
-                              <span className="truncate">{t('sidebar.maps_elements')}</span>
-                              <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
-                            </SidebarMenuSubTrigger>
-                          </TooltipTrigger>
-                          <TooltipContent side="right" align="center">{t('sidebar.maps_elements')}</TooltipContent>
-                        </Tooltip>
+                        <SidebarMenuSubTrigger tooltip={t('sidebar.maps_elements')} isActive={isActive('/maps/elements')} size="sm">
+                          <ListTree className={`${iconSize} text-muted-foreground`} />
+                          <span className="truncate">{t('sidebar.maps_elements')}</span>
+                          <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
+                        </SidebarMenuSubTrigger>
                         <SidebarMenuSubContent>
                           <SidebarMenuItem>
                             <SidebarMenuButton href="/maps/elements/polls" isActive={isActive('/maps/elements/polls')} size="sm">
@@ -310,16 +300,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               {/* FTTx Menu */}
               <SidebarMenuItem>
                 <SidebarMenuSub defaultOpen={isActive('/fttx')}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SidebarMenuSubTrigger tooltip={t('sidebar.fttx')} isActive={isActive('/fttx')}>
-                        <GitBranch className={iconSize} />
-                        <span className="truncate">{t('sidebar.fttx')}</span>
-                        <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
-                      </SidebarMenuSubTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" align="center">{t('sidebar.fttx')}</TooltipContent>
-                  </Tooltip>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.fttx')} isActive={isActive('/fttx')}>
+                    <GitBranch className={iconSize} />
+                    <span className="truncate">{t('sidebar.fttx')}</span>
+                    <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
+                  </SidebarMenuSubTrigger>
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
                       <SidebarMenuButton href="/fttx/dashboard" isActive={isActive('/fttx/dashboard')} size="sm">
@@ -346,16 +331,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               {/* Finances Menu */}
               <SidebarMenuItem>
                 <SidebarMenuSub defaultOpen={isActive('/finances')}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SidebarMenuSubTrigger tooltip={t('sidebar.finances')} isActive={isActive('/finances')}>
-                        <DollarSign className={iconSize} />
-                        <span className="truncate">{t('sidebar.finances')}</span>
-                        <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
-                      </SidebarMenuSubTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" align="center">{t('sidebar.finances')}</TooltipContent>
-                  </Tooltip>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.finances')} isActive={isActive('/finances')}>
+                    <DollarSign className={iconSize} />
+                    <span className="truncate">{t('sidebar.finances')}</span>
+                    <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
+                  </SidebarMenuSubTrigger>
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
                       <SidebarMenuButton href="/finances/cash-book" isActive={isActive('/finances/cash-book')} size="sm">
@@ -382,16 +362,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               {/* Inventory Menu */}
               <SidebarMenuItem>
                 <SidebarMenuSub defaultOpen={isActive('/inventory')}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SidebarMenuSubTrigger tooltip={t('sidebar.inventory')} isActive={isActive('/inventory')}>
-                        <Archive className={iconSize} />
-                        <span className="truncate">{t('sidebar.inventory')}</span>
-                        <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
-                      </SidebarMenuSubTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" align="center">{t('sidebar.inventory')}</TooltipContent>
-                  </Tooltip>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.inventory')} isActive={isActive('/inventory')}>
+                    <Archive className={iconSize} />
+                    <span className="truncate">{t('sidebar.inventory')}</span>
+                    <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
+                  </SidebarMenuSubTrigger>
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
                       <SidebarMenuButton href="/inventory/categories" isActive={isActive('/inventory/categories')} size="sm">
@@ -436,16 +411,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               {/* Service Calls Menu */}
               <SidebarMenuItem>
                 <SidebarMenuSub defaultOpen={isActive('/service-calls')}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SidebarMenuSubTrigger tooltip={t('sidebar.service_calls')} isActive={isActive('/service-calls')}>
-                        <Wrench className={iconSize} />
-                        <span className="truncate">{t('sidebar.service_calls')}</span>
-                        <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
-                      </SidebarMenuSubTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" align="center">{t('sidebar.service_calls')}</TooltipContent>
-                  </Tooltip>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.service_calls')} isActive={isActive('/service-calls')}>
+                    <Wrench className={iconSize} />
+                    <span className="truncate">{t('sidebar.service_calls')}</span>
+                    <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
+                  </SidebarMenuSubTrigger>
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
                       <SidebarMenuButton href="/service-calls/dashboard" isActive={isActive('/service-calls/dashboard')} size="sm">
@@ -475,16 +445,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               {/* HR Menu */}
               <SidebarMenuItem>
                 <SidebarMenuSub defaultOpen={isActive('/hr')}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SidebarMenuSubTrigger tooltip={t('sidebar.hr')} isActive={isActive('/hr')}>
-                        <BriefcaseBusiness className={iconSize} />
-                        <span className="truncate">{t('sidebar.hr')}</span>
-                        <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
-                      </SidebarMenuSubTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" align="center">{t('sidebar.hr')}</TooltipContent>
-                  </Tooltip>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.hr')} isActive={isActive('/hr')}>
+                    <BriefcaseBusiness className={iconSize} />
+                    <span className="truncate">{t('sidebar.hr')}</span>
+                    <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
+                  </SidebarMenuSubTrigger>
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
                       <SidebarMenuButton href="/hr/employees" isActive={isActive('/hr/employees')} size="sm">
@@ -499,16 +464,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               {/* Settings Menu */}
               <SidebarMenuItem>
                 <SidebarMenuSub defaultOpen={isActive('/settings')}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SidebarMenuSubTrigger tooltip={t('sidebar.settings')} isActive={isActive('/settings')}>
-                        <Settings className={iconSize} />
-                        <span className="truncate">{t('sidebar.settings')}</span>
-                        <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
-                      </SidebarMenuSubTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" align="center">{t('sidebar.settings')}</TooltipContent>
-                  </Tooltip>
+                  <SidebarMenuSubTrigger tooltip={t('sidebar.settings')} isActive={isActive('/settings')}>
+                    <Settings className={iconSize} />
+                    <span className="truncate">{t('sidebar.settings')}</span>
+                    <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
+                  </SidebarMenuSubTrigger>
                   <SidebarMenuSubContent>
                     <SidebarMenuItem>
                       <SidebarMenuButton href="/settings/global" isActive={isActive('/settings/global')} size="sm">
@@ -728,7 +688,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="flex-1 flex flex-col overflow-hidden"> {/* This div takes remaining horizontal space and stacks header/content vertically */}
           {!isMapPage && <AppHeader onToggleSidebar={toggleMobileSidebar} />}
           <SidebarInset noMargin={isMapPage}> {/* SidebarInset is now the <main> element */}
-            <div className="fixed top-0 left-[var(--sidebar-width)] right-0 h-1 z-50">
+            <div className="fixed top-0 left-[var(--sidebar-width)] right-0 h-1 z-[9999]"> {/* Increased z-index */}
               {isLoading && <Progress value={progress} indicatorClassName="bg-accent" className="w-full h-full rounded-none bg-transparent" />}
             </div>
             <div className={isMapPage ? "p-0 h-full" : "p-2 h-[calc(100%-theme(space.12))] overflow-y-auto"}> {/* Content padding is here */}
@@ -750,9 +710,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`antialiased`}
+        className="antialiased"
         suppressHydrationWarning
       >
+        {/* Ensure NextThemesProvider and subsequent providers/body/html are effectively full width */}
         <NextThemesProvider
           attribute="class"
           defaultTheme="system"
@@ -762,7 +723,7 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <LocaleProvider>
               <TooltipProvider delayDuration={0}>
-                <SidebarProvider side="left" collapsible="none">
+                <SidebarProvider side="left" collapsible="none" className="w-full"> {/* Ensure SidebarProvider's wrapper is full width */}
                   <AppLayout>{children}</AppLayout>
                 </SidebarProvider>
               </TooltipProvider>

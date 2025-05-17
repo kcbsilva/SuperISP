@@ -123,7 +123,7 @@ const SidebarProvider = React.forwardRef<
 
     return (
       <SidebarContext.Provider value={contextValue}>
-        <div ref={ref} className={cn("flex h-full", className)} {...props}>
+        <div ref={ref} className={cn("flex h-full w-full", className)} {...props}> {/* Ensure this wrapper is also full width */}
           {children}
         </div>
       </SidebarContext.Provider>
@@ -408,8 +408,61 @@ const SidebarMenuSub = React.forwardRef<
     isOpen,
     setIsOpen,
   }), [isOpen]);
+const SidebarMenuSubTrigger = React.memo(React.forwardRef<
+  HTMLButtonElement,
+  SidebarMenuSubTriggerProps
+>(
+  (
+    { className, children, isActive, tooltip, size = "default", ...props },
+    ref
+  ) => {
+    const { isOpen, setIsOpen } = useSidebarMenuSub();
 
-  console.log("SidebarMenuSub isOpen:", isOpen);
+    const triggerChildren = React.Children.map(children, (child) => {
+      if (
+        React.isValidElement(child) &&
+        typeof child.type !== "string" &&
+        (child.type as any).displayName?.includes("Icon")
+      ) {
+        return React.cloneElement(child as React.ReactElement<any>, {
+          className: cn("h-3 w-3", (child.props as any).className),
+        });
+      }
+      return child;
+    });
+
+    const buttonContent = (
+      <button
+        type="button"
+        ref={ref}
+        data-sidebar="menu-sub-trigger"
+        data-state={isOpen ? "open" : "closed"}
+        data-size={size}
+        className={cn(
+          sidebarMenuButtonVariants({ isActive, size, isCollapsed: false }), // isCollapsed is false
+          "group/sub-trigger",
+          className
+        )}
+        onClick={() => setIsOpen(!isOpen)} // Toggle the isOpen state
+        {...props}
+      >
+        {triggerChildren}
+      </button>
+    );
+
+    if (tooltip) {
+      return (
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
+          <TooltipContent side="right" align="center" className="text-xs">
+            {tooltip}
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+    return buttonContent;
+  }
+));
 
   return ( // Note: This is the return for the component, not the useMemo
     <SidebarMenuSubContext.Provider value={contextValue}>
@@ -427,7 +480,6 @@ const SidebarMenuSub = React.forwardRef<
 });
 SidebarMenuSub.displayName = "SidebarMenuSub";
 
-
 const SidebarMenuSubTrigger = React.memo(React.forwardRef<
   HTMLButtonElement,
   SidebarMenuSubTriggerProps
@@ -435,21 +487,18 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
   (
     { className, children, isActive, tooltip, size = "default", ...props },
     ref
-
   ) => {
     const { isOpen, setIsOpen } = useSidebarMenuSub();
-    // const { isMobile } = useSidebar(); // Not needed for text hiding if always expanded
-    console.log("SidebarMenuSubTrigger context:", { isOpen, setIsOpen });
-
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      console.log("Menu title clicked!"); // Add this line
-      setIsOpen(!isOpen);
-    };
 
     const triggerChildren = React.Children.map(children, (child) => {
-      if (React.isValidElement(child) && typeof child.type !== 'string' && (child.type as any).displayName?.includes('Icon')) {
-         return React.cloneElement(child as React.ReactElement<any>, { className: cn("h-3 w-3", (child.props as any).className) });
+      if (
+        React.isValidElement(child) &&
+        typeof child.type !== "string" &&
+        (child.type as any).displayName?.includes("Icon")
+      ) {
+        return React.cloneElement(child as React.ReactElement<any>, {
+          className: cn("h-3 w-3", (child.props as any).className),
+        });
       }
       return child;
     });
@@ -466,7 +515,7 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
           "group/sub-trigger",
           className
         )}
-        onClick={handleClick}
+        onClick={() => setIsOpen(!isOpen)} // Toggle the isOpen state
         {...props}
       >
         {triggerChildren}
@@ -476,9 +525,7 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
     if (tooltip) {
       return (
         <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>
-            {buttonContent}
-          </TooltipTrigger>
+          <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
           <TooltipContent side="right" align="center" className="text-xs">
             {tooltip}
           </TooltipContent>
@@ -488,6 +535,7 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
     return buttonContent;
   }
 ));
+
 SidebarMenuSubTrigger.displayName = "SidebarMenuSubTrigger";
 
 

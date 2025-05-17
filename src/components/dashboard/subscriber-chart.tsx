@@ -28,7 +28,7 @@ const chartConfig = {
   },
   lostSubscribers: {
     label: "Lost Subscribers",
-    color: "hsl(var(--chart-2))", // Medium Blue #233B6E
+    color: "hsl(var(--chart-2))", // Real Red  #D00000
   }
 } satisfies ChartConfig
 
