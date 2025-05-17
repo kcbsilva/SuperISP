@@ -1,3 +1,4 @@
+
 // src/components/ui/sidebar.tsx
 "use client"
 
@@ -5,7 +6,7 @@ import * as React from "react"
 import Link, { type LinkProps } from "next/link";
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { ChevronDown, ChevronLeft, ChevronRight, Dot, type LucideIcon } from "lucide-react" // Added Dot
+import { ChevronDown, ChevronLeft, ChevronRight, Dot, type LucideIcon } from "lucide-react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -105,7 +106,7 @@ const SidebarProvider = React.forwardRef<
     ref
   ) => {
     const isMobile = useIsMobile()
-    const [collapsed, setCollapsed] = React.useState(collapsible === 'none' ? false : (defaultCollapsed ?? false)) // Default to not collapsed
+    const [collapsed, setCollapsed] = React.useState(collapsible === 'none' ? false : (defaultCollapsed ?? false))
     const [isOpenMobile, setIsOpenMobile] = React.useState(defaultOpenMobile ?? false)
 
     React.useEffect(() => {
@@ -208,7 +209,7 @@ const SidebarHeader = React.forwardRef<
       ref={ref}
       data-sidebar="header"
       className={cn(
-        "flex items-center p-2 shrink-0 h-14", // Removed border-b
+        "flex items-center p-2 shrink-0 h-14", 
         collapsed ? "justify-center px-1" : "justify-center px-3",
         className
       )}
@@ -545,18 +546,11 @@ const SidebarInset = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"main"> & { noMargin?: boolean }
 >(({ className, noMargin, ...props }, ref) => {
-  const { side, variant } = useSidebar()
-
-   const marginClass = React.useMemo(() => {
-      if (noMargin) return ''; 
-     return 'md:ml-5'; 
-   }, [side, variant, noMargin]);
-
   return (
     <main
       ref={ref}
       className={cn(
-        "relative flex-1 overflow-auto", 
+        "relative flex-1 overflow-auto",
         className
       )}
       {...props}
@@ -582,4 +576,3 @@ export {
   SidebarInset,
   useSidebar,
 };
-
