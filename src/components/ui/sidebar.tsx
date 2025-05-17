@@ -17,7 +17,7 @@ const sidebarVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-card text-card-foreground",
+        default: "bg-card text-card-foreground", // Sidebar is white in light theme
         inset: "m-2 rounded-lg border bg-card text-card-foreground shadow-lg",
         floating: "m-2 rounded-lg border bg-card text-card-foreground shadow-lg",
       },
@@ -25,7 +25,7 @@ const sidebarVariants = cva(
         left: "inset-y-0 left-0 border-r",
         right: "inset-y-0 right-0 border-l",
       },
-      collapsible: {
+      collapsible: { // This variant is less relevant now as we are not using collapsed state
         none: "w-[var(--sidebar-width)]",
         icon: "w-[var(--sidebar-width-icon)] data-[collapsed=false]:w-[var(--sidebar-width)]",
         full: "w-[var(--sidebar-width)] data-[collapsed=true]:w-[var(--sidebar-width-icon)]"
@@ -34,7 +34,7 @@ const sidebarVariants = cva(
     defaultVariants: {
       variant: "default",
       side: "left",
-      collapsible: "none",
+      collapsible: "none", // Default to non-collapsible
     },
   }
 )
@@ -65,9 +65,9 @@ interface SidebarProps
 type SidebarContextValue = {
   variant: VariantProps<typeof sidebarVariants>["variant"]
   side: VariantProps<typeof sidebarVariants>["side"]
-  collapsed: boolean
-  collapsible: VariantProps<typeof sidebarVariants>["collapsible"]
-  setCollapsed: (collapsed: boolean) => void
+  // collapsed: boolean // No longer needed as sidebar is not collapsible
+  // collapsible: VariantProps<typeof sidebarVariants>["collapsible"] // No longer needed
+  // setCollapsed: (collapsed: boolean) => void // No longer needed
   isMobile: boolean
   isOpenMobile: boolean
   setIsOpenMobile: (open: boolean) => void
@@ -87,8 +87,7 @@ function useSidebar() {
 const SidebarProvider = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> &
-    Pick<SidebarProps, "variant" | "side" | "collapsible"> & {
-      defaultCollapsed?: boolean
+    Pick<SidebarProps, "variant" | "side"> & { // Removed collapsible and defaultCollapsed
       defaultOpenMobile?: boolean
     }
 >(
@@ -98,49 +97,33 @@ const SidebarProvider = React.forwardRef<
       children,
       variant = "default",
       side = "left",
-      collapsible = "none",
-      defaultCollapsed,
+      // collapsible = "none", // Removed collapsible
+      // defaultCollapsed, // Removed defaultCollapsed
       defaultOpenMobile,
       ...props
     },
     ref
   ) => {
     const isMobile = useIsMobile()
-    const [collapsed, setCollapsedInternal] = React.useState(collapsible === 'none' ? false : defaultCollapsed ?? false);
     const [isOpenMobile, setIsOpenMobile] = React.useState(defaultOpenMobile ?? false)
-
-    const setCollapsed = React.useCallback((value: boolean) => {
-      if (collapsible !== 'none') {
-        setCollapsedInternal(value);
-      } else {
-        setCollapsedInternal(false);
-      }
-    }, [collapsible]);
-
-    React.useEffect(() => {
-      if (collapsible === 'none') {
-        setCollapsedInternal(false);
-      }
-    }, [collapsible]);
-
 
     const contextValue = React.useMemo<SidebarContextValue>(
       () => ({
         variant,
         side,
-        collapsed: collapsible === 'none' ? false : collapsed,
-        collapsible,
-        setCollapsed,
+        // collapsed: false, // Always false as it's not collapsible
+        // collapsible: "none", // Always none
+        // setCollapsed: () => {}, // No-op function
         isMobile,
         isOpenMobile,
         setIsOpenMobile,
       }),
-      [variant, side, collapsed, collapsible, isMobile, isOpenMobile, setCollapsed, setIsOpenMobile]
+      [variant, side, isMobile, isOpenMobile, setIsOpenMobile]
     )
 
     return (
       <SidebarContext.Provider value={contextValue}>
-        <div ref={ref} className={cn("flex h-full", className)} {...props}> {/* Ensure this div has h-full */}
+        <div ref={ref} className={cn("flex h-full", className)} {...props}>
           {children}
         </div>
       </SidebarContext.Provider>
@@ -154,16 +137,14 @@ const Sidebar = React.forwardRef<
   HTMLElement,
   SidebarProps
 >(({ className, children, ...props }, ref) => {
-  const { variant, side, collapsible, collapsed, isMobile, isOpenMobile, setIsOpenMobile } = useSidebar()
-  const currentCollapsibleMode = collapsible === 'none' ? 'none' : (collapsed ? 'icon' : 'full');
+  const { variant, side, isMobile, isOpenMobile, setIsOpenMobile } = useSidebar()
 
   const commonProps = {
     ref,
     "data-sidebar": "sidebar",
     "data-variant": variant,
     "data-side": side,
-    "data-collapsed": collapsed.toString(),
-    "data-collapsible": currentCollapsibleMode, // Use the derived mode
+    "data-collapsible": "none", // Explicitly none
     ...props,
   }
 
@@ -191,12 +172,11 @@ const Sidebar = React.forwardRef<
   return (
     <nav
       className={cn(
-        sidebarVariants({ variant, side, collapsible: currentCollapsibleMode }),
-        "flex flex-col h-full",
+        sidebarVariants({ variant, side, collapsible: "none" }), // Collapsible is now 'none'
+        "flex flex-col h-full", // Ensure it takes full height
         (variant === "floating" || variant === "inset") && "p-2",
         className
       )}
-      style={{ width: 'var(--sidebar-width)' }} // Ensure fixed width when not collapsible
       {...commonProps}
     >
       {children}
@@ -215,7 +195,7 @@ const SidebarHeader = React.forwardRef<
       ref={ref}
       data-sidebar="header"
       className={cn(
-        "flex items-center p-2 shrink-0 h-14 justify-center px-3",
+        "flex items-center p-2 shrink-0 h-14 justify-center px-3", // Removed border-b
         className
       )}
       {...props}
@@ -253,7 +233,7 @@ const SidebarFooter = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="footer"
-      className={cn("mt-auto p-2 shrink-0 h-14 flex items-center justify-between", // Removed border-t
+      className={cn("mt-auto p-2 shrink-0 h-14 flex items-center justify-between",
       className)}
       {...props}
     >
@@ -272,7 +252,7 @@ const SidebarMenu = React.forwardRef<
     <ul
       ref={ref}
       data-sidebar="menu"
-      className={cn("flex flex-col gap-0.5 p-2", className)}
+      className={cn("flex flex-col gap-0.5 p-2", className)} // Removed p-2 for now
       {...props}
     >
       {children}
@@ -306,7 +286,7 @@ const sidebarMenuButtonVariants = cva(
       isActive: {
         true: "bg-muted text-primary font-semibold",
       },
-      isCollapsed: {
+      isCollapsed: { // Will not be used since collapsible is 'none'
         true: "[&>span:not(.sr-only)]:sr-only justify-center px-0",
       },
       size: {
@@ -325,7 +305,7 @@ const sidebarMenuButtonVariants = cva(
 
 interface SidebarMenuButtonProps extends Omit<LinkProps, 'asChild' | 'legacyBehavior'> {
   isActive?: boolean;
-  tooltip?: React.ReactNode;
+  tooltip?: React.ReactNode; // Tooltip is now less relevant for non-collapsible
   size?: "default" | "sm" | "lg";
   asChild?: boolean;
   children: React.ReactNode;
@@ -341,23 +321,17 @@ const SidebarMenuButton = React.memo(React.forwardRef<
     { className, isActive, children, tooltip, size = "default", asChild, href, ...props },
     ref
   ) => {
-    const { collapsed, collapsible, isMobile } = useSidebar();
-    const hideText = collapsible !== 'none' && collapsed;
+    // const { isMobile } = useSidebar(); // isMobile not used for text hiding if always expanded
     const Comp = asChild ? Slot : Link;
 
-    const buttonChildren = React.Children.toArray(children).map((child, index) => {
+    // Since sidebar is not collapsible, hideText logic for desktop is removed.
+    // Text is always visible on desktop.
+    const buttonChildren = React.Children.map(children, (child) => {
       if (React.isValidElement(child) && typeof child.type !== 'string' && (child.type as any).displayName?.includes('Icon')) {
          return React.cloneElement(child as React.ReactElement<any>, { className: cn("h-3 w-3", (child.props as any).className) });
       }
-      if (typeof child === 'string' || (React.isValidElement(child) && child.type === 'span')) {
-        if (hideText && !isMobile) {
-          return <span key={index} className="sr-only">{child}</span>;
-        }
-        return child;
-      }
       return child;
     });
-
 
     const buttonContent = (
       <Comp
@@ -365,7 +339,7 @@ const SidebarMenuButton = React.memo(React.forwardRef<
         data-sidebar="menu-button"
         data-size={size}
         className={cn(
-          sidebarMenuButtonVariants({ isActive, size, isCollapsed: hideText && !isMobile }),
+          sidebarMenuButtonVariants({ isActive, size, isCollapsed: false }), // isCollapsed is false
           className
         )}
         href={href}
@@ -375,7 +349,9 @@ const SidebarMenuButton = React.memo(React.forwardRef<
       </Comp>
     );
 
-    if (tooltip && hideText && !isMobile) {
+    // Tooltip is now less relevant on desktop if sidebar is always expanded
+    // but can still be useful for providing more info.
+    if (tooltip) {
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
@@ -395,13 +371,12 @@ SidebarMenuButton.displayName = "SidebarMenuButton";
 
 interface SidebarMenuSubTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isActive?: boolean;
-  tooltip?: React.ReactNode;
+  tooltip?: React.ReactNode; // Tooltip less relevant
   size?: "default" | "sm" | "lg";
   children: React.ReactNode;
   className?: string;
 }
 
-// Context for submenu state
 interface SidebarMenuSubContextValue {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -422,25 +397,11 @@ const SidebarMenuSub = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & { defaultOpen?: boolean }
 >(({ className, children, defaultOpen = false, ...props }, ref) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
-  const { collapsed, collapsible } = useSidebar();
   const pathname = usePathname();
 
-  // Effect to close submenu if sidebar is collapsed (unless non-collapsible)
   React.useEffect(() => {
-    if (collapsible !== 'none' && collapsed) {
-      setIsOpen(false);
-    }
-  }, [collapsed, collapsible]);
-
-  // Effect to update isOpen based on defaultOpen if it changes (e.g., due to navigation)
-  React.useEffect(() => {
-    // Only set to defaultOpen if the sidebar is not collapsed (or is non-collapsible)
-    // This prevents submenus from auto-opening when the sidebar is programmatically collapsed
-    // while a child route is active.
-    if (!(collapsible !== 'none' && collapsed)) {
-      setIsOpen(defaultOpen);
-    }
-  }, [defaultOpen, collapsed, collapsible, pathname]); // pathname dependency re-evaluates on route change
+    setIsOpen(defaultOpen);
+  }, [defaultOpen, pathname]); // Re-evaluate if defaultOpen changes or route changes
 
   const contextValue = React.useMemo(() => ({
     isOpen,
@@ -472,24 +433,17 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
     { className, children, isActive, tooltip, size = "default", ...props },
     ref
   ) => {
-    const subContext = useSidebarMenuSub();
-    const { collapsed, collapsible, isMobile } = useSidebar();
-    const hideText = collapsible !== 'none' && collapsed;
+    const { isOpen, setIsOpen } = useSidebarMenuSub();
+    // const { isMobile } = useSidebar(); // Not needed for text hiding if always expanded
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault(); // Prevent any default button behavior
-      subContext.setIsOpen(!subContext.isOpen);
+      e.preventDefault();
+      setIsOpen(!isOpen);
     };
 
-    const triggerChildren = React.Children.toArray(children).map((child, index) => {
-       if (React.isValidElement(child) && typeof child.type !== 'string' && (child.type as any).displayName?.includes('Icon')) {
+    const triggerChildren = React.Children.map(children, (child) => {
+      if (React.isValidElement(child) && typeof child.type !== 'string' && (child.type as any).displayName?.includes('Icon')) {
          return React.cloneElement(child as React.ReactElement<any>, { className: cn("h-3 w-3", (child.props as any).className) });
-       }
-      if (typeof child === 'string' || (React.isValidElement(child) && child.type === 'span')) {
-        if (hideText && !isMobile) {
-          return <span key={index} className="sr-only">{child}</span>;
-        }
-        return child;
       }
       return child;
     });
@@ -499,10 +453,10 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
         type="button"
         ref={ref}
         data-sidebar="menu-sub-trigger"
-        data-state={subContext.isOpen ? "open" : "closed"}
+        data-state={isOpen ? "open" : "closed"}
         data-size={size}
         className={cn(
-          sidebarMenuButtonVariants({ isActive, size, isCollapsed: hideText && !isMobile }),
+          sidebarMenuButtonVariants({ isActive, size, isCollapsed: false }), // isCollapsed is false
           "group/sub-trigger",
           className
         )}
@@ -513,7 +467,7 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
       </button>
     );
 
-    if (tooltip && hideText && !isMobile) {
+    if (tooltip) {
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
@@ -536,9 +490,8 @@ const SidebarMenuSubContent = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
   const { isOpen } = useSidebarMenuSub();
-  const { collapsed, collapsible } = useSidebar();
 
-  if ((collapsible !== 'none' && collapsed) || !isOpen) {
+  if (!isOpen) {
     return null;
   }
 
@@ -550,7 +503,7 @@ const SidebarMenuSubContent = React.forwardRef<
       className={cn(
         "overflow-hidden transition-all duration-200 ease-in-out",
         "data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up",
-        "pl-4",
+        "pl-4", // Indentation for submenu items
         className
       )}
       {...props}
@@ -584,28 +537,21 @@ SidebarSeparator.displayName = "SidebarSeparator";
 
 
 const SidebarInset = React.forwardRef<
-  HTMLDivElement, // Changed from main to div
-  React.ComponentProps<"div"> & { noMargin?: boolean } // Changed from main to div
->(({ className, noMargin, children, ...props }, ref) => { // Added children prop
-   const { side, variant } = useSidebar();
-
-   const marginClass = React.useMemo(() => {
-     if (noMargin) return '';
-     return 'md:ml-5'; // set margin to 5, for a gap of 20px
-   }, [noMargin]);
-
+  HTMLDivElement,
+  React.ComponentProps<"div"> & { noMargin?: boolean }
+>(({ className, noMargin, children, ...props }, ref) => {
+  // Margin logic removed as positioning is now handled by the main layout
   return (
-    <div // Changed from main to div
+    <main
       ref={ref}
       className={cn(
-        "relative flex-1 overflow-auto",
-        marginClass,
+        "relative flex-1 overflow-auto", // Takes remaining space
         className
       )}
       {...props}
     >
-      {children} {/* Render children */}
-    </div>
+      {children}
+    </main>
   )
 })
 SidebarInset.displayName = "SidebarInset"
@@ -627,4 +573,3 @@ export {
   SidebarInset,
   useSidebar,
 };
-
