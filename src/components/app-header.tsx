@@ -1,3 +1,4 @@
+
 // src/components/app-header.tsx
 'use client';
 
@@ -53,7 +54,7 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
-  const iconSize = "h-2.5 w-2.5"; 
+  const iconSize = "h-3 w-3"; 
   const smallIconSize = "h-2.5 w-2.5"; 
 
   React.useEffect(() => setMounted(true), []);
@@ -116,12 +117,11 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
     <header
       className={cn(
         "sticky top-0 z-30 flex h-14 items-center justify-between px-4 md:px-6",
-        "bg-background text-foreground", // Light theme: Use main background color, main foreground text
+        "bg-background text-foreground border-b-2 border-primary", // Light theme: dashboard background, primary border
         "dark:bg-background dark:text-foreground dark:border-b-2 dark:border-accent" // Dark theme: page background header, light text, and accent bottom border
       )}
     >
       <div className="flex items-center">
-        {/* Mobile sidebar toggle - ensure text color is appropriate for header background */}
         <Button variant="ghost" size="icon" className="md:hidden text-foreground hover:bg-muted/50" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
             <MenuIcon className={iconSize} />
         </Button>
@@ -201,7 +201,6 @@ export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
       </div>
 
        <div className="flex items-center gap-2">
-          {/* Ensure button text color contrasts with header background */}
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('header.toggle_theme', 'Toggle theme')} className="text-foreground hover:bg-muted/50">
             {mounted ? (theme === 'light' ? <Moon className={iconSize} /> : <Sun className={iconSize} />) : <Settings className={iconSize} /> }
           </Button>
