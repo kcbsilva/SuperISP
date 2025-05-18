@@ -1,7 +1,7 @@
 
 //src/app/admin/login/page.tsx
 'use client';
-import * as React from "react"; // Ensure React is imported
+import * as React from "react";
 import { useState, useEffect, type SVGProps } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,28 +20,29 @@ import { Separator } from "@/components/ui/separator";
 import { useLocale } from "@/contexts/LocaleContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { useTheme } from "next-themes"; // For ProlterLogo theming
+import { useTheme } from "next-themes";
 
 // Define ProlterLogo component directly in this file
 function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
   const { theme } = useTheme();
   const [isMounted, setIsMounted] = React.useState(false);
-  const { fixedColor, ...restProps } = props; // Destructure fixedColor
+  const { fixedColor, ...restProps } = props;
 
   React.useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Determine fill color based on theme or fixedColor prop
   let fillColor = "hsl(var(--foreground))"; // Default
   if (fixedColor) {
     fillColor = fixedColor;
   } else if (isMounted) {
+    // For the general ProlterLogo, it adapts to the theme
+    // Dark theme: Accent color (Orange/Amber #FCA311)
+    // Light theme: Primary color (Dark Blue #14213D, adjusted to #233B6E based on globals)
     fillColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
   }
 
-  if (!isMounted && !props.fixedColor) {
-    // Return a div with fixed size for SSR to prevent layout shift if color depends on mount
+  if (!isMounted && !fixedColor) {
     return <div style={{ width: "131px", height: "32px" }} />;
   }
 
@@ -52,15 +53,15 @@ function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
         height="100%"
         viewBox="0 0 131 32"
         xmlns="http://www.w3.org/2000/svg"
-        fill={fillColor} // Use the dynamic or fixed fill color
-        {...restProps} // Spread remaining SVG props, excluding fixedColor
+        fill={fillColor}
+        {...restProps}
       >
         {/* Placeholder SVG - REPLACE THIS with your actual SVG code */}
         <text
           x="50%"
           y="50%"
           fontFamily="Arial, sans-serif"
-          fontSize="20"
+          fontSize="24" // Increased font size for better visibility as a logo
           fontWeight="bold"
           textAnchor="middle"
           dominantBaseline="middle"
@@ -102,32 +103,27 @@ export default function AdminLoginPage() {
         setPublicIP("N/A");
         setIpLoading(false);
       });
-  }, [authIsLoading, isAuthenticated]); // Added dependencies to re-run if auth state changes from loading
+  }, []); // Removed dependencies to run only once on mount for IP fetching
 
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError("");
 
-    // Simulate API call
-    // Replace with your actual authentication logic
-    const DEMO_USERNAME = 'demo'; // Replace with actual environment variable or config
-    const DEMO_PASSWORD = 'demo'; // Replace with actual environment variable or config
+    const DEMO_USERNAME = 'demo';
+    const DEMO_PASSWORD = 'demo';
 
     if (username === DEMO_USERNAME && password === DEMO_PASSWORD) {
-      login('/admin/dashboard'); // Redirect to admin dashboard on successful login
+      login(); // AuthContext's login handles redirect to /admin/dashboard
       return;
     }
     
-    // If login fails
     setError(t('login.error_failed', 'Login failed. Please check your credentials.'));
   };
 
-  if (authIsLoading || (!authIsLoading && isAuthenticated)) {
-    // Show loading animation while checking auth or if already authenticated and redirecting
+  if (authIsLoading) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-black">
-        {/* Bouncing dots animation */}
         <div className="flex space-x-2">
           <div className="h-3 w-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
           <div className="h-3 w-3 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]"></div>
@@ -137,12 +133,23 @@ export default function AdminLoginPage() {
     );
   }
 
+  if (!authIsLoading && isAuthenticated) {
+    // This state should ideally be brief as useEffect above should redirect.
+    // Display a "Redirecting..." message or a minimal loader if preferred.
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center bg-black">
+        <p className="text-primary-foreground">{t('auth.redirecting', 'Redirecting to dashboard...')}</p>
+      </div>
+    );
+  }
+
+
+  // Only render the login form if not loading and not authenticated
   return (
     <div className="flex min-h-screen w-full bg-black">
       {/* Left Decorative Panel (Hidden on small screens) */}
       <div className="hidden lg:flex lg:w-3/4 bg-black items-center justify-center p-8">
         <div className="text-center">
-          {/* You can add branding or an image here if desired */}
            <h1 className="text-4xl font-bold text-primary-foreground">
              {t("login.welcome_title", "Welcome to Prolter ISP")}
            </h1>
@@ -218,3 +225,4 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+
