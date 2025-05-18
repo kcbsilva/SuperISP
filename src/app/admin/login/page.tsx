@@ -26,6 +26,7 @@ import { useTheme } from "next-themes"; // For ProlterLogo theming
 function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
   const { theme } = useTheme();
   const [isMounted, setIsMounted] = React.useState(false);
+  const { fixedColor, ...restProps } = props; // Destructure fixedColor
 
   React.useEffect(() => {
     setIsMounted(true);
@@ -33,8 +34,8 @@ function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
 
   // Determine fill color based on theme or fixedColor prop
   let fillColor = "hsl(var(--foreground))"; // Default
-  if (props.fixedColor) {
-    fillColor = props.fixedColor;
+  if (fixedColor) {
+    fillColor = fixedColor;
   } else if (isMounted) {
     fillColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
   }
@@ -52,7 +53,7 @@ function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
         viewBox="0 0 131 32"
         xmlns="http://www.w3.org/2000/svg"
         fill={fillColor} // Use the dynamic or fixed fill color
-        {...props} // Spread other SVG props
+        {...restProps} // Spread remaining SVG props, excluding fixedColor
       >
         {/* Placeholder SVG - REPLACE THIS with your actual SVG code */}
         <text
@@ -101,27 +102,32 @@ export default function AdminLoginPage() {
         setPublicIP("N/A");
         setIpLoading(false);
       });
-  }, []);
+  }, [authIsLoading, isAuthenticated]); // Added dependencies to re-run if auth state changes from loading
 
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError("");
 
-    const DEMO_USERNAME = 'demo';
-    const DEMO_PASSWORD = 'demo';
+    // Simulate API call
+    // Replace with your actual authentication logic
+    const DEMO_USERNAME = 'demo'; // Replace with actual environment variable or config
+    const DEMO_PASSWORD = 'demo'; // Replace with actual environment variable or config
 
     if (username === DEMO_USERNAME && password === DEMO_PASSWORD) {
-      login('/admin/dashboard');
+      login('/admin/dashboard'); // Redirect to admin dashboard on successful login
       return;
     }
     
+    // If login fails
     setError(t('login.error_failed', 'Login failed. Please check your credentials.'));
   };
 
   if (authIsLoading || (!authIsLoading && isAuthenticated)) {
+    // Show loading animation while checking auth or if already authenticated and redirecting
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-black">
+        {/* Bouncing dots animation */}
         <div className="flex space-x-2">
           <div className="h-3 w-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
           <div className="h-3 w-3 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]"></div>
