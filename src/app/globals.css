@@ -1,84 +1,85 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 90%; /* #E5E5E5 */
-    --foreground: 220 51% 16%; /* #14213D */
+    --background: 0 0% 90%; /* Light Gray/Off-white #E5E5E5 */
+    --foreground: 220 51% 16%; /* Dark Blue #14213D - Main text on light background */
 
     --card: 0 0% 100%; /* white */
-    --card-foreground: 220 51% 16%; /* #14213D */
+    --card-foreground: 220 51% 16%; /* Dark Blue #14213D - Text on card */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 51% 16%;
+    --popover: 0 0% 100%; /* white */
+    --popover-foreground: 220 51% 16%; /* Dark Blue #14213D */
 
-    --primary: 220 50% 28%; /* #233B6E */
-    --primary-foreground: 0 0% 90%; /* #E5E5E5 */
+    --primary: 220 50% 28%; /* Medium Blue #233B6E - Primary interactive elements */
+    --primary-foreground: 0 0% 90%; /* Light Gray #E5E5E5 - Text on primary elements */
 
-    --secondary: 220 51% 16%; /* #14213D */
-    --secondary-foreground: 0 0% 90%; /* #E5E5E5 */
+    --secondary: 0 0% 96.1%; /* Lighter gray for muted sections/secondary buttons */
+    --secondary-foreground: 220 51% 16%; /* Dark Blue #14213D - Text on secondary elements */
 
-    --muted: 0 0% 96%; /* Lighter gray for muted sections */
-    --muted-foreground: 220 50% 30%; /* #233B6E for muted text */
+    --muted: 0 0% 96.1%; /* Lighter gray for muted sections */
+    --muted-foreground: 220 50% 30%; /* Darker text for muted foreground #233B6E */
 
-    --accent: 37 98% 52%; /* #FCA311 */
-    --accent-foreground: 220 51% 16%; /* #14213D */
+    --accent: 37 98% 52%; /* Orange/Amber #FCA311 */
+    --accent-foreground: 220 51% 10%; /* Darkest blue #081124 - Text on accent elements */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 0 0% 83%; /* Mid-gray for borders */
-    --input: 0 0% 100%;
-    --ring: 220 50% 28%; /* #233B6E */
+    --input: 0 0% 89.8%; /* Slightly darker gray for input fields */
+    --ring: 37 98% 52%; /* Orange/Amber #FCA311 - Focus rings */
 
     --radius: 0.5rem;
-    --sidebar-width: 200px; /* Reduced from 250px */
-    --sidebar-width-icon: 56px;
+    --sidebar-width: 200px;
+    --sidebar-width-icon: 56px; /* Example for a potentially collapsed icon-only sidebar */
 
     /* Chart Colors Light Theme */
-    --chart-1: 37 98% 52%; /* #FCA311 */
-    --chart-2: 220 50% 28%; /* #233B6E */
-    --chart-3: 220 51% 16%; /* #14213D */
-    --chart-4: 220 68% 9%;  /* #081124 */
-    --chart-5: 0 0% 50%;   /* Neutral Gray */
+    --chart-1: 37 98% 52%;   /* Orange/Amber #FCA311 */
+    --chart-2: 220 50% 28%;  /* Medium Blue #233B6E */
+    --chart-3: 220 51% 16%;  /* Dark Blue #14213D */
+    --chart-4: 220 68% 9%;   /* Darkest Blue/Black #081124 */
+    --chart-5: 0 0% 50%;     /* Neutral Gray */
   }
 
   .dark {
-    --background: 220 51% 16%; /* #14213D */
-    --foreground: 0 0% 90%; /* #E5E5E5 */
+    --background: 220 51% 16%; /* Dark Blue #14213D - Main page background */
+    --foreground: 0 0% 90%; /* Light Gray #E5E5E5 - Main text on dark background */
 
-    --card: 220 68% 9%; /* #081124 */
-    --card-foreground: 0 0% 90%;
+    --card: 220 68% 9%;   /* Darkest Blue/Black #081124 - Card backgrounds */
+    --card-foreground: 0 0% 90%; /* Light Gray #E5E5E5 - Text on cards */
 
-    --popover: 220 68% 9%;
-    --popover-foreground: 0 0% 90%;
+    --popover: 220 68% 9%; /* Darkest Blue/Black #081124 */
+    --popover-foreground: 0 0% 90%; /* Light Gray #E5E5E5 */
 
-    --primary: 37 98% 52%; /* #FCA311 */
-    --primary-foreground: 220 51% 10%; /* Darkest blue for text on orange */
+    --primary: 37 98% 52%; /* Orange/Amber #FCA311 - Primary interactive elements */
+    --primary-foreground: 0 0% 90%; /* Light Gray #E5E5E5 - Text on primary (orange) elements */
 
-    --secondary: 220 50% 28%; /* #233B6E */
-    --secondary-foreground: 0 0% 90%;
+    --secondary: 220 50% 28%; /* Medium Blue #233B6E - Secondary buttons, less prominent elements */
+    --secondary-foreground: 0 0% 90%; /* Light Gray #E5E5E5 - Text on secondary elements */
 
     --muted: 220 68% 12%; /* Slightly lighter than card for muted sections */
     --muted-foreground: 220 30% 70%; /* Lighter muted text */
 
-    --accent: 37 98% 52%; /* #FCA311 */
-    --accent-foreground: 220 51% 10%;
+    --accent: 37 98% 52%; /* Orange/Amber #FCA311 */
+    --accent-foreground: 220 51% 10%; /* Darkest Blue/Black #081124 - Text on accent elements */
 
     --destructive: 0 63% 40%;
     --destructive-foreground: 0 0% 90%;
 
-    --border: 220 50% 22%; /* Slightly lighter than background */
-    --input: 220 68% 12%;
-    --ring: 37 98% 52%; /* #FCA311 */
+    --border: 220 50% 22%; /* Slightly lighter than background for borders */
+    --input: 220 68% 12%; /* Slightly lighter than card for input fields */
+    --ring: 37 98% 52%; /* Orange/Amber #FCA311 */
 
     /* Chart Colors Dark Theme */
-    --chart-1: 37 98% 52%; /* #FCA311 */
-    --chart-2: 220 50% 45%; /* Lighter #233B6E for dark theme */
-    --chart-3: 0 0% 90%;   /* #E5E5E5 for contrast */
-    --chart-4: 220 50% 60%; /* Another lighter blue */
-    --chart-5: 0 0% 70%;   /* Lighter Gray */
+    --chart-1: 37 98% 52%;   /* Orange/Amber #FCA311 */
+    --chart-2: 220 50% 45%;  /* Lighter Medium Blue */
+    --chart-3: 0 0% 90%;     /* Light Gray #E5E5E5 */
+    --chart-4: 220 50% 60%;  /* Even Lighter Blue */
+    --chart-5: 0 0% 70%;     /* Lighter Gray */
   }
 }
 
