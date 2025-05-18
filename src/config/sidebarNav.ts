@@ -201,7 +201,7 @@ export const sidebarNav: SidebarNavItem[] = [
           },
           {
             title: 'sidebar.fttx_olts',
-            href: '/admin/noc/fttx/olts', // Corrected path
+            href: 'admin/noc/fttx/olts', // Corrected path
             icon: NetworkIcon,
             tooltip: 'sidebar.fttx_olts',
           },
