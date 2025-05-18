@@ -1,3 +1,4 @@
+
 // src/config/sidebarNav.ts
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, ChevronDown, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
@@ -67,13 +68,13 @@ export interface SidebarNavItem {
 export const sidebarNav: SidebarNavItem[] = [
   {
     title: 'sidebar.dashboard',
-    href: '/',
+    href: '/admin/dashboard',
     icon: LayoutDashboard,
     tooltip: 'sidebar.dashboard',
   },
   {
     title: 'sidebar.subscribers',
-    href: '/subscribers/list',
+    href: '/admin/subscribers/list',
     icon: Users,
     tooltip: 'sidebar.subscribers',
   },
@@ -84,13 +85,13 @@ export const sidebarNav: SidebarNavItem[] = [
     children: [
       {
         title: 'sidebar.maps_projects',
-        href: '/maps/projects',
+        href: '/admin/maps/projects',
         icon: FileCode,
         tooltip: 'sidebar.maps_projects',
       },
       {
         title: 'sidebar.maps_map',
-        href: '/maps/map',
+        href: '/admin/maps/map',
         icon: Globe,
         tooltip: 'sidebar.maps_map',
       },
@@ -101,49 +102,49 @@ export const sidebarNav: SidebarNavItem[] = [
         children: [
           {
             title: 'sidebar.maps_elements_polls',
-            href: '/maps/elements/polls',
+            href: '/admin/maps/elements/polls',
             icon: Power,
             tooltip: 'sidebar.maps_elements_polls',
           },
           {
             title: 'sidebar.maps_elements_fdhs',
-            href: '/maps/elements/fdhs',
+            href: '/admin/maps/elements/fdhs',
             icon: Box,
             tooltip: 'sidebar.maps_elements_fdhs',
           },
           {
             title: 'sidebar.maps_elements_foscs',
-            href: '/maps/elements/foscs',
+            href: '/admin/maps/elements/foscs',
             icon: Warehouse,
             tooltip: 'sidebar.maps_elements_foscs',
           },
           {
             title: 'sidebar.maps_elements_peds',
-            href: '/maps/elements/peds',
+            href: '/admin/maps/elements/peds',
             icon: Box,
             tooltip: 'sidebar.maps_elements_peds',
           },
           {
             title: 'sidebar.maps_elements_accessories',
-            href: '/maps/elements/accessories',
+            href: '/admin/maps/elements/accessories',
             icon: Puzzle,
             tooltip: 'sidebar.maps_elements_accessories',
           },
           {
             title: 'sidebar.maps_elements_splitters',
-            href: '/maps/elements/splitters',
+            href: '/admin/maps/elements/splitters',
             icon: Split,
             tooltip: 'sidebar.maps_elements_splitters',
           },
           {
             title: 'sidebar.maps_elements_towers',
-            href: '/maps/elements/towers',
+            href: '/admin/maps/elements/towers',
             icon: TowerControl,
             tooltip: 'sidebar.maps_elements_towers',
           },
           {
             title: 'sidebar.maps_elements_cables',
-            href: '/maps/elements/cables',
+            href: '/admin/maps/elements/cables',
             icon: Cable,
             tooltip: 'sidebar.maps_elements_cables',
           },
@@ -158,19 +159,19 @@ export const sidebarNav: SidebarNavItem[] = [
     children: [
       {
         title: 'sidebar.finances_cash_book',
-        href: '/finances/cash-book',
+        href: '/admin/finances/cash-book',
         icon: BookOpen,
         tooltip: 'sidebar.finances_cash_book',
       },
       {
         title: 'sidebar.finances_entry_categories',
-        href: '/finances/entry-categories',
+        href: '/admin/finances/entry-categories',
         icon: ListFilter,
         tooltip: 'sidebar.finances_entry_categories',
       },
       {
         title: 'sidebar.finances_config',
-        href: '/settings/finances/configurations',
+        href: '/admin/settings/finances/configurations',
         icon: SlidersHorizontal,
         tooltip: 'sidebar.finances_config',
       },
@@ -183,7 +184,7 @@ export const sidebarNav: SidebarNavItem[] = [
     children: [
       {
         title: 'sidebar.noc_overview',
-        href: '/noc/overview',
+        href: '/admin/noc/overview',
         icon: LayoutDashboard,
         tooltip: 'sidebar.noc_overview',
       },
@@ -194,19 +195,19 @@ export const sidebarNav: SidebarNavItem[] = [
         children: [
           {
             title: 'sidebar.fttx_dashboard',
-            href: '/noc/fttx/dashboard',
+            href: '/admin/noc/fttx/dashboard', // Corrected path
             icon: LayoutDashboard,
             tooltip: 'sidebar.fttx_dashboard',
           },
           {
             title: 'sidebar.fttx_olts',
-            href: '/noc/fttx/olts',
-            icon: NetworkIcon, // Consider a different icon if NOC uses NetworkIcon
+            href: '/admin/noc/fttx/olts', // Corrected path
+            icon: NetworkIcon,
             tooltip: 'sidebar.fttx_olts',
           },
           {
             title: 'sidebar.fttx_onx_templates',
-            href: '/noc/fttx/onx-templates',
+            href: '/admin/noc/fttx/onx-templates', // Corrected path
             icon: FileTextIcon,
             tooltip: 'sidebar.fttx_onx_templates',
           },
@@ -219,20 +220,20 @@ export const sidebarNav: SidebarNavItem[] = [
         children: [
           {
             title: 'sidebar.noc_wireless_dashboard',
-            href: '/noc/wireless/dashboard',
+            href: '/admin/noc/wireless/dashboard',
             icon: LayoutDashboard,
             tooltip: 'sidebar.noc_wireless_dashboard',
           },
           {
             title: 'sidebar.noc_wireless_aps',
-            href: '/noc/wireless/access-points',
-            icon: RouterIcon, // Example Icon
+            href: '/admin/noc/wireless/access-points',
+            icon: RouterIcon,
             tooltip: 'sidebar.noc_wireless_aps',
           },
           {
             title: 'sidebar.noc_wireless_clients',
-            href: '/noc/wireless/clients',
-            icon: Users2, // Example Icon
+            href: '/admin/noc/wireless/clients',
+            icon: Users2,
             tooltip: 'sidebar.noc_wireless_clients',
           },
         ],
@@ -246,56 +247,56 @@ export const sidebarNav: SidebarNavItem[] = [
     children: [
       {
         title: 'sidebar.inventory_categories',
-        href: '/inventory/categories',
+        href: '/admin/inventory/categories',
         icon: ListFilter,
         tooltip: 'sidebar.inventory_categories',
       },
       {
         title: 'sidebar.inventory_manufacturers',
-        href: '/inventory/manufacturers',
+        href: '/admin/inventory/manufacturers',
         icon: Factory,
         tooltip: 'sidebar.inventory_manufacturers',
       },
       {
         title: 'sidebar.inventory_suppliers',
-        href: '/inventory/suppliers',
+        href: '/admin/inventory/suppliers',
         icon: Truck,
         tooltip: 'sidebar.inventory_suppliers',
       },
       {
         title: 'sidebar.inventory_products',
-        href: '/inventory/products',
+        href: '/admin/inventory/products',
         icon: PackageIcon,
         tooltip: 'sidebar.inventory_products',
       },
-      {
+       {
         title: 'sidebar.inventory_warehouses',
-        href: '/inventory/warehouses',
+        href: '/admin/inventory/warehouses',
         icon: Warehouse,
         tooltip: 'sidebar.inventory_warehouses',
       },
       {
         title: 'sidebar.inventory_vehicles',
-        href: '/inventory/vehicles',
+        href: '/admin/inventory/vehicles',
         icon: Bus,
         tooltip: 'sidebar.inventory_vehicles',
       },
     ],
   },
-  {
+   {
     title: 'sidebar.service_calls',
     icon: Wrench,
     tooltip: 'sidebar.service_calls',
     children: [
       {
         title: 'sidebar.service_calls_dashboard',
-        href: '/service-calls/dashboard',
+        href: '/admin/service-calls/dashboard',
         icon: ServiceDashboardIcon,
         tooltip: 'sidebar.service_calls_dashboard',
       },
       {
         title: 'sidebar.service_calls_service_types',
-        href: '/service-calls/service-types',
+        href: '/admin/service-calls/service-types',
         icon: ServiceTypesIcon,
         tooltip: 'sidebar.service_calls_service_types',
       },
@@ -303,7 +304,7 @@ export const sidebarNav: SidebarNavItem[] = [
   },
   {
     title: 'sidebar.reports',
-    href: '/reports',
+    href: '/admin/reports',
     icon: BarChart3,
     tooltip: 'sidebar.reports',
   },
@@ -314,7 +315,7 @@ export const sidebarNav: SidebarNavItem[] = [
     children: [
       {
         title: 'sidebar.hr_employees',
-        href: '/hr/employees',
+        href: '/admin/hr/employees',
         icon: Users,
         tooltip: 'sidebar.hr_employees',
       },
@@ -327,7 +328,7 @@ export const sidebarNav: SidebarNavItem[] = [
     children: [
       {
         title: 'sidebar.settings_global',
-        href: '/settings/global',
+        href: '/admin/settings/global',
         icon: Cog,
         tooltip: 'sidebar.settings_global',
       },
@@ -338,7 +339,7 @@ export const sidebarNav: SidebarNavItem[] = [
         children: [
           {
             title: 'sidebar.settings_business_pops',
-            href: '/settings/business/pops',
+            href: '/admin/settings/business/pops',
             icon: Building,
             tooltip: 'sidebar.settings_business_pops',
           },
@@ -351,31 +352,31 @@ export const sidebarNav: SidebarNavItem[] = [
         children: [
           {
             title: 'sidebar.settings_plans_internet',
-            href: '/settings/plans/internet',
+            href: '/admin/settings/plans/internet',
             icon: Wifi,
             tooltip: 'sidebar.settings_plans_internet',
           },
           {
             title: 'sidebar.settings_plans_tv',
-            href: '/settings/plans/tv',
+            href: '/admin/settings/plans/tv',
             icon: Tv,
             tooltip: 'sidebar.settings_plans_tv',
           },
           {
             title: 'sidebar.settings_plans_mobile',
-            href: '/settings/plans/mobile',
+            href: '/admin/settings/plans/mobile',
             icon: Smartphone,
             tooltip: 'sidebar.settings_plans_mobile',
           },
           {
             title: 'sidebar.settings_plans_landline',
-            href: '/settings/plans/landline',
+            href: '/admin/settings/plans/landline',
             icon: PhoneCall,
             tooltip: 'sidebar.settings_plans_landline',
           },
           {
             title: 'sidebar.settings_plans_combos',
-            href: '/settings/plans/combos',
+            href: '/admin/settings/plans/combos',
             icon: Combine,
             tooltip: 'sidebar.settings_plans_combos',
           },
@@ -388,31 +389,31 @@ export const sidebarNav: SidebarNavItem[] = [
         children: [
           {
             title: 'sidebar.network_ip',
-            href: '/settings/network/ip',
+            href: '/admin/settings/network/ip',
             icon: Code,
             tooltip: 'sidebar.network_ip',
           },
           {
             title: 'sidebar.network_devices',
-            href: '/settings/network/devices',
+            href: '/admin/settings/network/devices',
             icon: RouterIcon,
             tooltip: 'sidebar.network_devices',
           },
           {
             title: 'sidebar.network_cgnat',
-            href: '/settings/network/cgnat',
+            href: '/admin/settings/network/cgnat',
             icon: Share2,
             tooltip: 'sidebar.network_cgnat',
           },
           {
             title: 'sidebar.network_radius',
-            href: '/settings/network/radius',
+            href: '/admin/settings/network/radius',
             icon: ServerIcon,
             tooltip: 'sidebar.network_radius',
           },
           {
             title: 'sidebar.network_vlan',
-            href: '/settings/network/vlan',
+            href: '/admin/settings/network/vlan',
             icon: Split,
             tooltip: 'sidebar.network_vlan',
           },
@@ -420,13 +421,13 @@ export const sidebarNav: SidebarNavItem[] = [
       },
       {
         title: 'sidebar.security',
-        href: '/settings/security',
+        href: '/admin/settings/security',
         icon: ShieldCheck,
         tooltip: 'sidebar.security',
       },
       {
         title: 'sidebar.settings_system_monitor',
-        href: '/settings/system-monitor',
+        href: '/admin/settings/system-monitor',
         icon: RouterIcon,
         tooltip: 'sidebar.settings_system_monitor',
       },
@@ -437,25 +438,25 @@ export const sidebarNav: SidebarNavItem[] = [
         children: [
           {
             title: 'sidebar.settings_integrations_whatsapp',
-            href: '/settings/integrations/whatsapp',
+            href: '/admin/settings/integrations/whatsapp',
             icon: MessageSquare,
             tooltip: 'sidebar.settings_integrations_whatsapp',
           },
           {
             title: 'sidebar.settings_integrations_telegram',
-            href: '/settings/integrations/telegram',
+            href: '/admin/settings/integrations/telegram',
             icon: MessageSquare,
             tooltip: 'sidebar.settings_integrations_telegram',
           },
           {
             title: 'sidebar.settings_integrations_meta',
-            href: '/settings/integrations/meta',
+            href: '/admin/settings/integrations/meta',
             icon: MessageSquare,
             tooltip: 'sidebar.settings_integrations_meta',
           },
           {
             title: 'sidebar.settings_integrations_sms',
-            href: '/settings/integrations/sms',
+            href: '/admin/settings/integrations/sms',
             icon: Text,
             tooltip: 'sidebar.settings_integrations_sms',
           },
@@ -463,7 +464,7 @@ export const sidebarNav: SidebarNavItem[] = [
       },
       {
         title: 'sidebar.settings_users',
-        href: '/settings/users',
+        href: '/admin/settings/users',
         icon: Users,
         tooltip: 'sidebar.settings_users',
       },
@@ -474,13 +475,13 @@ export const sidebarNav: SidebarNavItem[] = [
         children: [
           {
             title: 'sidebar.mysql_databases',
-            href: '/mysql/databases',
+            href: '/admin/mysql/databases',
             icon: Database,
             tooltip: 'sidebar.mysql_databases',
           },
           {
             title: 'sidebar.mysql_cli',
-            href: '/mysql/cli',
+            href: '/admin/mysql/cli',
             icon: Code,
             tooltip: 'sidebar.mysql_cli',
           },
@@ -488,21 +489,22 @@ export const sidebarNav: SidebarNavItem[] = [
       },
     ],
   },
+  { title: 'tools-separator', isSeparator: true }, // Unique title for the separator
   {
     title: 'sidebar.pilotview',
-    href: '/pilotview',
+    href: '/admin/pilotview',
     icon: TbDeviceImacStar,
     tooltip: 'sidebar.pilotview',
   },
   {
     title: 'sidebar.transitos',
-    href: '/transitos',
+    href: '/admin/transitos',
     icon: SiReactrouter,
     tooltip: 'sidebar.transitos',
   },
   {
     title: 'sidebar.zones',
-    href: '/zones',
+    href: '/admin/zones',
     icon: SiNextdns,
     tooltip: 'sidebar.zones',
   },
