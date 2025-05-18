@@ -1,3 +1,4 @@
+
 // src/components/sidebar-nav.tsx
 'use client';
 
@@ -30,30 +31,48 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items, isSubMenu = false }) => 
   const pathname = usePathname();
   const { t } = useLocale();
 
-  const isActive = (href: string) => {
+  // Checks if the current path is an exact match or a sub-path of the given href
+  const isLinkActive = (currentPath: string, href?: string): boolean => {
+    if (!href) return false;
     const cleanHref = href.split('?')[0];
-    const cleanPathname = pathname.split('?')[0];
+    const cleanPathname = currentPath.split('?')[0];
+
     if (cleanHref === '/') return cleanPathname === '/';
-    return cleanPathname.startsWith(cleanHref);
+    // Exact match or sub-path (e.g., /admin/settings is active for /admin/settings/global)
+    return cleanPathname === cleanHref || cleanPathname.startsWith(cleanHref + '/');
   };
 
-  const renderItem = (item: SidebarNavItem) => {
+  // Checks if the item or any of its children are active
+  const isBranchActive = (item: SidebarNavItem): boolean => {
+    if (item.href && isLinkActive(pathname, item.href)) {
+      return true;
+    }
+    if (item.children) {
+      return item.children.some(child => isBranchActive(child));
+    }
+    return false;
+  };
+
+
+  const renderItem = (item: SidebarNavItem, index: number) => {
+    // Use a more unique key, e.g., combining title and index, or a dedicated id if available
+    const key = item.title ? `${t(item.title)}-${index}` : `sep-${index}`;
+
+
     if (item.isSeparator) {
-      return <SidebarSeparator key={item.title} />;
+      return <SidebarSeparator key={key} />;
     }
 
     const IconComponent = item.icon as LucideIcon | IconType | undefined;
     const icon = IconComponent ? <IconComponent className={`${iconSize} ${isSubMenu ? 'text-muted-foreground' : ''}`} /> : null;
 
     if (item.children && item.children.length > 0) {
-      const defaultOpen = item.children.some(child =>
-        child.href ? isActive(child.href) : child.children?.some(grandchild => grandchild.href ? isActive(grandchild.href) : false)
-      );
+      const branchIsActive = isBranchActive(item);
 
       return (
-        <SidebarMenuItem key={item.title}>
-          <SidebarMenuSub defaultOpen={defaultOpen}>
-            <SidebarMenuSubTrigger tooltip={t(item.tooltip || item.title)} isActive={isActive(item.href || '')} size={isSubMenu ? 'sm' : 'default'}>
+        <SidebarMenuItem key={key}>
+          <SidebarMenuSub defaultOpen={branchIsActive}>
+            <SidebarMenuSubTrigger tooltip={t(item.tooltip || item.title)} isActive={branchIsActive} size={isSubMenu ? 'sm' : 'default'}>
               {icon}
               <span className="truncate">{t(item.title)}</span>
               <ChevronDown className={`ml-auto ${iconSize} transition-transform group-data-[state=open]:rotate-180`} />
@@ -67,8 +86,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items, isSubMenu = false }) => 
     }
 
     return (
-      <SidebarMenuItem key={item.title}>
-        <SidebarMenuButton href={item.href || '#'} isActive={isActive(item.href || '')} tooltip={t(item.tooltip || item.title)} size={isSubMenu ? 'sm' : 'default'}>
+      <SidebarMenuItem key={key}>
+        <SidebarMenuButton href={item.href || '#'} isActive={isLinkActive(pathname, item.href)} tooltip={t(item.tooltip || item.title)} size={isSubMenu ? 'sm' : 'default'}>
           {icon}
           <span className="truncate">{t(item.title)}</span>
         </SidebarMenuButton>
@@ -78,7 +97,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items, isSubMenu = false }) => 
 
   return (
     <>
-      {items.map(item => renderItem(item))}
+      {items.map((item, index) => renderItem(item, index))}
     </>
   );
 };
