@@ -1,3 +1,4 @@
+
 // src/translations/pt.ts
 const pt = {
   // Login Page Translations
@@ -14,6 +15,8 @@ const pt = {
     submit_button: "Entrar",
     error_failed: "Falha no login. Verifique suas credenciais.", // Example error message
     error_unknown: "Ocorreu um erro desconhecido.", // Example error message
+    your_ip: "Seu IP:",
+    forgot_password: "Esqueceu a senha?",
   },
 
   // Auth related translations (from layout.tsx)
@@ -25,21 +28,9 @@ const pt = {
   sidebar: {
     dashboard: 'Painel',
     subscribers: 'Assinantes',
-    subscribers_list: 'Lista',
-    subscribers_new: 'Novo',
-    network: 'Rede',
-    network_ip: 'IPv4/6',
-    network_devices: 'Dispositivos',
-    network_cgnat: 'CGNAT',
-    network_radius: 'RADIUS(NAS)',
-    network_vlan: 'VLAN',
-    noc: 'NOC', // Added
-    noc_overview: 'Visão Geral', // Added
-    noc_wireless: 'Wireless', // Added
-    noc_wireless_dashboard: 'Painel', // Added
-    noc_wireless_aps: 'Pontos de Acesso', // Added
-    noc_wireless_clients: 'Dispositivos Clientes (CPEs)', // Added
     maps: 'Mapas',
+    maps_map: 'Mapa',
+    maps_projects: 'Projetos',
     maps_elements: 'Elementos',
     maps_elements_polls: 'Postes',
     maps_elements_fdhs: 'CTOs',
@@ -49,13 +40,16 @@ const pt = {
     maps_elements_splitters: 'Splitters',
     maps_elements_towers: 'Torres',
     maps_elements_cables: 'Cabos',
-    maps_map: 'Mapa',
-    maps_projects: 'Projetos',
+    noc: 'NOC',
+    noc_overview: 'Visão Geral',
+    noc_wireless: 'Wireless',
+    noc_wireless_dashboard: 'Painel Wireless', // Corrected translation key
+    noc_wireless_aps: 'Pontos de Acesso',
+    noc_wireless_clients: 'Dispositivos Clientes (CPEs)',
     fttx: 'FTTx',
-    fttx_dashboard: 'Painel',
+    fttx_dashboard: 'Painel FTTx', // Corrected translation key
     fttx_olts: 'OLTs & ONXs',
     fttx_onx_templates: 'Modelos ONx',
-    zones: 'Zonas',
     finances: 'Finanças',
     finances_cash_book: 'Livro Caixa',
     finances_entry_categories: 'Categorias de Lançamento',
@@ -68,12 +62,12 @@ const pt = {
     inventory_vehicles: 'Veículos',
     inventory_warehouses: 'Armazéns',
     service_calls: 'Ordens de Serviço',
-    service_calls_dashboard: 'Painel',
+    service_calls_dashboard: 'Painel de Ordens de Serviço', // Corrected translation key
     service_calls_service_types: 'Tipos de Serviço',
-    hr: 'RH',
-    hr_employees: 'Funcionários',
     reports: 'Relatórios',
-    security: 'Segurança',
+    hr: 'RH',
+    hr_dashboard: 'Painel de RH', // Added
+    hr_employees: 'Funcionários',
     settings: 'Configurações',
     settings_global: 'Configurações Globais',
     settings_business: 'Negócios',
@@ -84,21 +78,26 @@ const pt = {
     settings_plans_mobile: 'Celular',
     settings_plans_landline: 'Telefone Fixo',
     settings_plans_combos: 'Combos',
+    settings_network: 'Rede', // Renamed
+    settings_network_ip: 'IPv4/6',
+    settings_network_devices: 'Dispositivos',
+    settings_network_cgnat: 'CGNAT',
+    settings_network_radius: 'RADIUS(NAS)',
+    settings_network_vlan: 'VLAN',
+    settings_security: 'Segurança',
+    settings_system_monitor: 'Monitor do Sistema',
     settings_integrations: 'Integrações',
     settings_integrations_whatsapp: 'WhatsApp',
     settings_integrations_telegram: 'Telegram',
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
     settings_users: 'Usuários',
-    settings_system_monitor: 'Monitor do Sistema',
-    mysql: 'MySQL',
-    mysql_databases: 'Bancos de Dados',
-    mysql_tables: 'Tabelas',
-    mysql_cli: 'CLI',
+    settings_mysql: 'MySQL', // Renamed
+    settings_mysql_databases: 'Bancos de Dados',
+    settings_mysql_cli: 'CLI',
     pilotview: 'PilotView',
     transitos: 'TransitOS',
-    expand_sidebar: 'Expandir barra lateral',
-    collapse_sidebar: 'Recolher barra lateral',
+    zones: 'Zonas',
   },
   search: {
     placeholder: 'Buscar clientes, equipamentos, elementos...',
@@ -121,7 +120,7 @@ const pt = {
     my_account: 'Minha Conta',
     profile_menu_item: 'Perfil',
     logout_menu_item: 'Sair',
-    profile_action_title: 'Sair',
+    profile_action_title: 'Sair', // Changed this to make more sense for the action itself
     profile_action_desc: 'Processo de logout iniciado (Não Implementado)',
     toggle_theme: 'Alternar tema',
   },
@@ -482,8 +481,8 @@ const pt = {
     auth_type_staticip: 'IP Estático',
     services_fdh_id: 'ID CTO',
     services_fdh_port: 'Porta CTO',
-    services_ap_name: 'AP Name',
-    services_switch_id: 'Switch ID',
+    services_ap_name: 'Nome AP',
+    services_switch_id: 'ID Switch',
     services_pppoe_user: 'Usuário PPPoE',
     services_pppoe_pass: 'Senha PPPoE',
     services_ipoe_user: 'Usuário IPoE',
@@ -693,9 +692,9 @@ const pt = {
     fdh_modal_history_details: 'Detalhes',
     fdh_modal_no_history: 'Nenhum histórico disponível para esta CTO.',
     fdh_modal_close_button: 'Fechar',
-    template_modal_not_implemented_title: 'Template Management (Not Implemented)',
-    poll_template_button: 'Poll Templates',
-    poll_template_modal_not_implemented_desc: 'Managing templates for Hydro Polls is not yet available.',
+    template_modal_not_implemented_title: 'Gerenciamento de Modelos (Não Implementado)',
+    poll_template_button: 'Modelos de Poste',
+    poll_template_modal_not_implemented_desc: 'Gerenciar modelos para Postes Hidro ainda não está disponível.',
     poll_profile_title: 'Perfil Poste: {id}',
     poll_profile_description: 'Detalhes do poste hidro selecionado.',
     poll_modal_tab_details: 'Detalhes',
@@ -727,15 +726,15 @@ const pt = {
     action_edit_poll: 'Editar Poste (Não Implementado)',
     action_delete_poll: 'Excluir Poste (Não Implementado)',
     action_see_in_map: 'Ver no Mapa (Não Implementado)',
-    ped_template_button: 'PED Templates',
-    ped_template_modal_not_implemented_desc: 'Managing templates for PEDs is not yet available.',
-    tower_template_button: 'Tower Templates',
-    tower_template_modal_not_implemented_desc: 'Managing templates for Towers is not yet available.',
-    cable_template_button: 'Cable Templates',
-    cable_template_modal_not_implemented_desc: 'Managing templates for Cables is not yet available.',
-    accessory_template_button: 'Accessory Templates',
-    accessory_template_modal_not_implemented_desc: 'Managing templates for Accessories is not yet available.',
-    splitter_template_button: 'Splitter Templates',
+    ped_template_button: 'Modelos de PED',
+    ped_template_modal_not_implemented_desc: 'Gerenciar modelos para PEDs ainda não está disponível.',
+    tower_template_button: 'Modelos de Torre',
+    tower_template_modal_not_implemented_desc: 'Gerenciar modelos para Torres ainda não está disponível.',
+    cable_template_button: 'Modelos de Cabo',
+    cable_template_modal_not_implemented_desc: 'Gerenciar modelos para Cabos ainda não está disponível.',
+    accessory_template_button: 'Modelos de Acessório',
+    accessory_template_modal_not_implemented_desc: 'Gerenciar modelos para Acessórios ainda não está disponível.',
+    splitter_template_button: 'Modelos de Splitter',
     splitter_template_modal_not_implemented_desc: 'Gerenciar modelos para Splitters ainda não está disponível.',
     splitter_table_header_description: 'Descrição',
     splitter_table_header_enclosure: 'Caixa (ID CEO/CTO)',

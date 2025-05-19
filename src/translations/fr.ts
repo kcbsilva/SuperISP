@@ -1,24 +1,13 @@
+
 // src/translations/fr.ts
 const fr = {
   // Sidebar
   sidebar: {
     dashboard: 'Tableau de bord',
     subscribers: 'Abonnés',
-    subscribers_list: 'Liste',
-    subscribers_new: 'Nouveau',
-    network: 'Réseau',
-    network_ip: 'IPv4/6',
-    network_devices: 'Appareils',
-    network_cgnat: 'CGNAT',
-    network_radius: 'RADIUS(NAS)',
-    network_vlan: 'VLAN',
-    noc: 'NOC', // Added
-    noc_overview: 'Aperçu', // Added
-    noc_wireless: 'Sans Fil', // Added
-    noc_wireless_dashboard: 'Tableau de Bord', // Added
-    noc_wireless_aps: 'Points d\'Accès', // Added
-    noc_wireless_clients: 'Appareils Clients (CPEs)', // Added
     maps: 'Cartes',
+    maps_map: 'Carte',
+    maps_projects: 'Projets',
     maps_elements: 'Éléments',
     maps_elements_polls: 'Poteaux Hydro',
     maps_elements_fdhs: 'CTOs',
@@ -28,13 +17,16 @@ const fr = {
     maps_elements_splitters: 'Répartiteurs',
     maps_elements_towers: 'Tours',
     maps_elements_cables: 'Câbles',
-    maps_map: 'Carte',
-    maps_projects: 'Projets',
+    noc: 'NOC',
+    noc_overview: 'Aperçu',
+    noc_wireless: 'Sans Fil',
+    noc_wireless_dashboard: 'Tableau de Bord',
+    noc_wireless_aps: 'Points d\'Accès',
+    noc_wireless_clients: 'Appareils Clients (CPEs)',
     fttx: 'FTTx',
-    fttx_dashboard: 'Tableau de bord',
+    fttx_dashboard: 'Tableau de bord FTTx', // Corrected translation key
     fttx_olts: 'OLTs & ONXs',
     fttx_onx_templates: 'Modèles ONx',
-    zones: 'Zones',
     finances: 'Finances',
     finances_cash_book: 'Livre de caisse',
     finances_entry_categories: 'Catégories d\'entrées',
@@ -51,8 +43,8 @@ const fr = {
     service_calls_service_types: 'Types de Service',
     reports: 'Rapports',
     hr: 'RH',
+    hr_dashboard: 'Tableau de Bord RH', // Added
     hr_employees: 'Employés',
-    security: 'Sécurité',
     settings: 'Paramètres',
     settings_global: 'Paramètres globaux',
     settings_business: 'Entreprise',
@@ -63,23 +55,49 @@ const fr = {
     settings_plans_mobile: 'Mobile',
     settings_plans_landline: 'Fixe',
     settings_plans_combos: 'Combos',
+    settings_network: 'Réseau', // Renamed
+    settings_network_ip: 'IPv4/6',
+    settings_network_devices: 'Appareils',
+    settings_network_cgnat: 'CGNAT',
+    settings_network_radius: 'RADIUS(NAS)',
+    settings_network_vlan: 'VLAN',
+    settings_security: 'Sécurité',
+    settings_system_monitor: 'Moniteur Système',
     settings_integrations: 'Intégrations',
     settings_integrations_whatsapp: 'WhatsApp',
     settings_integrations_telegram: 'Telegram',
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
     settings_users: 'Utilisateurs',
-    settings_system_monitor: 'Moniteur Système',
-    mysql: 'MySQL',
-    mysql_databases: 'Bases de données',
-    mysql_tables: 'Tables',
-    mysql_cli: 'CLI',
+    settings_mysql: 'MySQL', // Renamed
+    settings_mysql_databases: 'Bases de données',
+    settings_mysql_cli: 'CLI',
     pilotview: 'PilotView',
     transitos: 'TransitOS',
-    expand_sidebar: 'Agrandir la barre latérale',
-    collapse_sidebar: 'Réduire la barre latérale',
+    zones: 'Zones',
   },
-   search: {
+  // ... rest of your French translations
+  login: {
+    loading: "Chargement...",
+    welcome_title: "Bienvenue chez Prolter ISP",
+    welcome_subtitle: "Gérez vos services efficacement.",
+    title: "Connexion Administrateur",
+    description: "Entrez vos identifiants pour accéder au panneau d'administration.",
+    username_label: "Nom d'utilisateur",
+    username_placeholder: "Entrez votre nom d'utilisateur",
+    password_label: "Mot de passe",
+    password_placeholder: "Entrez votre mot de passe",
+    submit_button: "Se connecter",
+    error_failed: "Échec de la connexion. Veuillez vérifier vos identifiants.",
+    error_unknown: "Une erreur inconnue est survenue.",
+    your_ip: "Votre IP:",
+    forgot_password: "Mot de passe oublié?",
+  },
+  auth: {
+    redirecting: "Redirection vers la page de connexion...",
+    loading: "Chargement de l'authentification...",
+  },
+  search: {
     placeholder: 'Rechercher clients, équipements, éléments...',
     clients_label: 'Clients',
     equipment_label: 'Équipement',
@@ -100,10 +118,8 @@ const fr = {
     my_account: 'Mon compte',
     profile_menu_item: 'Profil',
     logout_menu_item: 'Déconnexion',
-    profile_action_title: 'Profil',
-    profile_action_desc: 'Naviguer vers la page de profil (Non implémenté)',
-    logout_action_title: 'Déconnexion',
-    logout_action_desc: 'Processus de déconnexion initié (Non implémenté)',
+    profile_action_title: 'Déconnexion', // Changed this to make more sense for the action itself
+    profile_action_desc: 'Processus de déconnexion initié (Non implémenté)',
     toggle_theme: 'Changer de thème',
   },
   global_settings: {

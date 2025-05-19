@@ -1,11 +1,10 @@
+
 // src/translations/en.ts
 const en = {
   // Sidebar
   sidebar: {
     dashboard: 'Dashboard',
     subscribers: 'Subscribers',
-    // subscribers_list: 'List', // Removed as it's a direct link
-    // subscribers_new: 'New', // Removed as it's a direct link
     maps: 'Maps',
     maps_map: 'Map',
     maps_projects: 'Projects',
@@ -18,12 +17,12 @@ const en = {
     maps_elements_splitters: 'Splitters',
     maps_elements_towers: 'Towers',
     maps_elements_cables: 'Cables',
-    noc: 'NOC', // Added
-    noc_overview: 'Overview', // Added
-    noc_wireless: 'Wireless', // Added
-    noc_wireless_dashboard: 'Dashboard', // Added
-    noc_wireless_aps: 'Access Points', // Added
-    noc_wireless_clients: 'Client Devices (CPEs)', // Added
+    noc: 'NOC',
+    noc_overview: 'Overview',
+    noc_wireless: 'Wireless',
+    noc_wireless_dashboard: 'Dashboard',
+    noc_wireless_aps: 'Access Points',
+    noc_wireless_clients: 'Client Devices (CPEs)',
     fttx: 'FTTx',
     fttx_dashboard: 'Dashboard',
     fttx_olts: 'OLTs & ONXs',
@@ -44,6 +43,7 @@ const en = {
     service_calls_service_types: 'Service Types',
     reports: 'Reports',
     hr: 'HR',
+    hr_dashboard: 'HR Dashboard', // Added
     hr_employees: 'Employees',
     settings: 'Settings',
     settings_global: 'Global Settings',
@@ -55,31 +55,48 @@ const en = {
     settings_plans_mobile: 'Mobile',
     settings_plans_landline: 'Landline',
     settings_plans_combos: 'Combos',
-    network: 'Network', // Moved under Settings
-    network_ip: 'IPv4/6',
-    network_devices: 'Devices',
-    network_cgnat: 'CGNAT',
-    network_radius: 'RADIUS(NAS)',
-    network_vlan: 'VLAN',
-    security: 'Security', // Moved under Settings
-    settings_system_monitor: 'System Monitor', // Moved under Settings
+    settings_network: 'Network', // Renamed from sidebar.network
+    settings_network_ip: 'IPv4/6',
+    settings_network_devices: 'Devices',
+    settings_network_cgnat: 'CGNAT',
+    settings_network_radius: 'RADIUS(NAS)',
+    settings_network_vlan: 'VLAN',
+    settings_security: 'Security',
+    settings_system_monitor: 'System Monitor',
     settings_integrations: 'Integrations',
     settings_integrations_whatsapp: 'WhatsApp',
     settings_integrations_telegram: 'Telegram',
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
     settings_users: 'Users',
-    mysql: 'MySQL', // Moved under Settings
-    mysql_databases: 'Databases',
-    mysql_tables: 'Tables',
-    mysql_cli: 'CLI',
+    settings_mysql: 'MySQL', // Renamed from sidebar.mysql
+    settings_mysql_databases: 'Databases',
+    settings_mysql_cli: 'CLI',
     pilotview: 'PilotView',
     transitos: 'TransitOS',
     zones: 'Zones',
-    expand_sidebar: 'Expand sidebar',
-    collapse_sidebar: 'Collapse sidebar',
   },
-  // Search Bar
+  // ... rest of your English translations
+  login: {
+    loading: "Carregando...",
+    welcome_title: "Welcome to Prolter ISP",
+    welcome_subtitle: "Manage your services efficiently.",
+    title: "Admin Login",
+    description: "Enter your credentials to access the admin panel.",
+    username_label: "Username",
+    username_placeholder: "Enter your username",
+    password_label: "Password",
+    password_placeholder: "Enter your password",
+    submit_button: "Sign In",
+    error_failed: "Login failed. Please check your credentials.",
+    error_unknown: "An unknown error occurred.",
+    your_ip: "Your IP:",
+    forgot_password: "Forgot Password?",
+  },
+  auth: {
+    redirecting: "Redirecting to login...",
+    loading: "Loading authentication...",
+  },
   search: {
     placeholder: 'Search clients, equipment, elements...',
     clients_label: 'Clients',
@@ -88,7 +105,6 @@ const en = {
     elements_label: 'Elements',
     no_results_found: 'No results found for "{term}"',
   },
-  // Header Icons & Dropdowns
   header: {
     changelog: 'Changelog',
     changelog_label: 'Version 0.1.0',
@@ -102,13 +118,10 @@ const en = {
     my_account: 'My Account',
     profile_menu_item: 'Profile',
     logout_menu_item: 'Logout',
-    profile_action_title: 'Profile',
-    profile_action_desc: 'Navigate to profile page (Not Implemented)',
-    logout_action_title: 'Logout',
-    logout_action_desc: 'Logout process initiated (Not Implemented)',
+    profile_action_title: 'Logout',
+    profile_action_desc: 'Logout process initiated (Not Implemented)',
     toggle_theme: 'Toggle theme',
   },
-  // Global Settings Page
   global_settings: {
     title: 'Global Settings',
     company_name_label: 'Company Name *',
@@ -133,7 +146,6 @@ const en = {
     load_error_title: 'Error Loading Settings',
     load_error_description: 'Could not load existing global settings.',
   },
-  // PoPs Page
   pops: {
     title: 'Points of Presence (PoPs)',
     add_button: 'Add PoP',
@@ -157,10 +169,10 @@ const en = {
     add_success_toast_description: '{name} has been added successfully.',
     add_error_toast_title: 'Error Adding PoP',
     add_error_toast_description: 'Could not add the PoP.',
-    delete_success_toast_title: 'PoP Removido',
-    delete_success_toast_description: 'O PoP foi removido.',
-    delete_error_toast_title: 'Erro ao Remover PoP',
-    delete_error_toast_description: 'Não foi possível remover o PoP.',
+    delete_success_toast_title: 'PoP Removed',
+    delete_success_toast_description: 'The PoP has been removed.',
+    delete_error_toast_title: 'Error Removing PoP',
+    delete_error_toast_description: 'Could not remove the PoP.',
     update_success_toast_title: 'PoP Updated',
     update_success_toast_description: 'The PoP has been updated successfully.',
     update_error_toast_title: 'Error Updating PoP',
@@ -186,7 +198,6 @@ const en = {
     edit_dialog_description: 'Update the PoP details.',
     form_update_button: 'Update PoP',
   },
-   // Add Subscriber Page
    add_subscriber: {
      title: 'Add New Subscriber',
      card_title: 'Subscriber Information',
@@ -221,7 +232,6 @@ const en = {
      add_success_toast_description: 'Details for {name} saved.',
      required_field: '{field} is required.',
    },
-   // List Subscribers Page
    list_subscribers: {
      title: 'Subscribers',
      add_button: 'Add New',
@@ -256,7 +266,6 @@ const en = {
      stats_suspended_subscribers: 'Suspended Subscribers',
      stats_total_subscribers: 'Total Subscribers',
    },
-   // Subscriber Profile Page
    subscriber_profile: {
      overview_tab: 'Overview',
      contracts_tab: 'Contracts',
@@ -1155,7 +1164,7 @@ const en = {
       update_success_title: 'Warehouse Updated',
       update_success_description: 'Warehouse "{name}" updated.',
       delete_success_title: 'Warehouse Deleted',
-      delete_success_description: 'Warehouse "{name}" has been deleted.',
+      delete_success_description: 'Warehouse "{name}" deleted.',
       delete_confirm_title: 'Are you sure?',
       delete_confirm_description: 'This will permanently delete warehouse "{name}". This action cannot be undone.',
       delete_confirm_delete: 'Delete',
