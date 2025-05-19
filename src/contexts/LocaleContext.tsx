@@ -5,7 +5,7 @@ import type React from 'react';
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import translations from '@/translations'; // Import translation data
 
-export type Locale = 'en' | 'fr' | 'pt';
+export type Locale = 'en' | 'pt'; // Removed 'fr'
 
 // Define the shape of the translation dictionary
 type TranslationDict = { [key: string]: string | TranslationDict };
@@ -40,13 +40,13 @@ export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     setIsMounted(true);
     const storedLocale = localStorage.getItem('locale') as Locale | null;
-    if (storedLocale && ['en', 'fr', 'pt'].includes(storedLocale)) {
+    if (storedLocale && ['en', 'pt'].includes(storedLocale)) { // Removed 'fr'
       setLocaleState(storedLocale);
     }
   }, []);
 
   const setLocale = useCallback((newLocale: Locale) => {
-    if (['en', 'fr', 'pt'].includes(newLocale)) {
+    if (['en', 'pt'].includes(newLocale)) { // Removed 'fr'
       setLocaleState(newLocale);
       localStorage.setItem('locale', newLocale);
     }
