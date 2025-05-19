@@ -1,4 +1,3 @@
-
 // src/translations/en.ts
 const en = {
   // Sidebar
@@ -43,7 +42,7 @@ const en = {
     service_calls_service_types: 'Service Types',
     reports: 'Reports',
     hr: 'HR',
-    hr_dashboard: 'HR Dashboard', // Added
+    hr_dashboard: 'HR Dashboard',
     hr_employees: 'Employees',
     settings: 'Settings',
     settings_global: 'Global Settings',
@@ -55,7 +54,7 @@ const en = {
     settings_plans_mobile: 'Mobile',
     settings_plans_landline: 'Landline',
     settings_plans_combos: 'Combos',
-    settings_network: 'Network', // Renamed from sidebar.network
+    settings_network: 'Network',
     settings_network_ip: 'IPv4/6',
     settings_network_devices: 'Devices',
     settings_network_cgnat: 'CGNAT',
@@ -69,7 +68,7 @@ const en = {
     settings_integrations_meta: 'Meta',
     settings_integrations_sms: 'SMS',
     settings_users: 'Users',
-    settings_mysql: 'MySQL', // Renamed from sidebar.mysql
+    settings_mysql: 'MySQL',
     settings_mysql_databases: 'Databases',
     settings_mysql_cli: 'CLI',
     pilotview: 'PilotView',
@@ -78,7 +77,7 @@ const en = {
   },
   // ... rest of your English translations
   login: {
-    loading: "Carregando...",
+    loading: "Loading...",
     welcome_title: "Welcome to Prolter ISP",
     welcome_subtitle: "Manage your services efficiently.",
     title: "Admin Login",
@@ -92,6 +91,7 @@ const en = {
     error_unknown: "An unknown error occurred.",
     your_ip: "Your IP:",
     forgot_password: "Forgot Password?",
+    redirecting: "Redirecting to dashboard...",
   },
   auth: {
     redirecting: "Redirecting to login...",
@@ -135,7 +135,6 @@ const en = {
     language_label: 'Default Language *',
     language_placeholder: 'Select default language',
     language_english: 'English',
-    language_french: 'Français (French)',
     language_portuguese: 'Português (Portuguese)',
     save_button: 'Save Settings',
     saving_button: 'Saving...',
@@ -437,7 +436,7 @@ const en = {
      service_calls_new_button: 'New Service Call',
      service_calls_none: 'No service call history found.',
      service_call_status_resolved: 'Resolved',
-     service_call_status_pending: 'Pendente',
+     service_call_status_pending: 'Pending',
      service_calls_filter_all: "All",
      service_calls_filter_pending: "Pending",
      service_calls_filter_in_progress: "In Progress",
@@ -465,7 +464,6 @@ const en = {
      history_user_label: 'User',
      history_none: 'No history entries found.',
      loading_skeleton: 'Loading...',
-    // Internet Service Specific
     services_technology: 'Technology',
     services_data_rate: 'Data Rate (Down/Up)',
     services_ip_address: 'IP Address',
@@ -488,7 +486,6 @@ const en = {
     services_mac_address: 'MAC Address',
     services_xpon_sn: 'xPON S/N',
   },
-   // Dashboard Page
    dashboard: {
      dashboard_view_label: 'Dashboard View',
      select_view: 'Select Dashboard View',
@@ -573,11 +570,10 @@ const en = {
     fosc_status_inactive: 'Inactive',
     fosc_status_planned: 'Planned',
     fosc_table_header_brand: 'Brand',
-    fosc_table_header_manufacturer: 'Manufacturer', // Added for FOSC
+    fosc_table_header_manufacturer: 'Manufacturer',
     action_edit_fosc: 'Edit FOSC',
     action_delete_fosc: 'Delete FOSC',
     fosc_template_button: 'FOSC Templates',
-    // FOSC Template Modal translations
     fosc_manage_templates_title: 'Manage FOSC Templates',
     fosc_new_template_heading: 'New Template',
     fosc_template_form_manufacturer_label: 'Manufacturer',
@@ -743,7 +739,6 @@ const en = {
     splitter_table_header_ratio: 'Ratio (if 1x2)',
     action_edit_splitter: 'Edit Splitter',
     action_delete_splitter: 'Delete Splitter',
-    // Splitter Template Modal translations
     splitter_manage_templates_title: 'Manage Splitter Templates',
     splitter_new_template_heading: 'New Splitter Template',
     splitter_template_form_manufacturer_label: 'Manufacturer',
@@ -768,7 +763,6 @@ const en = {
     splitter_template_info_category: 'Category',
     splitter_template_info_conn_types: 'Connectors (In/Out)',
     fdh_template_button: 'FDH Templates',
-    // FDH Template Modal translations
     fdh_manage_templates_title: 'Manage FDH Templates',
     fdh_new_template_heading: 'New FDH Template',
     fdh_template_form_manufacturer_label: 'Manufacturer',
@@ -786,10 +780,8 @@ const en = {
     no_existing_fdh_templates: 'No existing FDH templates.',
     fdh_template_info_max_ports: 'Max Ports',
     fdh_template_info_type: 'Type',
-    // Poll Template Modal translations
     poll_manage_templates_title: 'Manage Poll Templates',
     poll_new_template_heading: 'New Poll Template',
-    poll_template_form_manufacturer_label: 'Manufacturer',
     poll_template_form_manufacturer_label_optional: 'Manufacturer (Optional)',
     poll_template_form_manufacturer_placeholder: 'Select Manufacturer',
     poll_template_form_material_label: 'Material',
@@ -807,7 +799,6 @@ const en = {
     existing_poll_templates_list_title: 'Existing Templates',
     no_existing_poll_templates: 'No existing templates.',
     poll_template_info_height_display: 'Height: {height}',
-    // PED Template Modal translations
     ped_manage_templates_title: 'Manage PED Templates',
     ped_new_template_heading: 'New PED Template',
     ped_template_form_manufacturer_label: 'Manufacturer',
@@ -1095,8 +1086,8 @@ const en = {
       delete_olt_not_implemented_desc: 'Deleting OLT {id} is not yet available.',
       list_onxs_title_provisioned: 'List Provisioned ONXs (Not Implemented)',
       list_onxs_desc_provisioned: 'Listing provisioned ONXs for OLT {id} is not yet available.',
-      list_onxs_title_non_provisioned: 'List Non-Provisioned ONXs (Not Implemented)', // Corrected key
-      list_onxs_desc_non_provisioned: 'Listing non-provisioned ONXs for OLT {id} is not yet available.', // Corrected key
+      list_onxs_title_non_provisioned: 'List Non-Provisioned ONXs (Not Implemented)',
+      list_onxs_desc_non_provisioned: 'Listing non-provisioned ONXs for OLT {id} is not yet available.',
       table_header_id: 'ID',
       table_header_description: 'Description',
       table_header_manufacturer: 'Manufacturer',
@@ -1135,10 +1126,8 @@ const en = {
       filter_onx_button: 'Filter ONXs',
       filter_by_light_level_label: 'Filter by Light Level',
     },
-    // General form translations
     form_cancel_button: 'Cancel',
     form_saving_button: 'Saving...',
-    // Inventory > Warehouses
     inventory_warehouses: {
       title: 'Warehouses',
       add_warehouse_button: 'Add Warehouse',
@@ -1569,7 +1558,29 @@ const en = {
     edit_not_implemented_desc: 'Editing VLAN {name} is not yet available.',
     delete_success_title: 'VLAN Deleted',
     delete_success_description: 'VLAN {name} ({vlanId}) has been deleted.',
-  }
+  },
+  hr_dashboard: {
+    title: 'HR Dashboard',
+    date_range_placeholder: 'Select Date Range',
+    date_range_7_days: 'Last 7 Days',
+    date_range_30_days: 'Last 30 Days',
+    date_range_90_days: 'Last 90 Days',
+    date_range_custom: 'Custom Range',
+    export_button: 'Export',
+    active_employees: 'Active Employees',
+    from_last_month: 'from last month',
+    new_hires_month: 'New Hires (Month)',
+    compared_to_last_month: 'compared to last month',
+    terminations_month: 'Terminations (Month)',
+    turnover_rate_month: 'Turnover Rate (Month)',
+    target_2_5_percent: 'Target: < 2.5%',
+    hires_terminations_chart_title: 'Hires and Terminations',
+    hires_terminations_chart_desc: 'Monthly trends over the last 6 months.',
+    turnover_rate_chart_title: 'Turnover Rate Over Time',
+    turnover_rate_chart_desc: 'Monthly turnover percentage.',
+    employees_by_tenure_chart_title: 'Employees by Tenure',
+    employees_by_tenure_chart_desc: 'Distribution of employees by years of service.',
+  },
 };
 
 export default en;

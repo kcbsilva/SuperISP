@@ -83,7 +83,6 @@ import { useLocale } from '@/contexts/LocaleContext';
 import SidebarNav from '@/components/sidebar-nav';
 import { useTheme } from 'next-themes';
 
-// Define ProlterLogo component here
 const ProlterLogo = () => {
   const { theme } = useTheme();
   const [isMounted, setIsMounted] = React.useState(false);
@@ -92,53 +91,23 @@ const ProlterLogo = () => {
     setIsMounted(true);
   }, []);
 
-  let fillColor = "currentColor"; // Default for SSR or if theme not ready
-
-  if (isMounted) {
-    // Dark theme: Accent color (Orange/Amber #FCA311)
-    // Light theme: Primary color (Dark Blue, e.g., #14213D or #233B6E based on your globals.css)
-    fillColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
-  }
-
-  if (!isMounted) {
-    // Return a div with fixed size for SSR to prevent layout shift
-    // and ensure it has a default color that won't clash badly if the theme switch is slow.
-    return <div style={{ width: "131px", height: "32px", color: "hsl(var(--foreground))" }} />;
-  }
+  const fillColor = isMounted
+    ? theme === "dark"
+      ? "hsl(var(--accent))"
+      : "hsl(var(--primary))"
+    : "hsl(var(--foreground))";
 
   return (
     <div style={{ width: '131px', height: '32px' }} className="flex items-center justify-center">
-      {/* 
-        !!! IMPORTANT: Ensure your actual SVG code from src/app/assets/prolter-logo.svg is placed here.
-        For theme colors to apply, the paths/shapes in your SVG should use fill="currentColor" or stroke="currentColor".
-      */}
-      <svg
-        width="100%"
-        height="100%"
-        viewBox="0 0 131 32" // Adjust viewBox if your actual SVG is different
-        xmlns="http://www.w3.org/2000/svg"
-        fill={fillColor} // This will be dynamically set based on the theme
-        // Add any other necessary attributes from your SVG like stroke, strokeWidth, etc.
-      >
-        {/* === PASTE YOUR ACTUAL SVG CODE FROM src/app/assets/prolter-logo.svg HERE === */}
-        {/* For example, if your logo was simple text, it might look like this: */}
-        <text
-          x="50%"
-          y="50%"
-          fontFamily="Arial, sans-serif"
-          fontSize="20" 
-          fontWeight="bold"
-          textAnchor="middle"
-          dominantBaseline="middle"
-          // Ensure this text element also uses currentColor or inherits the fill
-        >
-          PROLTER
-        </text>
-        {/* === END OF SVG CODE TO PASTE === */}
-      </svg>
+      <img
+        src="../assets/prolter-logo.svg"
+        alt="Prolter Logo"
+        style={{ height: "100%", width: "auto", fill: fillColor }}
+      />
     </div>
   );
 };
+
 
 
 export function AppLayoutContent({ children }: { children: React.ReactNode }) {
