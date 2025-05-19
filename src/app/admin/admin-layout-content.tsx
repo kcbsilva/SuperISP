@@ -77,11 +77,11 @@ import {
   SidebarInset,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { AppHeader } from '@/components/app-header'; // Make sure AppHeader is correctly imported
+import { AppHeader } from '@/components/app-header'; 
 import { sidebarNav } from '@/config/sidebarNav';
 import { useLocale } from '@/contexts/LocaleContext';
 import SidebarNav from '@/components/sidebar-nav';
-import { useTheme } from 'next-themes'; // Import useTheme
+import { useTheme } from 'next-themes';
 
 // Define ProlterLogo component here
 const ProlterLogo = () => {
@@ -95,6 +95,8 @@ const ProlterLogo = () => {
   let fillColor = "currentColor"; // Default for SSR or if theme not ready
 
   if (isMounted) {
+    // Dark theme: Accent color (Orange/Amber #FCA311)
+    // Light theme: Primary color (Dark Blue, e.g., #14213D or #233B6E based on your globals.css)
     fillColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
   }
 
@@ -107,18 +109,19 @@ const ProlterLogo = () => {
   return (
     <div style={{ width: '131px', height: '32px' }} className="flex items-center justify-center">
       {/* 
-        !!! IMPORTANT: Replace the <svg> block below with the actual content of your src/app/assets/prolter-logo.svg file.
-        Ensure paths/shapes in your SVG use fill="currentColor" to inherit the theme color.
+        !!! IMPORTANT: Ensure your actual SVG code from src/app/assets/prolter-logo.svg is placed here.
+        For theme colors to apply, the paths/shapes in your SVG should use fill="currentColor" or stroke="currentColor".
       */}
       <svg
         width="100%"
         height="100%"
         viewBox="0 0 131 32" // Adjust viewBox if your actual SVG is different
         xmlns="http://www.w3.org/2000/svg"
-        fill={fillColor} // This will be dynamically set
+        fill={fillColor} // This will be dynamically set based on the theme
         // Add any other necessary attributes from your SVG like stroke, strokeWidth, etc.
       >
-        {/* === START OF SVG CODE TO REPLACE === */}
+        {/* === PASTE YOUR ACTUAL SVG CODE FROM src/app/assets/prolter-logo.svg HERE === */}
+        {/* For example, if your logo was simple text, it might look like this: */}
         <text
           x="50%"
           y="50%"
@@ -131,7 +134,7 @@ const ProlterLogo = () => {
         >
           PROLTER
         </text>
-        {/* === END OF SVG CODE TO REPLACE === */}
+        {/* === END OF SVG CODE TO PASTE === */}
       </svg>
     </div>
   );
@@ -158,7 +161,6 @@ export function AppLayoutContent({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen overflow-hidden">
       <Sidebar>
         <SidebarHeader>
-          {/* Use the ProlterLogo component */}
           <Link href="/admin/dashboard" className="flex items-center justify-center w-full h-full" style={{ textDecoration: 'none' }}>
             <ProlterLogo />
           </Link>
