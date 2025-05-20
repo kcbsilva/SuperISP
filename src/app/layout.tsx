@@ -4,8 +4,7 @@
 import * as React from 'react';
 import { Inter as FontSans, Roboto_Mono as FontMono } from 'next/font/google';
 import './globals.css'; // Keep global styles
-// Toaster is now rendered within AppProviders
-import LayoutRenderer from './layout-renderer';
+import LayoutRenderer from '@/app/layout-renderer'; // Use path alias
 import { AppProviders } from '@/components/app-providers';
 
 const fontSans = FontSans({
