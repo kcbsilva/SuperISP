@@ -4,8 +4,9 @@
 import * as React from 'react';
 import { Inter as FontSans, Roboto_Mono as FontMono } from 'next/font/google';
 import './globals.css'; // Keep global styles
-import LayoutRenderer from '@/app/layout-renderer'; // Use path alias
+import LayoutRenderer from './layout-renderer'; // Use direct relative path
 import { AppProviders } from '@/components/app-providers';
+import { Toaster } from '@/components/ui/toaster';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -37,6 +38,7 @@ export default function RootLayout({
         <AppProviders>
           <LayoutRenderer>{pageContent}</LayoutRenderer>
         </AppProviders>
+        <Toaster />
       </body>
     </html>
   );
