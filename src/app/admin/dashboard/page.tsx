@@ -78,7 +78,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col w-full">
-      <main className="flex flex-1 flex-col gap-4 md:gap-6">
+      <div className="flex flex-1 flex-col gap-4 md:gap-6"> {/* Changed main to div */}
 
          <div className="flex items-start gap-4 mb-2">
             <div className="flex flex-col items-start gap-1">
@@ -262,7 +262,7 @@ export default function AdminDashboardPage() {
              </p>
            </div>
          )}
-      </main>
+      </div> {/* Changed main to div */}
     </div>
   );
 }

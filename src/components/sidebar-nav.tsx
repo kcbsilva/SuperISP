@@ -1,5 +1,3 @@
-
-// src/components/sidebar-nav.tsx
 'use client';
 
 import * as React from 'react';
@@ -27,7 +25,7 @@ interface SidebarNavProps {
 
 const iconSize = "h-3 w-3";
 
-const SidebarNav: React.FC<SidebarNavProps> = ({ items, isSubMenu = false }) => {
+const SidebarNav: React.FC<SidebarNavProps> = ({ items = [], isSubMenu = false }) => {
   const pathname = usePathname();
   const { t } = useLocale();
 
@@ -53,11 +51,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items, isSubMenu = false }) => 
     return false;
   };
 
-
   const renderItem = (item: SidebarNavItem, index: number) => {
     // Use a more unique key, e.g., combining title and index, or a dedicated id if available
     const key = item.title ? `${t(item.title)}-${index}` : `sep-${index}`;
-
 
     if (item.isSeparator) {
       return <SidebarSeparator key={key} />;
@@ -101,5 +97,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ items, isSubMenu = false }) => 
     </>
   );
 };
+
+export function SidebarProvider({ children }: { children: React.ReactNode }) {
+  return <div>{children}</div>; // Replace with actual provider logic if needed
+}
 
 export default SidebarNav;

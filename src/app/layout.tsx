@@ -1,12 +1,9 @@
-// src/app/layout.tsx
-// THIS FILE MUST BE A SERVER COMPONENT (no 'use client' at the top)
-
 import * as React from 'react';
 import { Inter as FontSans, Roboto_Mono as FontMono } from 'next/font/google';
-import './globals.css'; // Keep global styles
-import LayoutRenderer from './layout-renderer'; // Use direct relative path
+import './globals.css';
 import { AppProviders } from '@/components/app-providers';
 import { Toaster } from '@/components/ui/toaster';
+import Sidebar, { SidebarProvider } from '@/components/sidebar-nav'; // Default export
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -19,24 +16,29 @@ const fontMono = FontMono({
 });
 
 export const metadata = {
-  title: 'NetHub Manager',
+  title: 'SuperISP',
   description: 'ISP Management Software',
-  icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
 
 export default function RootLayout({
-  children: pageContent,
-}: Readonly<{
+  children,
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body
-        className={`antialiased font-sans ${fontSans.variable} ${fontMono.variable}`}
-        suppressHydrationWarning
+        className={`antialiased font-sans ${fontSans.variable} ${fontMono.variable} bg-background text-foreground`}
       >
         <AppProviders>
-          <LayoutRenderer>{pageContent}</LayoutRenderer>
+          <SidebarProvider>
+            <div className="flex min-h-screen w-full">
+              <Sidebar />
+              <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto" role="main">
+                {children}
+              </main>
+            </div>
+          </SidebarProvider>
         </AppProviders>
         <Toaster />
       </body>
