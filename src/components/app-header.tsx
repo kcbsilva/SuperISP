@@ -44,7 +44,7 @@ interface AppHeaderProps {
   onToggleSidebar: () => void;
 }
 
-export function AppHeader({ onToggleSidebar }: AppHeaderProps) {
+export function Header({ onToggleSidebar }: AppHeaderProps) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
   const [searchResults, setSearchResults] = React.useState<typeof searchResultsPlaceholder | null>(null);
