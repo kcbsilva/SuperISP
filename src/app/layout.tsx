@@ -1,9 +1,11 @@
+// src/app/layout.tsx
 import * as React from 'react';
 import { Inter as FontSans, Roboto_Mono as FontMono } from 'next/font/google';
 import './globals.css';
 import { AppProviders } from '@/components/app-providers';
+import LayoutRenderer from './layout-renderer'; // Use LayoutRenderer
 import { Toaster } from '@/components/ui/toaster';
-import Sidebar, { SidebarProvider } from '@/components/sidebar-nav'; // Default export
+import type { Metadata } from 'next';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -15,30 +17,31 @@ const fontMono = FontMono({
   variable: '--font-mono',
 });
 
-export const metadata = {
-  title: 'SuperISP',
-  description: 'ISP Management Software',
+// It's good practice to define a base URL for metadata, especially for production.
+// You can use an environment variable for this.
+const siteBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteBaseUrl), // Recommended for resolving relative paths
+  title: 'NetHub Manager',
+  description: 'ISP Management Software for NetHub.',
+  icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
 
 export default function RootLayout({
-  children,
-}: {
+  children: pageContent, // pageContent is the specific page component being rendered
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`antialiased font-sans ${fontSans.variable} ${fontMono.variable} bg-background text-foreground`}
+        suppressHydrationWarning
       >
         <AppProviders>
-          <SidebarProvider>
-            <div className="flex min-h-screen w-full">
-              <Sidebar />
-              <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto" role="main">
-                {children}
-              </main>
-            </div>
-          </SidebarProvider>
+          {/* LayoutRenderer will handle specific layouts like AdminLayout, ClientLayout, etc. */}
+          <LayoutRenderer>{pageContent}</LayoutRenderer>
         </AppProviders>
         <Toaster />
       </body>
