@@ -5,83 +5,20 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  LayoutDashboard,
-  ShieldCheck,
-  Settings,
-  Users,
-  MapPin,
-  TowerControl,
-  Cable,
-  Power,
-  Box,
-  Puzzle,
-  Warehouse,
-  Globe,
-  GitFork,
-  Split,
-  Code,
-  Router as RouterIcon,
-  Share2,
-  Server as ServerIcon,
-  DollarSign,
-  BarChart3,
-  Plug,
-  MessageSquare,
-  Text,
-  Settings2,
-  ListChecks,
-  Wifi,
-  Tv,
-  Smartphone,
-  PhoneCall,
-  Combine,
-  ListFilter,
-  Archive,
-  Factory,
-  Package as PackageIcon,
-  Truck,
-  FileText as FileTextIcon,
-  GitBranch,
-  Network as NetworkIcon,
-  Database,
-  Users2,
-  Bus,
-  BriefcaseBusiness,
-  FileCode,
-  Wrench,
-  BookOpen,
-  SlidersHorizontal,
-  Briefcase,
-  Building,
-  Cog,
-  Dot,
-  ChevronDown,
-  Menu as MenuIcon, // Added MenuIcon for mobile toggle
-} from 'lucide-react';
-import { SiNextdns } from "react-icons/si";
-import { TbDeviceImacStar } from "react-icons/tb";
-import { SiReactrouter } from "react-icons/si";
+import { useTheme } from 'next-themes';
 import {
   Sidebar,
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
   SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubTrigger,
-  SidebarMenuSubContent,
-  SidebarSeparator,
   SidebarInset,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { AppHeader } from '@/components/app-header'; 
+import { AppHeader } from '@/components/app-header';
 import { sidebarNav } from '@/config/sidebarNav';
-import { useLocale } from '@/contexts/LocaleContext';
 import SidebarNav from '@/components/sidebar-nav';
-import { useTheme } from 'next-themes';
+// Removed unused icons and locale context as they were specific to older versions
 
 const ProlterLogo = () => {
   const { theme } = useTheme();
@@ -91,29 +28,51 @@ const ProlterLogo = () => {
     setIsMounted(true);
   }, []);
 
-  const fillColor = isMounted
-    ? theme === "dark"
-      ? "hsl(var(--accent))"
-      : "hsl(var(--primary))"
-    : "hsl(var(--foreground))";
+  // Default to a fallback color or a specific color if theme is not yet available or for SSR
+  let fillColor = "hsl(var(--foreground))"; // A sensible default
 
+  if (isMounted) {
+    fillColor = theme === "dark"
+      ? "hsl(var(--accent))"
+      : "hsl(var(--primary))";
+  }
+
+  // Return a div placeholder if not mounted to avoid hydration mismatch issues with SVG fill
+  if (!isMounted) {
+    return <div style={{ width: '131px', height: '32px' }} className="bg-muted animate-pulse rounded" />;
+  }
+  
   return (
     <div style={{ width: '131px', height: '32px' }} className="flex items-center justify-center">
-      <img
-        src="../assets/prolter-logo.svg"
-        alt="Prolter Logo"
-        style={{ height: "100%", width: "auto", fill: fillColor }}
-      />
+      {/* Replace with your actual SVG or img tag for the logo */}
+      {/* This is a placeholder SVG */}
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 131 32"
+        xmlns="http://www.w3.org/2000/svg"
+        fill={fillColor} // Use the determined fill color
+      >
+        <text
+          x="50%"
+          y="50%"
+          fontFamily="Arial, sans-serif"
+          fontSize="20"
+          fontWeight="bold"
+          textAnchor="middle"
+          dominantBaseline="middle"
+        >
+          PROLTER
+        </text>
+      </svg>
     </div>
   );
 };
 
 
-
 export function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isMobile, isOpenMobile, setIsOpenMobile } = useSidebar();
-  const { t } = useLocale();
 
   const toggleMobileSidebar = () => setIsOpenMobile(!isOpenMobile);
 
@@ -122,12 +81,11 @@ export function AppLayoutContent({ children }: { children: React.ReactNode }) {
       setIsOpenMobile(false);
     }
   }, [isMobile, isOpenMobile, setIsOpenMobile]);
-  
+
   const isMapPage = pathname === "/admin/maps/map";
 
-
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden w-full">
       <Sidebar>
         <SidebarHeader>
           <Link href="/admin/dashboard" className="flex items-center justify-center w-full h-full" style={{ textDecoration: 'none' }}>
@@ -147,7 +105,7 @@ export function AppLayoutContent({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col flex-1 overflow-hidden">
         <AppHeader onToggleSidebar={toggleMobileSidebar} />
         <SidebarInset noMargin={isMapPage}>
-          <div className={isMapPage ? "p-0 h-full overflow-hidden" : "p-2 h-[calc(100%-theme(space.14))] overflow-y-auto"}>
+          <div className={isMapPage ? "p-0 h-full overflow-hidden" : "p-2 md:p-4 lg:p-6 h-[calc(100vh-theme(space.14))] overflow-y-auto"}>
             {children}
           </div>
         </SidebarInset>
