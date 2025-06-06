@@ -39,6 +39,9 @@ import {
   Building,
   Cog,
   Dot,
+  TrendingUp, // Added for Sales
+  Target, // Added for Opportunities
+  ShoppingCart, // Added for Sales Orders
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -289,6 +292,43 @@ export const sidebarNav: SidebarNavItem[] = [
         href: '/admin/service-calls/service-types',
         icon: ListChecks, // Using ListChecks for types/configuration
         tooltip: 'sidebar.service_calls_service_types',
+      },
+    ],
+  },
+  {
+    title: 'sidebar.sales', // New Sales Menu
+    icon: TrendingUp,
+    tooltip: 'sidebar.sales',
+    children: [
+      {
+        title: 'sidebar.sales_dashboard',
+        href: '/admin/sales/dashboard',
+        icon: LayoutDashboard,
+        tooltip: 'sidebar.sales_dashboard',
+      },
+      {
+        title: 'sidebar.sales_leads',
+        href: '/admin/sales/leads',
+        icon: Users, // Using Users icon for Leads
+        tooltip: 'sidebar.sales_leads',
+      },
+      {
+        title: 'sidebar.sales_opportunities',
+        href: '/admin/sales/opportunities',
+        icon: Target,
+        tooltip: 'sidebar.sales_opportunities',
+      },
+      {
+        title: 'sidebar.sales_proposals',
+        href: '/admin/sales/proposals',
+        icon: FileTextIcon,
+        tooltip: 'sidebar.sales_proposals',
+      },
+      {
+        title: 'sidebar.sales_sales_orders',
+        href: '/admin/sales/orders',
+        icon: ShoppingCart,
+        tooltip: 'sidebar.sales_sales_orders',
       },
     ],
   },

@@ -1,3 +1,4 @@
+
 // src/translations/index.ts
 import en from './en';
 // import fr from './fr'; // Removed French import
@@ -10,3 +11,5 @@ const translations = {
 };
 
 export default translations;
+
+    
