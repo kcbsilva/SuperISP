@@ -15,7 +15,7 @@ import {
   SidebarInset,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { AppHeader } from '@/components/app-header';
+import { Header } from '@/components/app-header'; // Changed AppHeader to Header
 import { sidebarNav } from '@/config/sidebarNav';
 import SidebarNav from '@/components/sidebar-nav';
 // Removed unused icons and locale context as they were specific to older versions
@@ -103,7 +103,7 @@ export function AppLayoutContent({ children }: { children: React.ReactNode }) {
       </Sidebar>
 
       <div className="flex flex-col flex-1 overflow-hidden">
-        <AppHeader onToggleSidebar={toggleMobileSidebar} />
+        <Header onToggleSidebar={toggleMobileSidebar} /> {/* Changed AppHeader to Header */}
         <SidebarInset noMargin={isMapPage}>
           <div className={isMapPage ? "p-0 h-full overflow-hidden" : "p-2 md:p-4 lg:p-6 h-[calc(100vh-theme(space.14))] overflow-y-auto"}>
             {children}
