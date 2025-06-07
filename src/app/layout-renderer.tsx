@@ -20,6 +20,24 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
     setIsMounted(true);
   }, []);
 
+  // Effect for handling redirects
+  React.useEffect(() => {
+    if (!isMounted || isAuthLoading) {
+      return; // Don't do anything until mounted and auth state is resolved
+    }
+
+    if (pathname.startsWith('/admin/login')) {
+      if (isAuthenticated) {
+        router.replace('/admin/dashboard');
+      }
+    } else if (pathname.startsWith('/admin')) {
+      if (!isAuthenticated) {
+        router.replace('/admin/login');
+      }
+    }
+  }, [isMounted, isAuthLoading, isAuthenticated, pathname, router]);
+
+
   if (!isMounted || isAuthLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
@@ -31,31 +49,32 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
     );
   }
 
+  // If we are in the process of redirecting (e.g., authenticated user on /admin/login),
+  // show a loader. This prevents rendering the login page content briefly before redirect.
+  if (pathname.startsWith('/admin/login') && isAuthenticated) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+  // Similarly, if on an admin page and not authenticated, show loader during redirect.
+  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login') && !isAuthenticated) {
+     return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+
   if (pathname.startsWith('/admin/login')) {
-    // If user is already authenticated and tries to go to login, redirect to dashboard
-    if (isAuthenticated) {
-      router.replace('/admin/dashboard'); // Perform client-side redirect
-      return ( // Show a loader while redirecting
-        <div className="flex h-screen w-full items-center justify-center bg-background">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      );
-    }
-    return <>{pageContent}</>; // Render login page
+    // Login page content is rendered directly without AdminLayout if not authenticated
+    return <>{pageContent}</>;
   }
 
   if (pathname.startsWith('/admin')) {
-    if (!isAuthenticated) {
-      // This case should ideally be handled by middleware redirecting to login.
-      // If reached, it means middleware might not have caught it or is disabled.
-      // A client-side redirect here is a fallback.
-      router.replace('/admin/login');
-      return (
-        <div className="flex h-screen w-full items-center justify-center bg-background">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      );
-    }
+    // For all other /admin routes, if authenticated, use AdminLayout
     return <AdminLayout>{pageContent}</AdminLayout>;
   }
 
@@ -66,6 +85,5 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
   // }
 
   // For other pages (e.g., public root page), render content directly.
-  // This includes src/app/page.tsx (your main dashboard for now)
   return <>{pageContent}</>;
 }
