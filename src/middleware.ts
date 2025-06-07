@@ -20,25 +20,26 @@ export function middleware(request: NextRequest) {
   }
 
   // If the user is trying to access the login page
-  if (pathname.startsWith('/admin/login')) {
+  if (pathname === '/admin/login') { // Exact match for login
     if (isAuthenticatedCookie?.value === 'true') {
-      // If authenticated, redirect from login to dashboard
-      return NextResponse.redirect(new URL('/', request.url));
+      // If authenticated, redirect from login to admin dashboard
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
     }
     // If not authenticated, allow access to login page
     return NextResponse.next();
   }
 
-  // For all other routes, check if authenticated
-  if (isAuthenticatedCookie?.value !== 'true') {
-    // If not authenticated, redirect to login page
-    // Preserve the originally requested path as a query parameter for redirection after login
-    const loginUrl = new URL('/admin/login', request.url);
-    // loginUrl.searchParams.set('redirect', pathname); // Optional: redirect back after login
-    return NextResponse.redirect(loginUrl);
+  // For other /admin/* routes, check if authenticated
+  if (pathname.startsWith('/admin')) {
+    if (isAuthenticatedCookie?.value !== 'true') {
+      // If not authenticated, redirect to login page
+      const loginUrl = new URL('/admin/login', request.url);
+      // loginUrl.searchParams.set('redirect', pathname); // Optional: redirect back after login
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
-  // If authenticated and not on the login page, allow access
+  // For non-admin public routes or if already handled, allow access
   return NextResponse.next();
 }
 
