@@ -6,9 +6,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { LocaleProvider } from '@/contexts/LocaleContext';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { Toaster } from '@/components/ui/toaster'; // Import Toaster here
+import { Toaster } from '@/components/ui/toaster';
 
-// Create a single instance of QueryClient here, within the client component module
+// Create a single instance of QueryClient at the module level
 const queryClient = new QueryClient();
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
@@ -19,8 +19,8 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   }, []);
 
   if (!isMounted) {
-    // You can return a global loading spinner here or null.
-    // Returning null avoids rendering providers server-side if they cause issues.
+    // Returning null or a minimal loader is fine during SSR or before mount
+    // This helps avoid hydration mismatches with providers that use localStorage or window
     return null;
   }
 
@@ -32,11 +32,11 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
     >
       <AuthProvider>
-        <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}> {/* Use the module-level instance */}
           <LocaleProvider>
             <TooltipProvider delayDuration={0}>
               {children}
-              <Toaster /> {/* Toaster is rendered here */}
+              <Toaster />
             </TooltipProvider>
           </LocaleProvider>
         </QueryClientProvider>

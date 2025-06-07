@@ -41,7 +41,7 @@ const ProlterLogo = () => {
   if (!isMounted) {
     return <div style={{ width: '131px', height: '32px' }} className="bg-muted animate-pulse rounded" />;
   }
-  
+
   return (
     <div style={{ width: '131px', height: '32px' }} className="flex items-center justify-center">
       {/* Replace with your actual SVG or img tag for the logo */}

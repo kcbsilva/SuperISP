@@ -23,8 +23,8 @@ const siteBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteBaseUrl), // Recommended for resolving relative paths
-  title: 'NetHub Manager',
-  description: 'ISP Management Software for NetHub.',
+  title: 'Prolter - Gerenciador mais completo di Mercado.',
+  description: 'Gerenciador mais completo di Mercado.',
   icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
 
