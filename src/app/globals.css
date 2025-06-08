@@ -30,7 +30,7 @@
     --destructive-foreground: 0 0% 98%;
 
     --border: 0 0% 83%; /* Mid-gray for borders */
-    --input: 0 0% 89.8%; /* Slightly darker gray for input fields */
+    --input: 0 0% 83%; /* Mid-gray, same as border for more visible input borders */
     --ring: 37 98% 52%; /* Orange/Amber #FCA311 - Focus rings */
 
     --radius: 0.5rem;

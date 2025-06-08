@@ -3,6 +3,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import {
   Card,
   CardContent,
@@ -39,7 +40,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
-// import { Textarea } from '@/components/ui/textarea'; // Changed to Input
 import {
   Select,
   SelectContent,
@@ -112,7 +112,7 @@ const flowFormSchema = z.object({
     saturday: z.object({ enabled: z.boolean(), startTime: z.string(), endTime: z.string() }),
     sunday: z.object({ enabled: z.boolean(), startTime: z.string(), endTime: z.string() }),
   }),
-}).refine(data => { // Validate start/end times if day is enabled
+}).refine(data => {
   for (const day of daysOfWeek) {
     if (data.schedule[day].enabled) {
       if (!data.schedule[day].startTime) return false;
@@ -123,7 +123,7 @@ const flowFormSchema = z.object({
   return true;
 }, {
   message: "Start time must be before end time for enabled days.",
-  path: ["schedule"], // General path, or you could refine for each day
+  path: ["schedule"], 
 });
 
 type FlowFormData = z.infer<typeof flowFormSchema>;
@@ -176,13 +176,13 @@ export default function MessengerFlowListPage() {
     setIsModalOpen(true);
   };
 
-  const handleEditFlow = (flow: MessengerFlowItem) => {
+  const handleEditFlowModal = (flow: MessengerFlowItem) => {
     setEditingFlow(flow);
     form.reset({
       description: flow.description,
       status: flow.status,
       channel: flow.channel,
-      schedule: { ...flow.schedule }, // Ensure deep copy for schedule
+      schedule: { ...flow.schedule },
     });
     setIsModalOpen(true);
   };
@@ -201,7 +201,6 @@ export default function MessengerFlowListPage() {
 
   const onSubmit = (data: FlowFormData) => {
     if (editingFlow) {
-      // Update existing flow
       setFlows(prevFlows => prevFlows.map(flow =>
         flow.id === editingFlow.id ? { ...editingFlow, ...data } : flow
       ));
@@ -210,7 +209,6 @@ export default function MessengerFlowListPage() {
         description: t('messenger_flow.update_success_desc', 'Flow "{name}" has been updated.').replace('{name}', data.description),
       });
     } else {
-      // Add new flow
       const newFlow: MessengerFlowItem = {
         id: `flow-${Date.now()}`,
         ...data,
@@ -258,7 +256,7 @@ export default function MessengerFlowListPage() {
                     <TableHead className="text-xs text-center">{t('messenger_flow.table_header_description', 'Description')}</TableHead>
                     <TableHead className="text-xs text-center">{t('messenger_flow.table_header_status', 'Status')}</TableHead>
                     <TableHead className="text-xs text-center">{t('messenger_flow.table_header_channel', 'Channel')}</TableHead>
-                    <TableHead className="text-xs text-center w-20">{t('messenger_flow.table_header_actions', 'Actions')}</TableHead>
+                    <TableHead className="text-xs text-center w-28">{t('messenger_flow.table_header_actions', 'Actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -273,35 +271,43 @@ export default function MessengerFlowListPage() {
                       </TableCell>
                       <TableCell className="text-xs text-center">{flow.channel}</TableCell>
                       <TableCell className="text-center">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditFlow(flow)}>
-                          <Edit className={iconSize} />
-                          <span className="sr-only">{t('messenger_flow.action_edit', 'Edit')}</span>
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive">
-                              <Trash2 className={iconSize} />
-                              <span className="sr-only">{t('messenger_flow.action_delete', 'Delete')}</span>
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>{t('messenger_flow.delete_confirm_title')}</AlertDialogTitle>
-                              <AlertDialogDescriptionComponent className="text-xs">
-                                {t('messenger_flow.delete_confirm_desc_flow', 'Are you sure you want to delete the flow "{name}"? This action cannot be undone.').replace('{name}', flow.description)}
-                              </AlertDialogDescriptionComponent>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel onClick={() => setFlowToDelete(null)}>{t('messenger_flow.form_cancel_button')}</AlertDialogCancel>
-                              <AlertDialogAction
-                                className={buttonVariants({ variant: "destructive" })}
-                                onClick={() => { setFlowToDelete(flow); confirmDeleteFlow(); }}
-                              >
-                                {t('messenger_flow.form_delete_button')}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        <div className="flex items-center justify-center gap-0.5">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                            <Link href={`/admin/messenger/flow/${flow.id}/edit`}>
+                              <Workflow className={iconSize} />
+                              <span className="sr-only">{t('messenger_flow.action_edit_flow_visual', 'Edit Flow Visual')}</span>
+                            </Link>
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditFlowModal(flow)}>
+                            <Edit className={iconSize} />
+                            <span className="sr-only">{t('messenger_flow.action_edit', 'Edit')}</span>
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive">
+                                <Trash2 className={iconSize} />
+                                <span className="sr-only">{t('messenger_flow.action_delete', 'Delete')}</span>
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>{t('messenger_flow.delete_confirm_title')}</AlertDialogTitle>
+                                <AlertDialogDescriptionComponent className="text-xs">
+                                  {t('messenger_flow.delete_confirm_desc_flow', 'Are you sure you want to delete the flow "{name}"? This action cannot be undone.').replace('{name}', flow.description)}
+                                </AlertDialogDescriptionComponent>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel onClick={() => setFlowToDelete(null)}>{t('messenger_flow.form_cancel_button')}</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className={buttonVariants({ variant: "destructive" })}
+                                  onClick={() => { setFlowToDelete(flow); confirmDeleteFlow(); }}
+                                >
+                                  {t('messenger_flow.form_delete_button')}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -320,14 +326,14 @@ export default function MessengerFlowListPage() {
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-sm">{editingFlow ? t('messenger_flow.edit_flow_modal_title') : t('messenger_flow.add_flow_modal_title')}</DialogTitle>
-            <DialogDescription className="text-xs">{editingFlow ? t('messenger_flow.edit_flow_modal_desc_generic') : t('messenger_flow.add_flow_modal_desc')}</DialogDescription>
+            <DialogDescription className="text-xs">{t('messenger_flow.edit_flow_modal_desc')}</DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <ScrollArea className="max-h-[70vh] p-1 pr-3"> {/* Added pr-3 for scrollbar space */}
+              <ScrollArea className="max-h-[70vh] p-1 pr-3">
                 <div className="space-y-4 p-1">
                   <div className="grid grid-cols-2 gap-4 items-center">
-                    <FormField
+                     <FormField
                       control={form.control}
                       name="channel"
                       render={({ field }) => (
@@ -353,10 +359,9 @@ export default function MessengerFlowListPage() {
                       control={form.control}
                       name="status"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm h-full">
                           <div className="space-y-0.5">
                             <FormLabel>{t('messenger_flow.form_status_label')}</FormLabel>
-                             {/* Removed specific active/inactive descriptions here */}
                           </div>
                           <FormControl>
                             <Switch
