@@ -329,19 +329,19 @@ const SidebarMenuItem = React.forwardRef<
 SidebarMenuItem.displayName = "SidebarMenuItem"
 
 const sidebarMenuButtonVariants = cva(
-  "w-full justify-start rounded-md px-2.5 py-1.5 text-left text-xs transition-colors flex items-center gap-2 hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none",
+  "w-full justify-start rounded-md pl-1.5 pr-2.5 py-1.5 text-left text-xs transition-colors flex items-center gap-2 hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none",
   {
     variants: {
       isActive: {
         true: "bg-muted text-primary font-semibold",
       },
       size: {
-        default: "",
-        sm: "px-2 py-1 text-xs",
-        lg: "px-3 py-2 text-sm",
+        default: "", // Uses the base pl-1.5 pr-2.5
+        sm: "pl-1 pr-2 py-1 text-xs", // Sub-menu items use this, reduced left padding
+        lg: "pl-2 pr-3 py-2 text-sm", // Adjusted lg padding if needed
       },
       isCollapsed: { // Variant for collapsed state
-        true: "justify-center px-0 w-[var(--sidebar-width-icon)] data-[collapsed=true]:w-[var(--sidebar-width-icon)]", // Center icon, adjust width
+        true: "justify-center px-0 w-[var(--sidebar-width-icon)] data-[collapsed=true]:w-[var(--sidebar-width-icon)]", 
         false: ""
       }
     },
