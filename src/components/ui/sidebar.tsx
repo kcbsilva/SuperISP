@@ -170,14 +170,14 @@ const Sidebar = React.forwardRef<
         <nav
           className={cn(
             sidebarMobileVariants({ side }),
-            "w-[var(--sidebar-width)]", // Mobile always uses full width when open
+            "w-[var(--sidebar-width)]", 
             variant === "inset" && "m-0 rounded-none border-none shadow-none",
             variant === "floating" && "m-0 rounded-none border-none shadow-none",
             className
           )}
           data-state={isOpenMobile ? "open" : "closed"}
           {...commonProps}
-          data-collapsed="false" // Ensure mobile is never considered "collapsed" for styling
+          data-collapsed="false"
         >
           {children}
         </nav>
@@ -185,12 +185,11 @@ const Sidebar = React.forwardRef<
     )
   }
 
-  // Desktop sidebar - now fixed position for overlay effect
   return (
     <nav
       className={cn(
         sidebarVariants({ variant, side, collapsible: "full" }),
-        "fixed inset-y-0 top-14 z-40 flex flex-col h-[calc(100vh-3.5rem)]", // Added fixed, inset-y-0, z-40 and top-14, adjusted height
+        "fixed inset-y-0 top-14 z-40 flex flex-col h-[calc(100vh-3.5rem)]",
         (variant === "floating" || variant === "inset") && "p-2",
         className
       )}
@@ -315,19 +314,19 @@ const SidebarMenuItem = React.forwardRef<
 SidebarMenuItem.displayName = "SidebarMenuItem"
 
 const sidebarMenuButtonVariants = cva(
-  "w-full justify-start rounded-md px-2.5 py-1.5 text-left text-xs transition-colors flex items-center gap-2 hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none",
+  "w-full justify-start rounded-md text-left text-xs transition-colors flex items-center hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none", // Removed gap-2
   {
     variants: {
       isActive: {
         true: "bg-muted text-primary font-semibold",
       },
       size: {
-        default: "px-2.5 py-1.5", // Original padding for expanded
-        sm: "px-2 py-1 text-xs", // Original padding for sub-menu items
+        default: "px-2.5 py-1.5", // Restored original padding for expanded
+        sm: "px-2 py-1 text-xs",    // Restored original padding for sub-menu
         lg: "px-3 py-2 text-sm",
       },
       isCollapsed: {
-        true: "justify-center px-0 w-[var(--sidebar-width-icon)] data-[collapsed=true]:w-[var(--sidebar-width-icon)]", // Centered icon for collapsed state
+        true: "justify-center px-0 w-[var(--sidebar-width-icon)] data-[collapsed=true]:w-[var(--sidebar-width-icon)]",
         false: ""
       }
     },
@@ -364,7 +363,6 @@ const SidebarMenuButton = React.memo(React.forwardRef<
       if (isMobile) {
         setIsOpenMobile(false);
       }
-      // No auto-expansion for direct links when collapsed
       if (props.onClick) {
         props.onClick(event);
       }
@@ -391,9 +389,9 @@ const SidebarMenuButton = React.memo(React.forwardRef<
         {textElement && (!isCollapsed || isMobile) && (
             React.isValidElement(textElement) ?
             React.cloneElement(textElement as React.ReactElement, {
-              className: cn((textElement.props as any).className, "truncate")
+              className: cn((textElement.props as any).className, "ml-1.5 truncate") // Added ml-1.5 for gap
             })
-            : <span className="truncate">{textElement}</span>
+            : <span className="ml-1.5 truncate">{textElement}</span> // Added ml-1.5 for gap
         )}
       </Comp>
     );
@@ -436,7 +434,7 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       if (isCollapsed && !isMobile) {
-        setIsCollapsed(false); // Expand the main sidebar first
+        setIsCollapsed(false); 
       }
       if (originalOnClick) {
         originalOnClick(event);
@@ -466,9 +464,9 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
         {textElement && (!isCollapsed || isMobile) && (
             React.isValidElement(textElement) ?
             React.cloneElement(textElement as React.ReactElement, {
-              className: cn((textElement.props as any).className, "truncate")
+              className: cn((textElement.props as any).className, "ml-1.5 truncate") // Added ml-1.5 for gap
             })
-            : <span className="truncate">{textElement}</span>
+            : <span className="ml-1.5 truncate">{textElement}</span> // Added ml-1.5 for gap
         )}
         {(!isCollapsed || isMobile) && chevronElement}
       </button>
@@ -507,7 +505,7 @@ const SidebarMenuSubContent = React.forwardRef<
       className={cn(
         "overflow-hidden transition-all duration-200 ease-in-out",
         "data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up",
-        "pl-4",
+        "pl-4", // Original left padding for sub-content
         className
       )}
       {...props}
@@ -616,11 +614,10 @@ const SidebarInset = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & { noMargin?: boolean }
 >(({ className, noMargin, children, ...props }, ref) => {
-  const { side, isMobile } = useSidebar();
+  const { side, isMobile } = useSidebar(); // Removed isCollapsed as it's no longer needed for margin
 
   let marginClass = "";
-  // Only apply the static margin for the icon-only sidebar width on desktop
-  if (!noMargin && !isMobile) {
+  if (!noMargin && !isMobile) { // Only apply static margin for icon-only sidebar on desktop
     marginClass = side === 'left' ? 'ml-[var(--sidebar-width-icon)]' : 'mr-[var(--sidebar-width-icon)]';
   }
 
@@ -628,7 +625,7 @@ const SidebarInset = React.forwardRef<
     <main
       ref={ref}
       className={cn(
-        "relative flex-1 overflow-auto",
+        "relative flex-1 overflow-auto", // Ensure main content can scroll if it overflows
         marginClass,
         className
       )}
@@ -656,3 +653,4 @@ export {
   SidebarInset,
   useSidebar,
 };
+
