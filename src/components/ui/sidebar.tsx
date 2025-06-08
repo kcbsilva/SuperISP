@@ -3,7 +3,7 @@
 "use client"
 
 import * as React from "react"
-import NextLink, { type LinkProps as NextLinkProps } from "next/link"; // Renamed to NextLink
+import NextLink, { type LinkProps as NextLinkProps } from "next/link";
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { ChevronDown, ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react"
@@ -11,9 +11,10 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { usePathname } from 'next/navigation';
+import { Button } from "@/components/ui/button"; // Import Button
 
 const sidebarVariants = cva(
-  "group/sidebar peer relative hidden md:block text-card-foreground transition-[width] duration-300 ease-in-out",
+  "group/sidebar peer relative hidden md:flex md:flex-col text-card-foreground transition-[width] duration-300 ease-in-out", // Added md:flex
   {
     variants: {
       variant: {
@@ -25,17 +26,16 @@ const sidebarVariants = cva(
         left: "inset-y-0 left-0 border-r",
         right: "inset-y-0 right-0 border-l",
       },
-      collapsible: {
+      collapsible: { // Changed from none to full
         none: "w-[var(--sidebar-width)]",
-        // The following are not actively used if collapsible is 'none'
+        full: "w-[var(--sidebar-width)] data-[collapsed=true]:w-[var(--sidebar-width-icon)]",
         icon: "w-[var(--sidebar-width-icon)] data-[collapsed=false]:w-[var(--sidebar-width)]",
-        full: "w-[var(--sidebar-width)] data-[collapsed=true]:w-[var(--sidebar-width-icon)]"
       },
     },
     defaultVariants: {
       variant: "default",
       side: "left",
-      collapsible: "none",
+      collapsible: "full", // Default to full collapsible behavior
     },
   }
 )
@@ -69,6 +69,8 @@ type SidebarContextValue = {
   isMobile: boolean
   isOpenMobile: boolean
   setIsOpenMobile: (open: boolean) => void
+  isCollapsed: boolean // New state for desktop collapse
+  setIsCollapsed: (collapsed: boolean) => void // New setter
 }
 
 
@@ -87,6 +89,7 @@ const SidebarProvider = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> &
     Pick<SidebarProps, "variant" | "side"> & {
       defaultOpenMobile?: boolean
+      defaultCollapsedDesktop?: boolean // New prop for initial desktop collapse state
     }
 >(
   (
@@ -96,12 +99,33 @@ const SidebarProvider = React.forwardRef<
       variant = "default",
       side = "left",
       defaultOpenMobile,
+      defaultCollapsedDesktop = false, // Default to expanded on desktop
       ...props
     },
     ref
   ) => {
     const isMobile = useIsMobile()
     const [isOpenMobile, setIsOpenMobile] = React.useState(defaultOpenMobile ?? false)
+    const [isCollapsed, setIsCollapsedState] = React.useState(defaultCollapsedDesktop);
+
+    React.useEffect(() => {
+      if (typeof window !== 'undefined' && !isMobile) { // Only apply for desktop
+        const stored = localStorage.getItem("sidebarCollapsed");
+        if (stored !== null) {
+          setIsCollapsedState(JSON.parse(stored));
+        }
+      }
+    }, [isMobile]); // Re-check if isMobile changes (though unlikely here)
+
+    const setIsCollapsed = React.useCallback((collapsed: boolean) => {
+      if (!isMobile) { // Only manage collapse for desktop
+        setIsCollapsedState(collapsed);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem("sidebarCollapsed", JSON.stringify(collapsed));
+        }
+      }
+    }, [isMobile]);
+
 
     const contextValue = React.useMemo<SidebarContextValue>(
       () => ({
@@ -110,8 +134,10 @@ const SidebarProvider = React.forwardRef<
         isMobile,
         isOpenMobile,
         setIsOpenMobile,
+        isCollapsed,
+        setIsCollapsed,
       }),
-      [variant, side, isMobile, isOpenMobile, setIsOpenMobile]
+      [variant, side, isMobile, isOpenMobile, setIsOpenMobile, isCollapsed, setIsCollapsed]
     )
 
     return (
@@ -130,14 +156,15 @@ const Sidebar = React.forwardRef<
   HTMLElement,
   SidebarProps
 >(({ className, children, ...props }, ref) => {
-  const { variant, side, isMobile, isOpenMobile, setIsOpenMobile } = useSidebar()
+  const { variant, side, isMobile, isOpenMobile, setIsOpenMobile, isCollapsed } = useSidebar()
 
   const commonProps = {
     ref,
     "data-sidebar": "sidebar",
     "data-variant": variant,
     "data-side": side,
-    "data-collapsible": "none",
+    "data-collapsible": "full", // Use full collapsible variant
+    "data-collapsed": isMobile ? "false" : isCollapsed.toString(), // Ensure data-collapsed reflects state for desktop
     ...props,
   }
 
@@ -155,6 +182,7 @@ const Sidebar = React.forwardRef<
           )}
           data-state={isOpenMobile ? "open" : "closed"}
           {...commonProps}
+          data-collapsed="false" // Mobile sidebar is never "collapsed" in the icon-only sense
         >
           {children}
         </nav>
@@ -162,10 +190,11 @@ const Sidebar = React.forwardRef<
     )
   }
 
+  // Desktop sidebar
   return (
     <nav
       className={cn(
-        sidebarVariants({ variant, side, collapsible: "none" }),
+        sidebarVariants({ variant, side, collapsible: "full" }), // Use "full" collapsible
         "flex flex-col h-full",
         (variant === "floating" || variant === "inset") && "p-2",
         className
@@ -183,17 +212,44 @@ const SidebarHeader = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
+  const { isMobile, isCollapsed, setIsCollapsed, side } = useSidebar();
+
   return (
     <div
       ref={ref}
       data-sidebar="header"
       className={cn(
-        "flex items-center p-2 shrink-0 h-14 justify-center px-3",
+        "flex items-center shrink-0 h-14",
+        isCollapsed && !isMobile ? "justify-center" : "justify-between",
+        "px-3",
         className
       )}
       {...props}
     >
-      {children}
+      {/* Render children (e.g., logo placeholder) only if not collapsed and not mobile */}
+      {!isMobile && !isCollapsed && children}
+
+      {/* Desktop Collapse/Expand Button */}
+      {!isMobile && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className={cn(
+            "text-muted-foreground hover:text-foreground h-7 w-7", // Smaller button
+            isCollapsed ? "mx-auto" : (side === "left" ? "ml-auto" : "mr-auto") // Center when collapsed, else push
+          )}
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {side === "left" ? (
+            isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />
+          ) : (
+            isCollapsed ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />
+          )}
+        </Button>
+      )}
+      {/* If there are children intended for mobile header (though typically AppHeader handles this) */}
+      {isMobile && children}
     </div>
   )
 })
@@ -284,10 +340,15 @@ const sidebarMenuButtonVariants = cva(
         sm: "px-2 py-1 text-xs",
         lg: "px-3 py-2 text-sm",
       },
+      isCollapsed: { // Variant for collapsed state
+        true: "justify-center px-0 w-[var(--sidebar-width-icon)] data-[collapsed=true]:w-[var(--sidebar-width-icon)]", // Center icon, adjust width
+        false: ""
+      }
     },
     defaultVariants: {
       isActive: false,
       size: "default",
+      isCollapsed: false,
     },
   }
 );
@@ -310,7 +371,7 @@ const SidebarMenuButton = React.memo(React.forwardRef<
     { className, isActive, children, tooltip, size = "default", asChild, href, ...props },
     ref
   ) => {
-    const { isMobile, setIsOpenMobile } = useSidebar();
+    const { isMobile, setIsOpenMobile, isCollapsed } = useSidebar();
     const Comp = asChild ? Slot : NextLink;
 
     const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -321,6 +382,11 @@ const SidebarMenuButton = React.memo(React.forwardRef<
         props.onClick(event);
       }
     };
+    
+    const actualChildrenArray = React.Children.toArray(children);
+    const iconElement = actualChildrenArray[0];
+    const textElement = actualChildrenArray.length > 1 ? actualChildrenArray[1] : null;
+
 
     const buttonContent = (
       <Comp
@@ -328,18 +394,25 @@ const SidebarMenuButton = React.memo(React.forwardRef<
         data-sidebar="menu-button"
         data-size={size}
         className={cn(
-          sidebarMenuButtonVariants({ isActive, size }),
+          sidebarMenuButtonVariants({ isActive, size, isCollapsed: isCollapsed && !isMobile }),
           className
         )}
         href={href}
         onClick={handleClick}
         {...props}
       >
-        {children}
+        {iconElement}
+        {textElement && (!isCollapsed || isMobile) && (
+            React.isValidElement(textElement) ? 
+            React.cloneElement(textElement as React.ReactElement, { 
+              className: cn((textElement.props as any).className, "truncate") 
+            }) 
+            : <span className="truncate">{textElement}</span>
+        )}
       </Comp>
     );
 
-    if (tooltip) {
+    if (tooltip && (isCollapsed && !isMobile)) { // Only show tooltip when collapsed on desktop
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
@@ -363,37 +436,49 @@ interface SidebarMenuSubTriggerProps extends React.ButtonHTMLAttributes<HTMLButt
   size?: "default" | "sm" | "lg";
   children: React.ReactNode;
   className?: string;
-  // No longer need to pass isOpen or toggleOpen as props
 }
 
 const SidebarMenuSubTrigger = React.memo(React.forwardRef<
   HTMLButtonElement,
-  SidebarMenuSubTriggerProps & { onClick: () => void; "data-state": "open" | "closed" } // Added onClick and data-state
+  SidebarMenuSubTriggerProps & { onClick: () => void; "data-state": "open" | "closed" }
 >(
   (
     { className, children, isActive, tooltip, size = "default", ...props },
     ref
   ) => {
+    const { isMobile, isCollapsed } = useSidebar();
+    const actualChildrenArray = React.Children.toArray(children);
+    const iconElement = actualChildrenArray[0];
+    const textElement = actualChildrenArray.length > 1 ? actualChildrenArray[1] : null;
+    const chevronElement = actualChildrenArray.length > 2 ? actualChildrenArray[2] : null;
+
+
     const buttonContent = (
       <button
         type="button"
         ref={ref}
         data-sidebar="menu-sub-trigger"
-        // data-state will be passed via props from SidebarMenuSub
         data-size={size}
         className={cn(
-          sidebarMenuButtonVariants({ isActive, size }),
+          sidebarMenuButtonVariants({ isActive, size, isCollapsed: isCollapsed && !isMobile }),
           "group/sub-trigger",
           className
         )}
-        // onClick will be passed via props from SidebarMenuSub
         {...props}
       >
-        {children}
+        {iconElement}
+        {textElement && (!isCollapsed || isMobile) && (
+            React.isValidElement(textElement) ? 
+            React.cloneElement(textElement as React.ReactElement, { 
+              className: cn((textElement.props as any).className, "truncate") 
+            }) 
+            : <span className="truncate">{textElement}</span>
+        )}
+        {(!isCollapsed || isMobile) && chevronElement}
       </button>
     );
 
-    if (tooltip) {
+    if (tooltip && (isCollapsed && !isMobile)) { // Only show tooltip when collapsed on desktop
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
@@ -411,9 +496,11 @@ SidebarMenuSubTrigger.displayName = "SidebarMenuSubTrigger";
 
 const SidebarMenuSubContent = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { isOpen: boolean } // Added isOpen prop
+  React.HTMLAttributes<HTMLDivElement> & { isOpen: boolean }
 >(({ className, children, isOpen, ...props }, ref) => {
-  if (!isOpen) {
+  const { isMobile, isCollapsed } = useSidebar();
+  
+  if (!isOpen || (isCollapsed && !isMobile)) { // Do not render content if collapsed on desktop
     return null;
   }
 
@@ -425,7 +512,7 @@ const SidebarMenuSubContent = React.forwardRef<
       className={cn(
         "overflow-hidden transition-all duration-200 ease-in-out",
         "data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up",
-        "pl-4",
+        "pl-4", // Indentation for sub-menu items
         className
       )}
       {...props}
@@ -442,25 +529,35 @@ const SidebarMenuSub = React.memo(React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { defaultOpen?: boolean }
 >(({ className, children, defaultOpen = false, ...props }, ref) => {
+  const { isMobile, isCollapsed } = useSidebar();
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
   const pathname = usePathname();
 
   React.useEffect(() => {
-    setIsOpen(defaultOpen);
-  }, [defaultOpen, pathname]);
+    if (isCollapsed && !isMobile) {
+      setIsOpen(false); // Force close submenus when sidebar collapses on desktop
+    } else {
+      setIsOpen(defaultOpen); // Respect defaultOpen otherwise or on path change
+    }
+  }, [defaultOpen, pathname, isCollapsed, isMobile]);
 
   const toggleOpen = React.useCallback(() => {
+    if (isCollapsed && !isMobile) return; // Prevent opening if collapsed on desktop
     setIsOpen(prev => !prev);
-  }, []);
+  }, [isCollapsed, isMobile]);
 
-  // We need to find the SidebarMenuSubTrigger and SidebarMenuSubContent among children
   let trigger: React.ReactNode = null;
   let content: React.ReactNode = null;
 
   React.Children.forEach(children, (child) => {
     if (React.isValidElement(child)) {
       if ((child.type as any).displayName === "SidebarMenuSubTrigger") {
-        trigger = React.cloneElement(child as React.ReactElement<any>, { onClick: toggleOpen, "data-state": isOpen ? "open" : "closed" });
+        trigger = React.cloneElement(child as React.ReactElement<any>, { 
+          onClick: toggleOpen, 
+          "data-state": isOpen ? "open" : "closed",
+          // Pass isCollapsed to allow trigger to hide its text
+          // This is handled inside SidebarMenuSubTrigger now via useSidebar hook
+        });
       } else if ((child.type as any).displayName === "SidebarMenuSubContent") {
         content = React.cloneElement(child as React.ReactElement<any>, { isOpen });
       }
@@ -471,7 +568,7 @@ const SidebarMenuSub = React.memo(React.forwardRef<
     <div
       ref={ref}
       data-sidebar="menu-sub"
-      data-state={isOpen ? "open" : "closed"}
+      data-state={isOpen && (!isCollapsed || isMobile) ? "open" : "closed"}
       className={cn("flex flex-col", className)}
       {...props}
     >
@@ -506,11 +603,22 @@ const SidebarInset = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & { noMargin?: boolean }
 >(({ className, noMargin, children, ...props }, ref) => {
+  const { side, isCollapsed, isMobile } = useSidebar();
+  
+  // Determine margin class based on sidebar state
+  let marginClass = "";
+  if (!noMargin && !isMobile) { // Only apply margin on desktop and if noMargin is false
+    const expandedMargin = side === 'left' ? 'ml-[var(--sidebar-width)]' : 'mr-[var(--sidebar-width)]';
+    const collapsedMargin = side === 'left' ? 'ml-[var(--sidebar-width-icon)]' : 'mr-[var(--sidebar-width-icon)]';
+    marginClass = isCollapsed ? collapsedMargin : expandedMargin;
+  }
+
   return (
     <main
       ref={ref}
       className={cn(
-        "relative flex-1 overflow-auto",
+        "relative flex-1 overflow-auto transition-[margin] duration-300 ease-in-out",
+        marginClass,
         className
       )}
       {...props}
@@ -538,3 +646,4 @@ export {
   SidebarInset,
   useSidebar,
 };
+
