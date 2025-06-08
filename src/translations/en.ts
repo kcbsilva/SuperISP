@@ -53,6 +53,7 @@ const en = {
     messenger: 'Messenger',
     messenger_chat: 'Chat',
     messenger_departments: 'Departments',
+    messenger_flow: 'Flows',
     messenger_configure: 'Configure',
     reports: 'Reports',
     hr: 'HR',
@@ -1637,6 +1638,14 @@ const en = {
     placeholder: 'Department list and management tools will be displayed here. (Not Implemented)',
     add_department_title_toast: 'Add Department (Not Implemented)',
     add_department_desc_toast: 'Adding messenger departments is not yet implemented.',
+  },
+  messenger_flow: {
+    title: 'Manage Messenger Flows',
+    description: 'Define and manage Genkit flows for your messenger bot.',
+    add_flow_button: 'Add Flow',
+    placeholder: 'Flow list and management tools will be displayed here. (Not Implemented)',
+    add_flow_title_toast: 'Add Flow (Not Implemented)',
+    add_flow_desc_toast: 'Adding messenger flows is not yet implemented.',
   },
   messenger_configure: {
     title: 'Configure Messenger Bot',

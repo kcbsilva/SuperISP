@@ -77,6 +77,7 @@ const pt = {
     messenger: 'Mensageiro',
     messenger_chat: 'Chat',
     messenger_departments: 'Departamentos',
+    messenger_flow: 'Fluxos',
     messenger_configure: 'Configurar',
     reports: 'Relatórios',
     hr: 'RH',
@@ -1640,6 +1641,14 @@ const pt = {
     placeholder: 'A lista de departamentos e as ferramentas de gerenciamento serão exibidas aqui. (Não Implementado)',
     add_department_title_toast: 'Adicionar Departamento (Não Implementado)',
     add_department_desc_toast: 'Adicionar departamentos ao mensageiro ainda não foi implementado.',
+  },
+  messenger_flow: {
+    title: 'Gerenciar Fluxos do Mensageiro',
+    description: 'Defina e gerencie fluxos Genkit para seu bot de mensagens.',
+    add_flow_button: 'Adicionar Fluxo',
+    placeholder: 'A lista de fluxos e as ferramentas de gerenciamento serão exibidas aqui. (Não Implementado)',
+    add_flow_title_toast: 'Adicionar Fluxo (Não Implementado)',
+    add_flow_desc_toast: 'Adicionar fluxos ao mensageiro ainda não foi implementado.',
   },
   messenger_configure: {
     title: 'Configuração do Bot Mensageiro',

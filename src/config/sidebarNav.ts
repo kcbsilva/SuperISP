@@ -43,6 +43,7 @@ import {
   Target, // Added for Opportunities
   ShoppingCart, // Added for Sales Orders
   MessageCircle, // For Messenger sub-page
+  Workflow, // Added for Flow
 } from 'lucide-react';
 // Removed imports for SiNextdns, TbDeviceImacStar, SiReactrouter as they are no longer used
 import type { Icon as LucideIcon } from 'lucide-react';
@@ -367,6 +368,12 @@ export const sidebarNav: SidebarNavItem[] = [
         tooltip: 'sidebar.messenger_departments',
       },
       {
+        title: 'sidebar.messenger_flow',
+        href: '/admin/messenger/flow',
+        icon: Workflow,
+        tooltip: 'sidebar.messenger_flow',
+      },
+      {
         title: 'sidebar.messenger_configure',
         href: '/admin/messenger/configure',
         icon: Settings2,
@@ -548,5 +555,4 @@ export const sidebarNav: SidebarNavItem[] = [
       },
     ],
   },
-  // Removed "tools-separator" and items below it (PilotView, TransitOS, Zones)
 ];
