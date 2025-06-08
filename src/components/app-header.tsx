@@ -1,3 +1,4 @@
+
 // src/components/app-header.tsx
 'use client';
 
@@ -9,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 // Import ProlterLogo as a React Component
-import ProlterLogoComponent from '@/app/assets/prolter-logo.svg';
+// import ProlterLogoComponent from '@/app/assets/prolter-logo.svg'; // Assuming this was how you tried before
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -28,6 +29,62 @@ import {
 } from "@/components/ui/popover";
 import { Skeleton } from '@/components/ui/skeleton'; // For clock placeholder
 
+// Define ProlterLogo component directly in this file
+function ProlterLogo(props: React.SVGProps<SVGSVGElement> & { fixedColor?: string }) {
+  const { theme } = useTheme();
+  const [isMounted, setIsMounted] = React.useState(false);
+  const { fixedColor, ...restProps } = props;
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  let fillColor = "hsl(var(--foreground))"; // Default
+  if (fixedColor) {
+    fillColor = fixedColor;
+  } else if (isMounted) {
+    fillColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
+  }
+
+  if (!isMounted && !fixedColor) {
+    // Render a placeholder or a div with fixed dimensions if SVG markup is large
+    // to prevent layout shift, or simply return null if a brief empty space is acceptable.
+    return <div style={{ width: props.width || "131px", height: props.height || "32px" }} />;
+  }
+  
+  return (
+    // Replace this SVG with your actual Prolter logo SVG markup
+    // Ensure paths use `fill="currentColor"` or do not have a fill attribute
+    // if you want the `fill` prop passed to the <svg> tag to control their color.
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 131 32" // Adjust viewBox as needed
+      fill={fillColor} // This fill will be applied
+      {...restProps} // Passes width, height, aria-label etc.
+    >
+      {/* 
+        YOUR ACTUAL SVG PATHS AND ELEMENTS GO HERE.
+        Example:
+        <path d="M10 20 L50 80 L90 20 Z" /> 
+        If your SVG paths have `fill="somecolor"`, they might override the SVG's fill prop.
+        For dynamic color, ensure paths use `fill="currentColor"` or inherit the fill.
+      */}
+       <text
+          x="50%"
+          y="50%"
+          fontFamily="Arial, sans-serif"
+          fontSize="24" 
+          fontWeight="bold"
+          textAnchor="middle"
+          dominantBaseline="middle"
+        >
+          PROLTER
+        </text>
+    </svg>
+  );
+};
+
+
 const searchResultsPlaceholder = {
   clients: [
     { id: 'sub-1', name: 'Alice Wonderland' },
@@ -44,13 +101,6 @@ const searchResultsPlaceholder = {
 interface AppHeaderProps {
   onToggleSidebar: () => void;
 }
-
-// Define ProlterLogo as a React component wrapper for the SVG
-const ProlterLogo: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
-  // @ts-ignore
-  return <ProlterLogoComponent {...props} />;
-};
-
 
 export function Header({ onToggleSidebar }: AppHeaderProps) {
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -73,9 +123,8 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
     const timerId = setInterval(() => {
       setCurrentTime(new Date().toLocaleTimeString());
     }, 1000);
-    // Set initial time
-    setCurrentTime(new Date().toLocaleTimeString());
-    return () => clearInterval(timerId); // Cleanup interval on component unmount
+    setCurrentTime(new Date().toLocaleTimeString()); // Initial time
+    return () => clearInterval(timerId);
   }, []);
 
   React.useEffect(() => {
@@ -130,11 +179,12 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [popoverRef, inputRef]);
-
+  
   const getLogoFillColor = () => {
-    if (!mounted) return "hsl(var(--primary))"; // Default or placeholder color before mount
+    if (!mounted) return "hsl(var(--primary))"; 
     return theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
   };
+
 
   return (
     <header
@@ -149,8 +199,8 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
           <ProlterLogo
             width="131"
             height="32"
-            fill={getLogoFillColor()} // Dynamically set fill
             aria-label="Prolter Logo"
+            // fill prop is handled internally by the ProlterLogo component now
           />
         </Link>
         <Button variant="ghost" size="icon" className="md:hidden text-foreground hover:bg-muted/50" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
@@ -158,9 +208,7 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
         </Button>
       </div>
 
-      {/* Middle part: Search Bar and Clock */}
       <div className="flex flex-1 items-center justify-center gap-4 mx-4">
-        {/* Search Bar Input Container */}
         <div className="relative flex-grow max-w-sm md:max-w-md">
            <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${iconSize} text-muted-foreground`} />
            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -232,9 +280,8 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
              )}
            </Popover>
         </div>
-        {/* Clock */}
-        <div className="text-xs font-mono text-foreground hidden md:flex items-center whitespace-nowrap">
-           {currentTime ? currentTime : <Skeleton className="h-4 w-16 bg-muted" />}
+        <div className="text-[10px] font-mono text-foreground hidden md:flex items-center whitespace-nowrap"> {/* Reduced font size */}
+           {currentTime ? currentTime : <Skeleton className="h-3 w-16 bg-muted" />} {/* Adjusted skeleton height */}
         </div>
       </div>
 

@@ -44,9 +44,7 @@ import {
   ShoppingCart, // Added for Sales Orders
   MessageCircle, // For Messenger sub-page
 } from 'lucide-react';
-import { SiNextdns } from "react-icons/si";
-import { TbDeviceImacStar } from "react-icons/tb";
-import { SiReactrouter } from "react-icons/si";
+// Removed imports for SiNextdns, TbDeviceImacStar, SiReactrouter as they are no longer used
 import type { Icon as LucideIcon } from 'lucide-react';
 import type { IconType } from 'react-icons';
 
@@ -544,23 +542,5 @@ export const sidebarNav: SidebarNavItem[] = [
       },
     ],
   },
-  { title: 'tools-separator', isSeparator: true },
-  {
-    title: 'sidebar.pilotview',
-    href: '/admin/pilotview',
-    icon: TbDeviceImacStar,
-    tooltip: 'sidebar.pilotview',
-  },
-  {
-    title: 'sidebar.transitos',
-    href: '/admin/transitos',
-    icon: SiReactrouter,
-    tooltip: 'sidebar.transitos',
-  },
-  {
-    title: 'sidebar.zones',
-    href: '/admin/zones',
-    icon: SiNextdns,
-    tooltip: 'sidebar.zones',
-  },
+  // Removed "tools-separator" and items below it (PilotView, TransitOS, Zones)
 ];
