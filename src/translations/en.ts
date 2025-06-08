@@ -1649,6 +1649,9 @@ const en = {
     send_message_sr: 'Send message',
     search_in_chat_sr: 'Search in chat',
     more_options_sr: 'More options',
+    new_conversation_aria_label: 'Start new conversation',
+    new_conversation_toast_title: 'New Conversation (Not Implemented)',
+    new_conversation_toast_desc: 'Functionality to start a new conversation is not yet available.',
   },
   messenger_departments: {
     title: 'Manage Messenger Departments',
@@ -1681,7 +1684,7 @@ const en = {
     no_flows_found: 'No flows configured yet.',
     add_flow_modal_title: 'Add New Flow',
     edit_flow_modal_title: 'Edit Flow Settings',
-    edit_flow_modal_desc: 'Update the general settings and schedule for this messenger flow.',
+    edit_flow_modal_desc: 'Update the details and schedule for this messenger flow.',
     form_status_label: 'Status',
     form_description_label: 'Description',
     form_description_placeholder: 'e.g., Welcome flow for new customers',

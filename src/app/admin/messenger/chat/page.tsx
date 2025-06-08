@@ -14,9 +14,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { MessageCircle, Send, Paperclip, Search, UserCircle, MoreVertical } from 'lucide-react';
+import { MessageCircle, Send, Paperclip, Search, UserCircle, MoreVertical, PlusCircle } from 'lucide-react'; // Added PlusCircle
 import { useLocale } from '@/contexts/LocaleContext';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast'; // Added useToast
 
 interface Message {
   id: string;
@@ -79,6 +80,7 @@ const placeholderConversations: Conversation[] = [
 
 export default function MessengerChatPage() {
   const { t } = useLocale();
+  const { toast } = useToast(); // Initialize toast
   const iconSize = "h-4 w-4";
   const smallIconSize = "h-3 w-3";
   const actionIconSize = "h-5 w-5 text-muted-foreground"; // For header icons
@@ -120,6 +122,13 @@ export default function MessengerChatPage() {
     // TODO: Implement actual message sending logic
   };
 
+  const handleNewConversation = () => {
+    toast({
+      title: t('messenger_chat.new_conversation_toast_title'),
+      description: t('messenger_chat.new_conversation_toast_desc'),
+    });
+  };
+
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
@@ -128,8 +137,8 @@ export default function MessengerChatPage() {
     <div className="flex h-full w-full bg-background">
       {/* Left Sidebar: Conversation List */}
       <div className="flex flex-col w-full max-w-xs border-r border-border bg-card">
-        <div className="p-3 border-b border-border">
-           <div className="relative">
+        <div className="p-3 border-b border-border flex items-center gap-2"> {/* Flex container for search and button */}
+           <div className="relative flex-grow"> {/* Search input takes available space */}
             <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${smallIconSize} text-muted-foreground`} />
             <Input
               type="search"
@@ -137,6 +146,15 @@ export default function MessengerChatPage() {
               className="pl-8 h-8 text-xs"
             />
            </div>
+           <Button
+             variant="default"
+             size="icon"
+             className="h-8 w-8 bg-green-600 hover:bg-green-700 text-white shrink-0" // Green button
+             onClick={handleNewConversation}
+             aria-label={t('messenger_chat.new_conversation_aria_label')}
+           >
+             <PlusCircle className={iconSize} />
+           </Button>
         </div>
         <ScrollArea className="flex-1">
           {placeholderConversations.map((convo) => (
