@@ -177,7 +177,7 @@ const Sidebar = React.forwardRef<
           )}
           data-state={isOpenMobile ? "open" : "closed"}
           {...commonProps}
-          data-collapsed="false"
+          data-collapsed="false" // Ensure mobile is never considered "collapsed" for styling
         >
           {children}
         </nav>
@@ -190,7 +190,7 @@ const Sidebar = React.forwardRef<
     <nav
       className={cn(
         sidebarVariants({ variant, side, collapsible: "full" }),
-        "fixed inset-y-0 z-40 flex flex-col h-full", // Added fixed, inset-y-0, z-40
+        "fixed inset-y-0 top-14 z-40 flex flex-col h-[calc(100vh-3.5rem)]", // Added fixed, inset-y-0, z-40 and top-14, adjusted height
         (variant === "floating" || variant === "inset") && "p-2",
         className
       )}
@@ -322,8 +322,8 @@ const sidebarMenuButtonVariants = cva(
         true: "bg-muted text-primary font-semibold",
       },
       size: {
-        default: "", // Inherits px-2.5 py-1.5 from base
-        sm: "px-2 py-1 text-xs",
+        default: "px-2.5 py-1.5", // Original padding for expanded
+        sm: "px-2 py-1 text-xs", // Original padding for sub-menu items
         lg: "px-3 py-2 text-sm",
       },
       isCollapsed: {
@@ -425,7 +425,6 @@ interface SidebarMenuSubTriggerProps extends React.ButtonHTMLAttributes<HTMLButt
 
 const SidebarMenuSubTrigger = React.memo(React.forwardRef<
   HTMLButtonElement,
-  // Ensure props.onClick from SidebarMenuSub is correctly typed
   SidebarMenuSubTriggerProps & { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void; "data-state": "open" | "closed" }
 >(
   (
@@ -439,8 +438,6 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
       if (isCollapsed && !isMobile) {
         setIsCollapsed(false); // Expand the main sidebar first
       }
-      // Call the original onClick handler passed from SidebarMenuSub (which is toggleOpen)
-      // This will handle opening/closing the sub-menu itself.
       if (originalOnClick) {
         originalOnClick(event);
       }
@@ -462,8 +459,8 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
           "group/sub-trigger",
           className
         )}
-        {...props} // Spread original props, including data-state
-        onClick={handleClick} // Use our wrapped handleClick
+        {...props}
+        onClick={handleClick}
       >
         {iconElement}
         {textElement && (!isCollapsed || isMobile) && (
@@ -534,12 +531,11 @@ const SidebarMenuSub = React.memo(React.forwardRef<
   React.useEffect(() => {
     if (isCollapsed && !isMobile) {
       setIsOpen(false);
-    } else if (!isMobile) { // Only re-evaluate for desktop
-        // If a child link is active and sidebar is not collapsed, ensure parent is open
+    } else if (!isMobile) { 
         let isActiveChild = false;
         React.Children.forEach(children, child => {
             if (React.isValidElement(child) && (child.type as any).displayName === "SidebarMenuSubContent") {
-                React.Children.forEach(child.props.children, subChild => { // Assuming SidebarNav -> SidebarMenuItem -> SidebarMenuButton
+                React.Children.forEach(child.props.children, subChild => { 
                     if (React.isValidElement(subChild) && subChild.props.children) {
                         React.Children.forEach(subChild.props.children, (buttonChild: any) => {
                            if (React.isValidElement(buttonChild) && buttonChild.props.href && pathname.startsWith(buttonChild.props.href)) {
@@ -552,7 +548,7 @@ const SidebarMenuSub = React.memo(React.forwardRef<
         });
         if (isActiveChild && !isCollapsed) {
             setIsOpen(true);
-        } else if (!isCollapsed) { // If not collapsed and no child is active, respect defaultOpen
+        } else if (!isCollapsed) { 
             setIsOpen(defaultOpen);
         }
     }
@@ -560,13 +556,7 @@ const SidebarMenuSub = React.memo(React.forwardRef<
 
 
   const toggleOpen = React.useCallback(() => {
-    // For desktop: if sidebar is collapsed, clicking the trigger will expand the sidebar (handled in trigger),
-    // then this toggleOpen will make the submenu visible.
-    // If sidebar is already expanded, this just toggles the submenu.
-    // For mobile: it just toggles the submenu.
     if (isCollapsed && !isMobile) {
-      // If main sidebar was collapsed, it's now expanding (handled by trigger).
-      // We want this sub-menu to open.
       setIsOpen(true);
     } else {
       setIsOpen(prev => !prev);
@@ -629,17 +619,16 @@ const SidebarInset = React.forwardRef<
   const { side, isMobile } = useSidebar();
 
   let marginClass = "";
-  if (!noMargin && !isMobile) { // Only apply margin on desktop and if noMargin is false
-    // Always use the icon width for the margin, as the expanded sidebar will overlay
+  // Only apply the static margin for the icon-only sidebar width on desktop
+  if (!noMargin && !isMobile) {
     marginClass = side === 'left' ? 'ml-[var(--sidebar-width-icon)]' : 'mr-[var(--sidebar-width-icon)]';
   }
-  // For mobile, the current sidebar is an overlay, so SidebarInset doesn't need a margin from it.
 
   return (
     <main
       ref={ref}
       className={cn(
-        "relative flex-1 overflow-auto", // Removed transition-[margin] as it's now fixed based on collapsed width
+        "relative flex-1 overflow-auto",
         marginClass,
         className
       )}
