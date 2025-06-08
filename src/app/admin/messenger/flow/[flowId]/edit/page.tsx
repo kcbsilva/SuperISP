@@ -43,31 +43,44 @@ interface FlowData {
 const initialNodes: Node[] = [];
 const initialEdges: Edge[] = [];
 
-const convertFlowToGraph = (flowData: FlowData) => {
+const convertFlowToGraph = (flowData: FlowData, t: (key: string, fallback?: string) => string) => {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
-  let yPos = 0;
+  let yPos = 50;
+  let xPos = 50;
+  const nodeHorizontalSpacing = 250;
+  const nodeVerticalSpacing = 150;
+  const nodesPerRow = 3;
+  let nodeCountInRow = 0;
 
-  Object.keys(flowData).forEach((key, index) => {
+  Object.keys(flowData).forEach((key) => {
     nodes.push({
       id: key,
-      type: 'default', // Or a custom node type
+      type: 'default',
       data: { label: key, message: flowData[key].message, options: flowData[key].options || [] },
-      position: { x: 250 * (index % 3) , y: yPos }, // Basic layout
+      position: { x: xPos, y: yPos },
     });
-    yPos += 150;
-    if ((index + 1) % 3 === 0) yPos += 100;
 
+    nodeCountInRow++;
+    if (nodeCountInRow >= nodesPerRow) {
+      nodeCountInRow = 0;
+      xPos = 50;
+      yPos += nodeVerticalSpacing;
+    } else {
+      xPos += nodeHorizontalSpacing;
+    }
 
     flowData[key].options?.forEach(option => {
-      edges.push({
-        id: `e-${key}-${option.next}-${option.keyword}`,
-        source: key,
-        target: option.next,
-        label: option.keyword,
-        type: 'smoothstep', // Or 'default'
-        animated: true,
-      });
+      if (option.next && option.keyword) { // Ensure 'next' and 'keyword' are defined
+        edges.push({
+          id: `e-${key}-${option.next}-${option.keyword}`,
+          source: key,
+          target: option.next,
+          label: option.keyword,
+          type: 'smoothstep',
+          animated: true,
+        });
+      }
     });
   });
   return { nodes, edges };
@@ -77,11 +90,12 @@ const convertGraphToFlow = (nodes: Node[], edges: Edge[]): FlowData => {
   const flowData: FlowData = {};
   nodes.forEach(node => {
     const step: FlowStep = { message: node.data.message, options: [] };
-    // Options are derived from edges originating from this node
     edges.filter(edge => edge.source === node.id).forEach(edge => {
-      step.options?.push({ keyword: edge.label as string, next: edge.target });
+      if (edge.label && edge.target) { // Ensure label and target are defined
+        step.options?.push({ keyword: edge.label as string, next: edge.target });
+      }
     });
-    if (step.options?.length === 0) delete step.options; // Clean up if no options
+    if (step.options?.length === 0) delete step.options;
     flowData[node.id] = step;
   });
   return flowData;
@@ -112,9 +126,9 @@ export default function EditFlowPage() {
         if (!response.ok) throw new Error('Failed to fetch flow');
         const data: FlowData = await response.json();
         setFlowData(data);
-        const { nodes: initialNodes, edges: initialEdges } = convertFlowToGraph(data);
-        setNodes(initialNodes);
-        setEdges(initialEdges);
+        const { nodes: initialNodesFromData, edges: initialEdgesFromData } = convertFlowToGraph(data, t);
+        setNodes(initialNodesFromData);
+        setEdges(initialEdgesFromData);
       } catch (error) {
         toast({ title: t('messenger_flow.editor_load_error_title'), description: (error as Error).message, variant: 'destructive' });
       } finally {
@@ -135,7 +149,7 @@ export default function EditFlowPage() {
   }, [selectedNode]);
 
   const onConnect = React.useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+    (params: Connection) => setEdges((eds) => addEdge({ ...params, type: 'smoothstep', animated: true }, eds)),
     [setEdges]
   );
 
@@ -148,7 +162,6 @@ export default function EditFlowPage() {
   };
 
   const handleSaveFlow = async () => {
-    if (!flowData) return;
     setIsSaving(true);
     const updatedFlowData = convertGraphToFlow(nodes, edges);
     try {
@@ -159,7 +172,7 @@ export default function EditFlowPage() {
       });
       if (!response.ok) throw new Error('Failed to save flow');
       toast({ title: t('messenger_flow.editor_save_success_title'), description: t('messenger_flow.editor_save_success_desc') });
-      setFlowData(updatedFlowData); // Update local state after successful save
+      setFlowData(updatedFlowData); 
     } catch (error) {
       toast({ title: t('messenger_flow.editor_save_error_title'), description: (error as Error).message, variant: 'destructive' });
     } finally {
@@ -169,16 +182,44 @@ export default function EditFlowPage() {
   
   const handleUpdateSelectedNodeDetails = () => {
     if (!selectedNode) return;
-    setNodes((nds) =>
-      nds.map((node) =>
+
+    let newNodesToAdd: Node[] = [];
+    let currentNodes = [...nodes]; // Get current nodes state
+
+    // Update selected node's data
+    const updatedNodes = currentNodes.map((node) =>
         node.id === selectedNode.id
-          ? { ...node, data: { ...node.data, label: node.id, message: editMessage, options: editOptions } }
-          : node
-      )
+        ? { ...node, data: { ...node.data, label: node.id, message: editMessage, options: editOptions } }
+        : node
     );
+
+    // Auto-create new nodes if options point to non-existent ones
+    editOptions.forEach((opt, index) => {
+        if (opt.next && opt.next.trim() !== '') {
+            const nodeExists = updatedNodes.some(n => n.id === opt.next);
+            if (!nodeExists) {
+                const sourceNodePosition = selectedNode.position || { x: 0, y: 0 };
+                const newNode: Node = {
+                    id: opt.next,
+                    type: 'default',
+                    data: { label: opt.next, message: t('messenger_flow.editor_new_node_default_msg', 'New step...'), options: [] },
+                    position: { 
+                        x: sourceNodePosition.x + 250, 
+                        y: sourceNodePosition.y + (index * 100) // Spread out new nodes vertically
+                    },
+                };
+                newNodesToAdd.push(newNode);
+            }
+        }
+    });
+    
+    const finalNodes = [...updatedNodes, ...newNodesToAdd];
+    setNodes(finalNodes);
+
+
     // Update edges based on new options
     const oldEdges = edges.filter(edge => edge.source !== selectedNode.id);
-    const newStepEdges: Edge[] = editOptions.map(opt => ({
+    const newStepEdges: Edge[] = editOptions.filter(opt => opt.next && opt.keyword).map(opt => ({
         id: `e-${selectedNode.id}-${opt.next}-${opt.keyword}`,
         source: selectedNode.id,
         target: opt.next,
@@ -187,6 +228,7 @@ export default function EditFlowPage() {
         animated: true,
     }));
     setEdges([...oldEdges, ...newStepEdges]);
+
     toast({ title: t('messenger_flow.editor_node_updated_title'), description: t('messenger_flow.editor_node_updated_desc', '{nodeId} details applied locally.').replace('{nodeId}', selectedNode.id) });
   };
 
@@ -213,11 +255,16 @@ export default function EditFlowPage() {
         toast({ title: t('messenger_flow.editor_new_node_id_exists_title'), description: t('messenger_flow.editor_new_node_id_exists_desc', '{nodeId} already exists.').replace('{nodeId}', newNodeId.trim()), variant: 'destructive'});
         return;
     }
+    const lastNode = nodes[nodes.length - 1];
+    const newNodePosition = lastNode 
+      ? { x: lastNode.position.x + 50, y: lastNode.position.y + 50 } 
+      : { x: 50, y: 50};
+
     const newNode: Node = {
       id: newNodeId.trim(),
       type: 'default',
       data: { label: newNodeId.trim(), message: t('messenger_flow.editor_new_node_default_msg'), options: [] },
-      position: { x: Math.random() * 400, y: Math.random() * 400 },
+      position: newNodePosition,
     };
     setNodes((nds) => [...nds, newNode]);
     setNewNodeId('');
