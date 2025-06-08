@@ -2,14 +2,14 @@
 'use client';
 
 import * as React from 'react';
-import Image from 'next/image'; // Import next/image
 import { Search, User, Box, Cable, Info, LogOut, UserCircle, Sun, Moon, Settings, Menu as MenuIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import ProlterLogo from '@/app/assets/prolter-logo.svg'
+// Import ProlterLogo as a React Component
+import ProlterLogoComponent from '@/app/assets/prolter-logo.svg';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -26,7 +26,7 @@ import {
   PopoverTrigger,
   PopoverAnchor,
 } from "@/components/ui/popover";
-
+import { Skeleton } from '@/components/ui/skeleton'; // For clock placeholder
 
 const searchResultsPlaceholder = {
   clients: [
@@ -45,10 +45,18 @@ interface AppHeaderProps {
   onToggleSidebar: () => void;
 }
 
+// Define ProlterLogo as a React component wrapper for the SVG
+const ProlterLogo: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
+  // @ts-ignore
+  return <ProlterLogoComponent {...props} />;
+};
+
+
 export function Header({ onToggleSidebar }: AppHeaderProps) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
   const [searchResults, setSearchResults] = React.useState<typeof searchResultsPlaceholder | null>(null);
+  const [currentTime, setCurrentTime] = React.useState<string | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const popoverRef = React.useRef<HTMLDivElement>(null);
   const { t } = useLocale();
@@ -59,6 +67,16 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
   const smallIconSize = "h-2.5 w-2.5";
 
   React.useEffect(() => setMounted(true), []);
+
+  // Effect for the clock
+  React.useEffect(() => {
+    const timerId = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString());
+    }, 1000);
+    // Set initial time
+    setCurrentTime(new Date().toLocaleTimeString());
+    return () => clearInterval(timerId); // Cleanup interval on component unmount
+  }, []);
 
   React.useEffect(() => {
     if (searchTerm.length > 1) {
@@ -113,6 +131,10 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
     };
   }, [popoverRef, inputRef]);
 
+  const getLogoFillColor = () => {
+    if (!mounted) return "hsl(var(--primary))"; // Default or placeholder color before mount
+    return theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
+  };
 
   return (
     <header
@@ -122,94 +144,100 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
         "dark:bg-background dark:text-foreground dark:border-b-2 dark:border-accent"
       )}
     >
-      <div className="flex items-center gap-2"> {/* Added gap-2 for spacing */}
-        {/* Prolter Logo - links to admin dashboard */}
+      <div className="flex items-center gap-2">
         <Link href="/admin/dashboard" className="flex items-center mr-2">
           <ProlterLogo
-            width={131}
-            height={32}
-            className="fill-gray-800 dark:fill-[#FCA311]"
+            width="131"
+            height="32"
+            fill={getLogoFillColor()} // Dynamically set fill
+            aria-label="Prolter Logo"
           />
         </Link>
-        {/* Mobile Sidebar Toggle */}
         <Button variant="ghost" size="icon" className="md:hidden text-foreground hover:bg-muted/50" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
           <MenuIcon className={iconSize} />
         </Button>
       </div>
 
-      <div className="flex flex-1 items-center justify-center">
-        <div className="relative w-full max-w-sm md:max-w-md">
-          <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${iconSize} text-muted-foreground`} />
-          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverAnchor asChild>
-              <Input
-                ref={inputRef}
-                type="search"
-                placeholder={t('search.placeholder', 'Search clients, equipment, elements...')}
-                className={cn(
-                  "h-8 w-full rounded-full pl-8 text-xs",
-                  "bg-card text-card-foreground",
-                  "dark:bg-muted/80 dark:text-foreground"
-                )}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onFocus={() => searchTerm.length > 1 && setIsPopoverOpen(true)}
-              />
-            </PopoverAnchor>
-            {searchResults && (
-              <PopoverContent
-                ref={popoverRef}
-                className="mt-1 w-[var(--radix-popover-trigger-width)] max-h-80 overflow-y-auto p-1"
-                align="start"
-                onOpenAutoFocus={(e) => e.preventDefault()}
-              >
-                {(searchResults.clients?.length ?? 0) > 0 && (
-                  <>
-                    <div className="mb-1 px-2 py-1 text-xs font-semibold text-muted-foreground">{t('search.clients_label')}</div>
-                    {searchResults.clients.map(client => (
-                      <Button key={client.id} variant="ghost" asChild className="h-auto w-full justify-start px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
-                        <Link href={`/subscribers/profile/${client.id}`} className="flex items-center gap-2">
-                          <User className={`${smallIconSize} text-muted-foreground`} />
-                          {client.name}
-                        </Link>
-                      </Button>
-                    ))}
-                  </>
-                )}
-                {(searchResults.equipment?.length ?? 0) > 0 && (
-                  <>
-                    <div className="mb-1 mt-2 px-2 py-1 text-xs font-semibold text-muted-foreground">{t('search.equipment_label')}</div>
-                    {searchResults.equipment.map(item => (
-                      <Button key={item.id} variant="ghost" className="h-auto w-full justify-start px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
-                        <Box className={`${smallIconSize} text-muted-foreground mr-2`} />
-                        <span>{item.type} ({t('search.serial_prefix')}: {item.serial})</span>
-                      </Button>
-                    ))}
-                  </>
-                )}
-                {(searchResults.elements?.length ?? 0) > 0 && (
-                  <>
-                    <div className="mb-1 mt-2 px-2 py-1 text-xs font-semibold text-muted-foreground">{t('search.elements_label')}</div>
-                    {searchResults.elements.map(elem => (
-                      <Button key={elem.id} variant="ghost" className="h-auto w-full justify-start px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
-                        <Cable className={`${smallIconSize} text-muted-foreground mr-2`} />
-                        <span>{elem.name} ({elem.type})</span>
-                      </Button>
-                    ))}
-                  </>
-                )}
-                {searchResults.clients?.length === 0 &&
-                  searchResults.equipment?.length === 0 &&
-                  searchResults.elements?.length === 0 && (
-                    <div className="p-2 text-center text-xs text-muted-foreground">
-                      {t('search.no_results_found', 'No results found for "{term}"').replace('{term}', searchTerm)}
-                    </div>
-                  )}
-              </PopoverContent>
-            )}
-          </Popover>
+      {/* Middle part: Search Bar and Clock */}
+      <div className="flex flex-1 items-center justify-center gap-4 mx-4">
+        {/* Search Bar Input Container */}
+        <div className="relative flex-grow max-w-sm md:max-w-md">
+           <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${iconSize} text-muted-foreground`} />
+           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+             <PopoverAnchor asChild>
+               <Input
+                 ref={inputRef}
+                 type="search"
+                 placeholder={t('search.placeholder', 'Search clients, equipment, elements...')}
+                 className={cn(
+                   "h-8 w-full rounded-full pl-8 text-xs",
+                   "bg-card text-card-foreground",
+                   "dark:bg-muted/80 dark:text-foreground"
+                 )}
+                 value={searchTerm}
+                 onChange={(e) => setSearchTerm(e.target.value)}
+                 onFocus={() => searchTerm.length > 1 && setIsPopoverOpen(true)}
+               />
+             </PopoverAnchor>
+             {searchResults && (
+               <PopoverContent
+                 ref={popoverRef}
+                 className="mt-1 w-[var(--radix-popover-trigger-width)] max-h-80 overflow-y-auto p-1"
+                 align="start"
+                 onOpenAutoFocus={(e) => e.preventDefault()}
+               >
+                 {(searchResults.clients?.length ?? 0) > 0 && (
+                   <>
+                     <div className="mb-1 px-2 py-1 text-xs font-semibold text-muted-foreground">{t('search.clients_label')}</div>
+                     {searchResults.clients.map(client => (
+                       <Button key={client.id} variant="ghost" asChild className="h-auto w-full justify-start px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
+                         <Link href={`/subscribers/profile/${client.id}`} className="flex items-center gap-2">
+                           <User className={`${smallIconSize} text-muted-foreground`} />
+                           {client.name}
+                         </Link>
+                       </Button>
+                     ))}
+                   </>
+                 )}
+                 {(searchResults.equipment?.length ?? 0) > 0 && (
+                   <>
+                     <div className="mb-1 mt-2 px-2 py-1 text-xs font-semibold text-muted-foreground">{t('search.equipment_label')}</div>
+                     {searchResults.equipment.map(item => (
+                       <Button key={item.id} variant="ghost" className="h-auto w-full justify-start px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
+                         <Box className={`${smallIconSize} text-muted-foreground mr-2`} />
+                         <span>{item.type} ({t('search.serial_prefix')}: {item.serial})</span>
+                       </Button>
+                     ))}
+                   </>
+                 )}
+                 {(searchResults.elements?.length ?? 0) > 0 && (
+                   <>
+                     <div className="mb-1 mt-2 px-2 py-1 text-xs font-semibold text-muted-foreground">{t('search.elements_label')}</div>
+                     {searchResults.elements.map(elem => (
+                       <Button key={elem.id} variant="ghost" className="h-auto w-full justify-start px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
+                         <Cable className={`${smallIconSize} text-muted-foreground mr-2`} />
+                         <span>{elem.name} ({elem.type})</span>
+                       </Button>
+                     ))}
+                   </>
+                 )}
+                 {searchResults.clients?.length === 0 &&
+                   searchResults.equipment?.length === 0 &&
+                   searchResults.elements?.length === 0 && (
+                     <div className="p-2 text-center text-xs text-muted-foreground">
+                       {t('search.no_results_found', 'No results found for "{term}"').replace('{term}', searchTerm)}
+                     </div>
+                   )}
+               </PopoverContent>
+             )}
+           </Popover>
+        </div>
+        {/* Clock */}
+        <div className="text-xs font-mono text-foreground hidden md:flex items-center whitespace-nowrap">
+           {currentTime ? currentTime : <Skeleton className="h-4 w-16 bg-muted" />}
         </div>
       </div>
+
 
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('header.toggle_theme', 'Toggle theme')} className="text-foreground hover:bg-muted/50">
