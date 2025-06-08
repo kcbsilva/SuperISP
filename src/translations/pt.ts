@@ -74,6 +74,9 @@ const pt = {
     sales_opportunities: 'Oportunidades', // New
     sales_proposals: 'Propostas', // New
     sales_sales_orders: 'Pedidos de Venda', // New
+    messenger: 'Messenger', // New
+    messenger_chat: 'Messenger', // New
+    messenger_configure: 'Configurar', // New
     reports: 'Relatórios',
     hr: 'RH',
     hr_dashboard: 'Painel de RH',
@@ -497,7 +500,7 @@ const pt = {
     services_ipoe_pass: 'Senha IPoE',
     services_mac_address: 'Endereço MAC',
     services_xpon_sn: 'S/N xPON',
-  },
+   },
   dashboard: {
     dashboard_view_label: 'Visualização do Painel',
     select_view: 'Selecionar Visualização do Painel',
@@ -1623,9 +1626,28 @@ const pt = {
     activity_type_proposal_sent: 'Proposta Enviada',
     activity_type_sale_closed: 'Venda Fechada',
   },
+  messenger_chat: {
+    chat_interface_title: 'Interface de Chat',
+    chat_interface_description: 'Interaja com seu bot de mensagens e veja conversas.',
+    bot_greeting: 'Olá! Como posso ajudar hoje?',
+    user_example_query: 'Preciso de ajuda com meu plano de internet.',
+    placeholder: 'A interface de chat do mensageiro estará aqui.',
+    type_message_placeholder: 'Digite sua mensagem...',
+    send_button_sr: 'Enviar',
+  },
+  messenger_configure: {
+    title: 'Configuração do Bot Mensageiro',
+    description: 'Configure seu bot de mensagens com IA, conecte-se a plataformas e defina comportamentos.',
+    platform_integration_title: 'Integrações de Plataforma',
+    platform_integration_placeholder: 'Conecte-se ao WhatsApp, Telegram, Facebook Messenger, etc. (Não Implementado)',
+    ai_settings_title: 'Configurações de IA & Comportamento',
+    ai_settings_placeholder: 'Configure fluxos Genkit, prompts e respostas automatizadas. (Não Implementado)',
+    greeting_message_title: 'Mensagem de Saudação',
+    greeting_message_placeholder: 'Defina a mensagem inicial que o bot envia aos usuários. (Não Implementado)',
+    save_changes_button: 'Salvar Alterações',
+    save_changes_title_toast: 'Salvar Alterações (Não Implementado)',
+    save_changes_desc_toast: 'Salvar configuração do mensageiro ainda não foi implementado.',
+  },
 };
 
 export default pt;
-
-
-    

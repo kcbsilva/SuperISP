@@ -42,6 +42,7 @@ import {
   TrendingUp, // Added for Sales
   Target, // Added for Opportunities
   ShoppingCart, // Added for Sales Orders
+  MessageCircle, // For Messenger sub-page
 } from 'lucide-react';
 import { SiNextdns } from "react-icons/si";
 import { TbDeviceImacStar } from "react-icons/tb";
@@ -314,7 +315,7 @@ export const sidebarNav: SidebarNavItem[] = [
     ],
   },
   {
-    title: 'sidebar.sales', // New Sales Menu
+    title: 'sidebar.sales',
     icon: TrendingUp,
     tooltip: 'sidebar.sales',
     children: [
@@ -327,7 +328,7 @@ export const sidebarNav: SidebarNavItem[] = [
       {
         title: 'sidebar.sales_leads',
         href: '/admin/sales/leads',
-        icon: Users, // Using Users icon for Leads
+        icon: Users,
         tooltip: 'sidebar.sales_leads',
       },
       {
@@ -347,6 +348,25 @@ export const sidebarNav: SidebarNavItem[] = [
         href: '/admin/sales/orders',
         icon: ShoppingCart,
         tooltip: 'sidebar.sales_sales_orders',
+      },
+    ],
+  },
+  {
+    title: 'sidebar.messenger', // New Messenger Menu
+    icon: MessageSquare,
+    tooltip: 'sidebar.messenger',
+    children: [
+      {
+        title: 'sidebar.messenger_chat',
+        href: '/admin/messenger/chat',
+        icon: MessageCircle,
+        tooltip: 'sidebar.messenger_chat',
+      },
+      {
+        title: 'sidebar.messenger_configure',
+        href: '/admin/messenger/configure',
+        icon: Settings2,
+        tooltip: 'sidebar.messenger_configure',
       },
     ],
   },
