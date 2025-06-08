@@ -1,4 +1,3 @@
-
 // src/config/sidebarNav.ts
 import {
   LayoutDashboard, ShieldCheck, Settings, Users, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
@@ -39,13 +38,13 @@ import {
   Building,
   Cog,
   Dot,
-  TrendingUp, // Added for Sales
-  Target, // Added for Opportunities
-  ShoppingCart, // Added for Sales Orders
-  MessageCircle, // For Messenger sub-page
-  Workflow, // Added for Flow
+  TrendingUp, 
+  Target, 
+  ShoppingCart, 
+  MessageCircle, 
+  Workflow, 
+  Radio, // Added for Channels
 } from 'lucide-react';
-// Removed imports for SiNextdns, TbDeviceImacStar, SiReactrouter as they are no longer used
 import type { Icon as LucideIcon } from 'lucide-react';
 import type { IconType } from 'react-icons';
 
@@ -132,7 +131,7 @@ export const sidebarNav: SidebarNavItem[] = [
           {
             title: 'sidebar.maps_elements_ducts',
             href: '/admin/maps/elements/ducts',
-            icon: GitBranch, // Representing pathways/conduits
+            icon: GitBranch, 
             tooltip: 'sidebar.maps_elements_ducts',
           },
           {
@@ -195,7 +194,7 @@ export const sidebarNav: SidebarNavItem[] = [
     children: [
       {
         title: 'sidebar.noc_overview',
-        href: '/admin/noc/dashboard', // Assuming overview is the NOC dashboard
+        href: '/admin/noc/dashboard', 
         icon: LayoutDashboard,
         tooltip: 'sidebar.noc_overview',
       },
@@ -213,7 +212,7 @@ export const sidebarNav: SidebarNavItem[] = [
           {
             title: 'sidebar.fttx_olts',
             href: '/admin/noc/fttx/olts',
-            icon: NetworkIcon, // Using NetworkIcon as OLTs are network devices
+            icon: NetworkIcon, 
             tooltip: 'sidebar.fttx_olts',
           },
           {
@@ -238,13 +237,13 @@ export const sidebarNav: SidebarNavItem[] = [
           {
             title: 'sidebar.noc_wireless_aps',
             href: '/admin/noc/wireless/access-points',
-            icon: RouterIcon, // Using RouterIcon for APs
+            icon: RouterIcon, 
             tooltip: 'sidebar.noc_wireless_aps',
           },
           {
             title: 'sidebar.noc_wireless_clients',
             href: '/admin/noc/wireless/clients',
-            icon: Users2, // Using Users2 for client devices
+            icon: Users2, 
             tooltip: 'sidebar.noc_wireless_clients',
           },
         ],
@@ -302,13 +301,13 @@ export const sidebarNav: SidebarNavItem[] = [
       {
         title: 'sidebar.service_calls_dashboard',
         href: '/admin/service-calls/dashboard',
-        icon: LayoutDashboard, // Using generic dashboard icon
+        icon: LayoutDashboard, 
         tooltip: 'sidebar.service_calls_dashboard',
       },
       {
         title: 'sidebar.service_calls_service_types',
         href: '/admin/service-calls/service-types',
-        icon: ListChecks, // Using ListChecks for types/configuration
+        icon: ListChecks, 
         tooltip: 'sidebar.service_calls_service_types',
       },
     ],
@@ -362,10 +361,16 @@ export const sidebarNav: SidebarNavItem[] = [
         tooltip: 'sidebar.messenger_chat',
       },
       {
-        title: 'sidebar.messenger_departments', // New "Departments" item
+        title: 'sidebar.messenger_departments',
         href: '/admin/messenger/departments',
-        icon: Users, // Using Users icon for departments
+        icon: Users, 
         tooltip: 'sidebar.messenger_departments',
+      },
+      {
+        title: 'sidebar.messenger_channels', // New "Channels" item
+        href: '/admin/messenger/channels',
+        icon: Radio, 
+        tooltip: 'sidebar.messenger_channels',
       },
       {
         title: 'sidebar.messenger_flow',
@@ -468,36 +473,36 @@ export const sidebarNav: SidebarNavItem[] = [
         ],
       },
       {
-        title: 'sidebar.settings_network', // Renamed from sidebar.network
+        title: 'sidebar.settings_network', 
         icon: NetworkIcon,
         tooltip: 'sidebar.settings_network',
         children: [
           {
-            title: 'sidebar.settings_network_ip', // Renamed
+            title: 'sidebar.settings_network_ip', 
             href: '/admin/settings/network/ip',
             icon: Code,
             tooltip: 'sidebar.settings_network_ip',
           },
           {
-            title: 'sidebar.settings_network_devices', // Renamed
+            title: 'sidebar.settings_network_devices', 
             href: '/admin/settings/network/devices',
             icon: RouterIcon,
             tooltip: 'sidebar.settings_network_devices',
           },
           {
-            title: 'sidebar.settings_network_cgnat', // Renamed
+            title: 'sidebar.settings_network_cgnat', 
             href: '/admin/settings/network/cgnat',
             icon: Share2,
             tooltip: 'sidebar.settings_network_cgnat',
           },
           {
-            title: 'sidebar.settings_network_radius', // Renamed
+            title: 'sidebar.settings_network_radius', 
             href: '/admin/settings/network/radius',
             icon: ServerIcon,
             tooltip: 'sidebar.settings_network_radius',
           },
           {
-            title: 'sidebar.settings_network_vlan', // Renamed
+            title: 'sidebar.settings_network_vlan', 
             href: '/admin/settings/network/vlan',
             icon: Split,
             tooltip: 'sidebar.settings_network_vlan',
@@ -505,7 +510,7 @@ export const sidebarNav: SidebarNavItem[] = [
         ],
       },
       {
-        title: 'sidebar.settings_security', // Renamed
+        title: 'sidebar.settings_security', 
         href: '/admin/settings/security',
         icon: ShieldCheck,
         tooltip: 'sidebar.settings_security',
@@ -513,7 +518,7 @@ export const sidebarNav: SidebarNavItem[] = [
       {
         title: 'sidebar.settings_system_monitor',
         href: '/admin/settings/system-monitor',
-        icon: RouterIcon, // Using RouterIcon as a generic system/device icon
+        icon: RouterIcon, 
         tooltip: 'sidebar.settings_system_monitor',
       },
       {
