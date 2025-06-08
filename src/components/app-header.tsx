@@ -1,8 +1,8 @@
-
 // src/components/app-header.tsx
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image'; // Import next/image
 import { Search, User, Box, Cable, Info, LogOut, UserCircle, Sun, Moon, Settings, Menu as MenuIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -54,8 +54,8 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
-  const iconSize = "h-3 w-3"; 
-  const smallIconSize = "h-2.5 w-2.5"; 
+  const iconSize = "h-3 w-3";
+  const smallIconSize = "h-2.5 w-2.5";
 
   React.useEffect(() => setMounted(true), []);
 
@@ -117,15 +117,27 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
     <header
       className={cn(
         "sticky top-0 z-30 flex h-14 items-center justify-between px-4 md:px-6",
-        "bg-background text-foreground border-b-2 border-primary", // Light theme: dashboard background, primary border
-        "dark:bg-background dark:text-foreground dark:border-b-2 dark:border-accent" // Dark theme: page background header, light text, and accent bottom border
+        "bg-background text-foreground border-b-2 border-primary",
+        "dark:bg-background dark:text-foreground dark:border-b-2 dark:border-accent"
       )}
     >
-      <div className="flex items-center">
+      <div className="flex items-center gap-2"> {/* Added gap-2 for spacing */}
+        {/* Prolter Logo - links to admin dashboard */}
+        <Link href="/admin/dashboard" className="flex items-center mr-2"> {/* Added mr-2 for spacing */}
+          <Image
+            src="/assets/prolter-logo.svg" // Assuming your SVG is in public/assets
+            alt="Prolter Logo"
+            width={131} // Set appropriate width
+            height={32} // Set appropriate height
+            priority // Add priority if it's LCP
+          />
+        </Link>
+        {/* Mobile Sidebar Toggle */}
         <Button variant="ghost" size="icon" className="md:hidden text-foreground hover:bg-muted/50" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
             <MenuIcon className={iconSize} />
         </Button>
       </div>
+
       <div className="flex flex-1 items-center justify-center">
         <div className="relative w-full max-w-sm md:max-w-md">
           <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${iconSize} text-muted-foreground`} />
@@ -137,8 +149,8 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
                     placeholder={t('search.placeholder', 'Search clients, equipment, elements...')}
                     className={cn(
                       "h-8 w-full rounded-full pl-8 text-xs",
-                      "bg-card text-card-foreground", 
-                      "dark:bg-muted/80 dark:text-foreground" 
+                      "bg-card text-card-foreground",
+                      "dark:bg-muted/80 dark:text-foreground"
                     )}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}

@@ -23,8 +23,8 @@ const siteBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteBaseUrl), // Recommended for resolving relative paths
-  title: 'Prolter - Gerenciador mais completo di Mercado.',
-  description: 'Gerenciador mais completo di Mercado.',
+  title: 'Prolter - Gerenciador mais completo do Mercado.',
+  description: 'Gerenciador mais completo do Mercado.',
   icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
 
