@@ -492,7 +492,7 @@ const en = {
     services_mac_address: 'MAC Address',
     services_xpon_sn: 'xPON S/N',
    },
-   dashboard: {
+  dashboard: {
      dashboard_view_label: 'Dashboard View',
      select_view: 'Select Dashboard View',
      general_view: 'General Overview',
@@ -1587,8 +1587,28 @@ const en = {
     employees_by_tenure_chart_title: 'Funcionários por Tempo de Casa',
     employees_by_tenure_chart_desc: 'Distribuição de funcionários por anos de serviço.',
   },
+  sales_dashboard: {
+    title: 'Painel de Vendas',
+    new_leads_month: 'Novos Leads (Mês)',
+    opportunities_won_month: 'Oportunidades Ganhas (Mês)',
+    sales_revenue_month: 'Receita de Vendas (Mês)',
+    conversion_rate_month: 'Taxa de Conversão (Mês)',
+    from_last_period: 'em relação ao período anterior',
+    pipeline_by_stage_title: 'Funil por Estágio',
+    pipeline_by_stage_desc: 'Número de oportunidades em cada estágio do funil.',
+    revenue_over_time_title: 'Receita ao Longo do Tempo',
+    revenue_over_time_desc: 'Receita de vendas mensal nos últimos 6 meses.',
+    recent_sales_activity_title: 'Atividade Recente de Vendas',
+    recent_sales_activity_none: 'Nenhuma atividade recente de vendas.',
+    activity_type_new_lead: 'Novo Lead',
+    activity_type_opportunity_created: 'Oportunidade Criada',
+    activity_type_proposal_sent: 'Proposta Enviada',
+    activity_type_sale_closed: 'Venda Fechada',
+  },
 };
 
 export default en; // This was the error, should be 'en'
+
+    
 
     
