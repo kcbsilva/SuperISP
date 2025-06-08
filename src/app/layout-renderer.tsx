@@ -1,37 +1,39 @@
-
+// src/app/layout-renderer.tsx
 'use client';
 
-import * as React from 'react';
+import React from 'react'; // Corrected React import
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminLayout from '@/app/admin/layout'; // Default export from admin/layout.tsx
-// import ClientLayout from '@/app/client/layout'; // Uncomment if you create a client layout
 import { Loader2 } from 'lucide-react';
-import { useLocale } from '@/contexts/LocaleContext'; // Import useLocale for translations
+import { useLocale } from '@/contexts/LocaleContext';
 
 export default function LayoutRenderer({ children: pageContent }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const [isMounted, setIsMounted] = React.useState(false);
   const router = useRouter();
-  const { t } = useLocale(); // For potential translated loading messages
+  const { t } = useLocale();
 
   React.useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Effect for handling redirects
   React.useEffect(() => {
     if (!isMounted || isAuthLoading) {
       return; // Don't do anything until mounted and auth state is resolved
     }
 
-    if (pathname.startsWith('/admin/login')) {
-      if (isAuthenticated) {
+    const isAdminPath = pathname.startsWith('/admin');
+    const isAdminLoginPath = pathname === '/admin/login';
+    const isAdminRootPath = pathname === '/admin';
+
+    if (isAuthenticated) {
+      if (isAdminLoginPath || isAdminRootPath) {
         router.replace('/admin/dashboard');
       }
-    } else if (pathname.startsWith('/admin')) {
-      if (!isAuthenticated) {
+    } else {
+      if (isAdminPath && !isAdminLoginPath && !isAdminRootPath) { // Also exclude admin root from this redirect
         router.replace('/admin/login');
       }
     }
@@ -49,41 +51,31 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
     );
   }
 
-  // If we are in the process of redirecting (e.g., authenticated user on /admin/login),
-  // show a loader. This prevents rendering the login page content briefly before redirect.
-  if (pathname.startsWith('/admin/login') && isAuthenticated) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-  // Similarly, if on an admin page and not authenticated, show loader during redirect.
-  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login') && !isAuthenticated) {
-     return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-
-  if (pathname.startsWith('/admin/login')) {
-    // Login page content is rendered directly without AdminLayout if not authenticated
-    return <>{pageContent}</>;
-  }
-
+  // Specific handling for admin routes
   if (pathname.startsWith('/admin')) {
-    // For all other /admin routes, if authenticated, use AdminLayout
-    return <AdminLayout>{pageContent}</AdminLayout>;
+    if (pathname === '/admin/login' || pathname === '/admin') { // Login page or admin root (redirector)
+      // If authenticated, redirect is in progress (show loader from useEffect logic).
+      // If not authenticated, show the page content directly.
+      return isAuthenticated && pathname === '/admin/login' ? ( // Only show loader for login if redirecting
+        <div className="flex h-screen w-full items-center justify-center bg-background">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : <>{pageContent}</>;
+    }
+
+    // For any other /admin/* page (e.g., /admin/dashboard, /admin/settings)
+    if (isAuthenticated) {
+      return <AdminLayout>{pageContent}</AdminLayout>; // Apply AdminLayout (shell)
+    } else {
+      // If not authenticated on a protected admin page, a redirect to login is in progress (or should be triggered by useEffect). Show loader.
+      return (
+        <div className="flex h-screen w-full items-center justify-center bg-background">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
+    }
   }
 
-  // Example for a potential client-side layout (if you had one at src/app/client/layout.tsx)
-  // if (pathname.startsWith('/client')) {
-  //   // Add authentication check for client routes if needed
-  //   return <ClientLayout>{pageContent}</ClientLayout>;
-  // }
-
-  // For other pages (e.g., public root page), render content directly.
+  // For all non-admin pages (e.g., root '/', '/client/*', etc.)
   return <>{pageContent}</>;
 }

@@ -1,9 +1,7 @@
-import type {NextConfig} from 'next';
-module.exports = {
-  output: 'standalone',
-};
+import type { NextConfig } from 'next';
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: 'standalone',
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -26,17 +24,23 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  allowedDevOrigins: ['9003-idx-studio-1746297214025.cluster-uf6urqn4lned4spwk4xorq6bpo.cloudworkstations.dev'],
   webpack: (config, { isServer }) => {
     // Fix for 'net', 'tls', 'fs' modules not found in client-side bundle due to mysql2
     if (!isServer) {
       config.resolve.fallback = {
-        ...(config.resolve.fallback || {}), // Spread existing fallbacks if any
+        ...(config.resolve.fallback || {}),
         net: false,
         tls: false,
         fs: false,
       };
     }
+
+    // Add SVG support
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack']
+    });
+
     return config;
   },
 };
