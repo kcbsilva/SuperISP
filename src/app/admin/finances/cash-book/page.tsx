@@ -89,7 +89,6 @@ const placeholderEntries: CashBookEntry[] = [
 
 const dateLocales: Record<AppLocale, typeof enUS> = {
     en: enUS,
-    fr: fr,
     pt: ptBR,
 };
 
@@ -170,7 +169,7 @@ export default function CashBookPage() {
 
   const netBalance = React.useMemo(() => totalIncome - totalExpenses, [totalIncome, totalExpenses]);
 
-  const currencyLocale = locale === 'pt' ? 'pt-BR' : locale === 'fr' ? 'fr-FR' : 'en-US';
+  const currencyLocale = locale === 'pt' ? 'pt-BR' : 'en-US';
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString(currencyLocale, { style: 'currency', currency: 'USD' }); // Assuming USD, adjust as needed
   };

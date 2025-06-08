@@ -42,7 +42,7 @@ export default function DashboardPage() {
 
   React.useEffect(() => {
     setFormattedSubscribers(dashboardData.totalSubscribers.toLocaleString(locale));
-    const currencyLocale = locale === 'pt' ? 'pt-BR' : locale === 'fr' ? 'fr-FR' : 'en-US';
+    const currencyLocale = locale === 'pt' ? 'pt-BR' : 'en-US';
     setFormattedMrr(dashboardData.mrr.toLocaleString(currencyLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
   }, [locale]);
 
