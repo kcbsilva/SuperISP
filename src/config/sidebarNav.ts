@@ -350,7 +350,7 @@ export const sidebarNav: SidebarNavItem[] = [
     ],
   },
   {
-    title: 'sidebar.messenger', // New Messenger Menu
+    title: 'sidebar.messenger',
     icon: MessageSquare,
     tooltip: 'sidebar.messenger',
     children: [
@@ -359,6 +359,12 @@ export const sidebarNav: SidebarNavItem[] = [
         href: '/admin/messenger/chat',
         icon: MessageCircle,
         tooltip: 'sidebar.messenger_chat',
+      },
+      {
+        title: 'sidebar.messenger_departments', // New "Departments" item
+        href: '/admin/messenger/departments',
+        icon: Users, // Using Users icon for departments
+        tooltip: 'sidebar.messenger_departments',
       },
       {
         title: 'sidebar.messenger_configure',

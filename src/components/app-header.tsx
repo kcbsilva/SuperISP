@@ -280,7 +280,7 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
              )}
            </Popover>
         </div>
-        <div className="text-[10px] font-mono text-foreground hidden md:flex items-center whitespace-nowrap"> {/* Reduced font size */}
+        <div className="text-[10px] font-mono font-bold text-foreground hidden md:flex items-center whitespace-nowrap"> {/* Reduced font size and added font-bold */}
            {currentTime ? currentTime : <Skeleton className="h-3 w-16 bg-muted" />} {/* Adjusted skeleton height */}
         </div>
       </div>
