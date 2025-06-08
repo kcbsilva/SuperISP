@@ -108,9 +108,6 @@ const pt = {
     settings_mysql: 'MySQL',
     settings_mysql_databases: 'Bancos de Dados',
     settings_mysql_cli: 'CLI',
-    pilotview: 'PilotView',
-    transitos: 'TransitOS',
-    zones: 'Zonas',
   },
   search: {
     placeholder: 'Buscar clientes, equipamentos, elementos...',
@@ -1651,3 +1648,4 @@ const pt = {
 };
 
 export default pt;
+
