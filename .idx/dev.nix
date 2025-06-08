@@ -13,7 +13,7 @@
     extensions = [];
     workspace = {
       onCreate = {
-        default.openFiles = ["src/app/page.tsx"];
+        default.openFiles = ["src/app/admin/dashboard/page.tsx"];
       };
     };
     

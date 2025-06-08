@@ -1,4 +1,3 @@
-
 // src/app/admin/messenger/configure/page.tsx
 'use client';
 
@@ -33,7 +32,7 @@ export default function MessengerConfigurePage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">{t('messenger_configure.title', 'Messenger Bot Configuration')}</CardTitle>
-          <CardDescription className="text-xs">{t('messenger_configure.description', 'Set up your AI-powered messenger bot, connect to platforms, and define behaviors.')}</CardDescription>
+          <CardDescription className="text-xs">{t('messenger_configure.description', 'Set up your AI-powered messenger bot, connect to platforms, and define behaviors. Settings here are placeholders for future implementation.')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <section>
@@ -47,7 +46,7 @@ export default function MessengerConfigurePage() {
           <section>
             <h3 className="text-sm font-medium mb-2">{t('messenger_configure.ai_settings_title', 'AI & Behavior Settings')}</h3>
             <p className="text-xs text-muted-foreground">
-              {t('messenger_configure.ai_settings_placeholder', 'Configure Genkit flows, prompts, and automated responses. (Not Implemented)')}
+              {t('messenger_configure.ai_settings_placeholder', 'Configure Genkit flows (see "Flows" page), prompts, and automated responses. (Not Implemented)')}
             </p>
             {/* Placeholder for AI model selection, prompt editor links, etc. */}
           </section>

@@ -1,4 +1,3 @@
-
 // src/app/admin/messenger/departments/page.tsx
 'use client';
 
@@ -37,11 +36,11 @@ export default function MessengerDepartmentsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">{t('messenger_departments.title', 'Manage Messenger Departments')}</CardTitle>
-          <CardDescription className="text-xs">{t('messenger_departments.description', 'Define departments for routing conversations and assigning agents.')}</CardDescription>
+          <CardDescription className="text-xs">{t('messenger_departments.description', 'Define departments for routing conversations and assigning agents within the messenger system.')}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-xs text-muted-foreground">
-            {t('messenger_departments.placeholder', 'Department list and management tools will be displayed here. (Not Implemented)')}
+            {t('messenger_departments.placeholder', 'Department list and management tools will be displayed here. For example, you could list departments like "Technical Support", "Billing", "Sales" and assign users or flows to them. (Not Implemented)')}
           </p>
           {/* Placeholder for department list, add/edit/delete functionality */}
         </CardContent>

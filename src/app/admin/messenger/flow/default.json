@@ -1,0 +1,60 @@
+{
+  "start": {
+    "message": "Welcome to our ISP support bot! How can I help you today? Press 1 for Technical Support, 2 for Billing.",
+    "options": [
+      { "keyword": "1", "next": "technical_support" },
+      { "keyword": "2", "next": "billing_inquiry" }
+    ]
+  },
+  "technical_support": {
+    "message": "You've reached Technical Support. Are you experiencing issues with: A) Internet, B) TV, C) Phone?",
+    "options": [
+      { "keyword": "A", "next": "internet_issues" },
+      { "keyword": "B", "next": "tv_issues" },
+      { "keyword": "C", "next": "phone_issues" }
+    ]
+  },
+  "billing_inquiry": {
+    "message": "For Billing Inquiries: 1) View current bill, 2) Payment options, 3) Billing history.",
+    "options": [
+      { "keyword": "1", "next": "view_bill" },
+      { "keyword": "2", "next": "payment_options" },
+      { "keyword": "3", "next": "billing_history" }
+    ]
+  },
+  "internet_issues": {
+    "message": "Okay, let's troubleshoot your internet. Have you tried restarting your modem and router?",
+    "options": [
+      { "keyword": "Yes", "next": "internet_issue_restarted" },
+      { "keyword": "No", "next": "internet_issue_restart_guidance" }
+    ]
+  },
+  "tv_issues": {
+    "message": "For TV issues, please ensure all cables are securely connected. Is the issue with picture, sound, or channels?",
+    "options": []
+  },
+  "phone_issues": {
+    "message": "For phone issues, please check if your phone is properly connected to the wall jack or modem.",
+    "options": []
+  },
+  "view_bill": {
+    "message": "To view your current bill, please log in to your account portal at [link_to_portal].",
+    "options": []
+  },
+  "payment_options": {
+    "message": "We accept payments via [payment_methods_list]. You can pay online or at our offices.",
+    "options": []
+  },
+  "billing_history": {
+    "message": "Your billing history can be viewed in your account portal.",
+    "options": []
+  },
+  "internet_issue_restarted": {
+    "message": "If restarting didn't help, please provide more details or type 'agent' to speak to someone.",
+    "options": []
+  },
+  "internet_issue_restart_guidance": {
+    "message": "Please unplug your modem and router for 30 seconds, then plug them back in. Wait a few minutes for them to reconnect.",
+    "options": []
+  }
+}

@@ -1,4 +1,3 @@
-
 // src/app/admin/messenger/chat/page.tsx
 'use client';
 
@@ -28,7 +27,7 @@ export default function MessengerChatPage() {
       <Card className="flex-1 flex flex-col">
         <CardHeader className="border-b">
           <CardTitle className="text-sm">{t('messenger_chat.chat_interface_title', 'Chat Interface')}</CardTitle>
-          <CardDescription className="text-xs">{t('messenger_chat.chat_interface_description', 'Interact with your messenger bot and view conversations.')}</CardDescription>
+          <CardDescription className="text-xs">{t('messenger_chat.chat_interface_description', 'Interact with your messenger bot and view conversations. This is a placeholder and not fully functional.')}</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 p-0 flex flex-col">
           <ScrollArea className="flex-grow p-4 space-y-4">
@@ -44,7 +43,7 @@ export default function MessengerChatPage() {
               </div>
             </div>
              <p className="text-xs text-muted-foreground text-center py-8">
-            {t('messenger_chat.placeholder', 'Messenger chat interface will be here.')}
+            {t('messenger_chat.placeholder', 'Messenger chat interface will be here. This area is for testing and viewing bot interactions.')}
           </p>
           </ScrollArea>
           <div className="border-t p-4">
