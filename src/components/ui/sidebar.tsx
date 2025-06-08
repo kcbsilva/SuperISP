@@ -329,19 +329,19 @@ const SidebarMenuItem = React.forwardRef<
 SidebarMenuItem.displayName = "SidebarMenuItem"
 
 const sidebarMenuButtonVariants = cva(
-  "w-full justify-start rounded-md pl-1 pr-2.5 py-1.5 text-left text-xs transition-colors flex items-center gap-2 hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none",
+  "w-full justify-start rounded-md px-2.5 py-1.5 text-left text-xs transition-colors flex items-center gap-2 hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none",
   {
     variants: {
       isActive: {
         true: "bg-muted text-primary font-semibold",
       },
       size: {
-        default: "", // Uses the base pl-1 pr-2.5
-        sm: "pl-0.5 pr-2 py-1 text-xs", // Sub-menu items use this, reduced left padding
-        lg: "pl-2 pr-3 py-2 text-sm", // Adjusted lg padding if needed
+        default: "", // Inherits px-2.5 py-1.5 from base
+        sm: "px-2 py-1 text-xs", // Specific padding for sub-menu items
+        lg: "px-3 py-2 text-sm",
       },
-      isCollapsed: { // Variant for collapsed state
-        true: "justify-center px-0 w-[var(--sidebar-width-icon)] data-[collapsed=true]:w-[var(--sidebar-width-icon)]", 
+      isCollapsed: {
+        true: "justify-center px-0 w-[var(--sidebar-width-icon)] data-[collapsed=true]:w-[var(--sidebar-width-icon)]",
         false: ""
       }
     },
@@ -382,7 +382,7 @@ const SidebarMenuButton = React.memo(React.forwardRef<
         props.onClick(event);
       }
     };
-    
+
     const actualChildrenArray = React.Children.toArray(children);
     const iconElement = actualChildrenArray[0];
     const textElement = actualChildrenArray.length > 1 ? actualChildrenArray[1] : null;
@@ -403,10 +403,10 @@ const SidebarMenuButton = React.memo(React.forwardRef<
       >
         {iconElement}
         {textElement && (!isCollapsed || isMobile) && (
-            React.isValidElement(textElement) ? 
-            React.cloneElement(textElement as React.ReactElement, { 
-              className: cn((textElement.props as any).className, "truncate") 
-            }) 
+            React.isValidElement(textElement) ?
+            React.cloneElement(textElement as React.ReactElement, {
+              className: cn((textElement.props as any).className, "truncate")
+            })
             : <span className="truncate">{textElement}</span>
         )}
       </Comp>
@@ -468,10 +468,10 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
       >
         {iconElement}
         {textElement && (!isCollapsed || isMobile) && (
-            React.isValidElement(textElement) ? 
-            React.cloneElement(textElement as React.ReactElement, { 
-              className: cn((textElement.props as any).className, "truncate") 
-            }) 
+            React.isValidElement(textElement) ?
+            React.cloneElement(textElement as React.ReactElement, {
+              className: cn((textElement.props as any).className, "truncate")
+            })
             : <span className="truncate">{textElement}</span>
         )}
         {(!isCollapsed || isMobile) && chevronElement}
@@ -499,7 +499,7 @@ const SidebarMenuSubContent = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & { isOpen: boolean }
 >(({ className, children, isOpen, ...props }, ref) => {
   const { isMobile, isCollapsed } = useSidebar();
-  
+
   if (!isOpen || (isCollapsed && !isMobile)) { // Do not render content if collapsed on desktop
     return null;
   }
@@ -537,7 +537,9 @@ const SidebarMenuSub = React.memo(React.forwardRef<
     if (isCollapsed && !isMobile) {
       setIsOpen(false); // Force close submenus when sidebar collapses on desktop
     } else {
-      setIsOpen(defaultOpen); // Respect defaultOpen otherwise or on path change
+      // Re-evaluate if submenu should be open based on defaultOpen or if path changed to one of its children
+      // This part can be enhanced if you want submenus to auto-open on child route navigation
+      setIsOpen(defaultOpen);
     }
   }, [defaultOpen, pathname, isCollapsed, isMobile]);
 
@@ -552,11 +554,9 @@ const SidebarMenuSub = React.memo(React.forwardRef<
   React.Children.forEach(children, (child) => {
     if (React.isValidElement(child)) {
       if ((child.type as any).displayName === "SidebarMenuSubTrigger") {
-        trigger = React.cloneElement(child as React.ReactElement<any>, { 
-          onClick: toggleOpen, 
+        trigger = React.cloneElement(child as React.ReactElement<any>, {
+          onClick: toggleOpen,
           "data-state": isOpen ? "open" : "closed",
-          // Pass isCollapsed to allow trigger to hide its text
-          // This is handled inside SidebarMenuSubTrigger now via useSidebar hook
         });
       } else if ((child.type as any).displayName === "SidebarMenuSubContent") {
         content = React.cloneElement(child as React.ReactElement<any>, { isOpen });
@@ -604,7 +604,7 @@ const SidebarInset = React.forwardRef<
   React.ComponentProps<"div"> & { noMargin?: boolean }
 >(({ className, noMargin, children, ...props }, ref) => {
   const { side, isCollapsed, isMobile } = useSidebar();
-  
+
   // Determine margin class based on sidebar state
   let marginClass = "";
   if (!noMargin && !isMobile) { // Only apply margin on desktop and if noMargin is false
@@ -646,4 +646,3 @@ export {
   SidebarInset,
   useSidebar,
 };
-
