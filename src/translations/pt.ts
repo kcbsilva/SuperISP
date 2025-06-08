@@ -1,3 +1,4 @@
+
 // src/translations/pt.ts
 const pt = {
   // Login Page Translations
@@ -1665,10 +1666,8 @@ const pt = {
     add_flow_modal_title: 'Adicionar Novo Fluxo',
     add_flow_modal_desc: 'Configure um novo fluxo de mensageiro com sua programação.',
     edit_flow_modal_title: 'Editar Fluxo',
-    edit_flow_modal_desc: 'Atualize os detalhes e a programação deste fluxo de mensageiro.',
+    edit_flow_modal_desc_generic: 'Atualize os detalhes e a programação deste fluxo de mensageiro.',
     form_status_label: 'Status',
-    form_status_active_desc: 'O fluxo estará ativo e poderá ser acionado.',
-    form_status_inactive_desc: 'O fluxo estará inativo e não poderá ser acionado.',
     form_description_label: 'Descrição',
     form_description_placeholder: 'ex: Fluxo de boas-vindas para novos clientes',
     form_channel_label: 'Canal',

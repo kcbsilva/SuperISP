@@ -1,3 +1,4 @@
+
 // src/translations/en.ts
 const en = {
   // Sidebar
@@ -1662,10 +1663,8 @@ const en = {
     add_flow_modal_title: 'Add New Flow',
     add_flow_modal_desc: 'Configure a new messenger flow with its schedule.',
     edit_flow_modal_title: 'Edit Flow',
-    edit_flow_modal_desc: 'Update the details and schedule of this messenger flow.',
+    edit_flow_modal_desc_generic: 'Update the details and schedule of this messenger flow.',
     form_status_label: 'Status',
-    form_status_active_desc: 'The flow will be active and can be triggered.',
-    form_status_inactive_desc: 'The flow will be inactive and cannot be triggered.',
     form_description_label: 'Description',
     form_description_placeholder: 'e.g., Welcome flow for new customers',
     form_channel_label: 'Channel',
@@ -1710,3 +1709,4 @@ const en = {
 };
 
 export default en;
+

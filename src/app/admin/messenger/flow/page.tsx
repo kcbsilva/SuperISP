@@ -1,3 +1,4 @@
+
 // src/app/admin/messenger/flow/page.tsx
 'use client';
 
@@ -38,7 +39,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+// import { Textarea } from '@/components/ui/textarea'; // Changed to Input
 import {
   Select,
   SelectContent,
@@ -319,32 +320,54 @@ export default function MessengerFlowListPage() {
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-sm">{editingFlow ? t('messenger_flow.edit_flow_modal_title') : t('messenger_flow.add_flow_modal_title')}</DialogTitle>
-            <DialogDescription className="text-xs">{editingFlow ? t('messenger_flow.edit_flow_modal_desc') : t('messenger_flow.add_flow_modal_desc')}</DialogDescription>
+            <DialogDescription className="text-xs">{editingFlow ? t('messenger_flow.edit_flow_modal_desc_generic') : t('messenger_flow.add_flow_modal_desc')}</DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <ScrollArea className="max-h-[70vh] p-1 pr-3"> {/* Added pr-3 for scrollbar space */}
                 <div className="space-y-4 p-1">
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5">
-                          <FormLabel>{t('messenger_flow.form_status_label')}</FormLabel>
-                          <DialogDescription className="text-xs">
-                            {field.value === 'Active' ? t('messenger_flow.form_status_active_desc') : t('messenger_flow.form_status_inactive_desc')}
-                          </DialogDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value === 'Active'}
-                            onCheckedChange={(checked) => field.onChange(checked ? 'Active' : 'Inactive')}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-2 gap-4 items-center">
+                    <FormField
+                      control={form.control}
+                      name="channel"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('messenger_flow.form_channel_label')}</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder={t('messenger_flow.form_channel_placeholder')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {placeholderChannels.map(channel => (
+                                <SelectItem key={channel} value={channel}>{channel}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                          <div className="space-y-0.5">
+                            <FormLabel>{t('messenger_flow.form_status_label')}</FormLabel>
+                             {/* Removed specific active/inactive descriptions here */}
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value === 'Active'}
+                              onCheckedChange={(checked) => field.onChange(checked ? 'Active' : 'Inactive')}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   <FormField
                     control={form.control}
                     name="description"
@@ -352,30 +375,8 @@ export default function MessengerFlowListPage() {
                       <FormItem>
                         <FormLabel>{t('messenger_flow.form_description_label')}</FormLabel>
                         <FormControl>
-                          <Textarea placeholder={t('messenger_flow.form_description_placeholder')} {...field} />
+                          <Input placeholder={t('messenger_flow.form_description_placeholder')} {...field} />
                         </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="channel"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('messenger_flow.form_channel_label')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('messenger_flow.form_channel_placeholder')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {placeholderChannels.map(channel => (
-                              <SelectItem key={channel} value={channel}>{channel}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
