@@ -264,7 +264,7 @@ export default function ListSubscribersPage() {
               <Input
                 type="search"
                 placeholder={t('list_subscribers.search_placeholder')}
-                className="pl-8 w-full"
+                className="pl-8 w-full border-border" // Added border-border
                 value={searchTerm}
                 onChange={(e) => {setSearchTerm(e.target.value); setCurrentPage(1);}}
               />
@@ -317,7 +317,7 @@ export default function ListSubscribersPage() {
                 {t('list_subscribers.refresh_button')}
             </Button>
             <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
-              <Link href="/subscribers/add">
+              <Link href="/admin/subscribers/add">
                 <PlusCircle className={`mr-2 ${iconSize}`} /> {t('list_subscribers.add_button')}
               </Link>
             </Button>
@@ -399,7 +399,7 @@ export default function ListSubscribersPage() {
                         )}
                       </TableCell>
                       <TableCell className="font-medium text-xs text-center">
-                        <Link href={`/subscribers/profile/${subscriber.id}`} className="hover:underline text-primary">
+                        <Link href={`/admin/subscribers/profile/${subscriber.id}`} className="hover:underline text-primary">
                           {subscriber.subscriberType === 'Residential' ? subscriber.fullName : subscriber.companyName}
                         </Link>
                       </TableCell>
