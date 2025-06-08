@@ -13,6 +13,9 @@ const en = {
     maps_elements_fdhs: 'FDHs',
     maps_elements_foscs: 'FOSCs',
     maps_elements_peds: 'PEDs',
+    maps_elements_sites: 'Sites',
+    maps_elements_vaults: 'Vaults',
+    maps_elements_ducts: 'Ducts',
     maps_elements_accessories: 'Accessories',
     maps_elements_splitters: 'Splitters',
     maps_elements_towers: 'Towers',
@@ -822,6 +825,18 @@ const en = {
     no_existing_ped_templates: 'No existing PED templates.',
     ped_template_info_max_capacity: 'Max Capacity',
     ped_template_info_type: 'Type',
+    list_title_sites: 'Lista de Sites',
+    site_template_button: 'Modelos de Site',
+    site_template_modal_not_implemented_desc: 'Gerenciar modelos para Sites ainda não está disponível.',
+    no_sites_found: 'Nenhum site encontrado. Eles são tipicamente adicionados pela interface do mapa.',
+    list_title_vaults: 'Lista de Caixas Subterrâneas',
+    vault_template_button: 'Modelos de Caixa Subterrânea',
+    vault_template_modal_not_implemented_desc: 'Gerenciar modelos para Caixas Subterrâneas ainda não está disponível.',
+    no_vaults_found: 'Nenhuma caixa subterrânea encontrada. Elas são tipicamente adicionadas pela interface do mapa.',
+    list_title_ducts: 'Lista de Dutos',
+    duct_template_button: 'Modelos de Duto',
+    duct_template_modal_not_implemented_desc: 'Gerenciar modelos para Dutos ainda não está disponível.',
+    no_ducts_found: 'Nenhum duto encontrado. Eles são tipicamente adicionados pela interface do mapa.',
   },
     settings_plans: {
       internet_page_title: 'Planos de Internet',
@@ -1445,7 +1460,7 @@ const en = {
   integrations_sms: {
     title: 'Configuração Gateway SMS',
     description: 'Gerencie sua integração com o gateway SMS para enviar notificações por mensagem de texto.',
-    placeholder: 'As configurações do gateway SMS (Chave API, ID do Remetente, etc.) serão exibidas aqui. (Não implementado)'
+    placeholder: 'As configurações do gateway SMS (Chave API, ID do Remetente, etc.) serão exibidos aqui. (Não implementado)'
   },
   security_settings_page: {
     title: 'Configuração de Segurança',

@@ -118,6 +118,24 @@ export const sidebarNav: SidebarNavItem[] = [
             tooltip: 'sidebar.maps_elements_peds',
           },
           {
+            title: 'sidebar.maps_elements_sites',
+            href: '/admin/maps/elements/sites',
+            icon: Building,
+            tooltip: 'sidebar.maps_elements_sites',
+          },
+          {
+            title: 'sidebar.maps_elements_vaults',
+            href: '/admin/maps/elements/vaults',
+            icon: Archive,
+            tooltip: 'sidebar.maps_elements_vaults',
+          },
+          {
+            title: 'sidebar.maps_elements_ducts',
+            href: '/admin/maps/elements/ducts',
+            icon: GitBranch, // Representing pathways/conduits
+            tooltip: 'sidebar.maps_elements_ducts',
+          },
+          {
             title: 'sidebar.maps_elements_accessories',
             href: '/admin/maps/elements/accessories',
             icon: Puzzle,
@@ -526,5 +544,3 @@ export const sidebarNav: SidebarNavItem[] = [
     tooltip: 'sidebar.zones',
   },
 ];
-
-    
