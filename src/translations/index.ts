@@ -1,15 +1,10 @@
-
 // src/translations/index.ts
 import en from './en';
-// import fr from './fr'; // Removed French import
-import pt from './pt';
+// Portuguese import and inclusion removed
 
 const translations = {
   en,
-  // fr, // Removed French
-  pt,
+  // pt, // Removed Portuguese
 };
 
 export default translations;
-
-    
