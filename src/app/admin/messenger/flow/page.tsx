@@ -5,9 +5,7 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
+  // CardHeader, CardTitle, CardDescription were removed
 } from "@/components/ui/card";
 import {
   Table,
@@ -28,13 +26,13 @@ interface MessengerFlowItem {
   description: string;
   status: 'Active' | 'Inactive' | 'Draft';
   channel: 'WhatsApp' | 'Telegram' | 'Facebook' | 'Web';
-  createdAt: Date;
+  // createdAt: Date; // Removed
 }
 
 const placeholderFlows: MessengerFlowItem[] = [
-  { id: 'flow-1', description: 'Welcome flow for new WhatsApp users', status: 'Active', channel: 'WhatsApp', createdAt: new Date() },
-  { id: 'flow-2', description: 'Technical support triage for Telegram', status: 'Draft', channel: 'Telegram', createdAt: new Date() },
-  { id: 'flow-3', description: 'Billing inquiry automation for Web Chat', status: 'Inactive', channel: 'Web', createdAt: new Date() },
+  { id: 'flow-1', description: 'Welcome flow for new WhatsApp users', status: 'Active', channel: 'WhatsApp' },
+  { id: 'flow-2', description: 'Technical support triage for Telegram', status: 'Draft', channel: 'Telegram' },
+  { id: 'flow-3', description: 'Billing inquiry automation for Web Chat', status: 'Inactive', channel: 'Web' },
 ];
 
 export default function MessengerFlowListPage() {
@@ -72,35 +70,32 @@ export default function MessengerFlowListPage() {
       </div>
 
       <Card className="flex-1">
-        <CardHeader>
-          <CardTitle className="text-sm">{t('messenger_flow.list_title', 'Configured Flows')}</CardTitle>
-          <CardDescription className="text-xs">{t('messenger_flow.list_description', 'Manage your automated messenger flows and their statuses.')}</CardDescription>
-        </CardHeader>
-        <CardContent>
+        {/* CardHeader, CardTitle, CardDescription removed */}
+        <CardContent className="pt-6"> {/* Added pt-6 to give some top padding since header is gone */}
           {placeholderFlows.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs">{t('messenger_flow.table_header_description', 'Description')}</TableHead>
+                    <TableHead className="text-xs text-center">{t('messenger_flow.table_header_description', 'Description')}</TableHead>
                     <TableHead className="text-xs text-center">{t('messenger_flow.table_header_status', 'Status')}</TableHead>
                     <TableHead className="text-xs text-center">{t('messenger_flow.table_header_channel', 'Channel')}</TableHead>
-                    <TableHead className="text-xs text-center">{t('messenger_flow.table_header_created_at', 'Created At')}</TableHead>
-                    <TableHead className="text-xs text-right">{t('messenger_flow.table_header_actions', 'Actions')}</TableHead>
+                    {/* Created At column header removed */}
+                    <TableHead className="text-xs text-center w-20">{t('messenger_flow.table_header_actions', 'Actions')}</TableHead> {/* Adjusted width */}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {placeholderFlows.map((flow) => (
                     <TableRow key={flow.id}>
-                      <TableCell className="font-medium text-xs">{flow.description}</TableCell>
+                      <TableCell className="font-medium text-xs text-center">{flow.description}</TableCell> {/* Centered description */}
                       <TableCell className="text-center">
                         <Badge variant="outline" className={`text-xs ${getStatusBadgeVariant(flow.status)} border-transparent`}>
                           {t(`messenger_flow.status_${flow.status.toLowerCase()}` as any, flow.status)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-xs text-center">{flow.channel}</TableCell>
-                      <TableCell className="text-xs text-center">{flow.createdAt.toLocaleDateString()}</TableCell>
-                      <TableCell className="text-right">
+                      {/* Created At cell removed */}
+                      <TableCell className="text-center"> {/* Centered actions */}
                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toast({title: 'Edit Flow (NI)', description: `Editing ${flow.description}`})}>
                           <Edit className={iconSize} />
                           <span className="sr-only">{t('messenger_flow.action_edit', 'Edit')}</span>

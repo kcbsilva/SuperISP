@@ -1651,17 +1651,16 @@ const pt = {
     add_channel_desc_toast: 'Adicionar canais ao mensageiro ainda não foi implementado.',
   },
   messenger_flow: {
-    title: 'Gerenciar Fluxos do Mensageiro', 
-    description: 'Defina e gerencie fluxos de conversação automatizados para seu bot de mensagens.',
+    title: 'Fluxos do Mensageiro', // Used as H1 title for the page
     add_new_flow_button: 'Adicionar Novo Fluxo',
     add_new_flow_toast_title: 'Adicionar Novo Fluxo (Não Implementado)',
     add_new_flow_toast_desc: 'A funcionalidade para adicionar um novo fluxo ainda não foi implementada.',
-    list_title: 'Fluxos Configurados',
-    list_description: 'Gerencie seus fluxos de mensageiro automatizados e seus status.',
+    // list_title: 'Fluxos Configurados', // Removed as per request
+    // list_description: 'Gerencie seus fluxos de mensageiro automatizados e seus status.', // Removed as per request
     table_header_description: 'Descrição',
     table_header_status: 'Status',
     table_header_channel: 'Canal',
-    table_header_created_at: 'Criado Em',
+    // table_header_created_at: 'Criado Em', // Removed
     table_header_actions: 'Ações',
     status_active: 'Ativo',
     status_inactive: 'Inativo',
