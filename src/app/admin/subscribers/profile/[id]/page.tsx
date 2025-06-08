@@ -34,7 +34,7 @@ import {
   XCircle,
   Clock,
   CalendarClock,
-  Handshake, 
+  Handshake,
   FileSignature,
   FilePlus2,
   MoreVertical,
@@ -56,18 +56,18 @@ import {
   Globe,
   GitFork,
   Code,
-  Router as RouterIcon, 
+  Router as RouterIcon,
   Share2,
   Split,
   Settings as SettingsIcon,
   Loader2,
-  ChevronDown, 
-  CalendarIcon, 
-  CreditCard, 
-  Receipt, 
-  FileX, 
-  Hourglass, 
-  List, 
+  ChevronDown,
+  CalendarIcon,
+  CreditCard,
+  Receipt,
+  FileX,
+  Hourglass,
+  List,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -293,7 +293,7 @@ const ServiceDetailItem: React.FC<{ label: string, value?: string | null, childr
 };
 
 const getTechnologyIcon = (technology?: string) => {
-  const iconSize = "h-4 w-4 text-primary"; 
+  const iconSize = "h-4 w-4 text-primary";
   if (!technology) return <ServerIcon className={iconSize} />;
 
   switch (technology.toLowerCase()) {
@@ -369,7 +369,7 @@ export default function SubscriberProfilePage() {
     }
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(0, 0, 0, 0);
 
     let maxLateness = -Infinity;
     let isAnyOverdueOrDueToday = false;
@@ -379,10 +379,10 @@ export default function SubscriberProfilePage() {
             const dueDate = parseISO(invoice.dueDate);
             dueDate.setHours(0,0,0,0);
 
-            if (dueDate <= today) { 
+            if (dueDate <= today) {
                 isAnyOverdueOrDueToday = true;
                 const diffTime = today.getTime() - dueDate.getTime();
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 if (diffDays > maxLateness) {
                     maxLateness = diffDays;
                 }
@@ -392,14 +392,14 @@ export default function SubscriberProfilePage() {
         }
     }
 
-    if (!isAnyOverdueOrDueToday && count > 0) { 
+    if (!isAnyOverdueOrDueToday && count > 0) {
         return { pendingInvoiceCount: count, pendingInvoiceUrgency: 'none' as 'none' | 'yellow' | 'red' };
     }
-    
+
     let urgency: 'none' | 'yellow' | 'red' = 'none';
-    if (maxLateness > 3) { 
+    if (maxLateness > 3) {
         urgency = 'red';
-    } else if (maxLateness >= 0) { 
+    } else if (maxLateness >= 0) {
         urgency = 'yellow';
     }
 
@@ -567,7 +567,7 @@ export default function SubscriberProfilePage() {
       setSelectedPendingInvoices([]);
     }
   };
-  
+
   return (
     <div className="flex flex-col gap-6">
       <Card>
@@ -596,7 +596,7 @@ export default function SubscriberProfilePage() {
             <span>{t('subscriber_profile.billing_tab')}</span>
             {pendingInvoiceCount > 0 && (
               <span className={cn(
-                "absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold text-white",
+                "absolute -top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold text-white",
                 {
                   'bg-yellow-500': pendingInvoiceUrgency === 'yellow',
                   'bg-red-600': pendingInvoiceUrgency === 'red',
@@ -1055,7 +1055,7 @@ export default function SubscriberProfilePage() {
                                                 mode="single"
                                                 selected={field.value}
                                                 onSelect={field.onChange}
-                                                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) } 
+                                                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
                                                 initialFocus
                                             />
                                         </PopoverContent>
