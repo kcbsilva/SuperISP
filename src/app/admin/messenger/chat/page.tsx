@@ -9,7 +9,7 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button'; // Import buttonVariants
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -224,16 +224,19 @@ export default function MessengerChatPage() {
           </div>
           <ScrollArea className="flex-1 p-2">
             {conversations.map((convo) => (
-              <Button
+              <div
                 key={convo.id}
-                variant="ghost"
                 className={cn(
-                  "w-full h-auto justify-start p-3 flex items-start mb-1",
+                  buttonVariants({ variant: 'ghost' }), // Use buttonVariants for base styling
+                  "w-full h-auto justify-start p-3 flex items-start mb-1 cursor-pointer", // Add cursor-pointer
                   "border-2 rounded-md", // Thicker border
                   selectedConversation?.id === convo.id && "bg-muted",
                   convo.isAssignedToMe ? "border-green-500" : "border-yellow-500"
                 )}
                 onClick={() => setSelectedConversation(convo)}
+                role="button" // Add role button for accessibility
+                tabIndex={0} // Make it focusable
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedConversation(convo); }} // Handle keyboard activation
               >
                 <Avatar className="h-9 w-9 mr-3 mt-0.5 shrink-0">
                   <AvatarImage src={convo.avatarUrl} alt={convo.contactName} data-ai-hint="person face"/>
@@ -252,9 +255,9 @@ export default function MessengerChatPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col items-end space-y-0.5 shrink-0 ml-auto"> {/* Added ml-auto */}
+                <div className="flex flex-col items-end space-y-0.5 shrink-0 ml-auto">
                   <p className="text-[10px] text-muted-foreground whitespace-nowrap">{convo.lastMessageTime}</p>
-                  <div className="flex items-center"> {/* Removed -mr-2 */}
+                  <div className="flex items-center">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -275,7 +278,7 @@ export default function MessengerChatPage() {
                     </Button>
                   </div>
                 </div>
-              </Button>
+              </div>
             ))}
             {conversations.length === 0 && (
               <p className="text-xs text-muted-foreground text-center p-4">{t('messenger_chat.no_conversations')}</p>
