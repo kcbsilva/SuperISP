@@ -113,7 +113,7 @@ export default function MessengerChatPage() {
   const actionIconSize = "h-5 w-5 text-muted-foreground";
 
   const [conversations, setConversations] = React.useState<Conversation[]>(initialConversations);
-  const [selectedConversation, setSelectedConversation] = React.useState<Conversation | null>(conversations[1]); // Default to Bob for initial view
+  const [selectedConversation, setSelectedConversation] = React.useState<Conversation | null>(conversations[1]);
   const [messages, setMessages] = React.useState<Message[]>(conversations[1]?.messages || []);
   const [newMessage, setNewMessage] = React.useState('');
   const [isTransferModalOpen, setIsTransferModalOpen] = React.useState(false);
@@ -202,7 +202,7 @@ export default function MessengerChatPage() {
     <>
       <div className="flex h-full w-full bg-background">
         {/* Left Sidebar: Conversation List */}
-        <div className="flex flex-col w-full max-w-xs border-r border-border bg-card">
+        <div className="flex flex-col w-full max-w-[303px] border-r border-border bg-card">
           <div className="p-3 border-b border-border flex items-center gap-2">
             <div className="relative flex-grow">
               <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${smallIconSize} text-muted-foreground`} />
@@ -227,23 +227,23 @@ export default function MessengerChatPage() {
               <div
                 key={convo.id}
                 className={cn(
-                  buttonVariants({ variant: 'ghost' }), // Use buttonVariants for base styling
-                  "w-full h-auto justify-start p-3 flex items-start mb-1 cursor-pointer", // Add cursor-pointer
-                  "border-2 rounded-md", // Thicker border
+                  buttonVariants({ variant: 'ghost' }),
+                  "w-full h-auto justify-start p-3 flex items-start mb-1 cursor-pointer",
+                  "border-2 rounded-md",
                   selectedConversation?.id === convo.id && "bg-muted",
                   convo.isAssignedToMe ? "border-green-500" : "border-yellow-500"
                 )}
                 onClick={() => setSelectedConversation(convo)}
-                role="button" // Add role button for accessibility
-                tabIndex={0} // Make it focusable
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedConversation(convo); }} // Handle keyboard activation
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedConversation(convo); }}
               >
                 <Avatar className="h-9 w-9 mr-3 mt-0.5 shrink-0">
-                  <AvatarImage src={convo.avatarUrl} alt={convo.contactName} data-ai-hint="person face"/>
+                  <AvatarImage src={convo.avatarUrl} alt={convo.contactName} data-ai-hint="person face" />
                   <AvatarFallback>{getInitials(convo.contactName)}</AvatarFallback>
                 </Avatar>
 
-                <div className="flex-1 min-w-0 text-left mr-2"> {/* Added min-w-0 for proper truncation */}
+                <div className="flex-1 min-w-0 mr-2 max-w-[180px]">
                   <p className="text-xs font-medium truncate">{convo.contactName}</p>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     {convo.unreadCount && convo.unreadCount > 0 && (
@@ -293,7 +293,7 @@ export default function MessengerChatPage() {
               {/* Chat Header */}
               <div className="flex items-center p-3 border-b border-border bg-card h-14">
                 <Avatar className="h-8 w-8 mr-3">
-                  <AvatarImage src={selectedConversation.avatarUrl} alt={selectedConversation.contactName} data-ai-hint="person face"/>
+                  <AvatarImage src={selectedConversation.avatarUrl} alt={selectedConversation.contactName} data-ai-hint="person face" />
                   <AvatarFallback>{getInitials(selectedConversation.contactName)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
