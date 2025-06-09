@@ -28,8 +28,6 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-// DropdownMenu components are no longer needed here for conversation item actions
-// as actions will be exposed directly.
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Message {
@@ -48,7 +46,7 @@ interface Conversation {
   unreadCount?: number;
   avatarUrl?: string;
   messages: Message[];
-  isAssignedToMe: boolean; // Ensure this is always a boolean
+  isAssignedToMe: boolean;
 }
 
 const initialConversations: Conversation[] = [
@@ -224,15 +222,16 @@ export default function MessengerChatPage() {
               <PlusCircle className={iconSize} />
             </Button>
           </div>
-          <ScrollArea className="flex-1">
+          <ScrollArea className="flex-1 p-2"> {/* Added padding to ScrollArea */}
             {conversations.map((convo) => (
               <Button
                 key={convo.id}
                 variant="ghost"
                 className={cn(
-                  "w-full h-auto justify-start p-3 rounded-none border-b border-border flex items-start", // items-start for vertical alignment
+                  "w-full h-auto justify-start p-3 flex items-start mb-1", // Added mb-1, removed border-b
+                  "border rounded-md", // Base border for all items
                   selectedConversation?.id === convo.id && "bg-muted",
-                  convo.isAssignedToMe ? "border-l-4 border-l-green-500" : "border-l-4 border-l-yellow-500"
+                  convo.isAssignedToMe ? "border-green-500" : "border-yellow-500"
                 )}
                 onClick={() => setSelectedConversation(convo)}
               >
@@ -255,7 +254,7 @@ export default function MessengerChatPage() {
 
                 <div className="flex flex-col items-end space-y-0.5 shrink-0">
                   <p className="text-[10px] text-muted-foreground whitespace-nowrap">{convo.lastMessageTime}</p>
-                  <div className="flex items-center -mr-2"> {/* Negative margin to align icons nicely */}
+                  <div className="flex items-center -mr-2">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -291,7 +290,7 @@ export default function MessengerChatPage() {
               {/* Chat Header */}
               <div className="flex items-center p-3 border-b border-border bg-card h-14">
                 <Avatar className="h-8 w-8 mr-3">
-                  <AvatarImage src={selectedConversation.avatarUrl} alt={selectedConversation.contactName} data-ai-hint="person face" />
+                  <AvatarImage src={selectedConversation.avatarUrl} alt={selectedConversation.contactName} data-ai-hint="person face"/>
                   <AvatarFallback>{getInitials(selectedConversation.contactName)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
