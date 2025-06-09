@@ -28,12 +28,8 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// DropdownMenu components are no longer needed here for conversation item actions
+// as actions will be exposed directly.
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Message {
@@ -52,7 +48,7 @@ interface Conversation {
   unreadCount?: number;
   avatarUrl?: string;
   messages: Message[];
-  isAssignedToMe?: boolean;
+  isAssignedToMe: boolean; // Ensure this is always a boolean
 }
 
 const initialConversations: Conversation[] = [
@@ -117,7 +113,6 @@ export default function MessengerChatPage() {
   const iconSize = "h-4 w-4";
   const smallIconSize = "h-3 w-3";
   const actionIconSize = "h-5 w-5 text-muted-foreground";
-  const menuIconSize = "h-2.5 w-2.5";
 
   const [conversations, setConversations] = React.useState<Conversation[]>(initialConversations);
   const [selectedConversation, setSelectedConversation] = React.useState<Conversation | null>(null);
@@ -147,7 +142,6 @@ export default function MessengerChatPage() {
       isSender: true,
     };
     setMessages(prev => [...prev, newMsg]);
-    // Update the conversation's last message
     setConversations(prevConvos =>
       prevConvos.map(convo =>
         convo.id === selectedConversation.id
@@ -199,7 +193,6 @@ export default function MessengerChatPage() {
     setIsTransferModalOpen(false);
     setConversationToTransferId(null);
     setTransferTarget(null);
-    // In a real app, you'd also update the conversation's assignment status or move it.
   };
 
 
@@ -233,55 +226,57 @@ export default function MessengerChatPage() {
           </div>
           <ScrollArea className="flex-1">
             {conversations.map((convo) => (
-              <div key={convo.id} className="relative group">
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full h-auto justify-start p-3 rounded-none border-b border-border",
-                    selectedConversation?.id === convo.id && "bg-muted",
-                    convo.isAssignedToMe && "border-l-2 border-l-green-500"
-                  )}
-                  onClick={() => setSelectedConversation(convo)}
-                >
-                  <Avatar className="h-9 w-9 mr-3">
-                    <AvatarImage src={convo.avatarUrl} alt={convo.contactName} data-ai-hint="person face" />
-                    <AvatarFallback>{getInitials(convo.contactName)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 text-left overflow-hidden">
-                    <div className="flex justify-between items-center">
-                      <p className="text-xs font-medium truncate">{convo.contactName}</p>
-                      <p className="text-[10px] text-muted-foreground whitespace-nowrap">{convo.lastMessageTime}</p>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-xs text-muted-foreground truncate">{convo.lastMessage}</p>
-                      {convo.unreadCount && convo.unreadCount > 0 && (
-                        <Badge variant="default" className="h-4 px-1.5 text-[10px] bg-primary text-primary-foreground ml-2">
-                          {convo.unreadCount}
-                        </Badge>
-                      )}
-                    </div>
+              <Button
+                key={convo.id}
+                variant="ghost"
+                className={cn(
+                  "w-full h-auto justify-start p-3 rounded-none border-b border-border flex items-start", // items-start for vertical alignment
+                  selectedConversation?.id === convo.id && "bg-muted",
+                  convo.isAssignedToMe ? "border-l-4 border-l-green-500" : "border-l-4 border-l-yellow-500"
+                )}
+                onClick={() => setSelectedConversation(convo)}
+              >
+                <Avatar className="h-9 w-9 mr-3 mt-0.5 shrink-0">
+                  <AvatarImage src={convo.avatarUrl} alt={convo.contactName} data-ai-hint="person face" />
+                  <AvatarFallback>{getInitials(convo.contactName)}</AvatarFallback>
+                </Avatar>
+
+                <div className="flex-1 text-left overflow-hidden mr-2">
+                  <p className="text-xs font-medium truncate">{convo.contactName}</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    {convo.unreadCount && convo.unreadCount > 0 && (
+                      <Badge variant="default" className="h-4 min-w-[16px] px-1.5 text-[10px] bg-primary text-primary-foreground shrink-0 flex items-center justify-center">
+                        {convo.unreadCount}
+                      </Badge>
+                    )}
+                    <p className="text-xs text-muted-foreground truncate flex-1">{convo.lastMessage}</p>
                   </div>
-                </Button>
-                 <div className="absolute top-1/2 right-1 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7">
-                                <MoreVertical className={`${smallIconSize} text-muted-foreground`} />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleAssignToMe(convo.id)}>
-                                <UserCheck className={`mr-2 ${menuIconSize}`} />
-                                {convo.isAssignedToMe ? t('messenger_chat.unassign_from_me') : t('messenger_chat.assign_to_me')}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleOpenTransferModal(convo.id)}>
-                                <Repeat className={`mr-2 ${menuIconSize}`} />
-                                {t('messenger_chat.transfer_conversation')}
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
                 </div>
-              </div>
+
+                <div className="flex flex-col items-end space-y-0.5 shrink-0">
+                  <p className="text-[10px] text-muted-foreground whitespace-nowrap">{convo.lastMessageTime}</p>
+                  <div className="flex items-center -mr-2"> {/* Negative margin to align icons nicely */}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => { e.stopPropagation(); handleAssignToMe(convo.id); }}
+                      className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                      title={convo.isAssignedToMe ? t('messenger_chat.unassign_from_me') : t('messenger_chat.assign_to_me')}
+                    >
+                      <UserCheck className={smallIconSize} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => { e.stopPropagation(); handleOpenTransferModal(convo.id); }}
+                      className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                      title={t('messenger_chat.transfer_conversation')}
+                    >
+                      <Repeat className={smallIconSize} />
+                    </Button>
+                  </div>
+                </div>
+              </Button>
             ))}
             {conversations.length === 0 && (
               <p className="text-xs text-muted-foreground text-center p-4">{t('messenger_chat.no_conversations')}</p>
