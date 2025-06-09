@@ -54,7 +54,7 @@ const initialConversations: Conversation[] = [
     id: 'convo-1',
     contactName: 'Alice Wonderland',
     contactNumber: '+1 555-1234',
-    lastMessage: "Okay, I'll try that. Thanks!",
+    lastMessage: "Okay, I'll try that. Thanks for all your help today, it's really appreciated!",
     lastMessageTime: '10:30 AM',
     unreadCount: 2,
     avatarUrl: 'https://placehold.co/40x40.png?text=AW',
@@ -62,7 +62,7 @@ const initialConversations: Conversation[] = [
       { id: 'msg-1-1', text: 'Hello, I need help with my internet.', timestamp: '10:25 AM', isSender: false },
       { id: 'msg-1-2', text: 'Hi Alice, sure. Have you tried restarting your modem?', timestamp: '10:26 AM', isSender: true },
       { id: 'msg-1-3', text: "Yes, I did. It didn't work.", timestamp: '10:28 AM', isSender: false },
-      { id: 'msg-1-4', text: "Okay, I'll try that. Thanks!", timestamp: '10:30 AM', isSender: false },
+      { id: 'msg-1-4', text: "Okay, I'll try that. Thanks for all your help today, it's really appreciated!", timestamp: '10:30 AM', isSender: false },
     ],
     isAssignedToMe: false,
   },
@@ -84,11 +84,11 @@ const initialConversations: Conversation[] = [
     id: 'convo-3',
     contactName: 'Charlie Brown',
     contactNumber: '+1 555-9012',
-    lastMessage: 'Good grief.',
+    lastMessage: 'Good grief. My kite is stuck in the tree again. Can you send someone?',
     lastMessageTime: 'Mon',
     unreadCount: 5,
     avatarUrl: 'https://placehold.co/40x40.png?text=CB',
-    messages: [{ id: 'msg-3-1', text: 'Good grief.', timestamp: 'Mon', isSender: false }],
+    messages: [{ id: 'msg-3-1', text: 'Good grief. My kite is stuck in the tree again. Can you send someone?', timestamp: 'Mon', isSender: false }],
     isAssignedToMe: false,
   },
 ];
@@ -113,8 +113,8 @@ export default function MessengerChatPage() {
   const actionIconSize = "h-5 w-5 text-muted-foreground";
 
   const [conversations, setConversations] = React.useState<Conversation[]>(initialConversations);
-  const [selectedConversation, setSelectedConversation] = React.useState<Conversation | null>(null);
-  const [messages, setMessages] = React.useState<Message[]>([]);
+  const [selectedConversation, setSelectedConversation] = React.useState<Conversation | null>(conversations[1]); // Default to Bob for initial view
+  const [messages, setMessages] = React.useState<Message[]>(conversations[1]?.messages || []);
   const [newMessage, setNewMessage] = React.useState('');
   const [isTransferModalOpen, setIsTransferModalOpen] = React.useState(false);
   const [conversationToTransferId, setConversationToTransferId] = React.useState<string | null>(null);
@@ -222,25 +222,25 @@ export default function MessengerChatPage() {
               <PlusCircle className={iconSize} />
             </Button>
           </div>
-          <ScrollArea className="flex-1 p-2"> {/* Added padding to ScrollArea */}
+          <ScrollArea className="flex-1 p-2">
             {conversations.map((convo) => (
               <Button
                 key={convo.id}
                 variant="ghost"
                 className={cn(
-                  "w-full h-auto justify-start p-3 flex items-start mb-1", // Added mb-1, removed border-b
-                  "border rounded-md", // Base border for all items
+                  "w-full h-auto justify-start p-3 flex items-start mb-1",
+                  "border-2 rounded-md", // Thicker border
                   selectedConversation?.id === convo.id && "bg-muted",
                   convo.isAssignedToMe ? "border-green-500" : "border-yellow-500"
                 )}
                 onClick={() => setSelectedConversation(convo)}
               >
                 <Avatar className="h-9 w-9 mr-3 mt-0.5 shrink-0">
-                  <AvatarImage src={convo.avatarUrl} alt={convo.contactName} data-ai-hint="person face" />
+                  <AvatarImage src={convo.avatarUrl} alt={convo.contactName} data-ai-hint="person face"/>
                   <AvatarFallback>{getInitials(convo.contactName)}</AvatarFallback>
                 </Avatar>
 
-                <div className="flex-1 text-left overflow-hidden mr-2">
+                <div className="flex-1 min-w-0 text-left mr-2"> {/* Added min-w-0 for proper truncation */}
                   <p className="text-xs font-medium truncate">{convo.contactName}</p>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     {convo.unreadCount && convo.unreadCount > 0 && (
@@ -248,13 +248,13 @@ export default function MessengerChatPage() {
                         {convo.unreadCount}
                       </Badge>
                     )}
-                    <p className="text-xs text-muted-foreground truncate flex-1">{convo.lastMessage}</p>
+                    <p className="text-xs text-muted-foreground truncate">{convo.lastMessage}</p>
                   </div>
                 </div>
 
-                <div className="flex flex-col items-end space-y-0.5 shrink-0">
+                <div className="flex flex-col items-end space-y-0.5 shrink-0 ml-auto"> {/* Added ml-auto */}
                   <p className="text-[10px] text-muted-foreground whitespace-nowrap">{convo.lastMessageTime}</p>
-                  <div className="flex items-center -mr-2">
+                  <div className="flex items-center"> {/* Removed -mr-2 */}
                     <Button
                       variant="ghost"
                       size="icon"
