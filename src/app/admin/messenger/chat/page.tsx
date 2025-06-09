@@ -14,16 +14,33 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { MessageCircle, Send, Paperclip, Search, UserCircle, MoreVertical, PlusCircle } from 'lucide-react'; // Added PlusCircle
+import { MessageCircle, Send, Paperclip, Search, UserCircle, MoreVertical, PlusCircle, UserCheck, Users as UsersIcon, Repeat } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast'; // Added useToast
+import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription as DialogDescriptionComponent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Message {
   id: string;
   text: string;
   timestamp: string;
-  isSender: boolean; // True if admin sent the message, false if contact sent
+  isSender: boolean;
 }
 
 interface Conversation {
@@ -33,11 +50,12 @@ interface Conversation {
   lastMessage: string;
   lastMessageTime: string;
   unreadCount?: number;
-  avatarUrl?: string; // Optional avatar URL
+  avatarUrl?: string;
   messages: Message[];
+  isAssignedToMe?: boolean;
 }
 
-const placeholderConversations: Conversation[] = [
+const initialConversations: Conversation[] = [
   {
     id: 'convo-1',
     contactName: 'Alice Wonderland',
@@ -52,6 +70,7 @@ const placeholderConversations: Conversation[] = [
       { id: 'msg-1-3', text: "Yes, I did. It didn't work.", timestamp: '10:28 AM', isSender: false },
       { id: 'msg-1-4', text: "Okay, I'll try that. Thanks!", timestamp: '10:30 AM', isSender: false },
     ],
+    isAssignedToMe: false,
   },
   {
     id: 'convo-2',
@@ -65,6 +84,7 @@ const placeholderConversations: Conversation[] = [
       { id: 'msg-2-2', text: 'Yes, we can!', timestamp: 'Yesterday', isSender: true },
       { id: 'msg-2-3', text: 'Great, looking forward to the quote.', timestamp: 'Yesterday', isSender: false },
     ],
+    isAssignedToMe: true,
   },
   {
     id: 'convo-3',
@@ -75,19 +95,38 @@ const placeholderConversations: Conversation[] = [
     unreadCount: 5,
     avatarUrl: 'https://placehold.co/40x40.png?text=CB',
     messages: [{ id: 'msg-3-1', text: 'Good grief.', timestamp: 'Mon', isSender: false }],
+    isAssignedToMe: false,
   },
+];
+
+const placeholderDepartments = [
+  { id: 'dept-1', name: 'Technical Support' },
+  { id: 'dept-2', name: 'Billing & Payments' },
+  { id: 'dept-3', name: 'Sales Enquiries' },
+];
+
+const placeholderUsers = [
+  { id: 'user-1', name: 'John Doe (Support)' },
+  { id: 'user-2', name: 'Jane Smith (Billing)' },
+  { id: 'user-3', name: 'Mike Brown (Sales)' },
 ];
 
 export default function MessengerChatPage() {
   const { t } = useLocale();
-  const { toast } = useToast(); // Initialize toast
+  const { toast } = useToast();
   const iconSize = "h-4 w-4";
   const smallIconSize = "h-3 w-3";
-  const actionIconSize = "h-5 w-5 text-muted-foreground"; // For header icons
+  const actionIconSize = "h-5 w-5 text-muted-foreground";
+  const menuIconSize = "h-2.5 w-2.5";
 
+  const [conversations, setConversations] = React.useState<Conversation[]>(initialConversations);
   const [selectedConversation, setSelectedConversation] = React.useState<Conversation | null>(null);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [newMessage, setNewMessage] = React.useState('');
+  const [isTransferModalOpen, setIsTransferModalOpen] = React.useState(false);
+  const [conversationToTransferId, setConversationToTransferId] = React.useState<string | null>(null);
+  const [transferTarget, setTransferTarget] = React.useState<{ type: 'Department' | 'Person', id: string, name: string } | null>(null);
+
 
   React.useEffect(() => {
     if (selectedConversation) {
@@ -108,18 +147,15 @@ export default function MessengerChatPage() {
       isSender: true,
     };
     setMessages(prev => [...prev, newMsg]);
-    // Update the conversation's last message (in a real app, this would update backend)
-    const updatedConversations = placeholderConversations.map(convo =>
-      convo.id === selectedConversation.id
-        ? { ...convo, lastMessage: newMessage, lastMessageTime: newMsg.timestamp, unreadCount: 0 }
-        : convo
+    // Update the conversation's last message
+    setConversations(prevConvos =>
+      prevConvos.map(convo =>
+        convo.id === selectedConversation.id
+          ? { ...convo, lastMessage: newMessage, lastMessageTime: newMsg.timestamp, unreadCount: 0 }
+          : convo
+      )
     );
-    // In a real app, you'd update your state source for placeholderConversations if it's dynamic.
-    // For this example, placeholderConversations is static, so the list won't visually update.
-
     setNewMessage('');
-    console.log('Sending message:', newMsg, 'to conversation:', selectedConversation.id);
-    // TODO: Implement actual message sending logic
   };
 
   const handleNewConversation = () => {
@@ -129,153 +165,268 @@ export default function MessengerChatPage() {
     });
   };
 
+  const handleAssignToMe = (conversationId: string) => {
+    setConversations(prevConvos =>
+      prevConvos.map(convo =>
+        convo.id === conversationId ? { ...convo, isAssignedToMe: !convo.isAssignedToMe } : convo
+      )
+    );
+    const assignedConvo = conversations.find(c => c.id === conversationId);
+    toast({
+      title: t('messenger_chat.assign_to_me_toast_title'),
+      description: t('messenger_chat.assign_to_me_toast_desc', 'Conversation with {contactName} {status}.')
+        .replace('{contactName}', assignedConvo?.contactName || 'Unknown')
+        .replace('{status}', !assignedConvo?.isAssignedToMe ? t('messenger_chat.assigned_status') : t('messenger_chat.unassigned_status')),
+    });
+  };
+
+  const handleOpenTransferModal = (conversationId: string) => {
+    setConversationToTransferId(conversationId);
+    setTransferTarget(null);
+    setIsTransferModalOpen(true);
+  };
+
+  const handleConfirmTransfer = () => {
+    if (!conversationToTransferId || !transferTarget) return;
+    const convoName = conversations.find(c => c.id === conversationToTransferId)?.contactName || 'this conversation';
+    toast({
+      title: t('messenger_chat.transfer_confirmed_toast_title'),
+      description: t('messenger_chat.transfer_confirmed_toast_desc', '{convoName} transferred to {targetType}: {targetName}.')
+        .replace('{convoName}', convoName)
+        .replace('{targetType}', t(`messenger_chat.transfer_target_type_${transferTarget.type.toLowerCase()}` as any))
+        .replace('{targetName}', transferTarget.name),
+    });
+    setIsTransferModalOpen(false);
+    setConversationToTransferId(null);
+    setTransferTarget(null);
+    // In a real app, you'd also update the conversation's assignment status or move it.
+  };
+
+
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
   return (
-    <div className="flex h-full w-full bg-background">
-      {/* Left Sidebar: Conversation List */}
-      <div className="flex flex-col w-full max-w-xs border-r border-border bg-card">
-        <div className="p-3 border-b border-border flex items-center gap-2"> {/* Flex container for search and button */}
-           <div className="relative flex-grow"> {/* Search input takes available space */}
-            <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${smallIconSize} text-muted-foreground`} />
-            <Input
-              type="search"
-              placeholder={t('messenger_chat.search_conversations_placeholder', 'Search or start new chat')}
-              className="pl-8 h-8 text-xs"
-            />
-           </div>
-           <Button
-             variant="default"
-             size="icon"
-             className="h-8 w-8 bg-green-600 hover:bg-green-700 text-white shrink-0" // Green button
-             onClick={handleNewConversation}
-             aria-label={t('messenger_chat.new_conversation_aria_label')}
-           >
-             <PlusCircle className={iconSize} />
-           </Button>
-        </div>
-        <ScrollArea className="flex-1">
-          {placeholderConversations.map((convo) => (
+    <>
+      <div className="flex h-full w-full bg-background">
+        {/* Left Sidebar: Conversation List */}
+        <div className="flex flex-col w-full max-w-xs border-r border-border bg-card">
+          <div className="p-3 border-b border-border flex items-center gap-2">
+            <div className="relative flex-grow">
+              <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${smallIconSize} text-muted-foreground`} />
+              <Input
+                type="search"
+                placeholder={t('messenger_chat.search_conversations_placeholder', 'Search or start new chat')}
+                className="pl-8 h-8 text-xs"
+              />
+            </div>
             <Button
-              key={convo.id}
-              variant="ghost"
-              className={cn(
-                "w-full h-auto justify-start p-3 rounded-none border-b border-border",
-                selectedConversation?.id === convo.id && "bg-muted"
-              )}
-              onClick={() => setSelectedConversation(convo)}
+              variant="default"
+              size="icon"
+              className="h-8 w-8 bg-green-600 hover:bg-green-700 text-white shrink-0"
+              onClick={handleNewConversation}
+              aria-label={t('messenger_chat.new_conversation_aria_label')}
             >
-              <Avatar className="h-9 w-9 mr-3">
-                <AvatarImage src={convo.avatarUrl} alt={convo.contactName} data-ai-hint="person face" />
-                <AvatarFallback>{getInitials(convo.contactName)}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 text-left overflow-hidden">
-                <div className="flex justify-between items-center">
-                  <p className="text-xs font-medium truncate">{convo.contactName}</p>
-                  <p className="text-[10px] text-muted-foreground whitespace-nowrap">{convo.lastMessageTime}</p>
+              <PlusCircle className={iconSize} />
+            </Button>
+          </div>
+          <ScrollArea className="flex-1">
+            {conversations.map((convo) => (
+              <div key={convo.id} className="relative group">
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full h-auto justify-start p-3 rounded-none border-b border-border",
+                    selectedConversation?.id === convo.id && "bg-muted",
+                    convo.isAssignedToMe && "border-l-2 border-l-green-500"
+                  )}
+                  onClick={() => setSelectedConversation(convo)}
+                >
+                  <Avatar className="h-9 w-9 mr-3">
+                    <AvatarImage src={convo.avatarUrl} alt={convo.contactName} data-ai-hint="person face" />
+                    <AvatarFallback>{getInitials(convo.contactName)}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 text-left overflow-hidden">
+                    <div className="flex justify-between items-center">
+                      <p className="text-xs font-medium truncate">{convo.contactName}</p>
+                      <p className="text-[10px] text-muted-foreground whitespace-nowrap">{convo.lastMessageTime}</p>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-xs text-muted-foreground truncate">{convo.lastMessage}</p>
+                      {convo.unreadCount && convo.unreadCount > 0 && (
+                        <Badge variant="default" className="h-4 px-1.5 text-[10px] bg-primary text-primary-foreground ml-2">
+                          {convo.unreadCount}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </Button>
+                 <div className="absolute top-1/2 right-1 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-7 w-7">
+                                <MoreVertical className={`${smallIconSize} text-muted-foreground`} />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleAssignToMe(convo.id)}>
+                                <UserCheck className={`mr-2 ${menuIconSize}`} />
+                                {convo.isAssignedToMe ? t('messenger_chat.unassign_from_me') : t('messenger_chat.assign_to_me')}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleOpenTransferModal(convo.id)}>
+                                <Repeat className={`mr-2 ${menuIconSize}`} />
+                                {t('messenger_chat.transfer_conversation')}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
-                <div className="flex justify-between items-center">
-                  <p className="text-xs text-muted-foreground truncate">{convo.lastMessage}</p>
-                  {convo.unreadCount && convo.unreadCount > 0 && (
-                    <Badge variant="default" className="h-4 px-1.5 text-[10px] bg-primary text-primary-foreground ml-2">
-                      {convo.unreadCount}
-                    </Badge>
+              </div>
+            ))}
+            {conversations.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center p-4">{t('messenger_chat.no_conversations')}</p>
+            )}
+          </ScrollArea>
+        </div>
+
+        {/* Right Main Area: Chat Window */}
+        <div className="flex flex-1 flex-col bg-background">
+          {selectedConversation ? (
+            <>
+              {/* Chat Header */}
+              <div className="flex items-center p-3 border-b border-border bg-card h-14">
+                <Avatar className="h-8 w-8 mr-3">
+                  <AvatarImage src={selectedConversation.avatarUrl} alt={selectedConversation.contactName} data-ai-hint="person face" />
+                  <AvatarFallback>{getInitials(selectedConversation.contactName)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <p className="text-xs font-semibold">{selectedConversation.contactName}</p>
+                  {selectedConversation.contactNumber && (
+                    <p className="text-[10px] text-muted-foreground">{selectedConversation.contactNumber}</p>
                   )}
                 </div>
-              </div>
-            </Button>
-          ))}
-          {placeholderConversations.length === 0 && (
-             <p className="text-xs text-muted-foreground text-center p-4">{t('messenger_chat.no_conversations')}</p>
-          )}
-        </ScrollArea>
-      </div>
-
-      {/* Right Main Area: Chat Window */}
-      <div className="flex flex-1 flex-col bg-background">
-        {selectedConversation ? (
-          <>
-            {/* Chat Header */}
-            <div className="flex items-center p-3 border-b border-border bg-card h-14">
-              <Avatar className="h-8 w-8 mr-3">
-                <AvatarImage src={selectedConversation.avatarUrl} alt={selectedConversation.contactName} data-ai-hint="person face" />
-                <AvatarFallback>{getInitials(selectedConversation.contactName)}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <p className="text-xs font-semibold">{selectedConversation.contactName}</p>
-                {selectedConversation.contactNumber && (
-                    <p className="text-[10px] text-muted-foreground">{selectedConversation.contactNumber}</p>
-                )}
-              </div>
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Search className={actionIconSize} />
                     <span className="sr-only">{t('messenger_chat.search_in_chat_sr', 'Search in chat')}</span>
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
                     <MoreVertical className={actionIconSize} />
                     <span className="sr-only">{t('messenger_chat.more_options_sr', 'More options')}</span>
-                </Button>
+                  </Button>
+                </div>
               </div>
-            </div>
 
-            {/* Message Display Area */}
-            <ScrollArea className="flex-1 p-4 space-y-3 bg-muted/30">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={cn(
-                    "flex w-full",
-                    msg.isSender ? "justify-end" : "justify-start"
-                  )}
-                >
+              {/* Message Display Area */}
+              <ScrollArea className="flex-1 p-4 space-y-3 bg-muted/30">
+                {messages.map((msg) => (
                   <div
+                    key={msg.id}
                     className={cn(
-                      "max-w-[70%] p-2 rounded-lg shadow-sm",
-                      msg.isSender
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-card text-card-foreground"
+                      "flex w-full",
+                      msg.isSender ? "justify-end" : "justify-start"
                     )}
                   >
-                    <p className="text-xs whitespace-pre-wrap">{msg.text}</p>
-                    <p className={cn("text-[10px] mt-1", msg.isSender ? "text-primary-foreground/70 text-right" : "text-muted-foreground/70 text-right")}>
-                      {msg.timestamp}
-                    </p>
+                    <div
+                      className={cn(
+                        "max-w-[70%] p-2 rounded-lg shadow-sm",
+                        msg.isSender
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-card text-card-foreground"
+                      )}
+                    >
+                      <p className="text-xs whitespace-pre-wrap">{msg.text}</p>
+                      <p className={cn("text-[10px] mt-1", msg.isSender ? "text-primary-foreground/70 text-right" : "text-muted-foreground/70 text-right")}>
+                        {msg.timestamp}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </ScrollArea>
+                ))}
+              </ScrollArea>
 
-            {/* Message Input Footer */}
-            <div className="p-3 border-t border-border bg-card h-16">
-              <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" type="button" className="h-8 w-8">
-                  <Paperclip className={`${iconSize} text-muted-foreground`} />
-                  <span className="sr-only">{t('messenger_chat.attach_file_sr', 'Attach file')}</span>
-                </Button>
-                <Input
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder={t('messenger_chat.message_input_placeholder', 'Type a message...')}
-                  className="flex-1 h-8 text-xs"
-                />
-                <Button type="submit" size="icon" className="h-8 w-8">
-                  <Send className={iconSize} />
-                  <span className="sr-only">{t('messenger_chat.send_message_sr', 'Send message')}</span>
-                </Button>
-              </form>
+              {/* Message Input Footer */}
+              <div className="p-3 border-t border-border bg-card h-16">
+                <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" type="button" className="h-8 w-8">
+                    <Paperclip className={`${iconSize} text-muted-foreground`} />
+                    <span className="sr-only">{t('messenger_chat.attach_file_sr', 'Attach file')}</span>
+                  </Button>
+                  <Input
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder={t('messenger_chat.message_input_placeholder', 'Type a message...')}
+                    className="flex-1 h-8 text-xs"
+                  />
+                  <Button type="submit" size="icon" className="h-8 w-8">
+                    <Send className={iconSize} />
+                    <span className="sr-only">{t('messenger_chat.send_message_sr', 'Send message')}</span>
+                  </Button>
+                </form>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-muted/30">
+              <MessageCircle className="h-16 w-16 text-muted-foreground/30 mb-4" />
+              <p className="text-sm font-semibold text-muted-foreground">{t('messenger_chat.no_chat_selected_title', 'No Chat Selected')}</p>
+              <p className="text-xs text-muted-foreground/80">{t('messenger_chat.no_chat_selected_desc', 'Select a conversation from the list to start chatting.')}</p>
             </div>
-          </>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-muted/30">
-            <MessageCircle className="h-16 w-16 text-muted-foreground/30 mb-4" />
-            <p className="text-sm font-semibold text-muted-foreground">{t('messenger_chat.no_chat_selected_title', 'No Chat Selected')}</p>
-            <p className="text-xs text-muted-foreground/80">{t('messenger_chat.no_chat_selected_desc', 'Select a conversation from the list to start chatting.')}</p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Transfer Modal */}
+      <Dialog open={isTransferModalOpen} onOpenChange={setIsTransferModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-sm">{t('messenger_chat.transfer_modal_title')}</DialogTitle>
+            <DialogDescriptionComponent className="text-xs">
+              {t('messenger_chat.transfer_modal_desc', 'Select a department or person to transfer this conversation to.')}
+            </DialogDescriptionComponent>
+          </DialogHeader>
+          <Tabs defaultValue="department" className="w-full mt-2">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="department">{t('messenger_chat.transfer_tab_department')}</TabsTrigger>
+              <TabsTrigger value="person">{t('messenger_chat.transfer_tab_person')}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="department" className="mt-4 max-h-60 overflow-y-auto">
+              <div className="space-y-2">
+                {placeholderDepartments.map(dept => (
+                  <Button
+                    key={dept.id}
+                    variant={transferTarget?.type === 'Department' && transferTarget.id === dept.id ? 'default' : 'outline'}
+                    className="w-full justify-start text-xs"
+                    onClick={() => setTransferTarget({ type: 'Department', id: dept.id, name: dept.name })}
+                  >
+                    <UsersIcon className={`mr-2 ${smallIconSize}`} /> {dept.name}
+                  </Button>
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="person" className="mt-4 max-h-60 overflow-y-auto">
+              <div className="space-y-2">
+                {placeholderUsers.map(user => (
+                  <Button
+                    key={user.id}
+                    variant={transferTarget?.type === 'Person' && transferTarget.id === user.id ? 'default' : 'outline'}
+                    className="w-full justify-start text-xs"
+                    onClick={() => setTransferTarget({ type: 'Person', id: user.id, name: user.name })}
+                  >
+                    <UserCircle className={`mr-2 ${smallIconSize}`} /> {user.name}
+                  </Button>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+          <DialogFooter className="mt-4">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">{t('messenger_chat.transfer_modal_cancel_button')}</Button>
+            </DialogClose>
+            <Button type="button" onClick={handleConfirmTransfer} disabled={!transferTarget}>
+              {t('messenger_chat.transfer_modal_confirm_button')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
