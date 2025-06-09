@@ -227,11 +227,11 @@ export default function MessengerChatPage() {
               <div
                 key={convo.id}
                 className={cn(
-                  buttonVariants({ variant: 'ghost' }),
+                  buttonVariants({ variant: 'ghost' }), // To get basic button-like styling
                   "w-full h-auto justify-start p-3 flex items-start mb-1 cursor-pointer",
-                  "border-2 rounded-md",
-                  selectedConversation?.id === convo.id && "bg-muted",
-                  convo.isAssignedToMe ? "border-green-500" : "border-yellow-500"
+                  "border-2 rounded-md", // Thicker border
+                  convo.isAssignedToMe ? "border-green-500" : "border-yellow-500",
+                  selectedConversation?.id === convo.id && "bg-muted"
                 )}
                 onClick={() => setSelectedConversation(convo)}
                 role="button"
