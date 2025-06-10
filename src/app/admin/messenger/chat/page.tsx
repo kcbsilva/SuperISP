@@ -1,3 +1,4 @@
+
 // src/app/admin/messenger/chat/page.tsx
 'use client';
 
@@ -14,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { MessageCircle, Send, Paperclip, Search, UserCircle, MoreVertical, PlusCircle, UserCheck, Users as UsersIcon, Repeat } from 'lucide-react';
+import { MessageCircle, Send, Paperclip, Search, UserCircle, MoreVertical, PlusCircle, UserCheck, Users as UsersIcon, Repeat, Check, CheckCheck } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -35,6 +36,7 @@ interface Message {
   text: string;
   timestamp: string;
   isSender: boolean;
+  status?: 'sent' | 'delivered' | 'seen'; // Added status for sender messages
 }
 
 interface Conversation {
@@ -60,7 +62,7 @@ const initialConversations: Conversation[] = [
     avatarUrl: 'https://placehold.co/40x40.png?text=AW',
     messages: [
       { id: 'msg-1-1', text: 'Hello, I need help with my internet.', timestamp: '10:25 AM', isSender: false },
-      { id: 'msg-1-2', text: 'Hi Alice, sure. Have you tried restarting your modem?', timestamp: '10:26 AM', isSender: true },
+      { id: 'msg-1-2', text: 'Hi Alice, sure. Have you tried restarting your modem?', timestamp: '10:26 AM', isSender: true, status: 'seen' },
       { id: 'msg-1-3', text: "Yes, I did. It didn't work.", timestamp: '10:28 AM', isSender: false },
       { id: 'msg-1-4', text: "Okay, I'll try that. Thanks for all your help today, it's really appreciated!", timestamp: '10:30 AM', isSender: false },
     ],
@@ -75,7 +77,7 @@ const initialConversations: Conversation[] = [
     avatarUrl: 'https://placehold.co/40x40.png?text=BB',
     messages: [
       { id: 'msg-2-1', text: 'Can we build it?', timestamp: 'Yesterday', isSender: false },
-      { id: 'msg-2-2', text: 'Yes, we can!', timestamp: 'Yesterday', isSender: true },
+      { id: 'msg-2-2', text: 'Yes, we can!', timestamp: 'Yesterday', isSender: true, status: 'delivered' },
       { id: 'msg-2-3', text: 'Great, looking forward to the quote.', timestamp: 'Yesterday', isSender: false },
     ],
     isAssignedToMe: true,
@@ -138,15 +140,17 @@ export default function MessengerChatPage() {
       text: newMessage,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isSender: true,
+      status: 'sent', // Default status for new admin messages
     };
     setMessages(prev => [...prev, newMsg]);
     setConversations(prevConvos =>
       prevConvos.map(convo =>
         convo.id === selectedConversation.id
-          ? { ...convo, lastMessage: newMessage, lastMessageTime: newMsg.timestamp, unreadCount: 0 }
+          ? { ...convo, lastMessage: newMessage, lastMessageTime: newMsg.timestamp, unreadCount: 0, messages: [...convo.messages, newMsg] }
           : convo
       )
     );
+    setSelectedConversation(prev => prev ? { ...prev, messages: [...prev.messages, newMsg], lastMessage: newMessage, lastMessageTime: newMsg.timestamp } : null);
     setNewMessage('');
   };
 
@@ -198,6 +202,20 @@ export default function MessengerChatPage() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  const renderMessageStatus = (status?: 'sent' | 'delivered' | 'seen') => {
+    const iconClasses = "h-3 w-3 ml-1";
+    if (status === 'seen') {
+      return <CheckCheck className={cn(iconClasses, "text-sky-400")} />;
+    }
+    if (status === 'delivered') {
+      return <CheckCheck className={cn(iconClasses, "text-primary-foreground/70")} />;
+    }
+    if (status === 'sent') {
+      return <Check className={cn(iconClasses, "text-primary-foreground/70")} />;
+    }
+    return null;
+  };
+
   return (
     <>
       <div className="flex h-full w-full bg-background">
@@ -227,7 +245,7 @@ export default function MessengerChatPage() {
               <div
                 key={convo.id}
                 className={cn(
-                  buttonVariants({ variant: 'ghost' }), // Keep base button styling for hover etc.
+                  buttonVariants({ variant: 'ghost' }),
                   "w-[285px] mx-auto h-auto justify-start flex items-start p-[5px] mb-1 cursor-pointer border-2 rounded-md",
                   convo.isAssignedToMe ? "border-green-500" : "border-yellow-500",
                   selectedConversation?.id === convo.id && "bg-muted"
@@ -319,7 +337,7 @@ export default function MessengerChatPage() {
                   <div
                     key={msg.id}
                     className={cn(
-                      "flex w-full",
+                      "flex w-full mb-2", // Added mb-2 for spacing between messages
                       msg.isSender ? "justify-end" : "justify-start"
                     )}
                   >
@@ -332,9 +350,10 @@ export default function MessengerChatPage() {
                       )}
                     >
                       <p className="text-xs whitespace-pre-wrap">{msg.text}</p>
-                      <p className={cn("text-[10px] mt-1", msg.isSender ? "text-primary-foreground/70 text-right" : "text-muted-foreground/70 text-right")}>
-                        {msg.timestamp}
-                      </p>
+                      <div className={cn("text-[10px] mt-1 flex items-center", msg.isSender ? "text-primary-foreground/70 justify-end" : "text-muted-foreground/70 justify-end")}>
+                        <span>{msg.timestamp}</span>
+                        {msg.isSender && renderMessageStatus(msg.status)}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -426,3 +445,4 @@ export default function MessengerChatPage() {
     </>
   );
 }
+
