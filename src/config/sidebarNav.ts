@@ -45,6 +45,7 @@ import {
   Workflow,
   Radio, // Added for Channels
   GitMerge, // Added for Hub > Connections
+  Webhook, // Added Webhook icon
 } from 'lucide-react';
 import type { Icon as LucideIcon } from 'lucide-react';
 import type { IconType } from 'react-icons';
@@ -252,9 +253,9 @@ export const sidebarNav: SidebarNavItem[] = [
     ],
   },
   {
-    title: 'sidebar.hub', // New Hub Menu
-    icon: NetworkIcon, // Using NetworkIcon for the top-level Hub
-    tooltip: 'sidebar.hub_tooltip',
+    title: 'sidebar.hub',
+    icon: Webhook, // Changed from NetworkIcon
+    tooltip: 'sidebar.hub', // Changed from sidebar.hub_tooltip
     children: [
       {
         title: 'sidebar.hub_dashboard',
@@ -265,13 +266,13 @@ export const sidebarNav: SidebarNavItem[] = [
       {
         title: 'sidebar.hub_connections',
         href: '/admin/hub/connections',
-        icon: GitMerge, // Using GitMerge for connections
+        icon: GitMerge,
         tooltip: 'sidebar.hub_connections_tooltip',
       },
       {
         title: 'sidebar.hub_peering',
         href: '/admin/hub/peering',
-        icon: Users2, // Using Users2 for peering relationships
+        icon: Users2,
         tooltip: 'sidebar.hub_peering_tooltip',
       },
       {
@@ -612,3 +613,26 @@ export const sidebarNav: SidebarNavItem[] = [
     ],
   },
 ];
+
+// The following items were previously after settings but had different icons.
+// Integrating them logically or deciding if they are top-level is needed.
+// For now, assuming they are distinct top-level experimental/tool sections.
+// { title: 'tools-separator', isSeparator: true },
+// {
+//   title: 'sidebar.pilotview',
+//   href: '/admin/pilotview',
+//   icon: TbDeviceImacStar, // Requires react-icons
+//   tooltip: 'sidebar.pilotview',
+// },
+// {
+//   title: 'sidebar.transitos',
+//   href: '/admin/transitos',
+//   icon: SiReactrouter, // Requires react-icons
+//   tooltip: 'sidebar.transitos',
+// },
+// {
+//   title: 'sidebar.zones',
+//   href: '/admin/zones',
+//   icon: SiNextdns, // Requires react-icons
+//   tooltip: 'sidebar.zones',
+// },
