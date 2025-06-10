@@ -29,7 +29,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Table,
@@ -48,90 +47,166 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlusCircle, ListChecks, Edit, Trash2, Loader2, ShieldCheck } from 'lucide-react';
+import { PlusCircle, ListChecks, Edit, Trash2, Loader2, ShieldCheck, Users as UsersIcon } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  getRoles,
+  getPermissions,
+  getUserTemplates,
+  addUserTemplate,
+  updateUserTemplate,
+  deleteUserTemplate,
+  getUserProfiles,
+} from '@/services/supabase/users';
+import type { Role, Permission, UserTemplate, UserTemplateData, UserProfile } from '@/types/users';
 
-// Schema for User Template
-const userTemplateSchema = z.object({
-  templateName: z.string().min(1, "Template name is required."),
+// Schema for User Template Form
+const userTemplateFormSchema = z.object({
+  template_name: z.string().min(1, "Template name is required."),
   description: z.string().optional(),
-  defaultRole: z.string().optional(), // Placeholder for now, could be more complex
-  permissions: z.array(z.string()).optional().default([]), // Added permissions
+  default_role_id: z.string().uuid("Invalid role ID.").nullable().optional(),
+  permission_ids: z.array(z.string().uuid()).optional().default([]),
 });
-type UserTemplateFormData = z.infer<typeof userTemplateSchema>;
 
-interface UserTemplate extends UserTemplateFormData {
-  id: string;
-  permissions: string[]; // Ensure permissions is always an array
-}
+type UserTemplateFormValues = z.infer<typeof userTemplateFormSchema>;
 
-const placeholderUserTemplates: UserTemplate[] = [
-  { id: 'tpl-admin', templateName: 'Administrator', description: 'Full system access', defaultRole: 'Admin', permissions: ['subscribers_view', 'subscribers_add', 'subscribers_edit', 'subscribers_delete', 'network_view_olts', 'network_manage_olts', 'finances_view_reports', 'settings_manage_global', 'pops_view', 'pops_add', 'pops_edit', 'pops_delete'] },
-  { id: 'tpl-support', templateName: 'Support Agent', description: 'Access to tickets and subscriber management', defaultRole: 'Support', permissions: ['subscribers_view', 'subscribers_edit'] },
-  { id: 'tpl-tech', templateName: 'Technician', description: 'Access to service calls and network tools', defaultRole: 'Technician', permissions: ['network_view_olts'] },
+// Placeholder for all available permissions (eventually fetch from DB)
+const STATIC_ALL_PERMISSIONS: Permission[] = [
+  { id: 'perm_sub_view', slug: 'subscribers.view', group_name: 'Subscribers', created_at: new Date().toISOString(), description: 'Can view subscriber information' },
+  { id: 'perm_sub_add', slug: 'subscribers.add', group_name: 'Subscribers', created_at: new Date().toISOString(), description: 'Can add new subscribers' },
+  { id: 'perm_sub_edit', slug: 'subscribers.edit', group_name: 'Subscribers', created_at: new Date().toISOString(), description: 'Can edit existing subscribers' },
+  { id: 'perm_sub_delete', slug: 'subscribers.delete', group_name: 'Subscribers', created_at: new Date().toISOString(), description: 'Can delete subscribers' },
+  { id: 'perm_net_view_olts', slug: 'network.view_olts', group_name: 'Network', created_at: new Date().toISOString(), description: 'Can view OLTs and network status' },
+  { id: 'perm_net_manage_olts', slug: 'network.manage_olts', group_name: 'Network', created_at: new Date().toISOString(), description: 'Can manage OLTs (add, edit, delete)' },
+  { id: 'perm_fin_view_reports', slug: 'finances.view_reports', group_name: 'Finances', created_at: new Date().toISOString(), description: 'Can view financial reports' },
+  { id: 'perm_set_manage_global', slug: 'settings.manage_global', group_name: 'Settings', created_at: new Date().toISOString(), description: 'Can manage global system settings' },
+  { id: 'perm_pops_view', slug: 'pops.view', group_name: 'PoPs', created_at: new Date().toISOString(), description: 'Can view Points of Presence' },
+  { id: 'perm_pops_add', slug: 'pops.add', group_name: 'PoPs', created_at: new Date().toISOString(), description: 'Can add new PoPs' },
+  { id: 'perm_pops_edit', slug: 'pops.edit', group_name: 'PoPs', created_at: new Date().toISOString(), description: 'Can edit PoPs' },
+  { id: 'perm_pops_delete', slug: 'pops.delete', group_name: 'PoPs', created_at: new Date().toISOString(), description: 'Can delete PoPs' },
 ];
-
-const allPermissions = [
-  { id: 'subscribers_view', labelKey: 'settings_users.permission_subscribers_view', group: 'Subscribers' },
-  { id: 'subscribers_add', labelKey: 'settings_users.permission_subscribers_add', group: 'Subscribers' },
-  { id: 'subscribers_edit', labelKey: 'settings_users.permission_subscribers_edit', group: 'Subscribers' },
-  { id: 'subscribers_delete', labelKey: 'settings_users.permission_subscribers_delete', group: 'Subscribers' },
-  { id: 'network_view_olts', labelKey: 'settings_users.permission_network_view_olts', group: 'Network' },
-  { id: 'network_manage_olts', labelKey: 'settings_users.permission_network_manage_olts', group: 'Network' },
-  { id: 'finances_view_reports', labelKey: 'settings_users.permission_finances_view_reports', group: 'Finances' },
-  { id: 'settings_manage_global', labelKey: 'settings_users.permission_settings_manage_global', group: 'Settings' },
-  { id: 'pops_view', labelKey: 'settings_users.permission_pops_view', group: 'PoPs' },
-  { id: 'pops_add', labelKey: 'settings_users.permission_pops_add', group: 'PoPs' },
-  { id: 'pops_edit', labelKey: 'settings_users.permission_pops_edit', group: 'PoPs' },
-  { id: 'pops_delete', labelKey: 'settings_users.permission_pops_delete', group: 'PoPs' },
-];
-
-const permissionGroups = Array.from(new Set(allPermissions.map(p => p.group)));
 
 
 export default function UsersPage() {
   const { t } = useLocale();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
   const [isUserTemplatesModalOpen, setIsUserTemplatesModalOpen] = React.useState(false);
   const [isAddTemplateModalOpen, setIsAddTemplateModalOpen] = React.useState(false);
   const [editingTemplate, setEditingTemplate] = React.useState<UserTemplate | null>(null);
-  const [userTemplates, setUserTemplates] = React.useState<UserTemplate[]>(placeholderUserTemplates);
+  const [templateToDelete, setTemplateToDelete] = React.useState<UserTemplate | null>(null);
 
   const iconSize = "h-3 w-3";
 
-  const templateForm = useForm<UserTemplateFormData>({ 
-    resolver: zodResolver(userTemplateSchema),
+  // Fetch data using React Query
+  const { data: roles = [], isLoading: isLoadingRoles, error: rolesError } = useQuery<Role[], Error>({
+    queryKey: ['roles'],
+    queryFn: getRoles,
+  });
+
+  const { data: allPermissions = [], isLoading: isLoadingPermissions, error: permissionsError } = useQuery<Permission[], Error>({
+    queryKey: ['permissions'],
+    queryFn: getPermissions,
+    initialData: STATIC_ALL_PERMISSIONS, // Use static data as initial, will be replaced by fetched
+  });
+
+  const { data: userTemplates = [], isLoading: isLoadingTemplates, error: templatesError } = useQuery<UserTemplate[], Error>({
+    queryKey: ['userTemplates'],
+    queryFn: getUserTemplates,
+  });
+
+  const { data: userProfiles = [], isLoading: isLoadingUserProfiles, error: userProfilesError } = useQuery<UserProfile[], Error>({
+    queryKey: ['userProfiles'],
+    queryFn: getUserProfiles,
+  });
+
+  const permissionGroups = React.useMemo(() => 
+    Array.from(new Set(allPermissions.map(p => p.group_name || 'Other'))).sort(), 
+  [allPermissions]);
+
+
+  const templateForm = useForm<UserTemplateFormValues>({
+    resolver: zodResolver(userTemplateFormSchema),
     defaultValues: {
-      templateName: '',
+      template_name: '',
       description: '',
-      defaultRole: '',
-      permissions: [],
+      default_role_id: null,
+      permission_ids: [],
     },
   });
 
   React.useEffect(() => {
     if (isAddTemplateModalOpen && editingTemplate) {
       templateForm.reset({
-        templateName: editingTemplate.templateName,
+        template_name: editingTemplate.template_name,
         description: editingTemplate.description || '',
-        defaultRole: editingTemplate.defaultRole || '',
-        permissions: editingTemplate.permissions || [],
+        default_role_id: editingTemplate.default_role_id || null,
+        permission_ids: editingTemplate.permissions || [],
       });
     } else if (isAddTemplateModalOpen && !editingTemplate) {
       templateForm.reset({
-        templateName: '',
+        template_name: '',
         description: '',
-        defaultRole: '',
-        permissions: [],
+        default_role_id: null,
+        permission_ids: [],
       });
     }
   }, [isAddTemplateModalOpen, editingTemplate, templateForm]);
+
+  const addTemplateMutation = useMutation({
+    mutationFn: addUserTemplate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userTemplates'] });
+      toast({ title: t('settings_users.add_template_success_title'), description: t('settings_users.add_template_success_desc', 'User template "{name}" added.').replace('{name}', templateForm.getValues('template_name'))});
+      setIsAddTemplateModalOpen(false);
+      setEditingTemplate(null);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const updateTemplateMutation = useMutation({
+    mutationFn: (data: { templateId: string; templateData: UserTemplateData }) => updateUserTemplate(data.templateId, data.templateData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userTemplates'] });
+      toast({ title: t('settings_users.update_template_success_title'), description: t('settings_users.update_template_success_desc', 'User template "{name}" updated.').replace('{name}', templateForm.getValues('template_name'))});
+      setIsAddTemplateModalOpen(false);
+      setEditingTemplate(null);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteTemplateMutation = useMutation({
+    mutationFn: deleteUserTemplate,
+    onSuccess: (_, templateId) => {
+      queryClient.invalidateQueries({ queryKey: ['userTemplates'] });
+      toast({ title: t('settings_users.delete_template_toast_title'), description: `Template deleted.` , variant: 'destructive' });
+      setTemplateToDelete(null);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      setTemplateToDelete(null);
+    },
+  });
 
 
   const handleAddUser = () => {
@@ -141,44 +216,35 @@ export default function UsersPage() {
     });
   };
 
-  const handleTemplateSubmit = (data: UserTemplateFormData) => {
+  const handleTemplateSubmit = (data: UserTemplateFormValues) => {
+    const templateDataToSubmit: UserTemplateData = {
+        template_name: data.template_name,
+        description: data.description,
+        default_role_id: data.default_role_id || null,
+        permission_ids: data.permission_ids || [],
+    };
+
     if (editingTemplate) {
-        setUserTemplates(prev => prev.map(tpl => tpl.id === editingTemplate.id ? { ...tpl, ...data, permissions: data.permissions || [] } : tpl));
-        toast({
-            title: t('settings_users.update_template_success_title', 'Template Updated'),
-            description: t('settings_users.update_template_success_desc', 'User template "{name}" updated.').replace('{name}', data.templateName),
-        });
+      updateTemplateMutation.mutate({ templateId: editingTemplate.id, templateData: templateDataToSubmit });
     } else {
-        const newTemplate: UserTemplate = {
-            ...data,
-            id: `tpl-${Date.now()}`,
-            permissions: data.permissions || [],
-        };
-        setUserTemplates(prev => [newTemplate, ...prev]);
-        toast({
-            title: t('settings_users.add_template_success_title'),
-            description: t('settings_users.add_template_success_desc', 'User template "{name}" added.').replace('{name}', data.templateName),
-        });
+      addTemplateMutation.mutate(templateDataToSubmit);
     }
-    templateForm.reset();
-    setEditingTemplate(null);
-    setIsAddTemplateModalOpen(false);
   };
 
   const handleEditTemplate = (template: UserTemplate) => {
     setEditingTemplate(template);
-    setIsAddTemplateModalOpen(true); 
+    setIsAddTemplateModalOpen(true);
   }
 
-  const handleDeleteTemplate = (templateId: string) => {
-     const template = userTemplates.find(t => t.id === templateId);
-     setUserTemplates(prev => prev.filter(t => t.id !== templateId));
-     toast({
-       title: t('settings_users.delete_template_toast_title'),
-       description: t('settings_users.delete_template_toast_desc', 'Template "{name}" deleted.').replace('{name}', template?.templateName || 'N/A'),
-       variant: 'destructive',
-     });
-  }
+  const handleDeleteTemplateConfirm = () => {
+    if (templateToDelete) {
+      deleteTemplateMutation.mutate(templateToDelete.id);
+    }
+  };
+
+  if (rolesError) return <p>Error loading roles: {rolesError.message}</p>;
+  if (permissionsError && !isLoadingPermissions) return <p>Error loading permissions: {permissionsError.message}</p>;
+  if (templatesError) return <p>Error loading templates: {templatesError.message}</p>;
 
 
   return (
@@ -192,13 +258,13 @@ export default function UsersPage() {
                   <ListChecks className={`mr-2 ${iconSize}`} /> {t('settings_users.user_templates_button', 'User Templates')}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-lg"> 
+              <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle className="text-sm">{t('settings_users.user_templates_modal_title', 'User Templates')}</DialogTitle>
                   <DialogDescriptionComponent className="text-xs">{t('settings_users.user_templates_modal_desc', 'Manage predefined user templates.')}</DialogDescriptionComponent>
                 </DialogHeader>
                 <div className="mt-4">
-                  {userTemplates.length > 0 ? (
+                  {isLoadingTemplates ? <Skeleton className="h-20 w-full" /> : userTemplates.length > 0 ? (
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -209,18 +275,20 @@ export default function UsersPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {userTemplates.map((template) => (
-                          <TableRow key={template.id}>
-                            <TableCell className="font-medium text-xs">{template.templateName}</TableCell>
-                            <TableCell className="text-muted-foreground text-xs">{template.description || '-'}</TableCell>
-                            <TableCell className="text-muted-foreground text-xs">{template.defaultRole || '-'}</TableCell>
-                            <TableCell className="text-right">
-                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditTemplate(template)}>
-                                <Edit className={iconSize} />
-                              </Button>
-                               <AlertDialog>
+                        {userTemplates.map((template) => {
+                          const role = roles.find(r => r.id === template.default_role_id);
+                          return (
+                            <TableRow key={template.id}>
+                              <TableCell className="font-medium text-xs">{template.template_name}</TableCell>
+                              <TableCell className="text-muted-foreground text-xs">{template.description || '-'}</TableCell>
+                              <TableCell className="text-muted-foreground text-xs">{role ? role.name : '-'}</TableCell>
+                              <TableCell className="text-right">
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditTemplate(template)}>
+                                  <Edit className={iconSize} />
+                                </Button>
+                               <AlertDialog open={!!templateToDelete && templateToDelete.id === template.id} onOpenChange={(open) => !open && setTemplateToDelete(null)}>
                                   <AlertDialogTrigger asChild>
-                                       <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive">
+                                       <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setTemplateToDelete(template)}>
                                         <Trash2 className={iconSize} />
                                       </Button>
                                   </AlertDialogTrigger>
@@ -228,23 +296,26 @@ export default function UsersPage() {
                                        <AlertDialogHeader>
                                           <AlertDialogTitle>{t('settings_users.delete_template_confirm_title')}</AlertDialogTitle>
                                           <AlertDialogDescription className="text-xs">
-                                              {t('settings_users.delete_template_confirm_desc', 'Are you sure you want to delete the template "{name}"? This action cannot be undone.').replace('{name}', template.templateName)}
+                                              {t('settings_users.delete_template_confirm_desc', 'Are you sure you want to delete the template "{name}"? This action cannot be undone.').replace('{name}', template.template_name)}
                                           </AlertDialogDescription>
                                        </AlertDialogHeader>
                                        <AlertDialogFooter>
-                                          <AlertDialogCancel>{t('settings_users.form_cancel_button')}</AlertDialogCancel>
+                                          <AlertDialogCancel onClick={() => setTemplateToDelete(null)}>{t('settings_users.form_cancel_button')}</AlertDialogCancel>
                                           <AlertDialogAction
                                               className={buttonVariants({ variant: "destructive" })}
-                                              onClick={() => handleDeleteTemplate(template.id)}
+                                              onClick={handleDeleteTemplateConfirm}
+                                              disabled={deleteTemplateMutation.isPending}
                                           >
+                                              {deleteTemplateMutation.isPending && <Loader2 className={`mr-2 ${iconSize} animate-spin`}/>}
                                               {t('settings_users.form_delete_button')}
                                           </AlertDialogAction>
                                        </AlertDialogFooter>
                                   </AlertDialogContent>
                                </AlertDialog>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   ) : (
@@ -273,19 +344,45 @@ export default function UsersPage() {
               <CardDescription className="text-xs">{t('settings_users.manage_users_desc', 'View, add, and manage system users and their permissions.')}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground text-xs">
-                {t('settings_users.no_users_placeholder', 'User management functionality is not yet implemented. This section will display a list of users and allow for role assignments and permission settings.')}
-              </p>
+                {isLoadingUserProfiles ? <Skeleton className="h-40 w-full" /> : userProfilesError ? <p className="text-destructive">Error: {userProfilesError.message}</p> : userProfiles.length > 0 ? (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="text-xs">Full Name</TableHead>
+                                <TableHead className="text-xs">Email</TableHead>
+                                <TableHead className="text-xs">Role</TableHead>
+                                <TableHead className="text-xs text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {userProfiles.map(profile => (
+                                <TableRow key={profile.id}>
+                                    <TableCell className="text-xs">{profile.full_name || 'N/A'}</TableCell>
+                                    <TableCell className="text-xs">{profile.email || 'N/A'}</TableCell>
+                                    <TableCell className="text-xs">{profile.role?.name || 'No Role'}</TableCell>
+                                    <TableCell className="text-right">
+                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toast({title: "Edit User (WIP)", description: `Editing user ${profile.full_name}`})}>
+                                            <Edit className={iconSize} />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                ) : (
+                    <p className="text-muted-foreground text-xs text-center py-4">
+                        {t('settings_users.no_users_placeholder', 'No users found. Users are typically added via Supabase Auth and then appear here.')}
+                    </p>
+                )}
             </CardContent>
           </Card>
         </div>
 
-       {/* Add/Edit Template Dialog */}
         <Dialog open={isAddTemplateModalOpen} onOpenChange={(isOpen) => {
             setIsAddTemplateModalOpen(isOpen);
-            if (!isOpen) setEditingTemplate(null); 
+            if (!isOpen) setEditingTemplate(null);
         }}>
-            <DialogContent className="sm:max-w-2xl"> 
+            <DialogContent className="sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle className="text-sm">{editingTemplate ? t('settings_users.edit_template_modal_title', 'Edit User Template') : t('settings_users.add_template_modal_title', 'Add New User Template')}</DialogTitle>
                      <DialogDescriptionComponent className="text-xs">
@@ -297,7 +394,7 @@ export default function UsersPage() {
                         <div className="md:col-span-1 space-y-4">
                             <FormField
                                 control={templateForm.control}
-                                name="templateName"
+                                name="template_name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{t('settings_users.template_form_name_label', 'Template Name')}</FormLabel>
@@ -323,13 +420,19 @@ export default function UsersPage() {
                             />
                             <FormField
                                 control={templateForm.control}
-                                name="defaultRole"
+                                name="default_role_id"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{t('settings_users.template_form_role_label', 'Default Role (Optional)')}</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder={t('settings_users.template_form_role_placeholder', 'e.g., Editor, Viewer')} {...field} />
-                                        </FormControl>
+                                        <Select onValueChange={field.onChange} value={field.value || undefined} disabled={isLoadingRoles}>
+                                            <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? "Loading roles..." : "Select a role"} /></SelectTrigger></FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="">{t('settings_users.form_parent_none', 'None')}</SelectItem>
+                                                {roles.map(role => (
+                                                    <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -342,15 +445,15 @@ export default function UsersPage() {
                                 {t('settings_users.permissions_title', 'Permissions')}
                             </FormLabel>
                             <ScrollArea className="h-[300px] border rounded-md p-3 pr-1">
-                                {permissionGroups.map(group => (
+                                {isLoadingPermissions ? <Skeleton className="h-full w-full" /> : permissionGroups.map(group => (
                                     <div key={group} className="mb-3">
-                                        <h3 className="text-xs font-semibold mb-1.5 text-muted-foreground">{t(`settings_users.permission_group_${group.toLowerCase().replace(/\s+/g, '_')}` as any, group)}</h3>
+                                        <h3 className="text-xs font-semibold mb-1.5 text-muted-foreground">{t(`settings_users.permission_group_${group?.toLowerCase().replace(/\s+/g, '_') || 'other'}` as any, group || 'Other Permissions')}</h3>
                                         <div className="space-y-1.5 pl-2">
-                                            {allPermissions.filter(p => p.group === group).map(permission => (
+                                            {allPermissions.filter(p => (p.group_name || 'Other') === group).map(permission => (
                                                 <FormField
                                                     key={permission.id}
                                                     control={templateForm.control}
-                                                    name="permissions"
+                                                    name="permission_ids"
                                                     render={({ field }) => (
                                                         <FormItem className="flex flex-row items-center space-x-2 space-y-0">
                                                             <FormControl>
@@ -367,8 +470,8 @@ export default function UsersPage() {
                                                                     }}
                                                                 />
                                                             </FormControl>
-                                                            <FormLabel className="text-xs font-normal">
-                                                                {t(permission.labelKey, permission.labelKey.split('.').pop()?.replace(/_/g, ' ') || permission.id)}
+                                                            <FormLabel className="text-xs font-normal cursor-pointer">
+                                                                {permission.description ? `${permission.slug} (${permission.description})` : permission.slug}
                                                             </FormLabel>
                                                         </FormItem>
                                                     )}
@@ -378,16 +481,16 @@ export default function UsersPage() {
                                     </div>
                                 ))}
                             </ScrollArea>
-                            <FormMessage>{templateForm.formState.errors.permissions?.message}</FormMessage>
+                            <FormMessage>{templateForm.formState.errors.permission_ids?.message}</FormMessage>
                         </div>
                         
                         <DialogFooter className="md:col-span-3">
                             <DialogClose asChild>
-                                <Button type="button" variant="outline" disabled={templateForm.formState.isSubmitting}>{t('settings_users.form_cancel_button', 'Cancel')}</Button>
+                                <Button type="button" variant="outline" disabled={templateForm.formState.isSubmitting || addTemplateMutation.isPending || updateTemplateMutation.isPending}>{t('settings_users.form_cancel_button', 'Cancel')}</Button>
                             </DialogClose>
-                            <Button type="submit" disabled={templateForm.formState.isSubmitting}>
-                                {templateForm.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                                {templateForm.formState.isSubmitting ? t('settings_users.form_saving_button', 'Saving...') : (editingTemplate ? t('settings_users.form_update_template_button', 'Update Template') : t('settings_users.form_save_template_button', 'Save Template'))}
+                            <Button type="submit" disabled={templateForm.formState.isSubmitting || addTemplateMutation.isPending || updateTemplateMutation.isPending}>
+                                {(templateForm.formState.isSubmitting || addTemplateMutation.isPending || updateTemplateMutation.isPending) && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
+                                {editingTemplate ? t('settings_users.form_update_template_button', 'Update Template') : t('settings_users.form_save_template_button', 'Save Template')}
                             </Button>
                         </DialogFooter>
                     </form>
