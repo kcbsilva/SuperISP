@@ -418,19 +418,20 @@ const SidebarMenuButton = React.memo(React.forwardRef<
         data-size={size}
         className={cn(
           sidebarMenuButtonVariants({ isActive, size, isCollapsed: isCollapsed && !isMobile }),
+          "gap-2.5", // Changed from gap-2
           className
         )}
         href={href}
         onClick={handleClick}
         {...props}
       >
-        {iconElement}
+        {React.isValidElement(iconElement) ? React.cloneElement(iconElement as React.ReactElement, { className: cn((iconElement.props as any).className, "[&_svg]:size-3.5") }) : iconElement}
         {textElement && (!isCollapsed || isMobile) && (
             React.isValidElement(textElement) ?
             React.cloneElement(textElement as React.ReactElement, {
-              className: cn((textElement.props as any).className, "ml-1.5 truncate") // ml-1.5 for gap
+              className: cn((textElement.props as any).className, "truncate") 
             })
-            : <span className="ml-1.5 truncate">{textElement}</span> // ml-1.5 for gap
+            : <span className="truncate">{textElement}</span>
         )}
       </Comp>
     );
@@ -494,18 +495,19 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
         className={cn(
           sidebarMenuButtonVariants({ isActive, size, isCollapsed: isCollapsed && !isMobile }),
           "group/sub-trigger",
+          "gap-2.5", // Changed from gap-2
           className
         )}
         {...props}
         onClick={handleClick}
       >
-        {iconElement}
+        {React.isValidElement(iconElement) ? React.cloneElement(iconElement as React.ReactElement, { className: cn((iconElement.props as any).className, "[&_svg]:size-3.5") }) : iconElement}
         {textElement && (!isCollapsed || isMobile) && (
             React.isValidElement(textElement) ?
             React.cloneElement(textElement as React.ReactElement, {
-              className: cn((textElement.props as any).className, "ml-1.5 truncate") // ml-1.5 for gap
+              className: cn((textElement.props as any).className, "truncate")
             })
-            : <span className="ml-1.5 truncate">{textElement}</span> // ml-1.5 for gap
+            : <span className="truncate">{textElement}</span>
         )}
         {(!isCollapsed || isMobile) && chevronElement}
       </button>

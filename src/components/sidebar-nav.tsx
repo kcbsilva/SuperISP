@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -23,7 +24,7 @@ interface SidebarNavProps {
   isSubMenu?: boolean;
 }
 
-const iconSize = "h-3 w-3";
+const iconSize = "h-3.5 w-3.5"; // Changed from h-3 w-3
 
 const SidebarNav: React.FC<SidebarNavProps> = ({ items = [], isSubMenu = false }) => {
   const pathname = usePathname();
