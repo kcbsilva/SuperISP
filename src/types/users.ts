@@ -40,9 +40,9 @@ export interface UserTemplateData {
 export interface UserProfile {
   id: string; // UUID, matches auth.users.id
   full_name?: string | null;
+  email?: string | null; // Email will now be directly on user_profiles
   role_id?: string | null; // UUID, Foreign Key to roles.id
   avatar_url?: string | null;
-  email?: string; // Often available from auth.users
   role?: Role; // Populated role object
   created_at: string;
   updated_at: string;

@@ -39,7 +39,6 @@ export async function getPermissions(): Promise<Permission[]> {
 // --- User Templates ---
 export async function getUserTemplates(): Promise<UserTemplate[]> {
   console.log('Supabase service: getUserTemplates called');
-  // This is a simplified fetch. In reality, you'd likely want to fetch related permissions too.
   const { data, error } = await supabase
     .from('user_templates')
     .select(`
@@ -88,7 +87,6 @@ export async function addUserTemplate(templateData: UserTemplateData): Promise<U
     const { error: permissionsError } = await supabase.from('template_permissions').insert(templatePermissions);
     if (permissionsError) {
       console.error('Error adding template permissions:', permissionsError);
-      // Potentially delete the template if permissions fail? Or log and let user fix.
       throw new Error(permissionsError.message);
     }
   }
@@ -114,7 +112,6 @@ export async function updateUserTemplate(templateId: string, templateData: UserT
     throw new Error('Failed to update template, no data returned.');
   }
 
-  // Manage permissions: delete existing, then add new ones
   const { error: deletePermError } = await supabase.from('template_permissions').delete().eq('template_id', templateId);
   if (deletePermError) {
     console.error('Error deleting old template permissions:', deletePermError);
@@ -137,9 +134,6 @@ export async function updateUserTemplate(templateId: string, templateData: UserT
 
 export async function deleteUserTemplate(templateId: string): Promise<void> {
   console.log('Supabase service: deleteUserTemplate called for ID', templateId);
-  // Note: template_permissions will be deleted by CASCADE if set up in DB.
-  // If not, delete them manually first:
-  // await supabase.from('template_permissions').delete().eq('template_id', templateId);
   const { error } = await supabase.from('user_templates').delete().eq('id', templateId);
   if (error) {
     console.error('Error deleting user template:', error);
@@ -155,13 +149,13 @@ export async function getUserProfiles(): Promise<UserProfile[]> {
     .select(`
       id,
       full_name,
+      email, 
       avatar_url,
       role_id,
       roles ( id, name, description ), 
       created_at,
-      updated_at,
-      users (email)
-    `); // Fetch related role name
+      updated_at
+    `);
 
   if (error) {
     console.error('Error fetching user profiles:', error);
@@ -169,20 +163,18 @@ export async function getUserProfiles(): Promise<UserProfile[]> {
   }
   return (data?.map(profile => ({
     ...profile,
-    email: (profile as any).users?.email, // Supabase returns joined tables as nested objects
-    role: profile.roles ? {id: profile.roles.id, name: profile.roles.name, description: profile.roles.description, created_at: '' } : undefined
+    role: profile.roles ? { id: profile.roles.id, name: profile.roles.name, description: profile.roles.description, created_at: '' } : undefined
   })) || []) as UserProfile[];
 }
 
-// Placeholder for adding/updating user roles/profiles
-// This is more complex as it involves auth.users and user_profiles
-// For now, users are managed via Supabase Auth UI or API directly for creation.
-// This function would be for updating profile details like role or full_name.
-export async function updateUserProfile(userId: string, profileData: Partial<Pick<UserProfile, 'full_name' | 'role_id' | 'avatar_url'>>): Promise<UserProfile> {
+export async function updateUserProfile(userId: string, profileData: Partial<Pick<UserProfile, 'full_name' | 'role_id' | 'avatar_url' | 'email'>>): Promise<UserProfile> {
     console.log('Supabase service: updateUserProfile called for ID', userId, 'with data', profileData);
+    // Ensure email is not directly updated here if it's managed by auth.users and synced by trigger
+    const { email, ...updatableProfileData } = profileData; 
+    
     const { data, error } = await supabase
         .from('user_profiles')
-        .update(profileData)
+        .update(updatableProfileData)
         .eq('id', userId)
         .select()
         .single();
