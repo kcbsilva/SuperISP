@@ -29,16 +29,16 @@ const en = {
     fttx_dashboard: 'FTTx Dashboard',
     fttx_olts: 'OLTs & ONXs',
     fttx_onx_templates: 'ONx Templates',
-    hub: 'Hub', // New
-    hub_tooltip: 'Manage Neutral Networks', // New
-    hub_dashboard: 'Hub Dashboard', // New
-    hub_dashboard_tooltip: 'Neutral Network Dashboard', // New
-    hub_connections: 'Connections', // New
-    hub_connections_tooltip: 'Manage Hub Connections', // New
-    hub_peering: 'Peering', // New
-    hub_peering_tooltip: 'Manage Peering Agreements', // New
-    hub_configurations: 'Configurations', // New
-    hub_configurations_tooltip: 'Hub Configurations', // New
+    hub: 'Hub',
+    hub_tooltip: 'Hub',
+    hub_dashboard: 'Hub Dashboard',
+    hub_dashboard_tooltip: 'Neutral Network Dashboard',
+    hub_connections: 'Connections',
+    hub_connections_tooltip: 'Manage Hub Connections',
+    hub_participants: 'Participants', // Renamed from hub_peering
+    hub_participants_tooltip: 'Manage Hub Participants', // Renamed from hub_peering_tooltip
+    hub_configurations: 'Configurations',
+    hub_configurations_tooltip: 'Hub Configurations',
     finances: 'Finances',
     finances_cash_book: 'Cash Book',
     finances_entry_categories: 'Entry Categories',
@@ -1271,6 +1271,8 @@ const en = {
         form_day_of_month_label: 'Day of Month',
         form_day_of_month_placeholder: 'Select a day',
         form_status_label: 'Status',
+        form_status_active_desc: 'This billing day is currently active.',
+        form_status_inactive_desc: 'This billing day is currently inactive.',
         form_permitted_pops_label: 'Permitted PoPs',
         form_available_pops_label: 'Available PoPs',
         form_selected_pops_label: 'Selected PoPs',
@@ -1780,6 +1782,23 @@ const en = {
     save_changes_button: 'Save Changes',
     save_changes_title_toast: 'Save Changes (Not Implemented)',
     save_changes_desc_toast: 'Saving messenger configuration is not yet implemented.',
+  },
+  hub_participants: { // New section for Participants page
+    title: 'Hub Participants',
+    add_participant_button: 'Add Participant',
+    search_placeholder: 'Search by Company Name, Business Number...',
+    table_header_id: 'ID',
+    table_header_company_name: 'Company Name',
+    table_header_business_number: 'Business Number',
+    table_header_device_count: 'Device Count',
+    table_header_vlan_count: 'VLAN Count',
+    table_header_actions: 'Actions',
+    action_edit: 'Edit',
+    no_participants_found: 'No participants found. Click "Add Participant" to create one.',
+    add_participant_toast_title: 'Add Participant (Not Implemented)',
+    add_participant_toast_desc: 'Adding new participants is not yet implemented.',
+    edit_participant_toast_title: 'Edit Participant (Not Implemented)',
+    edit_participant_toast_desc: 'Editing participant {id} is not yet implemented.',
   },
 };
 

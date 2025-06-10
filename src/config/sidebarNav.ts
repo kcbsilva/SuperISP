@@ -254,8 +254,8 @@ export const sidebarNav: SidebarNavItem[] = [
   },
   {
     title: 'sidebar.hub',
-    icon: Webhook, // Changed from NetworkIcon
-    tooltip: 'sidebar.hub', // Changed from sidebar.hub_tooltip
+    icon: Webhook,
+    tooltip: 'sidebar.hub',
     children: [
       {
         title: 'sidebar.hub_dashboard',
@@ -270,10 +270,10 @@ export const sidebarNav: SidebarNavItem[] = [
         tooltip: 'sidebar.hub_connections_tooltip',
       },
       {
-        title: 'sidebar.hub_peering',
-        href: '/admin/hub/peering',
+        title: 'sidebar.hub_participants',
+        href: '/admin/hub/participants',
         icon: Users2,
-        tooltip: 'sidebar.hub_peering_tooltip',
+        tooltip: 'sidebar.hub_participants_tooltip',
       },
       {
         title: 'sidebar.hub_configurations',
@@ -613,26 +613,3 @@ export const sidebarNav: SidebarNavItem[] = [
     ],
   },
 ];
-
-// The following items were previously after settings but had different icons.
-// Integrating them logically or deciding if they are top-level is needed.
-// For now, assuming they are distinct top-level experimental/tool sections.
-// { title: 'tools-separator', isSeparator: true },
-// {
-//   title: 'sidebar.pilotview',
-//   href: '/admin/pilotview',
-//   icon: TbDeviceImacStar, // Requires react-icons
-//   tooltip: 'sidebar.pilotview',
-// },
-// {
-//   title: 'sidebar.transitos',
-//   href: '/admin/transitos',
-//   icon: SiReactrouter, // Requires react-icons
-//   tooltip: 'sidebar.transitos',
-// },
-// {
-//   title: 'sidebar.zones',
-//   href: '/admin/zones',
-//   icon: SiNextdns, // Requires react-icons
-//   tooltip: 'sidebar.zones',
-// },
