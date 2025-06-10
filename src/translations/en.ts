@@ -29,6 +29,16 @@ const en = {
     fttx_dashboard: 'FTTx Dashboard',
     fttx_olts: 'OLTs & ONXs',
     fttx_onx_templates: 'ONx Templates',
+    hub: 'Hub', // New
+    hub_tooltip: 'Manage Neutral Networks', // New
+    hub_dashboard: 'Hub Dashboard', // New
+    hub_dashboard_tooltip: 'Neutral Network Dashboard', // New
+    hub_connections: 'Connections', // New
+    hub_connections_tooltip: 'Manage Hub Connections', // New
+    hub_peering: 'Peering', // New
+    hub_peering_tooltip: 'Manage Peering Agreements', // New
+    hub_configurations: 'Configurations', // New
+    hub_configurations_tooltip: 'Hub Configurations', // New
     finances: 'Finances',
     finances_cash_book: 'Cash Book',
     finances_entry_categories: 'Entry Categories',

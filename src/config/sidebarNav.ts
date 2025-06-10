@@ -38,12 +38,13 @@ import {
   Building,
   Cog,
   Dot,
-  TrendingUp, 
-  Target, 
-  ShoppingCart, 
-  MessageCircle, 
-  Workflow, 
+  TrendingUp,
+  Target,
+  ShoppingCart,
+  MessageCircle,
+  Workflow,
   Radio, // Added for Channels
+  GitMerge, // Added for Hub > Connections
 } from 'lucide-react';
 import type { Icon as LucideIcon } from 'lucide-react';
 import type { IconType } from 'react-icons';
@@ -131,7 +132,7 @@ export const sidebarNav: SidebarNavItem[] = [
           {
             title: 'sidebar.maps_elements_ducts',
             href: '/admin/maps/elements/ducts',
-            icon: GitBranch, 
+            icon: GitBranch,
             tooltip: 'sidebar.maps_elements_ducts',
           },
           {
@@ -194,7 +195,7 @@ export const sidebarNav: SidebarNavItem[] = [
     children: [
       {
         title: 'sidebar.noc_overview',
-        href: '/admin/noc/dashboard', 
+        href: '/admin/noc/dashboard',
         icon: LayoutDashboard,
         tooltip: 'sidebar.noc_overview',
       },
@@ -212,7 +213,7 @@ export const sidebarNav: SidebarNavItem[] = [
           {
             title: 'sidebar.fttx_olts',
             href: '/admin/noc/fttx/olts',
-            icon: NetworkIcon, 
+            icon: NetworkIcon,
             tooltip: 'sidebar.fttx_olts',
           },
           {
@@ -237,16 +238,47 @@ export const sidebarNav: SidebarNavItem[] = [
           {
             title: 'sidebar.noc_wireless_aps',
             href: '/admin/noc/wireless/access-points',
-            icon: RouterIcon, 
+            icon: RouterIcon,
             tooltip: 'sidebar.noc_wireless_aps',
           },
           {
             title: 'sidebar.noc_wireless_clients',
             href: '/admin/noc/wireless/clients',
-            icon: Users2, 
+            icon: Users2,
             tooltip: 'sidebar.noc_wireless_clients',
           },
         ],
+      },
+    ],
+  },
+  {
+    title: 'sidebar.hub', // New Hub Menu
+    icon: NetworkIcon, // Using NetworkIcon for the top-level Hub
+    tooltip: 'sidebar.hub_tooltip',
+    children: [
+      {
+        title: 'sidebar.hub_dashboard',
+        href: '/admin/hub/dashboard',
+        icon: LayoutDashboard,
+        tooltip: 'sidebar.hub_dashboard_tooltip',
+      },
+      {
+        title: 'sidebar.hub_connections',
+        href: '/admin/hub/connections',
+        icon: GitMerge, // Using GitMerge for connections
+        tooltip: 'sidebar.hub_connections_tooltip',
+      },
+      {
+        title: 'sidebar.hub_peering',
+        href: '/admin/hub/peering',
+        icon: Users2, // Using Users2 for peering relationships
+        tooltip: 'sidebar.hub_peering_tooltip',
+      },
+      {
+        title: 'sidebar.hub_configurations',
+        href: '/admin/hub/configurations',
+        icon: Settings2,
+        tooltip: 'sidebar.hub_configurations_tooltip',
       },
     ],
   },
@@ -301,13 +333,13 @@ export const sidebarNav: SidebarNavItem[] = [
       {
         title: 'sidebar.service_calls_dashboard',
         href: '/admin/service-calls/dashboard',
-        icon: LayoutDashboard, 
+        icon: LayoutDashboard,
         tooltip: 'sidebar.service_calls_dashboard',
       },
       {
         title: 'sidebar.service_calls_service_types',
         href: '/admin/service-calls/service-types',
-        icon: ListChecks, 
+        icon: ListChecks,
         tooltip: 'sidebar.service_calls_service_types',
       },
     ],
@@ -363,13 +395,13 @@ export const sidebarNav: SidebarNavItem[] = [
       {
         title: 'sidebar.messenger_departments',
         href: '/admin/messenger/departments',
-        icon: Users, 
+        icon: Users,
         tooltip: 'sidebar.messenger_departments',
       },
       {
-        title: 'sidebar.messenger_channels', // New "Channels" item
+        title: 'sidebar.messenger_channels', 
         href: '/admin/messenger/channels',
-        icon: Radio, 
+        icon: Radio,
         tooltip: 'sidebar.messenger_channels',
       },
       {
@@ -473,36 +505,36 @@ export const sidebarNav: SidebarNavItem[] = [
         ],
       },
       {
-        title: 'sidebar.settings_network', 
+        title: 'sidebar.settings_network',
         icon: NetworkIcon,
         tooltip: 'sidebar.settings_network',
         children: [
           {
-            title: 'sidebar.settings_network_ip', 
+            title: 'sidebar.settings_network_ip',
             href: '/admin/settings/network/ip',
             icon: Code,
             tooltip: 'sidebar.settings_network_ip',
           },
           {
-            title: 'sidebar.settings_network_devices', 
+            title: 'sidebar.settings_network_devices',
             href: '/admin/settings/network/devices',
             icon: RouterIcon,
             tooltip: 'sidebar.settings_network_devices',
           },
           {
-            title: 'sidebar.settings_network_cgnat', 
+            title: 'sidebar.settings_network_cgnat',
             href: '/admin/settings/network/cgnat',
             icon: Share2,
             tooltip: 'sidebar.settings_network_cgnat',
           },
           {
-            title: 'sidebar.settings_network_radius', 
+            title: 'sidebar.settings_network_radius',
             href: '/admin/settings/network/radius',
             icon: ServerIcon,
             tooltip: 'sidebar.settings_network_radius',
           },
           {
-            title: 'sidebar.settings_network_vlan', 
+            title: 'sidebar.settings_network_vlan',
             href: '/admin/settings/network/vlan',
             icon: Split,
             tooltip: 'sidebar.settings_network_vlan',
@@ -510,7 +542,7 @@ export const sidebarNav: SidebarNavItem[] = [
         ],
       },
       {
-        title: 'sidebar.settings_security', 
+        title: 'sidebar.settings_security',
         href: '/admin/settings/security',
         icon: ShieldCheck,
         tooltip: 'sidebar.settings_security',
@@ -518,7 +550,7 @@ export const sidebarNav: SidebarNavItem[] = [
       {
         title: 'sidebar.settings_system_monitor',
         href: '/admin/settings/system-monitor',
-        icon: RouterIcon, 
+        icon: RouterIcon,
         tooltip: 'sidebar.settings_system_monitor',
       },
       {
@@ -558,6 +590,25 @@ export const sidebarNav: SidebarNavItem[] = [
         icon: Users,
         tooltip: 'sidebar.settings_users',
       },
+       {
+        title: 'sidebar.settings_mysql',
+        icon: Database,
+        tooltip: 'sidebar.settings_mysql',
+        children: [
+            {
+            title: 'sidebar.settings_mysql_databases',
+            href: '/admin/mysql/databases',
+            icon: Database,
+            tooltip: 'sidebar.settings_mysql_databases',
+            },
+            {
+            title: 'sidebar.settings_mysql_cli',
+            href: '/admin/mysql/cli',
+            icon: Code,
+            tooltip: 'sidebar.settings_mysql_cli',
+            },
+        ]
+      }
     ],
   },
 ];
