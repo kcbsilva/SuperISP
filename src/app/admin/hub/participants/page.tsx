@@ -5,9 +5,6 @@ import * as React from 'react';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import {
   Table,
@@ -19,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Users2, PlusCircle, Edit, Search, RefreshCw } from 'lucide-react';
+import { Users2, PlusCircle, Edit, Search, RefreshCw, List as ListIcon } from 'lucide-react'; // Added ListIcon
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -54,6 +51,13 @@ export default function HubParticipantsPage() {
     toast({
       title: t('hub_participants.edit_participant_toast_title'),
       description: t('hub_participants.edit_participant_toast_desc').replace('{id}', participantId),
+    });
+  };
+
+  const handleDeviceList = (participantId: string, companyName: string) => {
+    toast({
+      title: t('hub_participants.device_list_toast_title'),
+      description: t('hub_participants.device_list_toast_desc').replace('{companyName}', companyName),
     });
   };
 
@@ -92,11 +96,8 @@ export default function HubParticipantsPage() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">{t('sidebar.hub_participants', 'Hub Participants List')}</CardTitle>
-          <CardDescription className="text-xs">{t('sidebar.hub_participants_tooltip', 'Manage Hub Participants')}</CardDescription>
-        </CardHeader>
-        <CardContent className="pt-0">
+        {/* CardHeader removed */}
+        <CardContent className="pt-6"> {/* Added pt-6 to CardContent */}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -106,7 +107,7 @@ export default function HubParticipantsPage() {
                   <TableHead className="text-xs text-center">{t('hub_participants.table_header_business_number')}</TableHead>
                   <TableHead className="text-xs text-center">{t('hub_participants.table_header_device_count')}</TableHead>
                   <TableHead className="text-xs text-center">{t('hub_participants.table_header_vlan_count')}</TableHead>
-                  <TableHead className="text-xs text-center w-20">{t('hub_participants.table_header_actions')}</TableHead>
+                  <TableHead className="text-xs text-center w-32">{t('hub_participants.table_header_actions')}</TableHead> {/* Adjusted width for new button */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -119,10 +120,16 @@ export default function HubParticipantsPage() {
                       <TableCell className="text-xs text-center">{participant.deviceCount}</TableCell>
                       <TableCell className="text-xs text-center">{participant.vlanCount}</TableCell>
                       <TableCell className="text-center">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditParticipant(participant.id)}>
-                          <Edit className={iconSize} />
-                          <span className="sr-only">{t('hub_participants.action_edit')}</span>
-                        </Button>
+                        <div className="flex items-center justify-center gap-1">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditParticipant(participant.id)} title={t('hub_participants.action_edit')}>
+                            <Edit className={iconSize} />
+                            <span className="sr-only">{t('hub_participants.action_edit')}</span>
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeviceList(participant.id, participant.companyName)} title={t('hub_participants.action_device_list')}>
+                            <ListIcon className={iconSize} />
+                            <span className="sr-only">{t('hub_participants.action_device_list')}</span>
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))

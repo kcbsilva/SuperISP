@@ -35,8 +35,8 @@ const en = {
     hub_dashboard_tooltip: 'Neutral Network Dashboard',
     hub_connections: 'Connections',
     hub_connections_tooltip: 'Manage Hub Connections',
-    hub_participants: 'Participants', // Renamed from hub_peering
-    hub_participants_tooltip: 'Manage Hub Participants', // Renamed from hub_peering_tooltip
+    hub_participants: 'Participants', 
+    hub_participants_tooltip: 'Manage Hub Participants', 
     hub_configurations: 'Configurations',
     hub_configurations_tooltip: 'Hub Configurations',
     finances: 'Finances',
@@ -1399,7 +1399,7 @@ const en = {
         delete_template_toast_title: 'Template Deleted',
         delete_template_toast_desc: 'Template "{name}" deleted.',
         delete_template_confirm_title: 'Are you sure?',
-        delete_template_confirm_desc: 'Are you sure you want to delete template "{name}"? This action cannot be undone.',
+        delete_template_confirm_desc: 'Are you sure you want to delete the template "{name}"? This action cannot be undone.',
         form_delete_button: 'Delete',
         add_user_toast_title: 'Add User (Not Implemented)',
         add_user_toast_desc: 'Functionality to add new users is not yet implemented.',
@@ -1783,7 +1783,7 @@ const en = {
     save_changes_title_toast: 'Save Changes (Not Implemented)',
     save_changes_desc_toast: 'Saving messenger configuration is not yet implemented.',
   },
-  hub_participants: { // New section for Participants page
+  hub_participants: {
     title: 'Hub Participants',
     add_participant_button: 'Add Participant',
     search_placeholder: 'Search by Company Name, Business Number...',
@@ -1793,12 +1793,15 @@ const en = {
     table_header_device_count: 'Device Count',
     table_header_vlan_count: 'VLAN Count',
     table_header_actions: 'Actions',
-    action_edit: 'Edit',
+    action_edit: 'Edit Participant',
+    action_device_list: 'View Device List',
     no_participants_found: 'No participants found. Click "Add Participant" to create one.',
     add_participant_toast_title: 'Add Participant (Not Implemented)',
     add_participant_toast_desc: 'Adding new participants is not yet implemented.',
     edit_participant_toast_title: 'Edit Participant (Not Implemented)',
     edit_participant_toast_desc: 'Editing participant {id} is not yet implemented.',
+    device_list_toast_title: 'Device List (Not Implemented)',
+    device_list_toast_desc: 'Viewing device list for {companyName} is not yet implemented.',
   },
 };
 
