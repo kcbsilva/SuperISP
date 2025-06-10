@@ -222,13 +222,13 @@ export default function MessengerChatPage() {
               <PlusCircle className={iconSize} />
             </Button>
           </div>
-          <ScrollArea className="flex-1 p-2"> {/* p-2 for spacing around the list */}
+          <ScrollArea className="flex-1 p-2">
             {conversations.map((convo) => (
-              <div // This is the "chat preview container"
+              <div
                 key={convo.id}
                 className={cn(
-                  buttonVariants({ variant: 'ghost' }),
-                  "w-[290px] mx-auto h-auto justify-start flex items-start p-[5px] mb-1 cursor-pointer border-2 rounded-md",
+                  buttonVariants({ variant: 'ghost' }), // Keep base button styling for hover etc.
+                  "w-[285px] mx-auto h-auto justify-start flex items-start p-[5px] mb-1 cursor-pointer border-2 rounded-md",
                   convo.isAssignedToMe ? "border-green-500" : "border-yellow-500",
                   selectedConversation?.id === convo.id && "bg-muted"
                 )}
@@ -237,12 +237,12 @@ export default function MessengerChatPage() {
                 tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedConversation(convo); }}
               >
-                <Avatar className="h-9 w-9 mr-2 mt-0.5 shrink-0"> {/* Reduced mr-3 to mr-2 */}
+                <Avatar className="h-9 w-9 mr-2 mt-0.5 shrink-0">
                   <AvatarImage src={convo.avatarUrl} alt={convo.contactName} data-ai-hint="person face" />
                   <AvatarFallback>{getInitials(convo.contactName)}</AvatarFallback>
                 </Avatar>
 
-                <div className="flex-1 min-w-0 mr-2 max-w-[180px]"> {/* Constrained text content area */}
+                <div className="flex-1 min-w-0 mr-2 max-w-[180px]">
                   <p className="text-xs font-medium truncate">{convo.contactName}</p>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     {convo.unreadCount && convo.unreadCount > 0 && (
