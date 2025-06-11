@@ -2,18 +2,17 @@
 // src/app/layout-renderer.tsx
 'use client';
 import React from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'; // Added useSearchParams
 import { useAuth } from '@/contexts/AuthContext';
-// AdminLayout is applied by Next.js file system for /admin/* routes, so we don't explicitly use it here for wrapping.
-// We rely on src/app/admin/layout.tsx to conditionally render the shell.
 import { Loader2 } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 
 export default function LayoutRenderer({ children: pageContent }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth(); // Get user
   const [isMounted, setIsMounted] = React.useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useLocale();
 
   React.useEffect(() => {
@@ -27,22 +26,29 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
 
     const isAdminPath = pathname.startsWith('/admin');
     const isAdminLoginPath = pathname === '/admin/login';
-    const isAdminRootPath = pathname === '/admin';
+    const isAdminRootPath = pathname === '/admin'; // Could be a redirector page
 
     if (isAuthenticated) {
+      // If authenticated and trying to access login page or the admin root (if it's just a redirector)
       if (isAdminLoginPath || isAdminRootPath) {
-        router.replace('/admin/dashboard');
+        const redirectUrl = searchParams.get('redirect_url');
+        router.replace(redirectUrl || '/admin/dashboard');
       }
+      // For other authenticated admin paths, just let them render
     } else {
-      // Middleware should handle redirecting to login for protected admin paths.
-      // This client-side check is a fallback or for SPAs if middleware isn't covering all cases.
+      // If not authenticated
       if (isAdminPath && !isAdminLoginPath && !isAdminRootPath) {
-        router.replace('/admin/login');
+        // If trying to access a protected admin page, redirect to login
+        // Preserve the intended path to redirect back after login
+        const redirectUrl = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
+        router.replace(`/admin/login?redirect_url=${encodeURIComponent(redirectUrl)}`);
       }
+      // If on /admin/login or /admin (and not authenticated), or any non-admin path, allow rendering
     }
-  }, [isMounted, isAuthLoading, isAuthenticated, pathname, router]);
+  }, [isMounted, isAuthLoading, isAuthenticated, pathname, router, searchParams, user]);
 
-  if (!isMounted || isAuthLoading) {
+
+  if (!isMounted || (isAuthLoading && !user && pathname !== '/admin/login')) { // Show loader if auth is loading AND user is not yet available (unless on login page)
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <div className="flex flex-col items-center">
@@ -52,22 +58,6 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
       </div>
     );
   }
-
-  // If it's an admin path, the src/app/admin/layout.tsx will be automatically applied by Next.js
-  // and will conditionally render the shell. So, LayoutRenderer just passes the content.
-  // If user is not authenticated and tries to access a protected admin page,
-  // middleware should redirect. If client-side check catches this, show loader.
-  if (pathname.startsWith('/admin') && !isAuthenticated && pathname !== '/admin/login' && pathname !== '/admin') {
-      return (
-        <div className="flex h-screen w-full items-center justify-center bg-background">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      );
-  }
   
-  // For all paths (admin or non-admin), just render the pageContent.
-  // The appropriate layout (e.g., src/app/admin/layout.tsx) will be applied by Next.js.
   return <>{pageContent}</>;
 }
-
-    

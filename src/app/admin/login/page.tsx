@@ -3,7 +3,7 @@
 'use client';
 import * as React from "react";
 import { useState, useEffect, type SVGProps } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation"; // Added useSearchParams
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,7 @@ import { useLocale } from "@/contexts/LocaleContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import { Loader2 } from "lucide-react"; // Import Loader2
 
 // Define ProlterLogo component directly in this file
 function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
@@ -36,18 +37,15 @@ function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
   if (fixedColor) {
     fillColor = fixedColor;
   } else if (isMounted) {
-    // For the general ProlterLogo, it adapts to the theme
-    // Dark theme: Accent color (Orange/Amber #FCA311)
-    // Light theme: Primary color (Dark Blue #14213D, adjusted to #233B6E based on globals)
     fillColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
   }
 
   if (!isMounted && !fixedColor) {
-    return <div style={{ width: "131px", height: "32px" }} />;
+    return <div style={{ width: props.width || "131px", height: props.height || "32px" }} />;
   }
 
   return (
-    <div style={{ width: '131px', height: '32px' }} className="flex items-center justify-center">
+    <div style={{ width: props.width || '131px', height: props.height || '32px' }} className="flex items-center justify-center">
       <svg
         width="100%"
         height="100%"
@@ -56,12 +54,11 @@ function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
         fill={fillColor}
         {...restProps}
       >
-        {/* Placeholder SVG - REPLACE THIS with your actual SVG code */}
         <text
           x="50%"
           y="50%"
           fontFamily="Arial, sans-serif"
-          fontSize="24" // Increased font size for better visibility as a logo
+          fontSize="24"
           fontWeight="bold"
           textAnchor="middle"
           dominantBaseline="middle"
@@ -75,23 +72,26 @@ function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
 
 
 export default function AdminLoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState(""); // Changed from username to email
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [publicIP, setPublicIP] = useState<string | null>(null);
   const [ipLoading, setIpLoading] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams(); // For getting redirect_url
   const { login, isAuthenticated, isLoading: authIsLoading } = useAuth();
   const { t } = useLocale();
+  const [isSubmitting, setIsSubmitting] = useState(false); // Local loading state for form submission
+
 
   useEffect(() => {
     if (!authIsLoading && isAuthenticated) {
-      router.push("/admin/dashboard");
+      const redirectUrl = searchParams.get('redirect_url') || '/admin/dashboard';
+      router.push(redirectUrl);
     }
-  }, [isAuthenticated, authIsLoading, router]);
+  }, [isAuthenticated, authIsLoading, router, searchParams]);
 
   useEffect(() => {
-    console.log("Auth State: isLoading:", authIsLoading, "isAuthenticated:", isAuthenticated);
     fetch("https://api.ipify.org?format=json")
       .then((response) => response.json())
       .then((data) => {
@@ -103,22 +103,23 @@ export default function AdminLoginPage() {
         setPublicIP("N/A");
         setIpLoading(false);
       });
-  }, []); // Removed dependencies to run only once on mount for IP fetching
+  }, []);
 
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError("");
+    setIsSubmitting(true); // Start local loading
 
-    const DEMO_USERNAME = 'demo';
-    const DEMO_PASSWORD = 'demo';
-
-    if (username === DEMO_USERNAME && password === DEMO_PASSWORD) {
-      login(); // AuthContext's login handles redirect to /admin/dashboard
-      return;
+    try {
+      const redirectUrl = searchParams.get('redirect_url') || '/admin/dashboard';
+      await login(email, password, redirectUrl); // Call Supabase login from context
+      // Redirect is handled by the useEffect above or by AuthContext on successful login
+    } catch (loginError: any) {
+      setError(loginError.message || t('login.error_failed', 'Login failed. Please check your credentials.'));
+    } finally {
+      setIsSubmitting(false); // Stop local loading
     }
-    
-    setError(t('login.error_failed', 'Login failed. Please check your credentials.'));
   };
 
   if (authIsLoading) {
@@ -134,8 +135,6 @@ export default function AdminLoginPage() {
   }
 
   if (!authIsLoading && isAuthenticated) {
-    // This state should ideally be brief as useEffect above should redirect.
-    // Display a "Redirecting..." message or a minimal loader if preferred.
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-black">
         <p className="text-primary-foreground">{t('auth.redirecting', 'Redirecting to dashboard...')}</p>
@@ -143,11 +142,8 @@ export default function AdminLoginPage() {
     );
   }
 
-
-  // Only render the login form if not loading and not authenticated
   return (
     <div className="flex min-h-screen w-full bg-black">
-      {/* Left Decorative Panel (Hidden on small screens) */}
       <div className="hidden lg:flex lg:w-3/4 bg-black items-center justify-center p-8">
         <div className="text-center">
            <h1 className="text-4xl font-bold text-primary-foreground">
@@ -159,7 +155,6 @@ export default function AdminLoginPage() {
         </div>
       </div>
 
-      {/* Right Login Panel */}
       <div className="w-full lg:w-1/4 flex justify-center items-center bg-black p-4 md:p-8">
         <Card className="w-full max-w-xs bg-[#233B6E] border-2 border-accent text-gray-200">
           <CardHeader className="items-center pt-8 pb-4">
@@ -178,15 +173,16 @@ export default function AdminLoginPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="username" className="text-gray-200">{t("login.username_label", "Username")}</Label>
+                <Label htmlFor="email" className="text-gray-200">{t("login.username_label", "Email")}</Label>
                 <Input
-                  id="username"
-                  type="text"
+                  id="email"
+                  type="email" // Changed from text to email
                   className="bg-background/10 text-gray-200 placeholder:text-gray-400 border-primary-foreground/30 focus:border-accent"
-                  placeholder={t("login.username_placeholder", "Enter your username")}
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder={t("login.username_placeholder", "Enter your email")}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isSubmitting}
                 />
               </div>
               <div className="space-y-1.5">
@@ -199,11 +195,13 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={isSubmitting}
                 />
               </div>
               {error && <p className="text-xs text-red-400">{error}</p>}
-              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                {t("login.submit_button", "Sign In")}
+              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting || authIsLoading}>
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                {isSubmitting ? t('login.loading', 'Signing In...') : t("login.submit_button", "Sign In")}
               </Button>
             </form>
           </CardContent>
@@ -225,4 +223,3 @@ export default function AdminLoginPage() {
     </div>
   );
 }
-
