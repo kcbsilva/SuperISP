@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod'; 
+import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label"; 
+import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -74,9 +74,9 @@ const subscriberSchema = z.object({
 }).refine(data => data.subscriber_type !== 'Commercial' || data.established_date, {
     message: "Established Date is required for Commercial subscribers.",
     path: ["established_date"],
-}).refine(data => data.subscriber_type !== 'Commercial' || (data.business_number && data.business_number.length > 0), {
-    message: "Business Number is required for Commercial subscribers.",
-    path: ["business_number"],
+}).refine(data => data.subscriber_type !== 'Commercial' || (data.tax_id && data.tax_id.length > 0), { // Changed business_number to tax_id for CNPJ
+    message: "CNPJ (Tax ID) is required for Commercial subscribers.",
+    path: ["tax_id"], // Ensure path points to tax_id
 });
 
 
@@ -86,7 +86,7 @@ export default function AddSubscriberPage() {
   const { toast } = useToast();
   const { t } = useLocale();
   const router = useRouter();
-  const iconSize = "h-3 w-3"; 
+  const iconSize = "h-3 w-3";
   const form = useForm<SubscriberFormZodData>({
     resolver: zodResolver(subscriberSchema),
     defaultValues: {
@@ -143,7 +143,7 @@ export default function AddSubscriberPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">{t('add_subscriber.card_title')}</CardTitle>
-          <CardDescription className="text-xs">{t('add_subscriber.card_description')}</CardDescription> 
+          <CardDescription className="text-xs">{t('add_subscriber.card_description')}</CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -164,7 +164,7 @@ export default function AddSubscriberPage() {
                           <FormControl>
                             <RadioGroupItem value="Residential" />
                           </FormControl>
-                          <FormLabel className="font-normal flex items-center gap-2 text-xs"> 
+                          <FormLabel className="font-normal flex items-center gap-2 text-xs">
                              <User className={`${iconSize} text-muted-foreground`}/> {t('add_subscriber.type_residential')}
                           </FormLabel>
                         </FormItem>
@@ -172,7 +172,7 @@ export default function AddSubscriberPage() {
                           <FormControl>
                             <RadioGroupItem value="Commercial" />
                           </FormControl>
-                          <FormLabel className="font-normal flex items-center gap-2 text-xs"> 
+                          <FormLabel className="font-normal flex items-center gap-2 text-xs">
                              <Building className={`${iconSize} text-muted-foreground`}/> {t('add_subscriber.type_commercial')}
                           </FormLabel>
                         </FormItem>
@@ -210,7 +210,7 @@ export default function AddSubscriberPage() {
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "pl-3 text-left font-normal text-xs", 
+                                  "pl-3 text-left font-normal text-xs",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
@@ -295,7 +295,7 @@ export default function AddSubscriberPage() {
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "pl-3 text-left font-normal text-xs", 
+                                  "pl-3 text-left font-normal text-xs",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
