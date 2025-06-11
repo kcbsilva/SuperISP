@@ -104,8 +104,8 @@ const en = {
     welcome_subtitle: "Manage your services efficiently.",
     title: "Admin Login",
     description: "Enter your credentials to access the admin panel.",
-    username_label: "Username",
-    username_placeholder: "Enter your username",
+    username_label: "Email", // Updated from Username to Email
+    username_placeholder: "Enter your email", // Updated placeholder
     password_label: "Password",
     password_placeholder: "Enter your password",
     submit_button: "Sign In",
@@ -120,6 +120,7 @@ const en = {
     loading: "Loading authentication...",
     session_expired_title: "Session Expired",
     session_expired_desc: "You have been logged out due to inactivity.",
+    email_not_confirmed_error: 'Your email address has not been confirmed. Please check your inbox (and spam folder) for a confirmation link.',
   },
   search: {
     placeholder: 'Search clients, equipment, elements...',

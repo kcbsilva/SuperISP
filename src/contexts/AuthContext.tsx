@@ -1,8 +1,8 @@
 // src/contexts/AuthContext.tsx
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { useRouter, usePathname } from 'next/navigation'; // usePathname might not be needed here
 import { supabase } from '@/services/supabase/db';
 import type { User, Session } from '@supabase/supabase-js';
 
@@ -19,15 +19,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Start true, set to false once initial auth state is known
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  // const pathname = usePathname(); // Not directly used here, but available
 
   useEffect(() => {
+    let isMounted = true; // To prevent state updates on unmounted component
     let initialCheckDone = false;
 
     const handleAuthStateChange = (session: Session | null) => {
-      console.log('Auth state changed (listener):', session);
+      if (!isMounted) return;
+      console.log('Auth state changed (listener):', session ? 'Session found' : 'No session');
       const currentUser = session?.user || null;
       setUser(currentUser);
       setIsAuthenticated(!!currentUser);
@@ -36,33 +37,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         initialCheckDone = true;
       }
     };
-    
-    // Immediately try to get the current session
+
+    // Attempt to get the current session on initial load
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (error) {
         console.error("Error getting initial session:", error);
       }
-      handleAuthStateChange(session);
+      if (isMounted) { // Check if still mounted before updating state
+        handleAuthStateChange(session);
+      }
     }).catch(e => {
       console.error("Exception in getInitialSession promise:", e);
-      handleAuthStateChange(null); // Treat as no session
+      if (isMounted) {
+        handleAuthStateChange(null); // Treat as no session
+      }
     });
 
-    // Then, listen for subsequent changes
+    // Listen for subsequent auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        // The initial getSession() should handle the first load.
-        // This listener handles subsequent changes (login, logout, token refresh).
-        if (initialCheckDone) { // Only update if initial check is done
-            handleAuthStateChange(session);
+        if (isMounted && initialCheckDone) { // Only update if initial check is done and component is mounted
+          handleAuthStateChange(session);
+        } else if (isMounted && !initialCheckDone) { // Handle the very first event if getSession was slow
+          handleAuthStateChange(session);
         }
       }
     );
 
     return () => {
+      isMounted = false;
       subscription?.unsubscribe();
     };
-  }, []); // Empty dependency array: runs once on mount
+  }, []);
+
 
   const login = async (email?: string, password?: string, redirectTo: string = '/admin/dashboard') => {
     if (!email || !password) {
@@ -72,26 +79,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setIsLoading(true); // Indicate login process has started
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      // onAuthStateChange will handle setting user, isAuthenticated, and isLoading to false eventually
-      // For a smoother UX, you might redirect here, but LayoutRenderer should also handle it
-      // router.push(redirectTo); 
+      if (error) {
+        // Check for specific "Email not confirmed" error
+        if (error.message.toLowerCase().includes('email not confirmed')) {
+          throw new Error('auth.email_not_confirmed'); // Specific key for UI
+        }
+        throw error; // Rethrow other errors
+      }
+      // Successful login will trigger onAuthStateChange, which updates state and isLoading
+      // router.push(redirectTo); // Consider if redirect here is needed or if LayoutRenderer handles it
     } catch (error: any) {
-      console.error('Login failed:', error);
-      setIsLoading(false); // Reset loading on explicit failure
-      throw error;
+      console.error('Login failed:', error.message);
+      setIsLoading(false); // Reset loading on explicit failure if onAuthStateChange doesn't cover it fast enough
+      throw error; // Rethrow to be caught by the calling component
     }
-    // Note: isLoading will be set to false by onAuthStateChange or the getSession resolution
   };
 
   const logout = async (redirectTo: string = '/admin/login') => {
-    setIsLoading(true); // Indicate logout process has started
+    // setIsLoading(true); // Set loading true before sign out
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Logout failed:', error);
+      // setIsLoading(false); // Reset loading if logout fails
     }
-    // onAuthStateChange will handle setting user to null, isAuthenticated to false,
-    // and eventually isLoading to false via the listener logic.
+    // onAuthStateChange will handle setting user to null, isAuthenticated to false.
+    // isLoading will be set to false by the onAuthStateChange handler eventually.
     router.push(redirectTo); // Redirect after initiating sign out
   };
 
@@ -126,11 +138,13 @@ export const withAuth = (WrappedComponent: React.ComponentType<any>) => {
     }, [isLoading, isAuthenticated, router, pathname]);
 
     if (isLoading) {
-      return <div>Loading authentication...</div>;
+      return <div>Loading authentication...</div>; // Or a more sophisticated loader
     }
 
     if (!isAuthenticated) {
-      return null; 
+      // This return null prevents rendering the component if not authenticated,
+      // relying on the useEffect above to handle the redirect.
+      return null;
     }
 
     return <WrappedComponent {...props} />;

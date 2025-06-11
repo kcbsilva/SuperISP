@@ -1,4 +1,3 @@
-
 //src/app/admin/login/page.tsx
 'use client';
 import * as React from "react";
@@ -116,13 +115,18 @@ export default function AdminLoginPage() {
       await login(email, password, redirectUrl); // Call Supabase login from context
       // Redirect is handled by the useEffect above or by AuthContext on successful login
     } catch (loginError: any) {
-      setError(loginError.message || t('login.error_failed', 'Login failed. Please check your credentials.'));
+      // Check for the specific "Email not confirmed" error key
+      if (loginError.message === 'auth.email_not_confirmed') {
+        setError(t('auth.email_not_confirmed_error', 'Your email address has not been confirmed. Please check your inbox (and spam folder) for a confirmation link.'));
+      } else {
+        setError(loginError.message || t('login.error_failed', 'Login failed. Please check your credentials.'));
+      }
     } finally {
       setIsSubmitting(false); // Stop local loading
     }
   };
 
-  if (authIsLoading) {
+  if (authIsLoading && !isSubmitting) { // Show main loader only if not already in form submission
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-black">
         <div className="flex space-x-2">
@@ -134,13 +138,14 @@ export default function AdminLoginPage() {
     );
   }
 
-  if (!authIsLoading && isAuthenticated) {
-    return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-black">
-        <p className="text-primary-foreground">{t('auth.redirecting', 'Redirecting to dashboard...')}</p>
-      </div>
-    );
-  }
+  // This case should ideally be handled by LayoutRenderer or the useEffect hook for redirection
+  // if (isAuthenticated) {
+  //   return (
+  //     <div className="flex min-h-screen w-full items-center justify-center bg-black">
+  //       <p className="text-primary-foreground">{t('auth.redirecting', 'Redirecting to dashboard...')}</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="flex min-h-screen w-full bg-black">
@@ -182,7 +187,7 @@ export default function AdminLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || authIsLoading}
                 />
               </div>
               <div className="space-y-1.5">
@@ -195,7 +200,7 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || authIsLoading}
                 />
               </div>
               {error && <p className="text-xs text-red-400">{error}</p>}
