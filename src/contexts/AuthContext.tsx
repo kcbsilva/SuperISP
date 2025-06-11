@@ -19,73 +19,80 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // Start true, set to false once initial auth state is known
   const router = useRouter();
-  const pathname = usePathname();
+  // const pathname = usePathname(); // Not directly used here, but available
 
   useEffect(() => {
-    setIsLoading(true);
-    // Correctly destructure to get the subscription object
-    const { data: { subscription: authListener } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        console.log('Auth state changed:', _event, session);
-        const currentUser = session?.user || null;
-        setUser(currentUser);
-        setIsAuthenticated(!!currentUser);
-        
-        if (isLoading) {
-          setIsLoading(false);
+    let initialCheckDone = false;
+
+    const handleAuthStateChange = (session: Session | null) => {
+      console.log('Auth state changed (listener):', session);
+      const currentUser = session?.user || null;
+      setUser(currentUser);
+      setIsAuthenticated(!!currentUser);
+      if (!initialCheckDone) {
+        setIsLoading(false);
+        initialCheckDone = true;
+      }
+    };
+    
+    // Immediately try to get the current session
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error("Error getting initial session:", error);
+      }
+      handleAuthStateChange(session);
+    }).catch(e => {
+      console.error("Exception in getInitialSession promise:", e);
+      handleAuthStateChange(null); // Treat as no session
+    });
+
+    // Then, listen for subsequent changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        // The initial getSession() should handle the first load.
+        // This listener handles subsequent changes (login, logout, token refresh).
+        if (initialCheckDone) { // Only update if initial check is done
+            handleAuthStateChange(session);
         }
       }
     );
 
-    const getInitialSession = async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            setUser(session.user);
-            setIsAuthenticated(true);
-        }
-        if (isLoading) {
-            setIsLoading(false);
-        }
-    };
-
-    getInitialSession();
-
     return () => {
-      // Now authListener directly refers to the subscription object
-      authListener?.unsubscribe();
+      subscription?.unsubscribe();
     };
-  }, [isLoading]);
+  }, []); // Empty dependency array: runs once on mount
 
   const login = async (email?: string, password?: string, redirectTo: string = '/admin/dashboard') => {
     if (!email || !password) {
         console.error("Email and password are required for login.");
-        return;
+        throw new Error("Email and password are required.");
     }
     try {
-      setIsLoading(true);
+      setIsLoading(true); // Indicate login process has started
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      router.push(redirectTo);
+      // onAuthStateChange will handle setting user, isAuthenticated, and isLoading to false eventually
+      // For a smoother UX, you might redirect here, but LayoutRenderer should also handle it
+      // router.push(redirectTo); 
     } catch (error: any) {
       console.error('Login failed:', error);
+      setIsLoading(false); // Reset loading on explicit failure
       throw error;
-    } finally {
-      setIsLoading(false);
     }
+    // Note: isLoading will be set to false by onAuthStateChange or the getSession resolution
   };
 
   const logout = async (redirectTo: string = '/admin/login') => {
-    setIsLoading(true);
+    setIsLoading(true); // Indicate logout process has started
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Logout failed:', error);
     }
-    setUser(null);
-    setIsAuthenticated(false);
-    setIsLoading(false); // Set loading to false after state updates
-    router.push(redirectTo);
+    // onAuthStateChange will handle setting user to null, isAuthenticated to false,
+    // and eventually isLoading to false via the listener logic.
+    router.push(redirectTo); // Redirect after initiating sign out
   };
 
   return (
@@ -104,6 +111,7 @@ export const useAuth = () => {
 };
 
 // Higher-Order Component for protecting routes (Client-side)
+// This HOC is not currently used in the setup with LayoutRenderer, but kept for completeness.
 export const withAuth = (WrappedComponent: React.ComponentType<any>) => {
   const ComponentWithAuth = (props: any) => {
     const { isAuthenticated, isLoading } = useAuth();
@@ -118,11 +126,11 @@ export const withAuth = (WrappedComponent: React.ComponentType<any>) => {
     }, [isLoading, isAuthenticated, router, pathname]);
 
     if (isLoading) {
-      return <div>Loading authentication...</div>; 
+      return <div>Loading authentication...</div>;
     }
 
     if (!isAuthenticated) {
-      return <div>Redirecting to login...</div>;
+      return null; 
     }
 
     return <WrappedComponent {...props} />;
