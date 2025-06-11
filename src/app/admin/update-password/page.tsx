@@ -1,9 +1,10 @@
+
 // src/app/admin/update-password/page.tsx
 'use client';
 
-import * as React from 'react';
+import * as React from 'react'; // Ensure React is imported
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Removed useSearchParams as it's not directly used for token
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -16,11 +17,11 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
 import { Loader2 } from 'lucide-react';
-import { useTheme } from 'next-themes'; // Added for ProlterLogo
-import { Separator } from '@/components/ui/separator'; // Added for consistency
+import { useTheme } from 'next-themes';
+import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Define ProlterLogo component (copied from login page for now)
+// Define ProlterLogo component
 function ProlterLogo(props: React.SVGProps<SVGSVGElement> & { fixedColor?: string }) {
   const { theme } = useTheme();
   const [isMounted, setIsMounted] = React.useState(false);
@@ -56,7 +57,7 @@ export default function UpdatePasswordPage() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState('');
   const [message, setMessage] = React.useState('');
-  const { isLoading: isAuthLoading, isAuthenticated } = useAuth(); // Get auth state
+  const { isLoading: isAuthLoading } = useAuth(); // Get auth state
   const [hasCheckedAuth, setHasCheckedAuth] = React.useState(false);
 
   const form = useForm<UpdatePasswordFormData>({
@@ -64,40 +65,39 @@ export default function UpdatePasswordPage() {
     defaultValues: { password: '', confirmPassword: '' },
   });
 
-  // Supabase client handles the token from the URL hash automatically
-  // when onAuthStateChange is set up in AuthContext.
-  // This page should be accessed when the user is in a PASSWORD_RECOVERY session.
-  useEffect(() => {
+  React.useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
-        // User is in the correct state to update password
         setMessage(t('update_password.ready_to_update', "You can now update your password."));
       }
-      if (!isAuthLoading && !session && event !== 'INITIAL_SESSION' && event !== 'USER_UPDATED') {
-        // If session is lost or token is invalid/expired and not during initial load
-        // or an explicit update.
+      // If the session is lost or becomes null NOT during initial load or an explicit update
+      // and we are on this page, it could mean the token expired or was invalid.
+      if (!session && event !== 'INITIAL_SESSION' && event !== 'USER_UPDATED' && event !== 'PASSWORD_RECOVERY') {
         setError(t('update_password.error_invalid_token', "Invalid or expired password reset link. Please request a new one."));
       }
-      setHasCheckedAuth(true);
+      // Only set hasCheckedAuth after the first event that isn't INITIAL_SESSION or if a session is found initially
+      if(event !== 'INITIAL_SESSION' || session) {
+        setHasCheckedAuth(true);
+      }
     });
 
-    // Initial check to see if already in recovery state (e.g. page refresh)
+    // Initial check
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session && session.user?.user_metadata?.recovery_token) { // A simple check
+       if (session && session.user?.recovery_sent_at) { // A way to infer if in recovery flow
          setMessage(t('update_password.ready_to_update', "You can now update your password."));
-      }
-      setHasCheckedAuth(true);
+       }
+       setHasCheckedAuth(true); // Mark initial check as done
     });
 
 
     return () => subscription.unsubscribe();
-  }, [t, isAuthLoading]);
+  }, [t]);
 
 
   const onSubmit = async (data: UpdatePasswordFormData) => {
     setIsSubmitting(true);
     setError('');
-    setMessage('');
+    // setMessage(''); // Don't clear the "ready to update" message immediately
 
     const { error: updateError } = await supabase.auth.updateUser({
       password: data.password,
@@ -116,7 +116,7 @@ export default function UpdatePasswordPage() {
         title: t('update_password.success_title', "Password Updated"),
         description: t('update_password.success_description', "Your password has been updated successfully. You can now log in."),
       });
-      // Optionally redirect to login after a delay
+      form.reset();
       setTimeout(() => router.push('/admin/login'), 3000);
     }
     setIsSubmitting(false);
@@ -157,7 +157,7 @@ export default function UpdatePasswordPage() {
                         placeholder={t('update_password.new_password_placeholder', "Enter new password")}
                         className="bg-background/10 text-gray-200 placeholder:text-gray-400 border-primary-foreground/30 focus:border-accent"
                         {...field}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || !!error} // Disable if there's an "invalid token" error
                       />
                     </FormControl>
                     <FormMessage className="text-red-400 text-xs" />
@@ -177,7 +177,7 @@ export default function UpdatePasswordPage() {
                         placeholder={t('update_password.confirm_password_placeholder', "Confirm new password")}
                         className="bg-background/10 text-gray-200 placeholder:text-gray-400 border-primary-foreground/30 focus:border-accent"
                         {...field}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || !!error} // Disable if there's an "invalid token" error
                       />
                     </FormControl>
                     <FormMessage className="text-red-400 text-xs" />
@@ -185,8 +185,8 @@ export default function UpdatePasswordPage() {
                 )}
               />
               {error && <p className="text-xs text-red-400">{error}</p>}
-              {message && !error && <p className="text-xs text-green-400">{message}</p>}
-              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting}>
+              {message && <p className="text-xs text-green-400">{message}</p>}
+              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting || !!error}>
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 {isSubmitting ? t('update_password.submitting_button', "Updating...") : t('update_password.submit_button', "Update Password")}
               </Button>

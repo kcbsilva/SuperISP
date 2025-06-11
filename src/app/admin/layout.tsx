@@ -10,11 +10,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   // Define paths where the full admin shell (Header, Sidebar) should NOT be rendered.
-  // This includes the login page and the admin root if it's just a redirector.
-  const noShellPaths = ['/admin/login', '/admin'];
+  const noShellPaths = [
+    '/admin/login',
+    '/admin', // Admin root might be a redirector or a very simple page
+    '/admin/forgot-password',
+    '/admin/update-password',
+  ];
 
   if (noShellPaths.includes(pathname)) {
-    return <>{children}</>; // Render only the page content for login or admin root
+    return <>{children}</>; // Render only the page content for these paths
   }
 
   // For all other admin paths, render the full shell
@@ -24,5 +28,3 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     </SidebarProvider>
   );
 }
-
-    
