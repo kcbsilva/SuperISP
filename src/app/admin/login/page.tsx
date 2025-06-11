@@ -1,7 +1,7 @@
 //src/app/admin/login/page.tsx
 'use client';
 import * as React from "react";
-import { useState, useEffect, type SVGProps } from "react";
+import { useState, useEffect } from "react"; // Removed SVGProps as ProlterLogo is now a separate component
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -19,57 +19,9 @@ import { Separator } from "@/components/ui/separator";
 import { useLocale } from "@/contexts/LocaleContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { useTheme } from "next-themes";
 import { Loader2 } from "lucide-react";
-import Image from "next/image"; // Import next/image
-
-// Define ProlterLogo component directly in this file
-function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
-  const { theme } = useTheme();
-  const [isMounted, setIsMounted] = React.useState(false);
-  const { fixedColor, ...restProps } = props;
-
-  React.useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  let fillColor = "hsl(var(--foreground))"; // Default
-  if (fixedColor) {
-    fillColor = fixedColor;
-  } else if (isMounted) {
-    fillColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
-  }
-
-  if (!isMounted && !fixedColor) {
-    return <div style={{ width: props.width || "131px", height: props.height || "32px" }} />;
-  }
-
-  return (
-    <div style={{ width: props.width || '131px', height: props.height || '32px' }} className="flex items-center justify-center">
-      <svg
-        width="100%"
-        height="100%"
-        viewBox="0 0 131 32"
-        xmlns="http://www.w3.org/2000/svg"
-        fill={fillColor}
-        {...restProps}
-      >
-        <text
-          x="50%"
-          y="50%"
-          fontFamily="Arial, sans-serif"
-          fontSize="24"
-          fontWeight="bold"
-          textAnchor="middle"
-          dominantBaseline="middle"
-        >
-          PROLTER
-        </text>
-      </svg>
-    </div>
-  );
-};
-
+import Image from "next/image";
+import { ProlterLogo } from '@/components/prolter-logo'; // Import the new ProlterLogo component
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -141,7 +93,7 @@ export default function AdminLoginPage() {
     <div className="flex min-h-screen w-full bg-background">
       {/* Left Side - Branding/Welcome (Visible on larger screens) */}
       <div className="hidden lg:flex lg:w-3/4 bg-muted flex-col items-center justify-center p-12 text-center">
-        <ProlterLogo width="200" height="48" fixedColor="hsl(var(--primary))" />
+        <ProlterLogo width="200" height="48" /> {/* Using the imported component */}
         <h1 className="mt-8 text-3xl font-bold text-primary">
           {t("login.welcome_title", "Welcome to Prolter ISP")}
         </h1>
@@ -161,13 +113,13 @@ export default function AdminLoginPage() {
       </div>
 
       {/* Right Side - Login Form (Takes full width on small screens) */}
-      <div className="w-full lg:w-1/4 flex justify-center items-center bg-background p-4 md:p-8">
-        <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg">
+      <div className="w-full lg:w-1/4 flex justify-center items-center bg-card p-4 md:p-8"> {/* Changed bg-background to bg-card */}
+        <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg"> {/* Ensured card uses card styles */}
           <CardHeader className="items-center pt-8 pb-4">
-            <div className="lg:hidden mb-4"> {/* Show logo on small screens here */}
-              <ProlterLogo />
+            <div className="lg:hidden mb-4">
+              <ProlterLogo /> {/* Using the imported component */}
             </div>
-            <CardTitle className="text-xl text-primary pt-4 lg:pt-0"> {/* Adjust padding for lg */}
+            <CardTitle className="text-xl text-primary pt-4 lg:pt-0">
               {t("login.title", "Admin Login")}
             </CardTitle>
             <CardDescription className="text-muted-foreground text-center px-2">

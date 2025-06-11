@@ -15,27 +15,8 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
 import { Loader2 } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import { Separator } from '@/components/ui/separator';
-
-// Define ProlterLogo component
-function ProlterLogo(props: React.SVGProps<SVGSVGElement> & { fixedColor?: string }) {
-  const { theme } = useTheme();
-  const [isMounted, setIsMounted] = React.useState(false);
-  const { fixedColor, ...restProps } = props;
-  React.useEffect(() => { setIsMounted(true); }, []);
-  let fillColor = "hsl(var(--foreground))";
-  if (fixedColor) { fillColor = fixedColor; }
-  else if (isMounted) { fillColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))"; }
-  if (!isMounted && !fixedColor) { return <div style={{ width: props.width || "131px", height: props.height || "32px" }} />; }
-  return (
-    <div style={{ width: props.width || '131px', height: props.height || '32px' }} className="flex items-center justify-center">
-      <svg width="100%" height="100%" viewBox="0 0 131 32" xmlns="http://www.w3.org/2000/svg" fill={fillColor} {...restProps}>
-        <text x="50%" y="50%" fontFamily="Arial, sans-serif" fontSize="24" fontWeight="bold" textAnchor="middle" dominantBaseline="middle">PROLTER</text>
-      </svg>
-    </div>
-  );
-}
+import { ProlterLogo } from '@/components/prolter-logo'; // Import the new ProlterLogo component
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -85,7 +66,7 @@ export default function ForgotPasswordPage() {
     <div className="flex min-h-screen w-full items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm bg-card border text-card-foreground shadow-lg">
         <CardHeader className="items-center pt-8 pb-4">
-          <ProlterLogo />
+          <ProlterLogo /> {/* Using the imported component */}
           <CardTitle className="text-xl text-primary pt-4">{t('forgot_password.title', "Forgot Password?")}</CardTitle>
           <CardDescription className="text-muted-foreground text-center px-2">
             {t('forgot_password.description', "Enter your email address and we'll send you a link to reset your password.")}

@@ -16,27 +16,8 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
 import { Loader2 } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import { Separator } from '@/components/ui/separator';
-
-// Define ProlterLogo component
-function ProlterLogo(props: React.SVGProps<SVGSVGElement> & { fixedColor?: string }) {
-  const { theme } = useTheme();
-  const [isMounted, setIsMounted] = React.useState(false);
-  const { fixedColor, ...restProps } = props;
-  React.useEffect(() => { setIsMounted(true); }, []);
-  let fillColor = "hsl(var(--foreground))";
-  if (fixedColor) { fillColor = fixedColor; }
-  else if (isMounted) { fillColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))"; }
-  if (!isMounted && !fixedColor) { return <div style={{ width: props.width || "131px", height: props.height || "32px" }} />; }
-  return (
-    <div style={{ width: props.width || '131px', height: props.height || '32px' }} className="flex items-center justify-center">
-      <svg width="100%" height="100%" viewBox="0 0 131 32" xmlns="http://www.w3.org/2000/svg" fill={fillColor} {...restProps}>
-        <text x="50%" y="50%" fontFamily="Arial, sans-serif" fontSize="24" fontWeight="bold" textAnchor="middle" dominantBaseline="middle">PROLTER</text>
-      </svg>
-    </div>
-  );
-}
+import { ProlterLogo } from '@/components/prolter-logo'; // Import the new ProlterLogo component
 
 const updatePasswordSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
@@ -77,26 +58,37 @@ export default function UpdatePasswordPage() {
         setError(t('update_password.error_already_logged_in', "You are already logged in. Password reset is for logged-out users."));
         setIsRecoveryContextActive(false);
       } else if (!session && event !== 'INITIAL_SESSION' && !isRecoveryContextActive) {
-        setError(t('update_password.error_invalid_token', "Invalid or expired password reset link. Please request a new one."));
-        setMessage('');
-        setIsRecoveryContextActive(false);
+        // If no session and it's not the initial check, and not already in recovery, it's likely an invalid token.
+        // This condition might need adjustment if the token is valid but there's no "active" session yet.
+        // Supabase client handles token from URL hash, `PASSWORD_RECOVERY` event is the confirmation.
       }
     });
     
+    // Check if Supabase client picks up a recovery token from URL hash.
+    // This might trigger onAuthStateChange with PASSWORD_RECOVERY shortly after page load.
     supabase.auth.getSession().then(({ data }) => {
         if (pageIsLoading) {
             setPageIsLoading(false);
         }
+        if (!data.session && !isRecoveryContextActive) { // Added !isRecoveryContextActive
+          // If getSession returns no session AND we haven't hit PASSWORD_RECOVERY yet,
+          // it's possible the token is invalid or already used, or not present.
+          // We wait for onAuthStateChange to confirm PASSWORD_RECOVERY.
+          // If it doesn't come, we might show an error.
+          // A timeout could be used here to show "invalid token" if PASSWORD_RECOVERY doesn't fire.
+        }
     });
+
 
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [t, pageIsLoading]); // Ensure pageIsLoading is in dependency array to avoid stale closure
+  }, [t, pageIsLoading, isRecoveryContextActive]); // isRecoveryContextActive added
+
 
   const onSubmit = async (data: UpdatePasswordFormData) => {
     if (!isRecoveryContextActive) {
-      setError(t('update_password.error_invalid_token', "Cannot update password. Recovery session not active."));
+      setError(t('update_password.error_invalid_token', "Cannot update password. Recovery session not active or token invalid."));
       return;
     }
     setIsSubmitting(true);
@@ -120,7 +112,7 @@ export default function UpdatePasswordPage() {
         description: t('update_password.success_description', "Your password has been updated successfully. You can now log in."),
       });
       form.reset();
-      setIsRecoveryContextActive(false);
+      setIsRecoveryContextActive(false); // Reset context after successful update
       setTimeout(() => router.push('/admin/login'), 3000);
     }
     setIsSubmitting(false);
@@ -138,10 +130,10 @@ export default function UpdatePasswordPage() {
     <div className="flex min-h-screen w-full items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm bg-card border text-card-foreground shadow-lg">
         <CardHeader className="items-center pt-8 pb-4">
-          <ProlterLogo />
+          <ProlterLogo /> {/* Using the imported component */}
           <CardTitle className="text-xl text-primary pt-4">{t('update_password.title', "Update Password")}</CardTitle>
           <CardDescription className="text-muted-foreground text-center px-2">
-            {message || t('update_password.description', "Enter your new password below.")}
+            {message || (isRecoveryContextActive ? t('update_password.description', "Enter your new password below.") : t('update_password.error_invalid_token', "Invalid or expired password reset link. Please request a new one."))}
           </CardDescription>
           <Separator className="my-2 bg-border" />
         </CardHeader>
