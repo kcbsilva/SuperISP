@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod'; // Corrected import
+import { zodResolver } from '@hookform/resolvers/zod'; 
 import * as z from 'zod';
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label"; // Keep Label for direct use if needed
+import { Label } from "@/components/ui/label"; 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -31,90 +31,118 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon, User, Building, Save } from "lucide-react";
+import { CalendarIcon, User, Building, Save, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
-import { addSubscriber } from '@/services/mysql/subscribers'; // Updated import
+import { addSubscriberToSupabase } from '@/services/supabase/subscribers'; // UPDATED IMPORT
+import type { SubscriberData } from '@/types/subscribers'; // Import SubscriberData type
+import { useRouter } from 'next/navigation'; // Import useRouter
+
 
 const subscriberSchema = z.object({
-  subscriberType: z.enum(['Residential', 'Commercial'], {
+  subscriber_type: z.enum(['Residential', 'Commercial'], { // Matches Supabase column
     required_error: "You need to select a subscriber type.",
   }),
-  fullName: z.string().optional(),
-  companyName: z.string().optional(),
+  full_name: z.string().optional(), // Matches Supabase column
+  company_name: z.string().optional(), // Matches Supabase column
   birthday: z.date().optional(),
-  establishedDate: z.date().optional(),
+  established_date: z.date().optional(), // Matches Supabase column
   address: z.string().min(1, 'Address is required'),
+  point_of_reference: z.string().optional(), // Matches Supabase column
   email: z.string().email('Invalid email address'),
-  phoneNumber: z.string().min(1, 'Phone number is required'),
-  mobileNumber: z.string().optional(),
-  taxId: z.string().optional(),
-  businessNumber: z.string().optional(),
-}).refine(data => data.subscriberType !== 'Residential' || (data.fullName && data.fullName.length > 0), {
+  phone_number: z.string().min(1, 'Phone number is required'), // Matches Supabase column
+  mobile_number: z.string().optional(), // Matches Supabase column
+  tax_id: z.string().optional(), // Matches Supabase column
+  business_number: z.string().optional(), // Matches Supabase column
+  id_number: z.string().optional(), // Matches Supabase column
+  signup_date: z.date().optional(), // Matches Supabase column
+  status: z.enum(['Active', 'Inactive', 'Suspended', 'Planned', 'Canceled']).default('Active').optional(),
+}).refine(data => data.subscriber_type !== 'Residential' || (data.full_name && data.full_name.length > 0), {
   message: "Full Name is required for Residential subscribers.",
-  path: ["fullName"],
-}).refine(data => data.subscriberType !== 'Residential' || data.birthday, {
+  path: ["full_name"],
+}).refine(data => data.subscriber_type !== 'Residential' || data.birthday, {
     message: "Birthday is required for Residential subscribers.",
     path: ["birthday"],
-}).refine(data => data.subscriberType !== 'Residential' || data.taxId && data.taxId.length > 0, {
+}).refine(data => data.subscriber_type !== 'Residential' || (data.tax_id && data.tax_id.length > 0), {
     message: "Tax ID is required for Residential subscribers.",
-    path: ["taxId"],
-}).refine(data => data.subscriberType !== 'Commercial' || (data.companyName && data.companyName.length > 0), {
+    path: ["tax_id"],
+}).refine(data => data.subscriber_type !== 'Commercial' || (data.company_name && data.company_name.length > 0), {
   message: "Company Name is required for Commercial subscribers.",
-  path: ["companyName"],
-}).refine(data => data.subscriberType !== 'Commercial' || data.establishedDate, {
+  path: ["company_name"],
+}).refine(data => data.subscriber_type !== 'Commercial' || data.established_date, {
     message: "Established Date is required for Commercial subscribers.",
-    path: ["establishedDate"],
-}).refine(data => data.subscriberType !== 'Commercial' || data.businessNumber && data.businessNumber.length > 0, {
+    path: ["established_date"],
+}).refine(data => data.subscriber_type !== 'Commercial' || (data.business_number && data.business_number.length > 0), {
     message: "Business Number is required for Commercial subscribers.",
-    path: ["businessNumber"],
+    path: ["business_number"],
 });
 
 
-type SubscriberFormData = z.infer<typeof subscriberSchema>;
+type SubscriberFormZodData = z.infer<typeof subscriberSchema>;
 
 export default function AddSubscriberPage() {
   const { toast } = useToast();
   const { t } = useLocale();
-  const iconSize = "h-3 w-3"; // Reduced icon size
-  const form = useForm<SubscriberFormData>({
+  const router = useRouter();
+  const iconSize = "h-3 w-3"; 
+  const form = useForm<SubscriberFormZodData>({
     resolver: zodResolver(subscriberSchema),
     defaultValues: {
-      subscriberType: undefined,
-      fullName: '',
-      companyName: '',
+      subscriber_type: undefined,
+      full_name: '',
+      company_name: '',
       birthday: undefined,
-      establishedDate: undefined,
+      established_date: undefined,
       address: '',
+      point_of_reference: '',
       email: '',
-      phoneNumber: '',
-      mobileNumber: '',
-      taxId: '',
-      businessNumber: '',
+      phone_number: '',
+      mobile_number: '',
+      tax_id: '',
+      business_number: '',
+      id_number: '',
+      signup_date: new Date(),
+      status: 'Active',
     },
   });
 
-  const subscriberType = form.watch('subscriberType');
+  const subscriberType = form.watch('subscriber_type');
 
-  const onSubmit = (data: SubscriberFormData) => {
-    // Simulate saving data locally or to mock storage
-    console.log('Subscriber Data (Simulated Save):', data);
-    const name = data.subscriberType === 'Residential' ? data.fullName : data.companyName;
-    toast({
-      title: t('add_subscriber.add_success_toast_title'),
-      description: t('add_subscriber.add_success_toast_description', 'Details for {name} saved.').replace('{name}', name || ''),
-    });
-    form.reset();
+  const onSubmit = async (data: SubscriberFormZodData) => {
+    try {
+      // Map form data to SubscriberData type expected by the service
+      const subscriberServiceData: SubscriberData = {
+        ...data,
+        // Ensure dates are correctly formatted if needed, though Supabase client handles Date objects well
+        birthday: data.birthday ? data.birthday : null,
+        established_date: data.established_date ? data.established_date : null,
+        signup_date: data.signup_date ? data.signup_date : new Date(),
+      };
+      const newSubscriber = await addSubscriberToSupabase(subscriberServiceData);
+      const name = newSubscriber.subscriberType === 'Residential' ? newSubscriber.fullName : newSubscriber.companyName;
+      toast({
+        title: t('add_subscriber.add_success_toast_title'),
+        description: t('add_subscriber.add_success_toast_description', 'Details for {name} saved with ID {id}.').replace('{name}', name || 'N/A').replace('{id}', newSubscriber.id.toString()),
+      });
+      form.reset();
+      router.push('/admin/subscribers/list'); // Redirect to list page on success
+    } catch (error: any) {
+      toast({
+        title: t('add_subscriber.add_error_toast_title', 'Error Adding Subscriber'),
+        description: error.message || t('add_subscriber.add_error_toast_desc', 'Could not add subscriber.'),
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-base font-semibold">{t('add_subscriber.title')}</h1> {/* Reduced heading size */}
+      <h1 className="text-base font-semibold">{t('add_subscriber.title')}</h1>
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm">{t('add_subscriber.card_title')}</CardTitle> {/* Reduced title size */}
+          <CardTitle className="text-sm">{t('add_subscriber.card_title')}</CardTitle>
           <CardDescription className="text-xs">{t('add_subscriber.card_description')}</CardDescription> 
         </CardHeader>
         <Form {...form}>
@@ -122,7 +150,7 @@ export default function AddSubscriberPage() {
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
-                name="subscriberType"
+                name="subscriber_type"
                 render={({ field }) => (
                   <FormItem className="space-y-3 md:col-span-2">
                     <FormLabel>{t('add_subscriber.type_label')}</FormLabel>
@@ -159,7 +187,7 @@ export default function AddSubscriberPage() {
                 <>
                   <FormField
                     control={form.control}
-                    name="fullName"
+                    name="full_name"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('add_subscriber.fullname_label')}</FormLabel>
@@ -213,7 +241,7 @@ export default function AddSubscriberPage() {
                   />
                    <FormField
                       control={form.control}
-                      name="taxId"
+                      name="tax_id"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>{t('add_subscriber.taxid_label')}</FormLabel>
@@ -224,6 +252,19 @@ export default function AddSubscriberPage() {
                         </FormItem>
                       )}
                    />
+                    <FormField
+                      control={form.control}
+                      name="id_number"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('add_subscriber.id_number_label', 'ID Number (RG)')}</FormLabel>
+                          <FormControl>
+                            <Input placeholder={t('add_subscriber.id_number_placeholder', 'e.g., 12.345.678-9')} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                 </>
               )}
 
@@ -231,7 +272,7 @@ export default function AddSubscriberPage() {
                 <>
                   <FormField
                     control={form.control}
-                    name="companyName"
+                    name="company_name"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('add_subscriber.company_name_label')}</FormLabel>
@@ -244,7 +285,7 @@ export default function AddSubscriberPage() {
                   />
                   <FormField
                     control={form.control}
-                    name="establishedDate"
+                    name="established_date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormLabel>{t('add_subscriber.established_date_label')}</FormLabel>
@@ -283,12 +324,25 @@ export default function AddSubscriberPage() {
                   />
                    <FormField
                       control={form.control}
-                      name="businessNumber"
+                      name="tax_id" // Using tax_id for CNPJ
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('add_subscriber.business_number_label')}</FormLabel>
+                          <FormLabel>{t('add_subscriber.cnpj_label', 'CNPJ *')}</FormLabel>
                           <FormControl>
-                            <Input placeholder={t('add_subscriber.business_number_placeholder')} {...field} />
+                            <Input placeholder={t('add_subscriber.cnpj_placeholder', 'e.g., XX.XXX.XXX/0001-XX')} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                   />
+                    <FormField
+                      control={form.control}
+                      name="business_number" // Using business_number for State Registration
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('add_subscriber.state_registration_label', 'State Registration')}</FormLabel>
+                          <FormControl>
+                            <Input placeholder={t('add_subscriber.state_registration_placeholder', 'e.g., XXX.XXX.XXX.XXX')} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -311,6 +365,19 @@ export default function AddSubscriberPage() {
                  )}
                />
                <FormField
+                control={form.control}
+                name="point_of_reference"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>{t('add_subscriber.point_of_reference_label')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('add_subscriber.point_of_reference_placeholder')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
                  control={form.control}
                  name="email"
                  render={({ field }) => (
@@ -325,7 +392,7 @@ export default function AddSubscriberPage() {
                />
                 <FormField
                   control={form.control}
-                  name="phoneNumber"
+                  name="phone_number"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('add_subscriber.phone_label')}</FormLabel>
@@ -338,7 +405,7 @@ export default function AddSubscriberPage() {
                 />
                  <FormField
                    control={form.control}
-                   name="mobileNumber"
+                   name="mobile_number"
                    render={({ field }) => (
                      <FormItem>
                        <FormLabel>{t('add_subscriber.mobile_label')}</FormLabel>
@@ -349,11 +416,36 @@ export default function AddSubscriberPage() {
                      </FormItem>
                    )}
                  />
-
+                  <FormField
+                    control={form.control}
+                    name="signup_date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>{t('add_subscriber.signup_date_label', 'Signup Date')}</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn("pl-3 text-left font-normal text-xs",!field.value && "text-muted-foreground")}
+                              >
+                                {field.value ? format(field.value, "PPP") : <span>{t('add_subscriber.signup_date_placeholder', 'Select signup date')}</span>}
+                                <CalendarIcon className={`ml-auto ${iconSize} opacity-50`} />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date()} initialFocus />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
             </CardContent>
             <CardFooter className="border-t px-6 py-4">
               <Button type="submit" disabled={!subscriberType || form.formState.isSubmitting}>
-                <Save className={`mr-2 ${iconSize}`} />
+                {form.formState.isSubmitting ? <Loader2 className={`mr-2 ${iconSize} animate-spin`} /> : <Save className={`mr-2 ${iconSize}`} />}
                 {t('add_subscriber.save_button')}
               </Button>
             </CardFooter>

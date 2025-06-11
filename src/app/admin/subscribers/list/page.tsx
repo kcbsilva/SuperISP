@@ -30,8 +30,8 @@ import type { Subscriber, SubscriberStatus, SubscriberType } from '@/types/subsc
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { listSubscribers as fetchSubscribers } from '@/services/mysql/subscribers';
-import { useQuery } from '@tanstack/react-query'; // Added useQuery
+import { listSubscribersFromSupabase as fetchSubscribers } from '@/services/supabase/subscribers'; // UPDATED IMPORT
+import { useQuery } from '@tanstack/react-query';
 
 type FilterState = {
     type: ('Residential' | 'Commercial')[];
@@ -40,6 +40,7 @@ type FilterState = {
 
 const formatTaxId = (taxId: string | undefined | null): string => {
   if (!taxId) return '-';
+  // Basic masking for demonstration, adjust as needed for CPF/CNPJ
   if (taxId.length <= 5) {
     if (taxId.length === 1) return '*';
     if (taxId.length === 2) return taxId[0] + '*';
@@ -48,11 +49,11 @@ const formatTaxId = (taxId: string | undefined | null): string => {
   const prefix = taxId.substring(0, 3);
   const suffix = taxId.substring(taxId.length - 2);
   const middle = taxId.substring(3, taxId.length - 2);
-  const maskedMiddle = middle.replace(/\d/g, '*');
+  const maskedMiddle = middle.replace(/\d/g, '*'); // Mask all digits in the middle
   return `${prefix}${maskedMiddle}${suffix}`;
 };
 
-const subscriberStats = {
+const subscriberStats = { // This data would typically come from an aggregate query
   newSubscribers: 25,
   activeSubscribers: 1180,
   suspendedSubscribers: 52,
@@ -74,7 +75,7 @@ const getStatusBadgeVariant = (status: SubscriberStatus | undefined) => {
     }
 };
 
-type SortableSubscriberKeys = keyof Subscriber | 'name';
+type SortableSubscriberKeys = keyof Pick<Subscriber, 'id' | 'subscriberType' | 'address' | 'phoneNumber' | 'status' | 'taxId'> | 'name';
 
 
 export default function ListSubscribersPage() {
@@ -94,13 +95,13 @@ export default function ListSubscribersPage() {
     const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
 
     const {
-        data: subscribers = [], // Default to empty array
-        isLoading, // Renamed from isLoadingSubscribers
-        error,     // Renamed from subscribersError
-        refetch    // Renamed from refetchSubscribers
+        data: subscribers = [],
+        isLoading,
+        error,
+        refetch
     } = useQuery<Subscriber[], Error>({
-        queryKey: ['subscribersList'],
-        queryFn: fetchSubscribers,
+        queryKey: ['subscribersListSupabase'], // Changed queryKey to avoid conflict if old one exists
+        queryFn: fetchSubscribers, // Using the new Supabase service function
     });
 
 
@@ -109,7 +110,7 @@ export default function ListSubscribersPage() {
         const nameMatch = sub.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) || sub.companyName?.toLowerCase().includes(searchTerm.toLowerCase());
         const taxIdMatch = sub.taxId?.toLowerCase().includes(searchTerm.toLowerCase()) || sub.businessNumber?.toLowerCase().includes(searchTerm.toLowerCase());
         const phoneMatch = sub.phoneNumber.includes(searchTerm);
-        const idMatch = sub.id.toString().toLowerCase().includes(searchTerm.toLowerCase());
+        const idMatch = sub.id.toString().toLowerCase().includes(searchTerm.toLowerCase()); // ID is now string (UUID)
         const addressMatch = sub.address.toLowerCase().includes(searchTerm.toLowerCase());
 
         const typeMatch = filters.type.length === 0 || filters.type.includes(sub.subscriberType as 'Residential' | 'Commercial');
@@ -129,8 +130,8 @@ export default function ListSubscribersPage() {
                 valA = a.subscriberType === 'Residential' ? a.fullName : a.companyName;
                 valB = b.subscriberType === 'Residential' ? b.fullName : b.companyName;
             } else {
-                valA = a[sortColumn as keyof Subscriber];
-                valB = b[sortColumn as keyof Subscriber];
+                valA = a[sortColumn as keyof Pick<Subscriber, 'id' | 'subscriberType' | 'address' | 'phoneNumber' | 'status' | 'taxId'>];
+                valB = b[sortColumn as keyof Pick<Subscriber, 'id' | 'subscriberType' | 'address' | 'phoneNumber' | 'status' | 'taxId'>];
             }
 
             if (valA === undefined || valA === null) valA = '';
@@ -268,7 +269,7 @@ export default function ListSubscribersPage() {
 
                  <DropdownMenuLabel className="mt-2">{t('list_subscribers.filter_status_label')}</DropdownMenuLabel>
                  <DropdownMenuSeparator />
-                 {(['Active', 'Inactive', 'Suspended', 'Planned'] as SubscriberStatus[]).map(status => (
+                 {(['Active', 'Inactive', 'Suspended', 'Planned', 'Canceled'] as SubscriberStatus[]).map(status => (
                      <DropdownMenuCheckboxItem
                         key={status}
                         checked={filters.status.includes(status)}
@@ -371,7 +372,7 @@ export default function ListSubscribersPage() {
                 ) : currentSubscribers.length > 0 ? (
                   currentSubscribers.map((subscriber) => (
                     <TableRow key={subscriber.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{subscriber.id}</TableCell>
+                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{subscriber.id.substring(0,8)}...</TableCell>
                       <TableCell className="text-center">
                         {subscriber.subscriberType === 'Residential' ? (
                           <User className={`${iconSize} text-muted-foreground mx-auto`} title={t('add_subscriber.type_residential')} />
@@ -397,7 +398,7 @@ export default function ListSubscribersPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center text-muted-foreground py-8 text-xs">
-                      {t('list_subscribers.no_results')}
+                      {searchTerm || filters.type.length > 0 || filters.status.length > 0 ? t('list_subscribers.no_results') : t('add_subscriber.no_subscribers_yet', 'No subscribers found. Add one to get started!')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -432,3 +433,4 @@ export default function ListSubscribersPage() {
     </div>
   );
 }
+

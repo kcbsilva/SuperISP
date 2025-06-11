@@ -108,21 +108,22 @@ export interface HistoryEntry {
 
 // Data needed to create/update a Subscriber
 export interface SubscriberData {
-  subscriberType: SubscriberType;
-  fullName?: string;
-  companyName?: string;
+  subscriber_type: SubscriberType; // Matches Supabase column name
+  full_name?: string | null; // Matches Supabase column name
+  company_name?: string | null; // Matches Supabase column name
   birthday?: Date | string | null;
-  establishedDate?: Date | string | null;
+  established_date?: Date | string | null; // Matches Supabase column name
   address: string;
-  pointOfReference?: string;
+  point_of_reference?: string | null; // Matches Supabase column name
   email: string;
-  phoneNumber: string;
-  mobileNumber?: string;
-  taxId?: string;
-  businessNumber?: string;
-  idNumber?: string; // Added from previous use
-  signupDate?: Date | string | null;
+  phone_number: string; // Matches Supabase column name
+  mobile_number?: string | null; // Matches Supabase column name
+  tax_id?: string | null; // Matches Supabase column name
+  business_number?: string | null; // Matches Supabase column name
+  id_number?: string | null; // Matches Supabase column name
+  signup_date?: Date | string | null; // Matches Supabase column name
   status?: SubscriberStatus;
+  // These will be handled by separate tables/queries in Supabase
   services?: SubscriberService[];
   billing?: BillingDetails;
   serviceCalls?: ServiceCall[];
@@ -133,13 +134,24 @@ export interface SubscriberData {
 }
 
 // Full Subscriber object structure including ID and timestamps
-export interface Subscriber extends SubscriberData {
-  id: number; // SERIAL PRIMARY KEY
+export interface Subscriber extends Omit<SubscriberData, 'subscriber_type' | 'full_name' | 'company_name' | 'established_date' | 'point_of_reference' | 'phone_number' | 'mobile_number' | 'tax_id' | 'business_number' | 'id_number' | 'signup_date'> {
+  id: string; // UUID from Supabase
+  subscriberType: SubscriberType; // Mapped from subscriber_type for frontend consistency
+  fullName?: string | null; // Mapped from full_name
+  companyName?: string | null; // Mapped from company_name
+  establishedDate?: Date | string | null; // Mapped
+  pointOfReference?: string | null; // Mapped
+  phoneNumber: string; // Mapped
+  mobileNumber?: string | null; // Mapped
+  taxId?: string | null; // Mapped
+  businessNumber?: string | null; // Mapped
+  idNumber?: string | null; // Mapped
+  signupDate: Date; // Mapped and ensured as Date
   status: SubscriberStatus;
-  signupDate: Date; // Should be Date object after fetching
-  createdAt: Date;
-  updatedAt: Date;
-  // Ensure these are always present on the full Subscriber object
+  createdAt: Date; // Mapped from created_at
+  updatedAt: Date; // Mapped from updated_at
+
+  // Nested details will be fetched separately for profile view
   services: SubscriberService[];
   billing: BillingDetails;
   serviceCalls: ServiceCall[];
