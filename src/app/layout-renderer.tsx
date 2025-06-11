@@ -1,26 +1,33 @@
 // src/app/layout-renderer.tsx
 'use client';
-import React from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
-import { useToast } from '@/hooks/use-toast'; // Import useToast
+import { useToast } from '@/hooks/use-toast';
+
+const ADMIN_LOGIN_PATH = '/admin/login';
+const ADMIN_DASHBOARD_PATH = '/admin/dashboard';
+const ADMIN_ROOT_PATH = '/admin';
+const ADMIN_FORGOT_PASSWORD_PATH = '/admin/forgot-password';
+const ADMIN_UPDATE_PASSWORD_PATH = '/admin/update-password';
+
 
 export default function LayoutRenderer({ children: pageContent }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isAuthenticated, isLoading: isAuthLoading, user, logout } = useAuth();
-  const [isMounted, setIsMounted] = React.useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLocale();
   const { toast } = useToast();
 
   const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
-  const logoutTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleInactivityLogout = React.useCallback(() => {
-    logout('/admin/login?reason=inactive');
+  const handleInactivityLogout = useCallback(() => {
+    logout(ADMIN_LOGIN_PATH + '?reason=inactive'); // Ensure logout redirects to login
     toast({
       title: t('auth.session_expired_title', 'Session Expired'),
       description: t('auth.session_expired_desc', 'You have been logged out due to inactivity.'),
@@ -29,32 +36,29 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
     });
   }, [logout, t, toast]);
 
-  const resetLogoutTimer = React.useCallback(() => {
+  const resetLogoutTimer = useCallback(() => {
     if (logoutTimerRef.current) {
       clearTimeout(logoutTimerRef.current);
     }
-    // Check isAuthenticated directly from useAuth for current status
-    if (isAuthenticated && pathname !== '/admin/login') {
+    if (isAuthenticated && pathname !== ADMIN_LOGIN_PATH && pathname !== ADMIN_FORGOT_PASSWORD_PATH && pathname !== ADMIN_UPDATE_PASSWORD_PATH) {
       logoutTimerRef.current = setTimeout(handleInactivityLogout, INACTIVITY_TIMEOUT_MS);
     }
   }, [isAuthenticated, pathname, INACTIVITY_TIMEOUT_MS, handleInactivityLogout]);
 
 
-  React.useEffect(() => {
+  useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Inactivity timer setup
-  React.useEffect(() => {
-    if (!isMounted) return; // Don't run if not mounted
+  useEffect(() => {
+    if (!isMounted) return;
 
     const activityEvents: (keyof WindowEventMap)[] = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
     
-    if (isAuthenticated && pathname !== '/admin/login') {
-      resetLogoutTimer(); // Start or reset the timer
+    if (isAuthenticated && pathname !== ADMIN_LOGIN_PATH && pathname !== ADMIN_FORGOT_PASSWORD_PATH && pathname !== ADMIN_UPDATE_PASSWORD_PATH) {
+      resetLogoutTimer();
       activityEvents.forEach(event => window.addEventListener(event, resetLogoutTimer, { passive: true }));
     } else {
-      // If not authenticated or on login page, clear any existing timer
       if (logoutTimerRef.current) {
         clearTimeout(logoutTimerRef.current);
       }
@@ -66,40 +70,43 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
       }
       activityEvents.forEach(event => window.removeEventListener(event, resetLogoutTimer));
     };
-  }, [isMounted, isAuthenticated, pathname, resetLogoutTimer]); // Dependencies ensure timer logic re-evaluates correctly
+  }, [isMounted, isAuthenticated, pathname, resetLogoutTimer]);
 
-  // Redirection logic
-  React.useEffect(() => {
-    if (!isMounted || isAuthLoading) { // Wait for mount and auth state to settle *before* redirecting
+  useEffect(() => {
+    if (!isMounted || isAuthLoading) {
       return;
     }
 
-    const isAdminPath = pathname.startsWith('/admin');
-    const isAdminLoginPath = pathname === '/admin/login';
-    const isAdminRootPath = pathname === '/admin';
-
+    const isAdminPath = pathname.startsWith(ADMIN_ROOT_PATH);
+    
     if (isAuthenticated) {
-      if (isAdminLoginPath || isAdminRootPath) {
+      if (pathname === ADMIN_LOGIN_PATH || pathname === ADMIN_ROOT_PATH || pathname === ADMIN_FORGOT_PASSWORD_PATH) {
         const redirectUrlParam = searchParams.get('redirect_url');
-        router.replace(redirectUrlParam || '/admin/dashboard');
+        router.replace(redirectUrlParam || ADMIN_DASHBOARD_PATH);
       }
+      // For ADMIN_UPDATE_PASSWORD_PATH, if authenticated, we assume it's a PASSWORD_RECOVERY session
+      // or the page itself will handle if it's a regular session trying to access it.
     } else {
       // If not authenticated, and trying to access a protected admin path
-      if (isAdminPath && !isAdminLoginPath && !isAdminRootPath) {
+      const isPublicPage = pathname === ADMIN_LOGIN_PATH || 
+                           pathname === ADMIN_ROOT_PATH || // Admin root might show login or redirect
+                           pathname === ADMIN_FORGOT_PASSWORD_PATH || 
+                           pathname === ADMIN_UPDATE_PASSWORD_PATH;
+
+      if (isAdminPath && !isPublicPage) {
         const redirectUrl = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
-        router.replace(`/admin/login?redirect_url=${encodeURIComponent(redirectUrl)}`);
+        router.replace(`${ADMIN_LOGIN_PATH}?redirect_url=${encodeURIComponent(redirectUrl)}`);
       }
     }
   }, [isMounted, isAuthLoading, isAuthenticated, pathname, router, searchParams, user]);
 
 
-  // Loader display condition
   if (!isMounted || isAuthLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <div className="flex flex-col items-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="mt-2 text-muted-foreground">{t('auth.loading', 'Loading...')}</p>
+          <p className="mt-2 text-muted-foreground">{t('auth.loading', 'Loading authentication...')}</p>
         </div>
       </div>
     );

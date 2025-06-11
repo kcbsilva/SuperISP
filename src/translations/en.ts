@@ -1,4 +1,3 @@
-
 // src/translations/en.ts
 const en = {
   // Sidebar
@@ -99,13 +98,13 @@ const en = {
     settings_mysql_cli: 'CLI',
   },
   login: {
-    loading: "Loading...",
+    loading: "Signing In...", // Changed from "Loading..."
     welcome_title: "Welcome to Prolter ISP",
     welcome_subtitle: "Manage your services efficiently.",
     title: "Admin Login",
     description: "Enter your credentials to access the admin panel.",
-    username_label: "Email", // Updated from Username to Email
-    username_placeholder: "Enter your email", // Updated placeholder
+    username_label: "Email",
+    username_placeholder: "Enter your email",
     password_label: "Password",
     password_placeholder: "Enter your password",
     submit_button: "Sign In",
@@ -121,6 +120,36 @@ const en = {
     session_expired_title: "Session Expired",
     session_expired_desc: "You have been logged out due to inactivity.",
     email_not_confirmed_error: 'Your email address has not been confirmed. Please check your inbox (and spam folder) for a confirmation link.',
+  },
+  forgot_password: {
+    title: "Forgot Password?",
+    description: "Enter your email address and we'll send you a link to reset your password.",
+    email_label: "Email Address",
+    email_placeholder: "you@example.com",
+    submit_button: "Send Reset Link",
+    submitting_button: "Sending...",
+    success_title: "Check Your Email",
+    success_description: "If an account exists for this email, a password reset link has been sent.",
+    error_title: "Error",
+    error_description: "Failed to send password reset email.",
+    back_to_login: "Back to Login",
+  },
+  update_password: {
+    title: "Update Password",
+    description: "Enter your new password below.",
+    new_password_label: "New Password",
+    new_password_placeholder: "Enter new password (min. 6 characters)",
+    confirm_password_label: "Confirm New Password",
+    confirm_password_placeholder: "Confirm new password",
+    submit_button: "Update Password",
+    submitting_button: "Updating...",
+    success_title: "Password Updated",
+    success_description: "Your password has been updated successfully. You can now log in.",
+    error_title: "Error",
+    error_description_generic: "Failed to update password. Please try again.",
+    error_invalid_token: "Invalid or expired password reset link. Please request a new one.",
+    ready_to_update: "You can now update your password.",
+    back_to_login: "Back to Login",
   },
   search: {
     placeholder: 'Search clients, equipment, elements...',
@@ -160,7 +189,7 @@ const en = {
     language_label: 'Default Language *',
     language_placeholder: 'Select default language',
     language_english: 'English',
-    language_portuguese: 'Português (Brasil)', // Added back for selection, even if not fully supported by all texts
+    language_portuguese: 'Português (Brasil)',
     save_button: 'Save Settings',
     saving_button: 'Saving...',
     save_success_title: 'Settings Saved',

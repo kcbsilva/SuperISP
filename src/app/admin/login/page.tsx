@@ -2,7 +2,7 @@
 'use client';
 import * as React from "react";
 import { useState, useEffect, type SVGProps } from "react";
-import { useRouter, useSearchParams } from "next/navigation"; // Added useSearchParams
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import { useLocale } from "@/contexts/LocaleContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Loader2 } from "lucide-react"; // Import Loader2
+import { Loader2 } from "lucide-react";
 
 // Define ProlterLogo component directly in this file
 function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
@@ -71,16 +71,16 @@ function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
 
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState(""); // Changed from username to email
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [publicIP, setPublicIP] = useState<string | null>(null);
   const [ipLoading, setIpLoading] = useState(true);
   const router = useRouter();
-  const searchParams = useSearchParams(); // For getting redirect_url
+  const searchParams = useSearchParams();
   const { login, isAuthenticated, isLoading: authIsLoading } = useAuth();
   const { t } = useLocale();
-  const [isSubmitting, setIsSubmitting] = useState(false); // Local loading state for form submission
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
 
   useEffect(() => {
@@ -108,25 +108,23 @@ export default function AdminLoginPage() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError("");
-    setIsSubmitting(true); // Start local loading
+    setIsSubmitting(true);
 
     try {
       const redirectUrl = searchParams.get('redirect_url') || '/admin/dashboard';
-      await login(email, password, redirectUrl); // Call Supabase login from context
-      // Redirect is handled by the useEffect above or by AuthContext on successful login
+      await login(email, password, redirectUrl);
     } catch (loginError: any) {
-      // Check for the specific "Email not confirmed" error key
       if (loginError.message === 'auth.email_not_confirmed') {
         setError(t('auth.email_not_confirmed_error', 'Your email address has not been confirmed. Please check your inbox (and spam folder) for a confirmation link.'));
       } else {
         setError(loginError.message || t('login.error_failed', 'Login failed. Please check your credentials.'));
       }
     } finally {
-      setIsSubmitting(false); // Stop local loading
+      setIsSubmitting(false);
     }
   };
 
-  if (authIsLoading && !isSubmitting) { // Show main loader only if not already in form submission
+  if (authIsLoading && !isSubmitting) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-black">
         <div className="flex space-x-2">
@@ -137,15 +135,6 @@ export default function AdminLoginPage() {
       </div>
     );
   }
-
-  // This case should ideally be handled by LayoutRenderer or the useEffect hook for redirection
-  // if (isAuthenticated) {
-  //   return (
-  //     <div className="flex min-h-screen w-full items-center justify-center bg-black">
-  //       <p className="text-primary-foreground">{t('auth.redirecting', 'Redirecting to dashboard...')}</p>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="flex min-h-screen w-full bg-black">
@@ -181,7 +170,7 @@ export default function AdminLoginPage() {
                 <Label htmlFor="email" className="text-gray-200">{t("login.username_label", "Email")}</Label>
                 <Input
                   id="email"
-                  type="email" // Changed from text to email
+                  type="email"
                   className="bg-background/10 text-gray-200 placeholder:text-gray-400 border-primary-foreground/30 focus:border-accent"
                   placeholder={t("login.username_placeholder", "Enter your email")}
                   value={email}
@@ -191,7 +180,12 @@ export default function AdminLoginPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-gray-200">{t("login.password_label", "Password")}</Label>
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="password" className="text-gray-200">{t("login.password_label", "Password")}</Label>
+                  <Link href="/admin/forgot-password" className="text-xs text-accent hover:underline">
+                    {t("login.forgot_password", "Forgot Password?")}
+                  </Link>
+                </div>
                 <Input
                   id="password"
                   type="password"
@@ -210,7 +204,7 @@ export default function AdminLoginPage() {
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-between items-center text-xs pt-4 pb-6 px-6">
+          <CardFooter className="flex justify-center items-center text-xs pt-4 pb-6 px-6">
             <div className="text-gray-300">
               {t("login.your_ip", "Your IP:")}{" "}
               {ipLoading ? (
@@ -219,9 +213,6 @@ export default function AdminLoginPage() {
                 <span className="font-medium text-gray-100">{publicIP}</span>
               )}
             </div>
-            <Link href="#" className="hover:underline text-accent">
-              {t("login.forgot_password", "Forgot Password?")}
-            </Link>
           </CardFooter>
         </Card>
       </div>

@@ -1,10 +1,19 @@
-
+// src/middleware.ts
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 const ADMIN_LOGIN_PATH = '/admin/login';
 const ADMIN_DASHBOARD_PATH = '/admin/dashboard';
 const ADMIN_ROOT_PATH = '/admin';
+const ADMIN_FORGOT_PASSWORD_PATH = '/admin/forgot-password';
+const ADMIN_UPDATE_PASSWORD_PATH = '/admin/update-password';
+
+const PUBLIC_ADMIN_PATHS = [
+  ADMIN_LOGIN_PATH,
+  ADMIN_FORGOT_PASSWORD_PATH,
+  ADMIN_UPDATE_PASSWORD_PATH,
+  // ADMIN_ROOT_PATH is handled separately as it might redirect to login or dashboard
+];
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -22,11 +31,9 @@ export async function middleware(request: NextRequest) {
           return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
-          // If you are using 'request.cookies.set', set it on the response instead.
           response.cookies.set({ name, value, ...options });
         },
         remove(name: string, options: CookieOptions) {
-          // If you are using 'request.cookies.set', set it on the response instead.
           response.cookies.set({ name, value: '', ...options });
         },
       },
@@ -40,7 +47,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthenticated = !!session;
 
-  // Allow requests for API routes, Next.js static files, and image optimization files
+  // Allow requests for API routes, Next.js static files, and image optimization files immediately
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next/static') ||
@@ -54,27 +61,33 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  const isAdminLoginPath = pathname === ADMIN_LOGIN_PATH;
+  const isPublicAdminPath = PUBLIC_ADMIN_PATHS.includes(pathname);
   const isAdminRootPath = pathname === ADMIN_ROOT_PATH;
   const isAdminPath = pathname.startsWith(ADMIN_ROOT_PATH);
 
   if (isAdminPath) {
     if (isAuthenticated) {
-      if (isAdminLoginPath || isAdminRootPath) {
+      // If authenticated and trying to access login, forgot-password, or admin root, redirect to dashboard
+      if (isPublicAdminPath || isAdminRootPath) {
+        // Exception: if on update-password and authenticated, it might be a PASSWORD_RECOVERY session, so allow it.
+        // Supabase client on the update-password page will handle the token.
+        // If it's a regular session on update-password, LayoutRenderer might redirect.
+        if (pathname === ADMIN_UPDATE_PASSWORD_PATH) {
+            return response;
+        }
         return NextResponse.redirect(new URL(ADMIN_DASHBOARD_PATH, request.url));
       }
-      return response; // User is authenticated and on a protected admin page (not login/root)
+      return response; // User is authenticated and on a protected admin page
     } else {
       // User is not authenticated
-      if (!isAdminLoginPath && !isAdminRootPath) {
-        // And not on login or admin root, redirect to login
+      if (!isPublicAdminPath && !isAdminRootPath) {
+        // And not on a public admin page or admin root, redirect to login
         const loginUrl = new URL(ADMIN_LOGIN_PATH, request.url);
-        // Preserve redirect_url if it was already there from a client-side redirect attempt
         const existingRedirectUrl = request.nextUrl.searchParams.get('redirect_url');
         loginUrl.searchParams.set('redirect_url', existingRedirectUrl || (pathname + request.nextUrl.search));
         return NextResponse.redirect(loginUrl);
       }
-      // If not authenticated but already on login or admin root, allow access
+      // If not authenticated but already on a public admin page (login, forgot-password, update-password) or admin root, allow access
       return response;
     }
   }
