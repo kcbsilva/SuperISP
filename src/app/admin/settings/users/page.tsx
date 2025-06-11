@@ -1,3 +1,4 @@
+
 // src/app/settings/users/page.tsx
 'use client';
 
@@ -73,7 +74,7 @@ import {
   updateUserTemplate,
   deleteUserTemplate,
   getUserProfiles,
-  updateUserProfile, // Import updateUserProfile
+  updateUserProfile, 
 } from '@/services/supabase/users';
 import type { Role, Permission, UserTemplate, UserTemplateData, UserProfile } from '@/types/users';
 
@@ -234,7 +235,7 @@ export default function UsersPage() {
         email,
         password,
         options: {
-          data: { // This data gets into auth.users.raw_user_meta_data
+          data: { 
             full_name: fullName, 
           },
         },
@@ -243,15 +244,12 @@ export default function UsersPage() {
       if (signUpError) throw signUpError;
       if (!signUpData.user) throw new Error("User not created in auth.");
 
-      // The trigger handle_new_user should create the profile.
-      // We then update it with roleId and ensure full_name is set if the trigger didn't catch it.
-      // A small delay might be needed for the trigger to fire and profile to be created.
-      await new Promise(resolve => setTimeout(resolve, 500)); // 0.5s delay
+      await new Promise(resolve => setTimeout(resolve, 500)); 
 
       await updateUserProfile(signUpData.user.id, {
         full_name: fullName,
         role_id: roleId || null,
-        email: email // email is now on user_profiles table
+        email: email 
       });
       
       return signUpData.user;
@@ -450,7 +448,7 @@ export default function UsersPage() {
                                         <Select onValueChange={field.onChange} value={field.value || undefined} disabled={isLoadingRoles}>
                                             <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? t('settings_users.loading_roles_placeholder') : t('settings_users.select_role_placeholder')} /></SelectTrigger></FormControl>
                                             <SelectContent>
-                                                <SelectItem value="">{t('settings_users.form_parent_none', 'None')}</SelectItem>
+                                                {/* Removed the "None" SelectItem as per previous fix */}
                                                 {roles.map(role => (
                                                     <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
                                                 ))}
@@ -564,7 +562,7 @@ export default function UsersPage() {
                                         <Select onValueChange={field.onChange} value={field.value || undefined} disabled={isLoadingRoles}>
                                             <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? t("settings_users.loading_roles_placeholder", "Loading roles...") : t("settings_users.select_role_placeholder", "Select a role")} /></SelectTrigger></FormControl>
                                             <SelectContent>
-                                                <SelectItem value="">{t('settings_users.form_parent_none', 'None')}</SelectItem>
+                                                {/* Removed the "None" SelectItem as per previous fix */}
                                                 {roles.map(role => (
                                                     <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
                                                 ))}
@@ -637,4 +635,3 @@ export default function UsersPage() {
     </div>
   );
 }
-
