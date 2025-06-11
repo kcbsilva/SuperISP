@@ -2,9 +2,9 @@
 // src/app/admin/update-password/page.tsx
 'use client';
 
-import * as React from 'react'; // Ensure React is imported
+import * as React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; // Removed useSearchParams as it's not directly used for token
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -19,7 +19,7 @@ import { useLocale } from '@/contexts/LocaleContext';
 import { Loader2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/contexts/AuthContext';
+// Removed useAuth import as its isLoading state is for the main session, not this specific flow.
 
 // Define ProlterLogo component
 function ProlterLogo(props: React.SVGProps<SVGSVGElement> & { fixedColor?: string }) {
@@ -57,8 +57,8 @@ export default function UpdatePasswordPage() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState('');
   const [message, setMessage] = React.useState('');
-  const { isLoading: isAuthLoading } = useAuth(); // Get auth state
-  const [hasCheckedAuth, setHasCheckedAuth] = React.useState(false);
+  const [pageIsLoading, setPageIsLoading] = React.useState(true); // Local loading state for this page
+  const [isRecoveryContextActive, setIsRecoveryContextActive] = React.useState(false); // Tracks if Supabase processed the recovery token
 
   const form = useForm<UpdatePasswordFormData>({
     resolver: zodResolver(updatePasswordSchema),
@@ -66,38 +66,53 @@ export default function UpdatePasswordPage() {
   });
 
   React.useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // This effect sets up the listener for auth state changes, crucial for PASSWORD_RECOVERY.
+    // It runs once on mount due to the `[t]` dependency array (assuming `t` is stable).
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (pageIsLoading) {
+        setPageIsLoading(false); // First auth event processed, page is no longer in initial loading state.
+      }
+
       if (event === 'PASSWORD_RECOVERY') {
-        setMessage(t('update_password.ready_to_update', "You can now update your password."));
-      }
-      // If the session is lost or becomes null NOT during initial load or an explicit update
-      // and we are on this page, it could mean the token expired or was invalid.
-      if (!session && event !== 'INITIAL_SESSION' && event !== 'USER_UPDATED' && event !== 'PASSWORD_RECOVERY') {
+        setMessage(t('update_password.ready_to_update'));
+        setError('');
+        setIsRecoveryContextActive(true); // Recovery context is active, form can be enabled.
+      } else if (session && event === 'SIGNED_IN' && !isRecoveryContextActive) {
+        // User is regularly signed in (not via recovery link).
+        // LayoutRenderer should ideally redirect. If they land here, show error.
+        setError(t('update_password.error_already_logged_in', "You are already logged in. Password reset is for logged-out users."));
+        setIsRecoveryContextActive(false);
+      } else if (!session && event !== 'INITIAL_SESSION' && !isRecoveryContextActive) {
+        // No session, not an initial check, and recovery context not active.
+        // This likely means the token was invalid or expired.
         setError(t('update_password.error_invalid_token', "Invalid or expired password reset link. Please request a new one."));
-      }
-      // Only set hasCheckedAuth after the first event that isn't INITIAL_SESSION or if a session is found initially
-      if(event !== 'INITIAL_SESSION' || session) {
-        setHasCheckedAuth(true);
+        setMessage('');
+        setIsRecoveryContextActive(false);
       }
     });
-
-    // Initial check
-    supabase.auth.getSession().then(({ data: { session } }) => {
-       if (session && session.user?.recovery_sent_at) { // A way to infer if in recovery flow
-         setMessage(t('update_password.ready_to_update', "You can now update your password."));
-       }
-       setHasCheckedAuth(true); // Mark initial check as done
+    
+    // Additionally, check session on mount. This helps set pageIsLoading correctly
+    // if onAuthStateChange is slightly delayed or if Supabase client processes URL hash immediately.
+    supabase.auth.getSession().then(({ data }) => {
+        if (pageIsLoading) {
+            setPageIsLoading(false);
+        }
+        // The PASSWORD_RECOVERY event is the primary trigger for enabling the form.
+        // getSession might not fully reflect the special recovery state immediately.
     });
 
-
-    return () => subscription.unsubscribe();
-  }, [t]);
-
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [t]); // `t` is from useLocale, should be stable.
 
   const onSubmit = async (data: UpdatePasswordFormData) => {
+    if (!isRecoveryContextActive) {
+      setError(t('update_password.error_invalid_token', "Cannot update password. Recovery session not active."));
+      return;
+    }
     setIsSubmitting(true);
     setError('');
-    // setMessage(''); // Don't clear the "ready to update" message immediately
 
     const { error: updateError } = await supabase.auth.updateUser({
       password: data.password,
@@ -117,12 +132,13 @@ export default function UpdatePasswordPage() {
         description: t('update_password.success_description', "Your password has been updated successfully. You can now log in."),
       });
       form.reset();
+      setIsRecoveryContextActive(false); // Prevent further submissions on this page
       setTimeout(() => router.push('/admin/login'), 3000);
     }
     setIsSubmitting(false);
   };
 
-  if (isAuthLoading || !hasCheckedAuth) {
+  if (pageIsLoading) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-black">
         <Loader2 className="h-8 w-8 animate-spin text-accent" />
@@ -137,7 +153,7 @@ export default function UpdatePasswordPage() {
           <ProlterLogo fixedColor="hsl(var(--accent))" />
           <CardTitle className="text-xl text-accent pt-4">{t('update_password.title', "Update Password")}</CardTitle>
           <CardDescription className="text-gray-300 text-center px-2">
-            {t('update_password.description', "Enter your new password below.")}
+            {message || t('update_password.description', "Enter your new password below.")}
           </CardDescription>
           <Separator className="my-2 bg-accent" />
         </CardHeader>
@@ -157,7 +173,7 @@ export default function UpdatePasswordPage() {
                         placeholder={t('update_password.new_password_placeholder', "Enter new password")}
                         className="bg-background/10 text-gray-200 placeholder:text-gray-400 border-primary-foreground/30 focus:border-accent"
                         {...field}
-                        disabled={isSubmitting || !!error} // Disable if there's an "invalid token" error
+                        disabled={isSubmitting || !!error || !isRecoveryContextActive}
                       />
                     </FormControl>
                     <FormMessage className="text-red-400 text-xs" />
@@ -177,7 +193,7 @@ export default function UpdatePasswordPage() {
                         placeholder={t('update_password.confirm_password_placeholder', "Confirm new password")}
                         className="bg-background/10 text-gray-200 placeholder:text-gray-400 border-primary-foreground/30 focus:border-accent"
                         {...field}
-                        disabled={isSubmitting || !!error} // Disable if there's an "invalid token" error
+                        disabled={isSubmitting || !!error || !isRecoveryContextActive}
                       />
                     </FormControl>
                     <FormMessage className="text-red-400 text-xs" />
@@ -185,8 +201,8 @@ export default function UpdatePasswordPage() {
                 )}
               />
               {error && <p className="text-xs text-red-400">{error}</p>}
-              {message && <p className="text-xs text-green-400">{message}</p>}
-              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting || !!error}>
+              {/* Message is now part of CardDescription */}
+              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting || !!error || !isRecoveryContextActive}>
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 {isSubmitting ? t('update_password.submitting_button', "Updating...") : t('update_password.submit_button', "Update Password")}
               </Button>
