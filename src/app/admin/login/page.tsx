@@ -126,7 +126,7 @@ export default function AdminLoginPage() {
 
   if (authIsLoading && !isSubmitting) {
     return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-black">
+      <div className="flex min-h-screen w-full items-center justify-center bg-background">
         <div className="flex space-x-2">
           <div className="h-3 w-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
           <div className="h-3 w-3 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]"></div>
@@ -137,10 +137,10 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-black">
-      <div className="hidden lg:flex lg:w-3/4 bg-black items-center justify-center p-8">
+    <div className="flex min-h-screen w-full bg-background">
+      <div className="hidden lg:flex lg:w-3/4 bg-muted items-center justify-center p-8">
         <div className="text-center">
-           <h1 className="text-4xl font-bold text-primary-foreground">
+           <h1 className="text-4xl font-bold text-primary">
              {t("login.welcome_title", "Welcome to Prolter ISP")}
            </h1>
            <p className="mt-2 text-muted-foreground">
@@ -149,29 +149,28 @@ export default function AdminLoginPage() {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/4 flex justify-center items-center bg-black p-4 md:p-8">
-        <Card className="w-full max-w-xs bg-[#233B6E] border-2 border-accent text-gray-200">
+      <div className="w-full lg:w-1/4 flex justify-center items-center bg-background p-4 md:p-8">
+        <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg">
           <CardHeader className="items-center pt-8 pb-4">
-            <ProlterLogo fixedColor="hsl(var(--accent))" />
-            <CardTitle className="text-xl text-accent pt-4">
+            <ProlterLogo />
+            <CardTitle className="text-xl text-primary pt-4">
               {t("login.title", "Admin Login")}
             </CardTitle>
-            <CardDescription className="text-gray-300 text-center px-2">
+            <CardDescription className="text-muted-foreground text-center px-2">
               {t(
                 "login.description",
                 "Enter your credentials to access the admin panel."
               )}
             </CardDescription>
-             <Separator className="my-2 bg-accent" />
+             <Separator className="my-2 bg-border" />
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-gray-200">{t("login.username_label", "Email")}</Label>
+                <Label htmlFor="email" className="text-foreground">{t("login.username_label", "Email")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  className="bg-background/10 text-gray-200 placeholder:text-gray-400 border-primary-foreground/30 focus:border-accent"
                   placeholder={t("login.username_placeholder", "Enter your email")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -181,15 +180,14 @@ export default function AdminLoginPage() {
               </div>
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="password" className="text-gray-200">{t("login.password_label", "Password")}</Label>
-                  <Link href="/admin/forgot-password" className="text-xs text-accent hover:underline">
+                  <Label htmlFor="password" className="text-foreground">{t("login.password_label", "Password")}</Label>
+                  <Link href="/admin/forgot-password" className="text-xs text-primary hover:underline">
                     {t("login.forgot_password", "Forgot Password?")}
                   </Link>
                 </div>
                 <Input
                   id="password"
                   type="password"
-                  className="bg-background/10 text-gray-200 placeholder:text-gray-400 border-primary-foreground/30 focus:border-accent"
                   placeholder={t("login.password_placeholder", "Enter your password")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -197,7 +195,7 @@ export default function AdminLoginPage() {
                   disabled={isSubmitting || authIsLoading}
                 />
               </div>
-              {error && <p className="text-xs text-red-400">{error}</p>}
+              {error && <p className="text-xs text-destructive">{error}</p>}
               <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting || authIsLoading}>
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 {isSubmitting ? t('login.loading', 'Signing In...') : t("login.submit_button", "Sign In")}
@@ -205,12 +203,12 @@ export default function AdminLoginPage() {
             </form>
           </CardContent>
           <CardFooter className="flex justify-center items-center text-xs pt-4 pb-6 px-6">
-            <div className="text-gray-300">
+            <div className="text-muted-foreground">
               {t("login.your_ip", "Your IP:")}{" "}
               {ipLoading ? (
-                <Skeleton className="h-3 w-20 inline-block bg-primary-foreground/20" />
+                <Skeleton className="h-3 w-20 inline-block bg-muted" />
               ) : (
-                <span className="font-medium text-gray-100">{publicIP}</span>
+                <span className="font-medium text-foreground">{publicIP}</span>
               )}
             </div>
           </CardFooter>

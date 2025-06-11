@@ -15,10 +15,10 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
 import { Loader2 } from 'lucide-react';
-import { useTheme } from 'next-themes'; // Added for ProlterLogo
-import { Separator } from '@/components/ui/separator'; // Added for consistency
+import { useTheme } from 'next-themes';
+import { Separator } from '@/components/ui/separator';
 
-// Define ProlterLogo component (copied from login page for now)
+// Define ProlterLogo component
 function ProlterLogo(props: React.SVGProps<SVGSVGElement> & { fixedColor?: string }) {
   const { theme } = useTheme();
   const [isMounted, setIsMounted] = React.useState(false);
@@ -58,9 +58,6 @@ export default function ForgotPasswordPage() {
     setIsSubmitting(true);
     setMessage('');
 
-    // IMPORTANT: Configure this redirect URL in your Supabase project settings!
-    // Authentication -> URL Configuration -> Redirect URLs
-    // Add: http://localhost:3000/admin/update-password (or your production URL)
     const redirectTo = `${window.location.origin}/admin/update-password`;
 
     const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
@@ -85,15 +82,15 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-black p-4">
-      <Card className="w-full max-w-sm bg-[#233B6E] border-2 border-accent text-gray-200">
+    <div className="flex min-h-screen w-full items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-sm bg-card border text-card-foreground shadow-lg">
         <CardHeader className="items-center pt-8 pb-4">
-          <ProlterLogo fixedColor="hsl(var(--accent))" />
-          <CardTitle className="text-xl text-accent pt-4">{t('forgot_password.title', "Forgot Password?")}</CardTitle>
-          <CardDescription className="text-gray-300 text-center px-2">
+          <ProlterLogo />
+          <CardTitle className="text-xl text-primary pt-4">{t('forgot_password.title', "Forgot Password?")}</CardTitle>
+          <CardDescription className="text-muted-foreground text-center px-2">
             {t('forgot_password.description', "Enter your email address and we'll send you a link to reset your password.")}
           </CardDescription>
-          <Separator className="my-2 bg-accent" />
+          <Separator className="my-2 bg-border" />
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -103,22 +100,21 @@ export default function ForgotPasswordPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <Label htmlFor="email" className="text-gray-200">{t('forgot_password.email_label', "Email Address")}</Label>
+                    <Label htmlFor="email" className="text-foreground">{t('forgot_password.email_label', "Email Address")}</Label>
                     <FormControl>
                       <Input
                         id="email"
                         type="email"
                         placeholder={t('forgot_password.email_placeholder', "you@example.com")}
-                        className="bg-background/10 text-gray-200 placeholder:text-gray-400 border-primary-foreground/30 focus:border-accent"
                         {...field}
                         disabled={isSubmitting}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-400 text-xs" />
+                    <FormMessage className="text-destructive text-xs" />
                   </FormItem>
                 )}
               />
-              {message && <p className="text-xs text-green-400">{message}</p>}
+              {message && <p className="text-xs text-green-600">{message}</p>}
               <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting}>
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 {isSubmitting ? t('forgot_password.submitting_button', "Sending...") : t('forgot_password.submit_button', "Send Reset Link")}
@@ -127,7 +123,7 @@ export default function ForgotPasswordPage() {
           </Form>
         </CardContent>
         <CardFooter className="flex justify-center text-xs pt-4 pb-6">
-          <Link href="/admin/login" className="hover:underline text-accent">
+          <Link href="/admin/login" className="hover:underline text-primary">
             {t('forgot_password.back_to_login', "Back to Login")}
           </Link>
         </CardFooter>
