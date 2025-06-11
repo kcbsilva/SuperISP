@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Loader2 } from "lucide-react";
+import Image from "next/image"; // Import next/image
 
 // Define ProlterLogo component directly in this file
 function ProlterLogo(props: SVGProps<SVGSVGElement> & { fixedColor?: string }) {
@@ -139,15 +140,23 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen w-full bg-background">
       {/* Left Side - Branding/Welcome (Visible on larger screens) */}
-      <div className="hidden lg:flex lg:w-3/4 bg-muted items-center justify-center p-8">
-        <div className="text-center">
-           <h1 className="text-4xl font-bold text-primary">
-             {t("login.welcome_title", "Welcome to Prolter ISP")}
-           </h1>
-           <p className="mt-2 text-muted-foreground">
-             {t("login.welcome_subtitle", "Manage your services efficiently.")}
-           </p>
-           {/* You can add an illustrative image or more branding elements here */}
+      <div className="hidden lg:flex lg:w-3/4 bg-muted flex-col items-center justify-center p-12 text-center">
+        <ProlterLogo width="200" height="48" fixedColor="hsl(var(--primary))" />
+        <h1 className="mt-8 text-3xl font-bold text-primary">
+          {t("login.welcome_title", "Welcome to Prolter ISP")}
+        </h1>
+        <p className="mt-3 text-lg text-muted-foreground">
+          {t("login.welcome_subtitle", "Manage your services efficiently and effectively.")}
+        </p>
+        <div className="mt-8 w-full max-w-md aspect-video relative">
+          <Image
+            src="https://placehold.co/600x400.png"
+            alt="ISP Management Illustration"
+            layout="fill"
+            objectFit="cover"
+            className="rounded-lg shadow-xl"
+            data-ai-hint="network technology"
+          />
         </div>
       </div>
 
@@ -155,8 +164,10 @@ export default function AdminLoginPage() {
       <div className="w-full lg:w-1/4 flex justify-center items-center bg-background p-4 md:p-8">
         <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg">
           <CardHeader className="items-center pt-8 pb-4">
-            <ProlterLogo />
-            <CardTitle className="text-xl text-primary pt-4">
+            <div className="lg:hidden mb-4"> {/* Show logo on small screens here */}
+              <ProlterLogo />
+            </div>
+            <CardTitle className="text-xl text-primary pt-4 lg:pt-0"> {/* Adjust padding for lg */}
               {t("login.title", "Admin Login")}
             </CardTitle>
             <CardDescription className="text-muted-foreground text-center px-2">
