@@ -138,6 +138,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="flex min-h-screen w-full bg-background">
+      {/* Left Side - Branding/Welcome (Visible on larger screens) */}
       <div className="hidden lg:flex lg:w-3/4 bg-muted items-center justify-center p-8">
         <div className="text-center">
            <h1 className="text-4xl font-bold text-primary">
@@ -146,9 +147,11 @@ export default function AdminLoginPage() {
            <p className="mt-2 text-muted-foreground">
              {t("login.welcome_subtitle", "Manage your services efficiently.")}
            </p>
+           {/* You can add an illustrative image or more branding elements here */}
         </div>
       </div>
 
+      {/* Right Side - Login Form (Takes full width on small screens) */}
       <div className="w-full lg:w-1/4 flex justify-center items-center bg-background p-4 md:p-8">
         <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg">
           <CardHeader className="items-center pt-8 pb-4">
