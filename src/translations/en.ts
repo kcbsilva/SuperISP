@@ -1,3 +1,4 @@
+
 // src/translations/en.ts
 const en = {
   // Sidebar
@@ -117,6 +118,8 @@ const en = {
   auth: {
     redirecting: "Redirecting to login...",
     loading: "Loading authentication...",
+    session_expired_title: "Session Expired",
+    session_expired_desc: "You have been logged out due to inactivity.",
   },
   search: {
     placeholder: 'Search clients, equipment, elements...',
