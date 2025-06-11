@@ -64,6 +64,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
+import { supabase } from '@/services/supabase/db'; // Import supabase client for auth
 import {
   getRoles,
   getPermissions,
@@ -72,6 +73,7 @@ import {
   updateUserTemplate,
   deleteUserTemplate,
   getUserProfiles,
+  updateUserProfile, // Import updateUserProfile
 } from '@/services/supabase/users';
 import type { Role, Permission, UserTemplate, UserTemplateData, UserProfile } from '@/types/users';
 
@@ -82,10 +84,18 @@ const userTemplateFormSchema = z.object({
   default_role_id: z.string().uuid("Invalid role ID.").nullable().optional(),
   permission_ids: z.array(z.string().uuid()).optional().default([]),
 });
-
 type UserTemplateFormValues = z.infer<typeof userTemplateFormSchema>;
 
-// Placeholder for all available permissions (eventually fetch from DB)
+// Schema for Add User Form
+const addUserFormSchema = z.object({
+  email: z.string().email("Invalid email address."),
+  password: z.string().min(6, "Password must be at least 6 characters."),
+  fullName: z.string().min(1, "Full name is required."),
+  roleId: z.string().uuid("Invalid role ID.").nullable().optional(),
+});
+type AddUserFormValues = z.infer<typeof addUserFormSchema>;
+
+
 const STATIC_ALL_PERMISSIONS: Permission[] = [
   { id: 'perm_sub_view', slug: 'subscribers.view', group_name: 'Subscribers', created_at: new Date().toISOString(), description: 'Can view subscriber information' },
   { id: 'perm_sub_add', slug: 'subscribers.add', group_name: 'Subscribers', created_at: new Date().toISOString(), description: 'Can add new subscribers' },
@@ -111,10 +121,10 @@ export default function UsersPage() {
   const [isAddTemplateModalOpen, setIsAddTemplateModalOpen] = React.useState(false);
   const [editingTemplate, setEditingTemplate] = React.useState<UserTemplate | null>(null);
   const [templateToDelete, setTemplateToDelete] = React.useState<UserTemplate | null>(null);
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = React.useState(false);
 
   const iconSize = "h-3 w-3";
 
-  // Fetch data using React Query
   const { data: roles = [], isLoading: isLoadingRoles, error: rolesError } = useQuery<Role[], Error>({
     queryKey: ['roles'],
     queryFn: getRoles,
@@ -123,7 +133,7 @@ export default function UsersPage() {
   const { data: allPermissions = [], isLoading: isLoadingPermissions, error: permissionsError } = useQuery<Permission[], Error>({
     queryKey: ['permissions'],
     queryFn: getPermissions,
-    initialData: STATIC_ALL_PERMISSIONS, // Use static data as initial, will be replaced by fetched
+    initialData: STATIC_ALL_PERMISSIONS,
   });
 
   const { data: userTemplates = [], isLoading: isLoadingTemplates, error: templatesError } = useQuery<UserTemplate[], Error>({
@@ -131,7 +141,7 @@ export default function UsersPage() {
     queryFn: getUserTemplates,
   });
 
-  const { data: userProfiles = [], isLoading: isLoadingUserProfiles, error: userProfilesError } = useQuery<UserProfile[], Error>({
+  const { data: userProfiles = [], isLoading: isLoadingUserProfiles, error: userProfilesError, refetch: refetchUserProfiles } = useQuery<UserProfile[], Error>({
     queryKey: ['userProfiles'],
     queryFn: getUserProfiles,
   });
@@ -140,7 +150,6 @@ export default function UsersPage() {
     Array.from(new Set(allPermissions.map(p => p.group_name || 'Other'))).sort(), 
   [allPermissions]);
 
-
   const templateForm = useForm<UserTemplateFormValues>({
     resolver: zodResolver(userTemplateFormSchema),
     defaultValues: {
@@ -148,6 +157,16 @@ export default function UsersPage() {
       description: '',
       default_role_id: null,
       permission_ids: [],
+    },
+  });
+
+  const addUserForm = useForm<AddUserFormValues>({
+    resolver: zodResolver(addUserFormSchema),
+    defaultValues: {
+        email: '',
+        password: '',
+        fullName: '',
+        roleId: null,
     },
   });
 
@@ -208,13 +227,52 @@ export default function UsersPage() {
     },
   });
 
+  const addUserMutation = useMutation({
+    mutationFn: async (userData: AddUserFormValues) => {
+      const { email, password, fullName, roleId } = userData;
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { // This data gets into auth.users.raw_user_meta_data
+            full_name: fullName, 
+          },
+        },
+      });
 
-  const handleAddUser = () => {
-    toast({
-      title: t('settings_users.add_user_toast_title', 'Add User (Not Implemented)'),
-      description: t('settings_users.add_user_toast_desc', 'Functionality to add new users is not yet implemented.'),
-    });
-  };
+      if (signUpError) throw signUpError;
+      if (!signUpData.user) throw new Error("User not created in auth.");
+
+      // The trigger handle_new_user should create the profile.
+      // We then update it with roleId and ensure full_name is set if the trigger didn't catch it.
+      // A small delay might be needed for the trigger to fire and profile to be created.
+      await new Promise(resolve => setTimeout(resolve, 500)); // 0.5s delay
+
+      await updateUserProfile(signUpData.user.id, {
+        full_name: fullName,
+        role_id: roleId || null,
+        email: email // email is now on user_profiles table
+      });
+      
+      return signUpData.user;
+    },
+    onSuccess: (user) => {
+      refetchUserProfiles();
+      toast({
+        title: t('settings_users.add_user_success_title'),
+        description: t('settings_users.add_user_success_desc', 'User {email} created successfully.').replace('{email}', user?.email || ''),
+      });
+      setIsAddUserModalOpen(false);
+      addUserForm.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: t('settings_users.add_user_error_title'),
+        description: error.message || t('settings_users.add_user_error_desc'),
+        variant: 'destructive',
+      });
+    },
+  });
 
   const handleTemplateSubmit = (data: UserTemplateFormValues) => {
     const templateDataToSubmit: UserTemplateData = {
@@ -229,6 +287,10 @@ export default function UsersPage() {
     } else {
       addTemplateMutation.mutate(templateDataToSubmit);
     }
+  };
+  
+  const onAddUserFormSubmit = (values: AddUserFormValues) => {
+    addUserMutation.mutate(values);
   };
 
   const handleEditTemplate = (template: UserTemplate) => {
@@ -333,9 +395,84 @@ export default function UsersPage() {
               </DialogContent>
             </Dialog>
 
-            <Button onClick={handleAddUser} className="bg-green-600 hover:bg-green-700 text-white">
-              <PlusCircle className={`mr-2 ${iconSize}`} /> {t('settings_users.add_user_button', 'Add User')}
-            </Button>
+            <Dialog open={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen}>
+                <DialogTrigger asChild>
+                    <Button className="bg-green-600 hover:bg-green-700 text-white">
+                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('settings_users.add_user_button', 'Add User')}
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-sm">{t('settings_users.add_user_modal_title')}</DialogTitle>
+                        <DialogDescriptionComponent className="text-xs">{t('settings_users.add_user_modal_desc')}</DialogDescriptionComponent>
+                    </DialogHeader>
+                    <Form {...addUserForm}>
+                        <form onSubmit={addUserForm.handleSubmit(onAddUserFormSubmit)} className="space-y-4 py-4">
+                            <FormField
+                                control={addUserForm.control}
+                                name="fullName"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('settings_users.form_fullname_label')}</FormLabel>
+                                        <FormControl><Input placeholder={t('settings_users.form_fullname_placeholder')} {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={addUserForm.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('settings_users.form_email_label')}</FormLabel>
+                                        <FormControl><Input type="email" placeholder={t('settings_users.form_email_placeholder')} {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={addUserForm.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('settings_users.form_password_label')}</FormLabel>
+                                        <FormControl><Input type="password" placeholder={t('settings_users.form_password_placeholder')} {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={addUserForm.control}
+                                name="roleId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('settings_users.form_role_label')}</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value || undefined} disabled={isLoadingRoles}>
+                                            <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? t('settings_users.loading_roles_placeholder') : t('settings_users.select_role_placeholder')} /></SelectTrigger></FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="">{t('settings_users.form_parent_none', 'None')}</SelectItem>
+                                                {roles.map(role => (
+                                                    <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button type="button" variant="outline" disabled={addUserMutation.isPending}>{t('settings_users.form_cancel_button')}</Button>
+                                </DialogClose>
+                                <Button type="submit" disabled={addUserMutation.isPending}>
+                                    {addUserMutation.isPending && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
+                                    {t('settings_users.form_create_user_button')}
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </Form>
+                </DialogContent>
+            </Dialog>
           </div>
 
           <Card>
@@ -425,7 +562,7 @@ export default function UsersPage() {
                                     <FormItem>
                                         <FormLabel>{t('settings_users.template_form_role_label', 'Default Role (Optional)')}</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value || undefined} disabled={isLoadingRoles}>
-                                            <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? "Loading roles..." : "Select a role"} /></SelectTrigger></FormControl>
+                                            <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? t("settings_users.loading_roles_placeholder", "Loading roles...") : t("settings_users.select_role_placeholder", "Select a role")} /></SelectTrigger></FormControl>
                                             <SelectContent>
                                                 <SelectItem value="">{t('settings_users.form_parent_none', 'None')}</SelectItem>
                                                 {roles.map(role => (
@@ -500,3 +637,4 @@ export default function UsersPage() {
     </div>
   );
 }
+
