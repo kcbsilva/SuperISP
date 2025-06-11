@@ -1,16 +1,44 @@
 
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
-const AUTH_COOKIE_NAME = 'prolter_auth'; // Must match the one in AuthContext
 const ADMIN_LOGIN_PATH = '/admin/login';
 const ADMIN_DASHBOARD_PATH = '/admin/dashboard';
-const ADMIN_ROOT_PATH = '/admin'; // Assuming /admin is a redirector or similar
+const ADMIN_ROOT_PATH = '/admin';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          // If you are using 'request.cookies.set', set it on the response instead.
+          response.cookies.set({ name, value, ...options });
+        },
+        remove(name: string, options: CookieOptions) {
+          // If you are using 'request.cookies.set', set it on the response instead.
+          response.cookies.set({ name, value: '', ...options });
+        },
+      },
+    }
+  );
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   const { pathname } = request.nextUrl;
-  const isAuthenticatedCookie = request.cookies.get(AUTH_COOKIE_NAME);
-  const isAuthenticated = isAuthenticatedCookie?.value === 'true';
+  const isAuthenticated = !!session;
 
   // Allow requests for API routes, Next.js static files, and image optimization files
   if (
@@ -23,35 +51,36 @@ export function middleware(request: NextRequest) {
     pathname.endsWith('.jpg') ||
     pathname.endsWith('.jpeg')
   ) {
-    return NextResponse.next();
+    return response;
   }
 
-  // Handle /admin routes
-  if (pathname.startsWith(ADMIN_ROOT_PATH)) {
-    // If trying to access login page or admin root itself
-    if (pathname === ADMIN_LOGIN_PATH || pathname === ADMIN_ROOT_PATH) {
-      if (isAuthenticated) {
-        // If authenticated, redirect from login/root to admin dashboard
+  const isAdminLoginPath = pathname === ADMIN_LOGIN_PATH;
+  const isAdminRootPath = pathname === ADMIN_ROOT_PATH;
+  const isAdminPath = pathname.startsWith(ADMIN_ROOT_PATH);
+
+  if (isAdminPath) {
+    if (isAuthenticated) {
+      if (isAdminLoginPath || isAdminRootPath) {
         return NextResponse.redirect(new URL(ADMIN_DASHBOARD_PATH, request.url));
       }
-      // If not authenticated, allow access to login page or admin root
-      return NextResponse.next();
+      return response; // User is authenticated and on a protected admin page (not login/root)
+    } else {
+      // User is not authenticated
+      if (!isAdminLoginPath && !isAdminRootPath) {
+        // And not on login or admin root, redirect to login
+        const loginUrl = new URL(ADMIN_LOGIN_PATH, request.url);
+        // Preserve redirect_url if it was already there from a client-side redirect attempt
+        const existingRedirectUrl = request.nextUrl.searchParams.get('redirect_url');
+        loginUrl.searchParams.set('redirect_url', existingRedirectUrl || (pathname + request.nextUrl.search));
+        return NextResponse.redirect(loginUrl);
+      }
+      // If not authenticated but already on login or admin root, allow access
+      return response;
     }
-
-    // For any other /admin/* path (e.g., /admin/dashboard, /admin/settings)
-    if (!isAuthenticated) {
-      // If not authenticated, redirect to login page
-      const loginUrl = new URL(ADMIN_LOGIN_PATH, request.url);
-      // Optionally, pass a redirect query param if your login page handles it
-      // loginUrl.searchParams.set('redirect_url', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-    // If authenticated and on a protected admin path, allow access
-    return NextResponse.next();
   }
 
   // For non-admin public routes or if already handled, allow access
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
@@ -68,5 +97,3 @@ export const config = {
     '/((?!api|_next/static|_next/image|.*\\.(?:ico|png|svg|jpg|jpeg)$).*)',
   ],
 };
-
-    
