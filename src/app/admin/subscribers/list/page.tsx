@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card"; // Added CardHeader
+import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card"; 
 import {
   Table,
   TableBody,
@@ -31,6 +31,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { listSubscribers as fetchSubscribers } from '@/services/mysql/subscribers';
+import { useQuery } from '@tanstack/react-query'; // Added useQuery
 
 type FilterState = {
     type: ('Residential' | 'Commercial')[];
@@ -58,14 +59,6 @@ const subscriberStats = {
   totalSubscribers: 1257,
 };
 
-const placeholderSubscribers: Subscriber[] = [
-    { id: 1, subscriberType: 'Residential', fullName: 'Alice Wonderland', address: '123 Fantasy Lane', phoneNumber: '555-1111', taxId: '123.456.789-00', status: 'Active', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'alice@example.com' },
-    { id: 2, subscriberType: 'Commercial', companyName: 'Bob The Builder Inc.', address: '456 Construction Ave', phoneNumber: '555-2222', businessNumber: '98.765.432/0001-00', status: 'Active', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'bob@example.com' },
-    { id: 3, subscriberType: 'Residential', fullName: 'Charlie Brown', address: '789 Peanut Street', phoneNumber: '555-3333', taxId: '111.222.333-44', status: 'Suspended', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'charlie@example.com' },
-    { id: 4, subscriberType: 'Residential', fullName: 'Diana Prince', address: '1 Amazon Way', phoneNumber: '555-4444', taxId: '444.555.666-77', status: 'Inactive', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'diana@example.com' },
-    { id: 5, subscriberType: 'Commercial', companyName: 'Wayne Enterprises', address: '1007 Mountain Drive', phoneNumber: '555-5555', businessNumber: '11.222.333/0001-44', status: 'Planned', signupDate: new Date(), createdAt: new Date(), updatedAt: new Date(), email: 'bruce@example.com' },
-];
-
 const getStatusBadgeVariant = (status: SubscriberStatus | undefined) => {
     switch (status) {
         case 'Active':
@@ -92,36 +85,24 @@ export default function ListSubscribersPage() {
         type: [],
         status: [],
     });
-    const [isLoading, setIsLoading] = React.useState(false);
     const iconSize = "h-3 w-3";
     const statIconSize = "h-4 w-4 text-muted-foreground";
-
-    const [subscribers, setSubscribers] = React.useState<Subscriber[]>([]);
 
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
     const [sortColumn, setSortColumn] = React.useState<SortableSubscriberKeys | null>(null);
     const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
 
+    const {
+        data: subscribers = [], // Default to empty array
+        isLoading, // Renamed from isLoadingSubscribers
+        error,     // Renamed from subscribersError
+        refetch    // Renamed from refetchSubscribers
+    } = useQuery<Subscriber[], Error>({
+        queryKey: ['subscribersList'],
+        queryFn: fetchSubscribers,
+    });
 
-    React.useEffect(() => {
-      setIsLoading(true);
-      fetchSubscribers()
-        .then(data => {
-          setSubscribers(data);
-          console.log('Subscribers response', data);
-        })
-        .catch(error => {
-          console.error("Failed to fetch subscribers:", error);
-          toast({
-            title: "Error",
-            description: "Failed to load subscriber data.",
-            variant: "destructive",
-          });
-          setSubscribers(placeholderSubscribers);
-        })
-        .finally(() => setIsLoading(false));
-    }, [toast]);
 
     const filteredSubscribers = React.useMemo(() => {
         return subscribers.filter(sub => {
@@ -189,29 +170,23 @@ export default function ListSubscribersPage() {
                 : currentCategory.filter(item => item !== value);
             return { ...prev, [category]: updatedCategory };
         });
-        setCurrentPage(1); // Reset to first page on filter change
+        setCurrentPage(1); 
     };
 
     const handleRefresh = async () => {
-        setIsLoading(true);
         toast({ title: t('list_subscribers.refresh_start_toast') });
         try {
-          const data = await fetchSubscribers();
-          setSubscribers(data);
-          console.log('Subscribers response', data);
+          await refetch();
           toast({ title: t('list_subscribers.refresh_end_toast') });
-        } catch (error) {
-           console.error("Failed to refresh subscribers:", error);
+        } catch (err) {
+           console.error("Failed to refresh subscribers:", err);
            toast({
              title: "Error Refreshing",
-             description: "Failed to refresh subscriber data.",
+             description: (err as Error).message || "Failed to refresh subscriber data.",
              variant: "destructive",
            });
-           setSubscribers(placeholderSubscribers);
-        } finally {
-            setIsLoading(false);
-            setCurrentPage(1);
         }
+        setCurrentPage(1);
     };
 
   return (
@@ -264,7 +239,7 @@ export default function ListSubscribersPage() {
               <Input
                 type="search"
                 placeholder={t('list_subscribers.search_placeholder')}
-                className="pl-8 w-full border-border" // Added border-border
+                className="pl-8 w-full border-border"
                 value={searchTerm}
                 onChange={(e) => {setSearchTerm(e.target.value); setCurrentPage(1);}}
               />
@@ -387,6 +362,12 @@ export default function ListSubscribersPage() {
                             <TableCell className="text-center"><Skeleton className="h-4 bg-muted rounded w-20 mx-auto" /></TableCell>
                         </TableRow>
                     ))
+                ) : error ? (
+                     <TableRow>
+                        <TableCell colSpan={7} className="text-center text-destructive py-8 text-xs">
+                             Error fetching subscribers: {error.message}
+                        </TableCell>
+                    </TableRow>
                 ) : currentSubscribers.length > 0 ? (
                   currentSubscribers.map((subscriber) => (
                     <TableRow key={subscriber.id}>
@@ -423,7 +404,7 @@ export default function ListSubscribersPage() {
               </TableBody>
             </Table>
           </div>
-          {totalPages > 1 && (
+          {totalPages > 1 && !isLoading && !error && (
             <div className="flex items-center justify-end space-x-2 py-4">
               <span className="text-xs text-muted-foreground">
                 Page {currentPage} of {totalPages}
@@ -451,4 +432,3 @@ export default function ListSubscribersPage() {
     </div>
   );
 }
-
