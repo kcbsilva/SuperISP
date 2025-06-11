@@ -1,4 +1,3 @@
-
 // src/app/settings/users/page.tsx
 'use client';
 
@@ -65,7 +64,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
-import { supabase } from '@/services/supabase/db'; // Import supabase client for auth
+import { supabase } from '@/services/supabase/db';
 import {
   getRoles,
   getPermissions,
@@ -74,7 +73,7 @@ import {
   updateUserTemplate,
   deleteUserTemplate,
   getUserProfiles,
-  updateUserProfile, 
+  updateUserProfile,
 } from '@/services/supabase/users';
 import type { Role, Permission, UserTemplate, UserTemplateData, UserProfile } from '@/types/users';
 
@@ -91,10 +90,21 @@ type UserTemplateFormValues = z.infer<typeof userTemplateFormSchema>;
 const addUserFormSchema = z.object({
   email: z.string().email("Invalid email address."),
   password: z.string().min(6, "Password must be at least 6 characters."),
+  confirmPassword: z.string().min(1, "Please confirm your password."),
+  fullName: z.string().min(1, "Full name is required."),
+  roleId: z.string().uuid("Invalid role ID.").nullable().optional(),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+type AddUserFormValues = z.infer<typeof addUserFormSchema>;
+
+// Schema for Edit User Form (only full_name and role_id are editable here)
+const editUserFormSchema = z.object({
   fullName: z.string().min(1, "Full name is required."),
   roleId: z.string().uuid("Invalid role ID.").nullable().optional(),
 });
-type AddUserFormValues = z.infer<typeof addUserFormSchema>;
+type EditUserFormValues = z.infer<typeof editUserFormSchema>;
 
 
 const STATIC_ALL_PERMISSIONS: Permission[] = [
@@ -123,6 +133,8 @@ export default function UsersPage() {
   const [editingTemplate, setEditingTemplate] = React.useState<UserTemplate | null>(null);
   const [templateToDelete, setTemplateToDelete] = React.useState<UserTemplate | null>(null);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = React.useState(false);
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = React.useState(false);
+  const [editingUserProfile, setEditingUserProfile] = React.useState<UserProfile | null>(null);
 
   const iconSize = "h-3 w-3";
 
@@ -166,6 +178,15 @@ export default function UsersPage() {
     defaultValues: {
         email: '',
         password: '',
+        confirmPassword: '',
+        fullName: '',
+        roleId: null,
+    },
+  });
+
+  const editUserForm = useForm<EditUserFormValues>({
+    resolver: zodResolver(editUserFormSchema),
+    defaultValues: {
         fullName: '',
         roleId: null,
     },
@@ -188,6 +209,15 @@ export default function UsersPage() {
       });
     }
   }, [isAddTemplateModalOpen, editingTemplate, templateForm]);
+
+  React.useEffect(() => {
+    if (isEditUserModalOpen && editingUserProfile) {
+      editUserForm.reset({
+        fullName: editingUserProfile.full_name || '',
+        roleId: editingUserProfile.role_id || null,
+      });
+    }
+  }, [isEditUserModalOpen, editingUserProfile, editUserForm]);
 
   const addTemplateMutation = useMutation({
     mutationFn: addUserTemplate,
@@ -249,7 +279,7 @@ export default function UsersPage() {
       await updateUserProfile(signUpData.user.id, {
         full_name: fullName,
         role_id: roleId || null,
-        email: email 
+        // email: email // Email is already handled by the trigger
       });
       
       return signUpData.user;
@@ -272,6 +302,27 @@ export default function UsersPage() {
     },
   });
 
+  const updateUserProfileMutation = useMutation({
+    mutationFn: (data: { userId: string; profileData: Pick<UserProfile, 'full_name' | 'role_id'> }) => 
+      updateUserProfile(data.userId, data.profileData),
+    onSuccess: () => {
+      refetchUserProfiles();
+      toast({
+        title: t('settings_users.update_user_success_title'),
+        description: t('settings_users.update_user_success_desc', 'User profile for {name} updated.').replace('{name}', editUserForm.getValues('fullName')),
+      });
+      setIsEditUserModalOpen(false);
+      setEditingUserProfile(null);
+    },
+    onError: (error: any) => {
+      toast({
+        title: t('settings_users.update_user_error_title'),
+        description: error.message || t('settings_users.update_user_error_desc'),
+        variant: 'destructive',
+      });
+    },
+  });
+
   const handleTemplateSubmit = (data: UserTemplateFormValues) => {
     const templateDataToSubmit: UserTemplateData = {
         template_name: data.template_name,
@@ -289,6 +340,21 @@ export default function UsersPage() {
   
   const onAddUserFormSubmit = (values: AddUserFormValues) => {
     addUserMutation.mutate(values);
+  };
+
+  const onEditUserFormSubmit = (values: EditUserFormValues) => {
+    if (editingUserProfile) {
+        updateUserProfileMutation.mutate({
+            userId: editingUserProfile.id,
+            profileData: { full_name: values.fullName, role_id: values.roleId },
+        });
+    }
+  };
+
+
+  const handleOpenEditUserModal = (userProfile: UserProfile) => {
+    setEditingUserProfile(userProfile);
+    setIsEditUserModalOpen(true);
   };
 
   const handleEditTemplate = (template: UserTemplate) => {
@@ -439,6 +505,17 @@ export default function UsersPage() {
                                     </FormItem>
                                 )}
                             />
+                             <FormField
+                                control={addUserForm.control}
+                                name="confirmPassword"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('settings_users.form_confirm_password_label')}</FormLabel>
+                                        <FormControl><Input type="password" placeholder={t('settings_users.form_confirm_password_placeholder')} {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <FormField
                                 control={addUserForm.control}
                                 name="roleId"
@@ -448,7 +525,6 @@ export default function UsersPage() {
                                         <Select onValueChange={field.onChange} value={field.value || undefined} disabled={isLoadingRoles}>
                                             <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? t('settings_users.loading_roles_placeholder') : t('settings_users.select_role_placeholder')} /></SelectTrigger></FormControl>
                                             <SelectContent>
-                                                {/* Removed the "None" SelectItem as per previous fix */}
                                                 {roles.map(role => (
                                                     <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
                                                 ))}
@@ -483,10 +559,10 @@ export default function UsersPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="text-xs">Full Name</TableHead>
-                                <TableHead className="text-xs">Email</TableHead>
-                                <TableHead className="text-xs">Role</TableHead>
-                                <TableHead className="text-xs text-right">Actions</TableHead>
+                                <TableHead className="text-xs">{t('settings_users.user_table_fullname', 'Full Name')}</TableHead>
+                                <TableHead className="text-xs">{t('settings_users.user_table_email', 'Email')}</TableHead>
+                                <TableHead className="text-xs">{t('settings_users.user_table_role', 'Role')}</TableHead>
+                                <TableHead className="text-xs text-right">{t('settings_users.user_table_actions', 'Actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -494,9 +570,9 @@ export default function UsersPage() {
                                 <TableRow key={profile.id}>
                                     <TableCell className="text-xs">{profile.full_name || 'N/A'}</TableCell>
                                     <TableCell className="text-xs">{profile.email || 'N/A'}</TableCell>
-                                    <TableCell className="text-xs">{profile.role?.name || 'No Role'}</TableCell>
+                                    <TableCell className="text-xs">{profile.role?.name || t('settings_users.no_role_assigned')}</TableCell>
                                     <TableCell className="text-right">
-                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toast({title: "Edit User (WIP)", description: `Editing user ${profile.full_name}`})}>
+                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleOpenEditUserModal(profile)}>
                                             <Edit className={iconSize} />
                                         </Button>
                                     </TableCell>
@@ -513,6 +589,7 @@ export default function UsersPage() {
           </Card>
         </div>
 
+        {/* Add/Edit Template Modal */}
         <Dialog open={isAddTemplateModalOpen} onOpenChange={(isOpen) => {
             setIsAddTemplateModalOpen(isOpen);
             if (!isOpen) setEditingTemplate(null);
@@ -562,7 +639,6 @@ export default function UsersPage() {
                                         <Select onValueChange={field.onChange} value={field.value || undefined} disabled={isLoadingRoles}>
                                             <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? t("settings_users.loading_roles_placeholder", "Loading roles...") : t("settings_users.select_role_placeholder", "Select a role")} /></SelectTrigger></FormControl>
                                             <SelectContent>
-                                                {/* Removed the "None" SelectItem as per previous fix */}
                                                 {roles.map(role => (
                                                     <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
                                                 ))}
@@ -626,6 +702,68 @@ export default function UsersPage() {
                             <Button type="submit" disabled={templateForm.formState.isSubmitting || addTemplateMutation.isPending || updateTemplateMutation.isPending}>
                                 {(templateForm.formState.isSubmitting || addTemplateMutation.isPending || updateTemplateMutation.isPending) && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
                                 {editingTemplate ? t('settings_users.form_update_template_button', 'Update Template') : t('settings_users.form_save_template_button', 'Save Template')}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+
+        {/* Edit User Modal */}
+        <Dialog open={isEditUserModalOpen} onOpenChange={(isOpen) => {
+            setIsEditUserModalOpen(isOpen);
+            if (!isOpen) setEditingUserProfile(null);
+        }}>
+            <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle className="text-sm">{t('settings_users.edit_user_modal_title')}</DialogTitle>
+                    <DialogDescriptionComponent className="text-xs">
+                        {t('settings_users.edit_user_modal_desc', 'Update user details for {email}. Email and password cannot be changed here.')
+                            .replace('{email}', editingUserProfile?.email || t('settings_users.unknown_user'))}
+                    </DialogDescriptionComponent>
+                </DialogHeader>
+                <Form {...editUserForm}>
+                    <form onSubmit={editUserForm.handleSubmit(onEditUserFormSubmit)} className="space-y-4 py-4">
+                        <FormItem>
+                            <FormLabel>{t('settings_users.form_email_label')}</FormLabel>
+                            <FormControl><Input type="email" value={editingUserProfile?.email || ''} disabled className="bg-muted" /></FormControl>
+                        </FormItem>
+                        <FormField
+                            control={editUserForm.control}
+                            name="fullName"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{t('settings_users.form_fullname_label')}</FormLabel>
+                                    <FormControl><Input placeholder={t('settings_users.form_fullname_placeholder')} {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={editUserForm.control}
+                            name="roleId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{t('settings_users.form_role_label')}</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value || undefined} disabled={isLoadingRoles}>
+                                        <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? t('settings_users.loading_roles_placeholder') : t('settings_users.select_role_placeholder')} /></SelectTrigger></FormControl>
+                                        <SelectContent>
+                                            {roles.map(role => (
+                                                <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <DialogFooter>
+                            <DialogClose asChild>
+                                <Button type="button" variant="outline" disabled={updateUserProfileMutation.isPending}>{t('settings_users.form_cancel_button')}</Button>
+                            </DialogClose>
+                            <Button type="submit" disabled={updateUserProfileMutation.isPending}>
+                                {updateUserProfileMutation.isPending && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
+                                {t('settings_users.form_update_user_button')}
                             </Button>
                         </DialogFooter>
                     </form>

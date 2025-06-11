@@ -35,8 +35,8 @@ const en = {
     hub_dashboard_tooltip: 'Neutral Network Dashboard',
     hub_connections: 'Connections',
     hub_connections_tooltip: 'Manage Hub Connections',
-    hub_participants: 'Participants', 
-    hub_participants_tooltip: 'Manage Hub Participants', 
+    hub_participants: 'Participants',
+    hub_participants_tooltip: 'Manage Hub Participants',
     hub_configurations: 'Configurations',
     hub_configurations_tooltip: 'Hub Configurations',
     finances: 'Finances',
@@ -1423,6 +1423,7 @@ const en = {
         permission_group_finances: 'Finances',
         permission_group_settings: 'Settings',
         permission_group_pops: 'PoPs',
+        permission_group_other: 'Other',
         add_user_modal_title: 'Add New User',
         add_user_modal_desc: 'Enter details for the new system user.',
         form_fullname_label: 'Full Name',
@@ -1431,6 +1432,8 @@ const en = {
         form_email_placeholder: 'user@example.com',
         form_password_label: 'Password',
         form_password_placeholder: 'Enter password (min. 6 characters)',
+        form_confirm_password_label: 'Confirm Password',
+        form_confirm_password_placeholder: 'Re-enter password',
         form_role_label: 'Role (Optional)',
         loading_roles_placeholder: 'Loading roles...',
         select_role_placeholder: 'Select a role',
@@ -1440,6 +1443,19 @@ const en = {
         add_user_success_desc: 'User {email} created successfully.',
         add_user_error_title: 'Error Creating User',
         add_user_error_desc: 'Could not create the user.',
+        user_table_fullname: 'Full Name',
+        user_table_email: 'Email',
+        user_table_role: 'Role',
+        user_table_actions: 'Actions',
+        no_role_assigned: 'No Role',
+        edit_user_modal_title: 'Edit User Profile',
+        edit_user_modal_desc: 'Update user details for {email}. Email and password cannot be changed here.',
+        unknown_user: 'Unknown User',
+        form_update_user_button: 'Update User',
+        update_user_success_title: 'User Updated',
+        update_user_success_desc: 'User profile for {name} updated.',
+        update_user_error_title: 'Error Updating User',
+        update_user_error_desc: 'Could not update the user profile.',
     },
     service_calls: {
       title: 'Service Calls',
@@ -1823,4 +1839,3 @@ const en = {
 };
 
 export default en;
-
