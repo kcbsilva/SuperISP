@@ -1,3 +1,4 @@
+
 // src/app/layout-renderer.tsx
 'use client';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
@@ -73,31 +74,44 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
   }, [isMounted, isAuthenticated, pathname, resetLogoutTimer]);
 
   useEffect(() => {
+    console.log(
+      `LayoutRenderer Effect: isMounted=${isMounted}, isAuthLoading=${isAuthLoading}, isAuthenticated=${isAuthenticated}, pathname=${pathname}, user: ${JSON.stringify(user)}`
+    );
+
     if (!isMounted || isAuthLoading) {
+      console.log('LayoutRenderer Effect: Skipping redirect logic, not mounted or auth is loading.');
       return;
     }
 
     const isAdminPath = pathname.startsWith(ADMIN_ROOT_PATH);
     
     if (isAuthenticated) {
+      console.log('LayoutRenderer Effect: User is authenticated.');
       if (pathname === ADMIN_LOGIN_PATH || pathname === ADMIN_ROOT_PATH || pathname === ADMIN_FORGOT_PASSWORD_PATH) {
         const redirectUrlParam = searchParams.get('redirect_url');
-        router.replace(redirectUrlParam || ADMIN_DASHBOARD_PATH);
+        const targetRedirect = redirectUrlParam || ADMIN_DASHBOARD_PATH;
+        console.log(`LayoutRenderer Effect: Authenticated user on login/root/forgot. Redirecting to ${targetRedirect}.`);
+        router.replace(targetRedirect);
       }
       // For ADMIN_UPDATE_PASSWORD_PATH, if authenticated, we assume it's a PASSWORD_RECOVERY session
       // or the page itself will handle if it's a regular session trying to access it.
     } else {
       // If not authenticated, and trying to access a protected admin path
+      console.log('LayoutRenderer Effect: User is NOT authenticated.');
       const isPublicPage = pathname === ADMIN_LOGIN_PATH || 
                            pathname === ADMIN_ROOT_PATH || // Admin root might show login or redirect
                            pathname === ADMIN_FORGOT_PASSWORD_PATH || 
                            pathname === ADMIN_UPDATE_PASSWORD_PATH;
 
       if (isAdminPath && !isPublicPage) {
+        console.log('LayoutRenderer Effect: User NOT authenticated and on protected admin path. Redirecting to login.');
         const redirectUrl = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
         router.replace(`${ADMIN_LOGIN_PATH}?redirect_url=${encodeURIComponent(redirectUrl)}`);
+      } else {
+        console.log('LayoutRenderer Effect: User NOT authenticated but on public admin page or non-admin path. No redirect needed by this effect.');
       }
     }
+  // Ensure all dependencies that could trigger redirection logic are included.
   }, [isMounted, isAuthLoading, isAuthenticated, pathname, router, searchParams, user]);
 
 
