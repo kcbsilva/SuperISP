@@ -1,3 +1,4 @@
+
 // src/components/prolter-logo.tsx
 'use client';
 
@@ -5,12 +6,12 @@ import * as React from 'react';
 import { useTheme } from 'next-themes';
 
 // INSTRUCTIONS FOR USING YOUR ACTUAL SVG:
-// 1. Make sure your SVG file (e.g., `prolter-logo.svg`) is in the `src/app/assets` folder.
-// 2. The import below attempts to load it. Ensure the path is correct for your project structure.
-import MyActualLogo from '@/app/assets/prolter-logo.svg'; // Path updated as per user
-// 3. The component will now try to render MyActualLogo.
-// 4. Ensure your actual SVG's paths use `fill="currentColor"` or have no hardcoded fill
-//    if you want the theme/prop to control the color via the `fill` prop on MyActualLogo.
+// 1. Make sure your SVG file (e.g., `prolter-logo.svg`) is in a suitable public or assets folder.
+//    For example, if you place it in `public/assets/prolter-logo.svg`,
+//    you could use an <Image> component from Next.js or directly use an <img> tag.
+// 2. If you want to embed the SVG markup directly for dynamic color changes via `fill="currentColor"`,
+//    replace the placeholder <svg> below with your actual SVG content.
+//    Ensure its paths use `fill="currentColor"` or have no hardcoded fill.
 
 interface ProlterLogoProps extends React.SVGProps<SVGSVGElement> {
   fixedColor?: string;
@@ -40,14 +41,28 @@ export function ProlterLogo({ fixedColor, width = "131", height = "32", ...restP
     return <div style={{ width: typeof width === 'number' ? `${width}px` : width, height: typeof height === 'number' ? `${height}px` : height }} aria-label="Prolter Logo" />;
   }
 
-  // Use the imported SVG component
+  // Using a simple text-based SVG as a placeholder
   return (
-    <MyActualLogo
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 131 32" // Adjust viewBox to fit "PROLTER"
+      fill={fillColor}
       width={width}
       height={height}
-      fill={fillColor} // This fill can be controlled by theme or fixedColor prop
       aria-label="Prolter Logo"
-      {...restProps} // Spreads other SVG props like className, etc.
-    />
+      {...restProps}
+    >
+      <text
+        x="50%"
+        y="50%"
+        fontFamily="Arial, sans-serif" // Using a common font for portability
+        fontSize="20" // Adjusted font size
+        fontWeight="bold"
+        textAnchor="middle"
+        dominantBaseline="middle"
+      >
+        PROLTER
+      </text>
+    </svg>
   );
 }

@@ -9,8 +9,7 @@ import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-// Import ProlterLogo as a React Component
-// import ProlterLogoComponent from '@/app/assets/prolter-logo.svg'; // Assuming this was how you tried before
+import { ProlterLogo } from '@/components/prolter-logo'; // Import the consolidated ProlterLogo
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -27,63 +26,8 @@ import {
   PopoverTrigger,
   PopoverAnchor,
 } from "@/components/ui/popover";
-import { Skeleton } from '@/components/ui/skeleton'; // For clock placeholder
-
-// Define ProlterLogo component directly in this file
-function ProlterLogo(props: React.SVGProps<SVGSVGElement> & { fixedColor?: string }) {
-  const { theme } = useTheme();
-  const [isMounted, setIsMounted] = React.useState(false);
-  const { fixedColor, ...restProps } = props;
-
-  React.useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  let fillColor = "hsl(var(--foreground))"; // Default
-  if (fixedColor) {
-    fillColor = fixedColor;
-  } else if (isMounted) {
-    fillColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
-  }
-
-  if (!isMounted && !fixedColor) {
-    // Render a placeholder or a div with fixed dimensions if SVG markup is large
-    // to prevent layout shift, or simply return null if a brief empty space is acceptable.
-    return <div style={{ width: props.width || "131px", height: props.height || "32px" }} />;
-  }
-  
-  return (
-    // Replace this SVG with your actual Prolter logo SVG markup
-    // Ensure paths use `fill="currentColor"` or do not have a fill attribute
-    // if you want the `fill` prop passed to the <svg> tag to control their color.
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 131 32" // Adjust viewBox as needed
-      fill={fillColor} // This fill will be applied
-      {...restProps} // Passes width, height, aria-label etc.
-    >
-      {/* 
-        YOUR ACTUAL SVG PATHS AND ELEMENTS GO HERE.
-        Example:
-        <path d="M10 20 L50 80 L90 20 Z" /> 
-        If your SVG paths have `fill="somecolor"`, they might override the SVG's fill prop.
-        For dynamic color, ensure paths use `fill="currentColor"` or inherit the fill.
-      */}
-       <text
-          x="50%"
-          y="50%"
-          fontFamily="Arial, sans-serif"
-          fontSize="24" 
-          fontWeight="bold"
-          textAnchor="middle"
-          dominantBaseline="middle"
-        >
-          PROLTER
-        </text>
-    </svg>
-  );
-};
-
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
 
 const searchResultsPlaceholder = {
   clients: [
@@ -113,17 +57,17 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const { logout } = useAuth(); // Get logout function from AuthContext
   const iconSize = "h-3 w-3";
   const smallIconSize = "h-2.5 w-2.5";
 
   React.useEffect(() => setMounted(true), []);
 
-  // Effect for the clock
   React.useEffect(() => {
     const timerId = setInterval(() => {
       setCurrentTime(new Date().toLocaleTimeString());
     }, 1000);
-    setCurrentTime(new Date().toLocaleTimeString()); // Initial time
+    setCurrentTime(new Date().toLocaleTimeString());
     return () => clearInterval(timerId);
   }, []);
 
@@ -156,11 +100,13 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
     });
   };
 
-  const handleLogoutClick = () => {
+  const handleLogoutClick = async () => {
     toast({
       title: t('header.logout_action_title', 'Logout'),
-      description: t('header.logout_action_desc', 'Logout process initiated (Not Implemented)'),
+      description: t('header.logout_action_desc', 'Logging out...'),
     });
+    await logout(); // Call the actual logout function
+    // AuthContext's onAuthStateChange will handle redirecting to login page
   };
 
   const toggleTheme = () => {
@@ -180,16 +126,10 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
     };
   }, [popoverRef, inputRef]);
   
-  const getLogoFillColor = () => {
-    if (!mounted) return "hsl(var(--primary))"; 
-    return theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
-  };
-
-
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 flex h-14 items-center justify-between px-4 md:px-6", // Changed z-30 to z-50
+        "sticky top-0 z-50 flex h-14 items-center justify-between px-4 md:px-6",
         "bg-background text-foreground border-b-2 border-primary",
         "dark:bg-background dark:text-foreground dark:border-b-2 dark:border-accent"
       )}
@@ -200,7 +140,6 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
             width="131"
             height="32"
             aria-label="Prolter Logo"
-            // fill prop is handled internally by the ProlterLogo component now
           />
         </Link>
         <Button variant="ghost" size="icon" className="md:hidden text-foreground hover:bg-muted/50" onClick={onToggleSidebar} aria-label={t('sidebar.toggle_mobile_sidebar', 'Toggle sidebar')}>
@@ -239,7 +178,7 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
                      <div className="mb-1 px-2 py-1 text-xs font-semibold text-muted-foreground">{t('search.clients_label')}</div>
                      {searchResults.clients.map(client => (
                        <Button key={client.id} variant="ghost" asChild className="h-auto w-full justify-start px-2 py-1.5 text-xs font-normal" onClick={handleResultClick}>
-                         <Link href={`/subscribers/profile/${client.id}`} className="flex items-center gap-2">
+                         <Link href={`/admin/subscribers/profile/${client.id}`} className="flex items-center gap-2">
                            <User className={`${smallIconSize} text-muted-foreground`} />
                            {client.name}
                          </Link>
@@ -280,11 +219,10 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
              )}
            </Popover>
         </div>
-        <div className="text-[10px] font-mono font-bold text-foreground hidden md:flex items-center whitespace-nowrap"> {/* Reduced font size and added font-bold */}
-           {currentTime ? currentTime : <Skeleton className="h-3 w-16 bg-muted" />} {/* Adjusted skeleton height */}
+        <div className="text-[10px] font-mono font-bold text-foreground hidden md:flex items-center whitespace-nowrap">
+           {currentTime ? currentTime : <Skeleton className="h-3 w-16 bg-muted" />}
         </div>
       </div>
-
 
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('header.toggle_theme', 'Toggle theme')} className="text-foreground hover:bg-muted/50">
