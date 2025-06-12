@@ -6,7 +6,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo } 
 import translations from '@/translations'; // Import translation data
 import { enUS as enUSLocale } from 'date-fns/locale'; // Only import enUSLocale
 
-export type Locale = 'en'; // Only English
+export type Locale = 'en'; // Only English is supported
 
 // Define the shape of the translation dictionary
 type TranslationDict = { [key: string]: string | TranslationDict };
