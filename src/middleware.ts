@@ -31,41 +31,32 @@ export async function middleware(request: NextRequest) {
           return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
-          // Ensure this response object is the one ultimately returned or used for redirects
           response.cookies.set({ name, value, ...options });
         },
         remove(name: string, options: CookieOptions) {
-          // Ensure this response object is the one ultimately returned or used for redirects
           response.cookies.set({ name, value: '', ...options });
         },
       },
     }
   );
 
-  // Crucial: `getSession` might modify `response.cookies` via the `set/remove` callbacks.
+  // IMPORTANT: supabase.auth.getSession() can potentially update response.cookies through the
+  // 'set' and 'remove' callbacks in its options, especially if a token refresh occurs.
   const {
     data: { session },
-    error: sessionError, // Capture session error
+    error: sessionError,
   } = await supabase.auth.getSession();
 
   if (sessionError) {
     console.error('[Middleware] Error getting session:', sessionError.message);
-    // Decide how to handle session errors, e.g., redirect to login or allow if public path
   }
   
-  // If a session was successfully retrieved (and potentially refreshed, updating cookies),
-  // ensure the Supabase client instance is aware of this fresh session.
-  // This helps if the client-side login just happened and cookies were set.
-  if (session && session.access_token && session.refresh_token) {
-    // console.log('[Middleware] Session found, explicitly setting it for Supabase client instance.');
-    // await supabase.auth.setSession({ // This might be redundant if getSession already updated cookies and internal state.
-    //   access_token: session.access_token,
-    //   refresh_token: session.refresh_token,
-    // });
-  }
-
-
   // console.log(`[Middleware] Path: ${request.nextUrl.pathname}, Session from Supabase getSession: ${session ? 'Exists' : 'Null'}`);
+  // console.log('[Middleware] Request cookies:', JSON.stringify(request.cookies.getAll()));
+  // if (session) {
+  //   console.log('[Middleware] Session object:', JSON.stringify(session, null, 2));
+  // }
+
 
   const { pathname } = request.nextUrl;
   const isAuthenticated = !!session;
@@ -80,7 +71,7 @@ export async function middleware(request: NextRequest) {
     pathname.endsWith('.jpg') ||
     pathname.endsWith('.jpeg')
   ) {
-    return response; // Pass through the potentially modified response
+    return response;
   }
 
   const isPublicAdminPath = PUBLIC_ADMIN_PATHS.includes(pathname);
@@ -93,24 +84,19 @@ export async function middleware(request: NextRequest) {
       if (isPublicAdminPath || isAdminRootPath) {
         if (pathname === ADMIN_UPDATE_PASSWORD_PATH) {
             // console.log(`[Middleware] Authenticated user on update-password. Allowing.`);
+            // For update-password, it's crucial that any Set-Cookie headers from session refresh are passed back.
             return response; 
         }
         // User is authenticated but on a public admin page (login, forgot-password) or admin root.
         // Redirect to dashboard.
         // console.log(`[Middleware] Authenticated user on public admin path ${pathname}. Redirecting to dashboard.`);
         const redirectUrl = new URL(ADMIN_DASHBOARD_PATH, request.url);
-        const redirectResponse = NextResponse.redirect(redirectUrl);
-        
-        // Copy all cookies from the `response` object (potentially modified by Supabase)
-        // to the new `redirectResponse`.
-        response.cookies.getAll().forEach(cookie => {
-          redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
-        });
-        return redirectResponse;
+        // Pass the headers from the `response` object, which may have been modified by Supabase.
+        return NextResponse.redirect(redirectUrl, { headers: response.headers });
       }
       // User is authenticated and on a protected admin page.
       // console.log(`[Middleware] Authenticated user on protected admin path ${pathname}. Allowing.`);
-      return response; // Pass through the potentially modified response
+      return response;
     } else {
       // User is not authenticated
       // console.log(`[Middleware] User IS NOT AUTHENTICATED. Path: ${pathname}`);
@@ -122,26 +108,22 @@ export async function middleware(request: NextRequest) {
         const redirectParam = request.nextUrl.searchParams.get('redirect_url');
         const targetRedirect = redirectParam || (pathname + request.nextUrl.search);
 
-        // Avoid self-referential redirect_url for login page itself
         if (targetRedirect && targetRedirect !== ADMIN_LOGIN_PATH && !targetRedirect.startsWith(ADMIN_LOGIN_PATH + '?')) {
             loginUrl.searchParams.set('redirect_url', targetRedirect);
         }
         
-        const redirectResponse = NextResponse.redirect(loginUrl);
-        response.cookies.getAll().forEach(cookie => {
-          redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
-        });
-        return redirectResponse;
+        // Pass the headers from the `response` object.
+        return NextResponse.redirect(loginUrl, { headers: response.headers });
       }
       // User is not authenticated but on a public admin page or admin root. Allow access.
       // console.log(`[Middleware] Unauthenticated user on public admin path ${pathname} or admin root. Allowing.`);
-      return response; // Pass through the potentially modified response
+      return response;
     }
   }
 
   // For non-admin public routes or if already handled, allow access
   // console.log(`[Middleware] Non-admin path ${pathname}. Allowing.`);
-  return response; // Pass through the potentially modified response
+  return response;
 }
 
 export const config = {
