@@ -23,48 +23,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    let isMounted = true; // To prevent state updates on unmounted component
+    let isMounted = true;
     let initialCheckDone = false;
+    console.log('AuthProvider: useEffect entered. isMounted:', isMounted, 'initialCheckDone:', initialCheckDone);
 
-    const handleAuthStateChange = (session: Session | null) => {
-      if (!isMounted) return;
-      console.log('Auth state changed (listener):', session ? 'Session found' : 'No session');
+    const handleAuthStateChange = (session: Session | null, source: string) => {
+      if (!isMounted) {
+        console.log(`AuthProvider: handleAuthStateChange called from ${source} on unmounted component. Session:`, session ? 'Exists' : 'Null');
+        return;
+      }
+      console.log(`AuthProvider: handleAuthStateChange called from ${source}. Session:`, session ? 'Exists' : 'Null', 'Current initialCheckDone:', initialCheckDone);
       const currentUser = session?.user || null;
       setUser(currentUser);
       setIsAuthenticated(!!currentUser);
       if (!initialCheckDone) {
+        console.log('AuthProvider: Setting isLoading to false via handleAuthStateChange from source:', source);
         setIsLoading(false);
         initialCheckDone = true;
       }
     };
 
-    // Attempt to get the current session on initial load
+    console.log('AuthProvider: Attempting supabase.auth.getSession()');
     supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error("Error getting initial session:", error);
-      }
-      if (isMounted) { // Check if still mounted before updating state
-        handleAuthStateChange(session);
+      console.log('AuthProvider: supabase.auth.getSession() promise resolved. Session:', session ? 'Exists' : 'Null', 'Error:', error);
+      if (isMounted) {
+        if (error) {
+          console.error("AuthProvider: Error getting initial session:", error);
+          handleAuthStateChange(null, 'getSessionError');
+        } else {
+          handleAuthStateChange(session, 'getSessionSuccess');
+        }
+      } else {
+        console.log('AuthProvider: supabase.auth.getSession() resolved but component unmounted.');
       }
     }).catch(e => {
-      console.error("Exception in getInitialSession promise:", e);
+      console.error("AuthProvider: Exception in getSession promise:", e);
       if (isMounted) {
-        handleAuthStateChange(null); // Treat as no session
+        handleAuthStateChange(null, 'getSessionCatch');
+      } else {
+        console.log('AuthProvider: getSession promise caught exception but component unmounted.');
       }
     });
 
-    // Listen for subsequent auth state changes
+    console.log('AuthProvider: Setting up onAuthStateChange listener.');
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        if (isMounted && initialCheckDone) { // Only update if initial check is done and component is mounted
-          handleAuthStateChange(session);
-        } else if (isMounted && !initialCheckDone) { // Handle the very first event if getSession was slow
-          handleAuthStateChange(session);
-        }
+        console.log('AuthProvider: onAuthStateChange event fired. Event:', _event, 'Session:', session ? 'Exists' : 'Null');
+        handleAuthStateChange(session, `onAuthStateChange (${_event})`);
       }
     );
 
     return () => {
+      console.log('AuthProvider: useEffect cleanup. Unsubscribing from onAuthStateChange.');
       isMounted = false;
       subscription?.unsubscribe();
     };
@@ -77,34 +87,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Email and password are required.");
     }
     try {
-      setIsLoading(true); // Indicate login process has started
+      setIsLoading(true); 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        // Check for specific "Email not confirmed" error
         if (error.message.toLowerCase().includes('email not confirmed')) {
-          throw new Error('auth.email_not_confirmed'); // Specific key for UI
+          throw new Error('auth.email_not_confirmed'); 
         }
-        throw error; // Rethrow other errors
+        throw error; 
       }
-      // Successful login will trigger onAuthStateChange, which updates state and isLoading
-      // router.push(redirectTo); // Consider if redirect here is needed or if LayoutRenderer handles it
     } catch (error: any) {
       console.error('Login failed:', error.message);
-      setIsLoading(false); // Reset loading on explicit failure if onAuthStateChange doesn't cover it fast enough
-      throw error; // Rethrow to be caught by the calling component
+      setIsLoading(false); 
+      throw error; 
     }
   };
 
   const logout = async (redirectTo: string = '/admin/login') => {
-    // setIsLoading(true); // Set loading true before sign out
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Logout failed:', error);
-      // setIsLoading(false); // Reset loading if logout fails
     }
-    // onAuthStateChange will handle setting user to null, isAuthenticated to false.
-    // isLoading will be set to false by the onAuthStateChange handler eventually.
-    router.push(redirectTo); // Redirect after initiating sign out
+    router.push(redirectTo); 
   };
 
   return (
@@ -142,8 +145,6 @@ export const withAuth = (WrappedComponent: React.ComponentType<any>) => {
     }
 
     if (!isAuthenticated) {
-      // This return null prevents rendering the component if not authenticated,
-      // relying on the useEffect above to handle the redirect.
       return null;
     }
 
