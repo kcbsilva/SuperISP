@@ -63,7 +63,7 @@ export default function AdminLoginPage() {
       // The redirectUrl calculation here is for potential future use or if login itself needed it.
       // Currently, AuthContext.login doesn't use it, and LayoutRenderer handles the redirect.
       // const redirectUrl = searchParams.get('redirect_url') || '/admin/dashboard';
-      await login(email, password); // Removed redirectUrl as it's not used by AuthContext.login for redirection
+      await login(email, password, '/admin/dashboard'); // Added redirect path
       // If login is successful, AuthContext state changes.
       // LayoutRenderer's useEffect will detect isAuthenticated becoming true and redirect.
     } catch (loginError: any) {

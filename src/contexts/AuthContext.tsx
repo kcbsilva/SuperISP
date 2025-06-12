@@ -2,7 +2,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/services/supabase/db';
 import type { User, Session } from '@supabase/supabase-js';
 
@@ -88,6 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       // Success: onAuthStateChange will trigger processSession.
     } catch (error: any) {
+
       console.error('Login failed:', error.message);
       // If login fails hard before any auth state change, global isLoading might still be true.
       // However, processSession should have already run from getSession or INITIAL_SESSION.

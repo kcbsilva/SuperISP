@@ -24,7 +24,6 @@
           command = [
             "concurrently" 
             "\"npm run dev -- --port $PORT --hostname 0.0.0.0\"" 
-            "\"cd backend && node server.js\""
           ];
           manager = "web";
         };

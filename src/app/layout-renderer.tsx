@@ -17,18 +17,21 @@ const ADMIN_UPDATE_PASSWORD_PATH = '/admin/update-password';
 
 export default function LayoutRenderer({ children: pageContent }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { isAuthenticated, isLoading: isAuthLoading, user, logout } = useAuth();
+  const { isAuthenticated, isLoading: isAuthContextLoading, user, logout } = useAuth(); // Renamed to avoid clash, added logout
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLocale();
   const { toast } = useToast();
 
+  // LOGGING THE CONTEXT VALUE DIRECTLY
+  console.log(`LayoutRenderer - TOP LEVEL RENDER: isAuthContextLoading=${isAuthContextLoading}, isAuthenticated=${isAuthenticated}, pathname=${pathname}`);
+
   const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
   const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleInactivityLogout = useCallback(() => {
-    logout(ADMIN_LOGIN_PATH + '?reason=inactive'); // Ensure logout redirects to login
+    logout(ADMIN_LOGIN_PATH + '?reason=inactive');
     toast({
       title: t('auth.session_expired_title', 'Session Expired'),
       description: t('auth.session_expired_desc', 'You have been logged out due to inactivity.'),
@@ -75,10 +78,10 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
 
   useEffect(() => {
     console.log(
-      `LayoutRenderer Effect: isMounted=${isMounted}, isAuthLoading=${isAuthLoading}, isAuthenticated=${isAuthenticated}, pathname=${pathname}, user: ${JSON.stringify(user)}`
+      `LayoutRenderer Effect (Redirection Logic): isMounted=${isMounted}, isAuthContextLoading=${isAuthContextLoading}, isAuthenticated=${isAuthenticated}, pathname=${pathname}, user: ${JSON.stringify(user?.id)}`
     );
 
-    if (!isMounted || isAuthLoading) {
+    if (!isMounted || isAuthContextLoading) {
       console.log('LayoutRenderer Effect: Skipping redirect logic, not mounted or auth is loading.');
       return;
     }
@@ -87,23 +90,29 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
     
     if (isAuthenticated) {
       console.log('LayoutRenderer Effect: User is authenticated.');
+      // If authenticated and on login, admin root, or forgot password, redirect to dashboard
       if (pathname === ADMIN_LOGIN_PATH || pathname === ADMIN_ROOT_PATH || pathname === ADMIN_FORGOT_PASSWORD_PATH) {
-        const redirectUrlParam = searchParams.get('redirect_url');
-        const targetRedirect = redirectUrlParam || ADMIN_DASHBOARD_PATH;
-        console.log(`LayoutRenderer Effect: Authenticated user on login/root/forgot. Redirecting to ${targetRedirect}.`);
-        router.replace(targetRedirect);
+        console.log(`LayoutRenderer Effect: Authenticated and on public/root admin page (${pathname}). Redirecting to dashboard.`);
+        router.replace(ADMIN_DASHBOARD_PATH);
+      } else if (pathname === ADMIN_UPDATE_PASSWORD_PATH) {
+        // If authenticated on update-password, it might be PASSWORD_RECOVERY flow (token in URL hash).
+        // Supabase client handles this. The onAuthStateChange should have set the session.
+        // If it's a regular logged-in user navigating here, the page itself should ideally handle (e.g., show error or redirect).
+        // For now, we allow it, assuming the update-password page logic is robust.
+        console.log('LayoutRenderer Effect: Authenticated on update-password, allowing. Page logic should handle if session is not PW_RECOVERY.');
+      } else {
+        console.log('LayoutRenderer Effect: Authenticated and on a protected admin page or non-admin page. No redirect needed by this effect based on this condition.');
       }
-      // For ADMIN_UPDATE_PASSWORD_PATH, if authenticated, we assume it's a PASSWORD_RECOVERY session
-      // or the page itself will handle if it's a regular session trying to access it.
     } else {
-      // If not authenticated, and trying to access a protected admin path
+      // User is NOT authenticated
       console.log('LayoutRenderer Effect: User is NOT authenticated.');
-      const isPublicPage = pathname === ADMIN_LOGIN_PATH || 
-                           pathname === ADMIN_ROOT_PATH || // Admin root might show login or redirect
-                           pathname === ADMIN_FORGOT_PASSWORD_PATH || 
-                           pathname === ADMIN_UPDATE_PASSWORD_PATH;
+      const isPublicAdminPage = pathname === ADMIN_LOGIN_PATH || 
+                               pathname === ADMIN_ROOT_PATH || // Admin root can be public (redirects to login)
+                               pathname === ADMIN_FORGOT_PASSWORD_PATH || 
+                               pathname === ADMIN_UPDATE_PASSWORD_PATH;
 
-      if (isAdminPath && !isPublicPage) {
+      if (isAdminPath && !isPublicAdminPage) {
+        // Not authenticated and on a protected admin path
         console.log('LayoutRenderer Effect: User NOT authenticated and on protected admin path. Redirecting to login.');
         const redirectUrl = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
         router.replace(`${ADMIN_LOGIN_PATH}?redirect_url=${encodeURIComponent(redirectUrl)}`);
@@ -112,10 +121,11 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
       }
     }
   // Ensure all dependencies that could trigger redirection logic are included.
-  }, [isMounted, isAuthLoading, isAuthenticated, pathname, router, searchParams, user]);
+  }, [isMounted, isAuthContextLoading, isAuthenticated, pathname, router, searchParams, user]);
 
 
-  if (!isMounted || isAuthLoading) {
+  if (!isMounted || isAuthContextLoading) {
+    console.log(`LayoutRenderer RENDER: Showing LOADING UI. isMounted=${isMounted}, isAuthContextLoading=${isAuthContextLoading}`);
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <div className="flex flex-col items-center">
@@ -125,6 +135,6 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
       </div>
     );
   }
-
+  console.log(`LayoutRenderer RENDER: Showing PAGE CONTENT for ${pathname}`);
   return <>{pageContent}</>;
 }
