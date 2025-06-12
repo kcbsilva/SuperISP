@@ -1,22 +1,31 @@
 // src/translations/index.ts
-import core from './en/core';
+import auth from './en/auth';
+import header from './en/header';
+import loginPage from './en/loginPage';
+import forgotPasswordPage from './en/forgotPasswordPage';
+import updatePasswordPage from './en/updatePasswordPage';
 import dashboard from './en/dashboard';
 import sidebar from './en/sidebar';
 import subscribers from './en/subscribers';
-// Import other English translation modules you have created here
+// Import other English translation modules as you create them
 // For example:
-// import settings from './en/settings';
-// import finances from './en/finances';
+// import settingsGlobalPage from './en/settingsGlobalPage';
+// import popsPage from './en/popsPage';
+// import etc...
 
 // Combine all English translation modules into a single 'en' object
 const en = {
-  ...core,
-  ...dashboard,
+  ...auth,
+  ...header,
+  ...loginPage,
+  ...forgotPasswordPage,
+  ...updatePasswordPage,
+  ...dashboard, // dashboard.ts now likely uses keys like 'dashboard.total_subscribers_title' directly
   ...sidebar,
   ...subscribers,
-  // Spread other imported modules here:
-  // ...settings,
-  // ...finances,
+  // Spread other imported page-specific modules here:
+  // ...settingsGlobalPage,
+  // ...popsPage,
 };
 
 const translations = {
