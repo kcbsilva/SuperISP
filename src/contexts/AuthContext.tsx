@@ -1,7 +1,7 @@
 // src/contexts/AuthContext.tsx
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/services/supabase/db';
 import type { User, Session } from '@supabase/supabase-js';
@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Start true
   const router = useRouter();
+  const isLoadingRef = useRef(true); // Ref to track initial loading state
 
   useEffect(() => {
     let isMounted = true;
@@ -34,36 +35,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(currentUser);
       setIsAuthenticated(!!currentUser);
       
-      // Only set isLoading to false once, when the initial check is done or first relevant event.
-      if (isLoading) { 
+      if (isLoadingRef.current) { 
         console.log('AuthProvider: Setting isLoading to false. Source:', source);
         setIsLoading(false);
+        isLoadingRef.current = false; 
       }
     };
 
-    // Initial session check
-    const initializeAuth = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        console.log('AuthProvider: getSession() resolved. Session:', session ? 'Exists' : 'Null', 'Error:', error);
-        if (error) console.error('AuthProvider: Error in getSession initial check:', error);
-        await processSession(session, error ? 'getSession error' : 'getSession');
-      } catch (error) {
-        console.error('AuthProvider: Critical error in getSession() promise:', error);
-        await processSession(null, 'getSession critical error');
-      }
-    };
-
-    initializeAuth();
-
-    // Listen for auth changes
+    // Supabase client automatically performs an initial session check which will
+    // trigger onAuthStateChange with INITIAL_SESSION.
+    // We don't need a separate initializeAuth() call here for getSession().
+    
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log(`AuthProvider: onAuthStateChange event: ${event}, Session: ${session ? 'Exists' : 'Null'}`);
         await processSession(session, `onAuthStateChange (${event})`);
-        
-        // Removed router.refresh() from here to let LayoutRenderer handle redirection
-        // based on context state changes.
       }
     );
 
@@ -72,7 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isMounted = false;
       subscription?.unsubscribe();
     };
-  }, [isLoading]); // isLoading added to ensure it's correctly set once.
+  }, []); // Empty dependency array ensures this effect runs only once on mount
 
   const login = async (email?: string, password?: string, redirectTo: string = '/admin/dashboard') => {
     if (!email || !password) {
@@ -103,7 +89,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error('Logout failed:', error);
     }
     // User and isAuthenticated state will be updated by onAuthStateChange.
-    // Redirect after state update is handled by LayoutRenderer.
     router.push(redirectTo); 
   };
 
