@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // Start true
   const router = useRouter();
 
   useEffect(() => {
@@ -34,7 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(currentUser);
       setIsAuthenticated(!!currentUser);
       
-      if (isLoading) {
+      // Only set isLoading to false once, when the initial check is done or first relevant event.
+      if (isLoading) { 
         console.log('AuthProvider: Setting isLoading to false. Source:', source);
         setIsLoading(false);
       }
@@ -61,11 +62,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log(`AuthProvider: onAuthStateChange event: ${event}, Session: ${session ? 'Exists' : 'Null'}`);
         await processSession(session, `onAuthStateChange (${event})`);
         
-        // Force a router refresh after successful sign in to sync server/client state
-        if (event === 'SIGNED_IN' && session) {
-          console.log('AuthProvider: Forcing router refresh after SIGNED_IN');
-          router.refresh();
-        }
+        // Removed router.refresh() from here to let LayoutRenderer handle redirection
+        // based on context state changes.
       }
     );
 
@@ -74,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isMounted = false;
       subscription?.unsubscribe();
     };
-  }, []);
+  }, [isLoading]); // isLoading added to ensure it's correctly set once.
 
   const login = async (email?: string, password?: string, redirectTo: string = '/admin/dashboard') => {
     if (!email || !password) {
@@ -91,8 +89,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw error;
       }
       
-      // Don't redirect immediately - let the auth state change handler do it
-      // The onAuthStateChange will trigger and router.refresh() will sync the state
       console.log('Login successful, waiting for auth state change...');
       
     } catch (error: any) {
@@ -106,7 +102,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (error) {
       console.error('Logout failed:', error);
     }
-    router.push(redirectTo);
+    // User and isAuthenticated state will be updated by onAuthStateChange.
+    // Redirect after state update is handled by LayoutRenderer.
+    router.push(redirectTo); 
   };
 
   return (
