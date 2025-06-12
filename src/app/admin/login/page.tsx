@@ -1,7 +1,7 @@
 //src/app/admin/login/page.tsx
 'use client';
 import * as React from "react";
-import { useState, useEffect } from "react"; // Removed SVGProps as ProlterLogo is now a separate component
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import { ProlterLogo } from '@/components/prolter-logo'; // Import the new ProlterLogo component
+import { ProlterLogo } from '@/components/prolter-logo';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -31,17 +31,13 @@ export default function AdminLoginPage() {
   const [ipLoading, setIpLoading] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login, isAuthenticated, isLoading: authIsLoading } = useAuth();
+  const { login, isAuthenticated, isLoading: authIsLoading } = useAuth(); // isAuthenticated and authIsLoading are kept for UI state, not redirection here.
   const { t } = useLocale();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
 
-  useEffect(() => {
-    if (!authIsLoading && isAuthenticated) {
-      const redirectUrl = searchParams.get('redirect_url') || '/admin/dashboard';
-      router.push(redirectUrl);
-    }
-  }, [isAuthenticated, authIsLoading, router, searchParams]);
+  // useEffect for redirecting after login is REMOVED.
+  // LayoutRenderer will handle redirection based on AuthContext state.
 
   useEffect(() => {
     fetch("https://api.ipify.org?format=json")
@@ -64,8 +60,12 @@ export default function AdminLoginPage() {
     setIsSubmitting(true);
 
     try {
-      const redirectUrl = searchParams.get('redirect_url') || '/admin/dashboard';
-      await login(email, password, redirectUrl);
+      // The redirectUrl calculation here is for potential future use or if login itself needed it.
+      // Currently, AuthContext.login doesn't use it, and LayoutRenderer handles the redirect.
+      // const redirectUrl = searchParams.get('redirect_url') || '/admin/dashboard';
+      await login(email, password); // Removed redirectUrl as it's not used by AuthContext.login for redirection
+      // If login is successful, AuthContext state changes.
+      // LayoutRenderer's useEffect will detect isAuthenticated becoming true and redirect.
     } catch (loginError: any) {
       if (loginError.message === 'auth.email_not_confirmed') {
         setError(t('auth.email_not_confirmed_error', 'Your email address has not been confirmed. Please check your inbox (and spam folder) for a confirmation link.'));
@@ -77,6 +77,9 @@ export default function AdminLoginPage() {
     }
   };
 
+  // This loader handles the case where AuthContext is still loading its initial state.
+  // If LayoutRenderer is already showing a global loader, this might be redundant,
+  // but it's fine for a brief period.
   if (authIsLoading && !isSubmitting) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-background">
@@ -93,7 +96,7 @@ export default function AdminLoginPage() {
     <div className="flex min-h-screen w-full bg-background">
       {/* Left Side - Branding/Welcome (Visible on larger screens) */}
       <div className="hidden lg:flex lg:w-3/4 bg-muted flex-col items-center justify-center p-12 text-center">
-        <ProlterLogo width="200" height="48" /> {/* Using the imported component */}
+        <ProlterLogo width="200" height="48" />
         <h1 className="mt-8 text-3xl font-bold text-primary">
           {t("login.welcome_title", "Welcome to Prolter ISP")}
         </h1>
@@ -113,11 +116,11 @@ export default function AdminLoginPage() {
       </div>
 
       {/* Right Side - Login Form (Takes full width on small screens) */}
-      <div className="w-full lg:w-1/4 flex justify-center items-center bg-card p-4 md:p-8"> {/* Changed bg-background to bg-card */}
-        <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg"> {/* Ensured card uses card styles */}
+      <div className="w-full lg:w-1/4 flex justify-center items-center bg-card p-4 md:p-8">
+        <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg">
           <CardHeader className="items-center pt-8 pb-4">
             <div className="lg:hidden mb-4">
-              <ProlterLogo /> {/* Using the imported component */}
+              <ProlterLogo />
             </div>
             <CardTitle className="text-xl text-primary pt-4 lg:pt-0">
               {t("login.title", "Admin Login")}
