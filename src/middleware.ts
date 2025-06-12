@@ -1,3 +1,4 @@
+
 // src/middleware.ts
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -12,7 +13,6 @@ const PUBLIC_ADMIN_PATHS = [
   ADMIN_LOGIN_PATH,
   ADMIN_FORGOT_PASSWORD_PATH,
   ADMIN_UPDATE_PASSWORD_PATH,
-  // ADMIN_ROOT_PATH is handled separately as it might redirect to login or dashboard
 ];
 
 export async function middleware(request: NextRequest) {
@@ -43,11 +43,12 @@ export async function middleware(request: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
+  // console.log(`[Middleware] Path: ${request.nextUrl.pathname}, Session from Supabase: ${session ? 'Exists' : 'Null'}`);
+
 
   const { pathname } = request.nextUrl;
   const isAuthenticated = !!session;
 
-  // Allow requests for API routes, Next.js static files, and image optimization files immediately
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next/static') ||
@@ -67,27 +68,42 @@ export async function middleware(request: NextRequest) {
 
   if (isAdminPath) {
     if (isAuthenticated) {
-      // If authenticated and trying to access login, forgot-password, or admin root, redirect to dashboard
       if (isPublicAdminPath || isAdminRootPath) {
-        // Exception: if on update-password and authenticated, it might be a PASSWORD_RECOVERY session, so allow it.
-        // Supabase client on the update-password page will handle the token.
-        // If it's a regular session on update-password, LayoutRenderer might redirect.
         if (pathname === ADMIN_UPDATE_PASSWORD_PATH) {
-            return response;
+            // Allow access, page logic will handle session type
+            return response; 
         }
-        return NextResponse.redirect(new URL(ADMIN_DASHBOARD_PATH, request.url));
+        // User is authenticated but on a public admin page (login, forgot-password) or admin root.
+        // Redirect to dashboard.
+        const redirectUrl = new URL(ADMIN_DASHBOARD_PATH, request.url);
+        const redirectResponse = NextResponse.redirect(redirectUrl);
+        // Transfer cookies from the initial 'response' (potentially modified by Supabase) to the new redirectResponse
+        response.cookies.getAll().forEach(cookie => {
+          redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+        });
+        return redirectResponse;
       }
-      return response; // User is authenticated and on a protected admin page
+      // User is authenticated and on a protected admin page (not login, forgot-pw, etc.)
+      return response;
     } else {
       // User is not authenticated
       if (!isPublicAdminPath && !isAdminRootPath) {
-        // And not on a public admin page or admin root, redirect to login
+        // Not authenticated and on a protected admin path that is not admin root.
+        // Redirect to login.
         const loginUrl = new URL(ADMIN_LOGIN_PATH, request.url);
-        const existingRedirectUrl = request.nextUrl.searchParams.get('redirect_url');
-        loginUrl.searchParams.set('redirect_url', existingRedirectUrl || (pathname + request.nextUrl.search));
-        return NextResponse.redirect(loginUrl);
+        const redirectParam = request.nextUrl.searchParams.get('redirect_url');
+        const targetRedirect = redirectParam || (pathname + request.nextUrl.search);
+        if (targetRedirect) {
+            loginUrl.searchParams.set('redirect_url', targetRedirect);
+        }
+        
+        const redirectResponse = NextResponse.redirect(loginUrl);
+        response.cookies.getAll().forEach(cookie => {
+          redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+        });
+        return redirectResponse;
       }
-      // If not authenticated but already on a public admin page (login, forgot-password, update-password) or admin root, allow access
+      // User is not authenticated but on a public admin page (login, forgot-pw, update-pw) or admin root. Allow access.
       return response;
     }
   }
@@ -98,15 +114,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - specific static assets (e.g., .ico, .png, .svg, .jpg, .jpeg)
-     *
-     * This ensures that all actual page routes are processed by the middleware.
-     */
     '/((?!api|_next/static|_next/image|.*\\.(?:ico|png|svg|jpg|jpeg)$).*)',
   ],
 };
