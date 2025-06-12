@@ -1,4 +1,3 @@
-
 // src/middleware.ts
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -40,8 +39,7 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // IMPORTANT: supabase.auth.getSession() can potentially update response.cookies through the
-  // 'set' and 'remove' callbacks in its options, especially if a token refresh occurs.
+  // Check for session and handle potential token refresh
   const {
     data: { session },
     error: sessionError,
@@ -50,17 +48,13 @@ export async function middleware(request: NextRequest) {
   if (sessionError) {
     console.error('[Middleware] Error getting session:', sessionError.message);
   }
-  
-  // console.log(`[Middleware] Path: ${request.nextUrl.pathname}, Session from Supabase getSession: ${session ? 'Exists' : 'Null'}`);
-  // console.log('[Middleware] Request cookies:', JSON.stringify(request.cookies.getAll()));
-  // if (session) {
-  //   console.log('[Middleware] Session object:', JSON.stringify(session, null, 2));
-  // }
-
 
   const { pathname } = request.nextUrl;
   const isAuthenticated = !!session;
 
+  console.log(`[Middleware] Path: ${pathname}, Authenticated: ${isAuthenticated}`);
+
+  // Skip middleware for static assets and API routes
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next/static') ||
@@ -80,49 +74,69 @@ export async function middleware(request: NextRequest) {
 
   if (isAdminPath) {
     if (isAuthenticated) {
-      // console.log(`[Middleware] User IS AUTHENTICATED. Path: ${pathname}`);
-      if (isPublicAdminPath || isAdminRootPath) {
-        if (pathname === ADMIN_UPDATE_PASSWORD_PATH) {
-            // console.log(`[Middleware] Authenticated user on update-password. Allowing.`);
-            // For update-password, it's crucial that any Set-Cookie headers from session refresh are passed back.
-            return response; 
-        }
-        // User is authenticated but on a public admin page (login, forgot-password) or admin root.
-        // Redirect to dashboard.
-        // console.log(`[Middleware] Authenticated user on public admin path ${pathname}. Redirecting to dashboard.`);
-        const redirectUrl = new URL(ADMIN_DASHBOARD_PATH, request.url);
-        // Pass the headers from the `response` object, which may have been modified by Supabase.
-        return NextResponse.redirect(redirectUrl, { headers: response.headers });
+      console.log(`[Middleware] User IS AUTHENTICATED. Path: ${pathname}`);
+      
+      // Handle update-password specially - always allow if authenticated
+      if (pathname === ADMIN_UPDATE_PASSWORD_PATH) {
+        console.log(`[Middleware] Authenticated user on update-password. Allowing.`);
+        return response;
       }
-      // User is authenticated and on a protected admin page.
-      // console.log(`[Middleware] Authenticated user on protected admin path ${pathname}. Allowing.`);
+      
+      // Redirect authenticated users away from public admin pages
+      if (isPublicAdminPath || isAdminRootPath) {
+        console.log(`[Middleware] Authenticated user on public admin path ${pathname}. Redirecting to dashboard.`);
+        const redirectUrl = new URL(ADMIN_DASHBOARD_PATH, request.url);
+        
+        // Create a new response with redirect and preserve any cookies that might have been set
+        const redirectResponse = NextResponse.redirect(redirectUrl);
+        
+        // Copy over any cookies that were set during session refresh
+        response.cookies.getAll().forEach(cookie => {
+          redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+        });
+        
+        return redirectResponse;
+      }
+      
+      // User is authenticated and on a protected admin page - allow access
+      console.log(`[Middleware] Authenticated user on protected admin path ${pathname}. Allowing.`);
       return response;
+      
     } else {
-      // User is not authenticated
-      // console.log(`[Middleware] User IS NOT AUTHENTICATED. Path: ${pathname}`);
+      // User is NOT authenticated
+      console.log(`[Middleware] User IS NOT AUTHENTICATED. Path: ${pathname}`);
+      
       if (!isPublicAdminPath && !isAdminRootPath) {
-        // Not authenticated and on a protected admin path that is not admin root.
-        // Redirect to login.
-        // console.log(`[Middleware] Unauthenticated user on protected admin path ${pathname}. Redirecting to login.`);
+        // Not authenticated and trying to access protected admin path
+        console.log(`[Middleware] Unauthenticated user on protected admin path ${pathname}. Redirecting to login.`);
+        
         const loginUrl = new URL(ADMIN_LOGIN_PATH, request.url);
         const redirectParam = request.nextUrl.searchParams.get('redirect_url');
         const targetRedirect = redirectParam || (pathname + request.nextUrl.search);
 
+        // Only add redirect_url if it's not the login page itself
         if (targetRedirect && targetRedirect !== ADMIN_LOGIN_PATH && !targetRedirect.startsWith(ADMIN_LOGIN_PATH + '?')) {
-            loginUrl.searchParams.set('redirect_url', targetRedirect);
+          loginUrl.searchParams.set('redirect_url', targetRedirect);
         }
         
-        // Pass the headers from the `response` object.
-        return NextResponse.redirect(loginUrl, { headers: response.headers });
+        const redirectResponse = NextResponse.redirect(loginUrl);
+        
+        // Preserve any cookies
+        response.cookies.getAll().forEach(cookie => {
+          redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+        });
+        
+        return redirectResponse;
       }
-      // User is not authenticated but on a public admin page or admin root. Allow access.
-      // console.log(`[Middleware] Unauthenticated user on public admin path ${pathname} or admin root. Allowing.`);
+      
+      // User is not authenticated but on a public admin page - allow access
+      console.log(`[Middleware] Unauthenticated user on public admin path ${pathname} or admin root. Allowing.`);
       return response;
     }
   }
 
-  // For non-admin public routes or if already handled, allow access
-  // console.log(`[Middleware] Non-admin path ${pathname}. Allowing.`);
+  // For non-admin routes, allow access
+  console.log(`[Middleware] Non-admin path ${pathname}. Allowing.`);
   return response;
 }
 
