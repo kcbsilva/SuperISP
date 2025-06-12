@@ -5,8 +5,8 @@ import jwt from 'jsonwebtoken';
 export async function POST(request: Request) {
   const { email, password } = await request.json();
 
-  // Dummy auth check - Restored to demo/demo
-  if (email === 'demo' && password === 'demo') {
+  // Dummy auth check - Restored to demo@demo.com/demo
+  if (email === 'demo@demo.com' && password === 'demo') {
     const token = jwt.sign({ email }, process.env.JWT_SECRET!, { expiresIn: '1d' });
 
     const response = NextResponse.json({ success: true });
