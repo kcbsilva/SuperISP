@@ -1,3 +1,4 @@
+// src/translations/en/sidebar.ts
 const sidebar = {
     sidebar: {
       dashboard: 'Dashboard',
