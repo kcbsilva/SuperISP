@@ -1,8 +1,7 @@
-//src/app/admin/login/page.tsx
 'use client';
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,15 +28,21 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const [publicIP, setPublicIP] = useState<string | null>(null);
   const [ipLoading, setIpLoading] = useState(true);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { login, isAuthenticated, isLoading: authIsLoading } = useAuth(); // isAuthenticated and authIsLoading are kept for UI state, not redirection here.
-  const { t } = useLocale();
+  const [redirectUrl, setRedirectUrl] = useState<string>("/admin/dashboard");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const router = useRouter();
+  const { login, isAuthenticated, isLoading: authIsLoading } = useAuth();
+  const { t } = useLocale();
 
-  // useEffect for redirecting after login is REMOVED.
-  // LayoutRenderer will handle redirection based on AuthContext state.
+  // Get redirect_url client-side only to avoid hydration mismatch
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get("redirect_url");
+    if (redirect) {
+      setRedirectUrl(redirect);
+    }
+  }, []);
 
   useEffect(() => {
     fetch("https://api.ipify.org?format=json")
@@ -53,19 +58,13 @@ export default function AdminLoginPage() {
       });
   }, []);
 
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError("");
     setIsSubmitting(true);
 
     try {
-      // The redirectUrl calculation here is for potential future use or if login itself needed it.
-      // Currently, AuthContext.login doesn't use it, and LayoutRenderer handles the redirect.
-      // const redirectUrl = searchParams.get('redirect_url') || '/admin/dashboard';
-      await login(email, password, '/admin/dashboard'); // Added redirect path
-      // If login is successful, AuthContext state changes.
-      // LayoutRenderer's useEffect will detect isAuthenticated becoming true and redirect.
+      await login(email, password, redirectUrl);
     } catch (loginError: any) {
       if (loginError.message === 'auth.email_not_confirmed') {
         setError(t('auth.email_not_confirmed_error', 'Your email address has not been confirmed. Please check your inbox (and spam folder) for a confirmation link.'));
@@ -77,16 +76,13 @@ export default function AdminLoginPage() {
     }
   };
 
-  // This loader handles the case where AuthContext is still loading its initial state.
-  // If LayoutRenderer is already showing a global loader, this might be redundant,
-  // but it's fine for a brief period.
   if (authIsLoading && !isSubmitting) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-background">
         <div className="flex space-x-2">
-          <div className="h-3 w-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="h-3 w-3 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="h-3 w-3 bg-foreground rounded-full animate-bounce"></div>
+          <div className="h-3 w-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
+          <div className="h-3 w-3 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]" />
+          <div className="h-3 w-3 bg-foreground rounded-full animate-bounce" />
         </div>
       </div>
     );
@@ -94,7 +90,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="flex min-h-screen w-full bg-background">
-      {/* Left Side - Branding/Welcome (Visible on larger screens) */}
+      {/* Left Branding */}
       <div className="hidden lg:flex lg:w-3/4 bg-muted flex-col items-center justify-center p-12 text-center">
         <ProlterLogo width="200" height="48" />
         <h1 className="mt-8 text-3xl font-bold text-primary">
@@ -115,7 +111,7 @@ export default function AdminLoginPage() {
         </div>
       </div>
 
-      {/* Right Side - Login Form (Takes full width on small screens) */}
+      {/* Right Login */}
       <div className="w-full lg:w-1/4 flex justify-center items-center bg-card p-4 md:p-8">
         <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg">
           <CardHeader className="items-center pt-8 pb-4">
@@ -126,12 +122,9 @@ export default function AdminLoginPage() {
               {t("login.title", "Admin Login")}
             </CardTitle>
             <CardDescription className="text-muted-foreground text-center px-2">
-              {t(
-                "login.description",
-                "Enter your credentials to access the admin panel."
-              )}
+              {t("login.description", "Enter your credentials to access the admin panel.")}
             </CardDescription>
-             <Separator className="my-2 bg-border" />
+            <Separator className="my-2 bg-border" />
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">

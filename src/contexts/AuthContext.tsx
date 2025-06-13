@@ -1,4 +1,3 @@
-// src/contexts/AuthContext.tsx
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
@@ -19,33 +18,56 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Start true
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const isLoadingRef = useRef(true); // Ref to track initial loading state
+  const isLoadingRef = useRef(true);
+  const initializationRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
 
     const processSession = async (session: Session | null, source: string) => {
       if (!isMounted) return;
-      
+
       console.log(`AuthProvider: Processing session from ${source}. Session: ${session ? 'Exists' : 'Null'}`);
-      
+
       const currentUser = session?.user || null;
       setUser(currentUser);
       setIsAuthenticated(!!currentUser);
-      
-      if (isLoadingRef.current) { 
+
+      if (isLoadingRef.current) {
         console.log('AuthProvider: Setting isLoading to false. Source:', source);
         setIsLoading(false);
-        isLoadingRef.current = false; 
+        isLoadingRef.current = false;
       }
     };
 
-    // Supabase client automatically performs an initial session check which will
-    // trigger onAuthStateChange with INITIAL_SESSION.
-    // We don't need a separate initializeAuth() call here for getSession().
-    
+    const initializeAuth = async () => {
+      if (initializationRef.current) return;
+      initializationRef.current = true;
+
+      try {
+        console.log('AuthProvider: Getting initial session...');
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('AuthProvider: Error getting initial session:', error);
+        }
+        
+        await processSession(session, 'initial getSession');
+      } catch (error) {
+        console.error('AuthProvider: Error during initialization:', error);
+        // Even if there's an error, we should stop loading
+        if (isLoadingRef.current) {
+          setIsLoading(false);
+          isLoadingRef.current = false;
+        }
+      }
+    };
+
+    // Initialize auth state immediately
+    initializeAuth();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log(`AuthProvider: onAuthStateChange event: ${event}, Session: ${session ? 'Exists' : 'Null'}`);
@@ -58,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isMounted = false;
       subscription?.unsubscribe();
     };
-  }, []); // Empty dependency array ensures this effect runs only once on mount
+  }, []);
 
   const login = async (email?: string, password?: string, redirectTo: string = '/admin/dashboard') => {
     if (!email || !password) {
@@ -67,29 +89,55 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      setIsLoading(true); // Set loading during login attempt
+      
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      
       if (error) {
+        setIsLoading(false); // Reset loading on error
         if (error.message.toLowerCase().includes('email not confirmed')) {
           throw new Error('auth.email_not_confirmed');
         }
         throw error;
       }
-      
-      console.log('Login successful, waiting for auth state change...');
+
+      console.log('Login successful, session:', data.session ? 'Exists' : 'Null');
+
+      // Don't redirect immediately - let the auth state change handle it
+      // The onAuthStateChange will update the context and trigger re-renders
+      // Let the LayoutRenderer handle the redirect based on auth state
       
     } catch (error: any) {
       console.error('Login failed:', error.message);
+      setIsLoading(false); // Reset loading on error
       throw error;
     }
   };
 
   const logout = async (redirectTo: string = '/admin/login') => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Logout failed:', error);
+    try {
+      setIsLoading(true); // Set loading during logout
+      
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error('Logout failed:', error);
+        setIsLoading(false); // Reset loading on error
+        throw error;
+      }
+
+      // Clear state immediately on successful logout
+      setUser(null);
+      setIsAuthenticated(false);
+      
+      console.log('Logout successful, redirecting to:', redirectTo);
+      router.push(redirectTo);
+      
+    } catch (error) {
+      console.error('Logout error:', error);
+      setIsLoading(false);
+      throw error;
     }
-    // User and isAuthenticated state will be updated by onAuthStateChange.
-    router.push(redirectTo); 
   };
 
   return (
