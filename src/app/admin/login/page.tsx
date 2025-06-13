@@ -28,32 +28,34 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const [publicIP, setPublicIP] = useState<string | null>(null);
   const [ipLoading, setIpLoading] = useState(true);
-  const [redirectUrl, setRedirectUrl] = useState<string>("/admin/dashboard");
+  const [redirectUrl, setRedirectUrl] = useState("/admin/dashboard");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
   const { login, isAuthenticated, isLoading: authIsLoading } = useAuth();
   const { t } = useLocale();
 
-  // Get redirect_url client-side only to avoid hydration mismatch
+  // Get redirect_url from query params
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const redirect = params.get("redirect_url");
-    if (redirect) {
-      setRedirectUrl(redirect);
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get("redirect_url");
+      if (redirect && redirect.startsWith("/admin")) {
+        setRedirectUrl(redirect);
+      }
     }
   }, []);
 
   useEffect(() => {
     fetch("https://api.ipify.org?format=json")
-      .then((response) => response.json())
+      .then((res) => res.json())
       .then((data) => {
-        setPublicIP(data.ip);
+        setPublicIP(data.ip || "Unavailable");
         setIpLoading(false);
       })
       .catch((e) => {
-        console.error("Error fetching IP:", e);
-        setPublicIP("N/A");
+        console.error("IP fetch error:", e);
+        setPublicIP("Unavailable");
         setIpLoading(false);
       });
   }, []);
@@ -90,7 +92,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="flex min-h-screen w-full bg-background">
-      {/* Left Branding */}
+      {/* Branding section */}
       <div className="hidden lg:flex lg:w-3/4 bg-muted flex-col items-center justify-center p-12 text-center">
         <ProlterLogo width="200" height="48" />
         <h1 className="mt-8 text-3xl font-bold text-primary">
@@ -106,12 +108,11 @@ export default function AdminLoginPage() {
             layout="fill"
             objectFit="cover"
             className="rounded-lg shadow-xl"
-            data-ai-hint="network technology"
           />
         </div>
       </div>
 
-      {/* Right Login */}
+      {/* Login form */}
       <div className="w-full lg:w-1/4 flex justify-center items-center bg-card p-4 md:p-8">
         <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg">
           <CardHeader className="items-center pt-8 pb-4">
@@ -129,7 +130,7 @@ export default function AdminLoginPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-foreground">{t("login.username_label", "Email")}</Label>
+                <Label htmlFor="email">{t("login.username_label", "Email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -142,7 +143,7 @@ export default function AdminLoginPage() {
               </div>
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="password" className="text-foreground">{t("login.password_label", "Password")}</Label>
+                  <Label htmlFor="password">{t("login.password_label", "Password")}</Label>
                   <Link href="/admin/forgot-password" className="text-xs text-primary hover:underline">
                     {t("login.forgot_password", "Forgot Password?")}
                   </Link>
@@ -158,15 +159,19 @@ export default function AdminLoginPage() {
                 />
               </div>
               {error && <p className="text-xs text-destructive">{error}</p>}
-              <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting || authIsLoading}>
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              <Button
+                type="submit"
+                className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                disabled={isSubmitting || authIsLoading}
+              >
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isSubmitting ? t('login.loading', 'Signing In...') : t("login.submit_button", "Sign In")}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center items-center text-xs pt-4 pb-6 px-6">
             <div className="text-muted-foreground">
-              {t("login.your_ip", "Your IP:")}{" "}
+              {t("login.your_ip", "Your IP:")}&nbsp;
               {ipLoading ? (
                 <Skeleton className="h-3 w-20 inline-block bg-muted" />
               ) : (

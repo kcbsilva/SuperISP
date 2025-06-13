@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Your existing config
   output: 'standalone',
   typescript: {
     ignoreBuildErrors: true,
@@ -8,6 +9,10 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  
+  // FONT FIX: Disable font optimization to prevent 403 errors
+  optimizeFonts: false,
+  
   images: {
     remotePatterns: [
       {
@@ -24,6 +29,26 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  // Headers to help with font loading in cloud environments
+  async headers() {
+    return [
+      {
+        source: '/_next/static/media/(.*)',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
+
   webpack: (config, { isServer }) => {
     // Fix for 'net', 'tls', 'fs' modules not found in client-side bundle due to mysql2
     if (!isServer) {
