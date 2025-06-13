@@ -15,7 +15,6 @@ const ADMIN_ROOT_PATH = '/admin';
 const ADMIN_FORGOT_PASSWORD_PATH = '/admin/forgot-password';
 const ADMIN_UPDATE_PASSWORD_PATH = '/admin/update-password';
 
-// Public paths that don't require authentication
 const PUBLIC_ADMIN_PATHS = [
   ADMIN_LOGIN_PATH,
   ADMIN_FORGOT_PASSWORD_PATH,
@@ -24,20 +23,26 @@ const PUBLIC_ADMIN_PATHS = [
 
 export default function LayoutRenderer({ children: pageContent }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { isAuthenticated, user, isLoading: isAuthContextLoading, logout } = useAuth(); // Get user here
+  const { isAuthenticated, user, isLoading: isAuthContextLoading, logout } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const router = useRouter();
   const { t } = useLocale();
   const { toast } = useToast();
 
-  const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
-  const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+  const REDIRECT_LOOP_BREAK_TIMEOUT_MS = 15 * 1000; // 15 seconds
+
+  const inactivityLogoutTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const redirectLoopBreakTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const isPublicPath = PUBLIC_ADMIN_PATHS.includes(pathname);
   const isAdminPath = pathname.startsWith('/admin');
 
-  console.log(`LayoutRenderer - TOP LEVEL RENDER: isAuthContextLoading=${isAuthContextLoading}, isAuthenticated=${isAuthenticated}, pathname=${pathname}`);
+  // Initial mount effect
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleInactivityLogout = useCallback(() => {
     logout(ADMIN_LOGIN_PATH + '?reason=inactive');
@@ -49,85 +54,131 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
     });
   }, [logout, t, toast]);
 
-  const resetLogoutTimer = useCallback(() => {
-    if (logoutTimerRef.current) {
-      clearTimeout(logoutTimerRef.current);
+  const resetInactivityTimer = useCallback(() => {
+    if (inactivityLogoutTimerRef.current) {
+      clearTimeout(inactivityLogoutTimerRef.current);
     }
-    if (isAuthenticated && !isPublicPath) {
-      logoutTimerRef.current = setTimeout(handleInactivityLogout, INACTIVITY_TIMEOUT_MS);
+    if (isAuthenticated && !isPublicPath && isMounted) { // Added isMounted check
+      inactivityLogoutTimerRef.current = setTimeout(handleInactivityLogout, INACTIVITY_TIMEOUT_MS);
     }
-  }, [isAuthenticated, isPublicPath, handleInactivityLogout]);
+  }, [isAuthenticated, isPublicPath, handleInactivityLogout, isMounted]);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
+  // Inactivity timer management
   useEffect(() => {
     if (!isMounted) return;
 
     const activityEvents: (keyof WindowEventMap)[] = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
 
     if (isAuthenticated && !isPublicPath) {
-      resetLogoutTimer();
-      activityEvents.forEach(event => window.addEventListener(event, resetLogoutTimer, { passive: true }));
+      resetInactivityTimer();
+      activityEvents.forEach(event => window.addEventListener(event, resetInactivityTimer, { passive: true }));
     } else {
-      if (logoutTimerRef.current) {
-        clearTimeout(logoutTimerRef.current);
+      if (inactivityLogoutTimerRef.current) {
+        clearTimeout(inactivityLogoutTimerRef.current);
       }
     }
 
     return () => {
-      if (logoutTimerRef.current) {
-        clearTimeout(logoutTimerRef.current);
+      if (inactivityLogoutTimerRef.current) {
+        clearTimeout(inactivityLogoutTimerRef.current);
       }
-      activityEvents.forEach(event => window.removeEventListener(event, resetLogoutTimer));
+      activityEvents.forEach(event => window.removeEventListener(event, resetInactivityTimer));
     };
-  }, [isMounted, isAuthenticated, isPublicPath, resetLogoutTimer]);
+  }, [isMounted, isAuthenticated, isPublicPath, resetInactivityTimer]);
 
+
+  // Redirection and loop breaking logic
   useEffect(() => {
     if (!isMounted || isAuthContextLoading) {
-      console.log(`LayoutRenderer Effect (Redirection Logic): SKIPPING - isMounted=${isMounted}, isAuthContextLoading=${isAuthContextLoading}`);
+      console.log(`LayoutRenderer Effect (Redirection Logic): SKIPPING - isMounted=${isMounted}, isAuthLoading=${isAuthContextLoading}`);
       return;
     }
 
-    console.log(`LayoutRenderer Effect (Redirection Logic): isMounted=${isMounted}, isAuthContextLoading=${isAuthContextLoading}, isAuthenticated=${isAuthenticated}, pathname=${pathname}, user: "${user?.id}"`);
-    let didRedirect = false;
+    // Clear any previous loop break timer at the start of this effect
+    if (redirectLoopBreakTimerRef.current) {
+      clearTimeout(redirectLoopBreakTimerRef.current);
+      redirectLoopBreakTimerRef.current = null;
+    }
+
+    console.log(`LayoutRenderer Effect (Redirection Logic): isMounted=${isMounted}, isAuthLoading=${isAuthContextLoading}, isAuthenticated=${isAuthenticated}, pathname=${pathname}, user: "${user?.id}"`);
+    let didRedirectThisPass = false;
 
     if (isAuthenticated) {
       console.log('LayoutRenderer Effect: User is authenticated.');
       if (pathname === ADMIN_ROOT_PATH) {
         console.log('LayoutRenderer Effect: Authenticated on ADMIN_ROOT_PATH, redirecting to dashboard');
         router.replace(ADMIN_DASHBOARD_PATH);
-        didRedirect = true;
+        didRedirectThisPass = true;
       } else if (isPublicPath) {
         console.log(`LayoutRenderer Effect: Authenticated on PUBLIC_ADMIN_PATH (${pathname}), redirecting to dashboard`);
         router.replace(ADMIN_DASHBOARD_PATH);
-        didRedirect = true;
+        didRedirectThisPass = true;
+
+        // If we are on the login page and authenticated, start the loop break timer
+        if (pathname === ADMIN_LOGIN_PATH) {
+          console.log('LayoutRenderer Effect: Starting redirect loop break timer.');
+          redirectLoopBreakTimerRef.current = setTimeout(() => {
+            // Check current conditions *inside* the timeout callback
+            // Need to check window.location.pathname because `pathname` in closure might be stale
+            if (window.location.pathname === ADMIN_LOGIN_PATH) {
+              console.warn('LayoutRenderer: Dashboard redirect appears stuck after 15s. Forcing logout.');
+              toast({
+                title: t('auth.redirect_stuck_title', 'Redirect Issue'),
+                description: t('auth.redirect_stuck_desc', 'Could not reach the dashboard. Logging out to prevent a loop.'),
+                variant: 'destructive',
+                duration: 7000,
+              });
+              logout(ADMIN_LOGIN_PATH + '?reason=redirect_loop_broken'); // logout will trigger auth state change
+            }
+          }, REDIRECT_LOOP_BREAK_TIMEOUT_MS);
+        }
+      } else {
+        // Authenticated and on a protected admin page (not login/forgot/update) or non-admin page.
+        // No redirect needed from here, ensure isRedirecting is false.
+        if (isRedirecting) setIsRedirecting(false);
       }
-    } else {
+    } else { // Not authenticated
       console.log('LayoutRenderer Effect: User is NOT authenticated.');
       if (isAdminPath && !isPublicPath && pathname !== ADMIN_ROOT_PATH) {
         console.log(`LayoutRenderer Effect: Unauthenticated on protected admin path (${pathname}), redirecting to login`);
         router.replace(ADMIN_LOGIN_PATH);
-        didRedirect = true;
+        didRedirectThisPass = true;
+      } else {
+         // Not authenticated and on a public page or admin root.
+         // No redirect needed, ensure isRedirecting is false.
+        if (isRedirecting) setIsRedirecting(false);
       }
     }
 
-    if (didRedirect) {
+    if (didRedirectThisPass && !isRedirecting) {
       setIsRedirecting(true);
-    } else if (isRedirecting) { 
-      console.log("LayoutRenderer Effect: No redirect performed, clearing redirecting state.");
+    } else if (!didRedirectThisPass && isRedirecting) {
+      // If no redirect was performed in this pass, but we were in a redirecting state, clear it.
+      // This happens if, for example, auth state changes while a redirect was "pending".
       setIsRedirecting(false);
     }
+    
+    // Cleanup function for the effect
+    return () => {
+      if (redirectLoopBreakTimerRef.current) {
+        clearTimeout(redirectLoopBreakTimerRef.current);
+        redirectLoopBreakTimerRef.current = null;
+        console.log('LayoutRenderer Effect: Cleared redirect loop break timer on cleanup or re-run.');
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMounted, isAuthContextLoading, isAuthenticated, pathname, user, router, logout, t, toast]); // isAdminPath, isPublicPath removed as they are derived from pathname
 
-  }, [isMounted, isAuthContextLoading, isAuthenticated, pathname, router, isAdminPath, isPublicPath, user]); // Added user to dependency array
 
-
-  if (!isMounted || isAuthContextLoading || isRedirecting) {
+  if (!isMounted || isAuthContextLoading || (isRedirecting && isAuthenticated && pathname === ADMIN_LOGIN_PATH)) {
+    // Show loader if:
+    // 1. Not mounted yet.
+    // 2. Auth context is still loading.
+    // 3. We are in a redirecting state FROM the login page while authenticated (meaning we are waiting for the loop break or successful redirect).
     const loadingMessage = isRedirecting
       ? (isAuthenticated ? t('auth.redirecting_dashboard', 'Redirecting to dashboard...') : t('auth.redirecting_login', 'Redirecting to login...'))
       : t('auth.loading', 'Loading authentication...');
-    console.log(`LayoutRenderer RENDER: Showing LOADER - isMounted=${isMounted}, isAuthContextLoading=${isAuthContextLoading}, isRedirecting=${isRedirecting}, Message: ${loadingMessage}`);
+    console.log(`LayoutRenderer RENDER: Showing LOADER - isMounted=${isMounted}, isAuthContextLoading=${isAuthContextLoading}, isRedirecting=${isRedirecting}, pathname=${pathname}, Message: ${loadingMessage}`);
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <div className="flex flex-col items-center">
@@ -141,3 +192,4 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
   console.log(`LayoutRenderer RENDER: Showing PAGE CONTENT for ${pathname}`);
   return <>{pageContent}</>;
 }
+
