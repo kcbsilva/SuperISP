@@ -95,7 +95,10 @@ const sidebar = {
       settings_mysql: 'MySQL',
       settings_mysql_databases: 'Databases',
       settings_mysql_cli: 'CLI',
+      pilotview: "Pilot View",
+      transitos: "Transits/Peering",
+      zones: "DNS Zones",
+      toggle_mobile_sidebar: "Toggle sidebar"
     }
   };
-  
-  export default sidebar;
+export default sidebar;

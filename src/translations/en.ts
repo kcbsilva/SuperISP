@@ -5,7 +5,7 @@ import loginPage from './en/loginPage';
 import forgotPasswordPage from './en/forgotPasswordPage';
 import updatePasswordPage from './en/updatePasswordPage';
 import dashboard from './en/dashboard';
-import sidebar from './en/sidebar'; // Import the new sidebar translations
+import sidebar from './en/sidebar'; // Import the new sidebar translations module
 import subscribers from './en/subscribers';
 // Import other English translation modules as you create them
 // For example:
@@ -21,7 +21,7 @@ const en = {
   ...forgotPasswordPage,
   ...updatePasswordPage,
   ...dashboard,
-  ...sidebar, // Spread the new sidebar translations
+  ...sidebar, // Spread the imported sidebar translations
   ...subscribers,
   // Spread other imported page-specific modules here:
   // ...settingsGlobalPage,
