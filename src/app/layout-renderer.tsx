@@ -1,3 +1,4 @@
+
 // src/app/layout-renderer.tsx
 
 'use client';
@@ -23,7 +24,7 @@ const PUBLIC_ADMIN_PATHS = [
 
 export default function LayoutRenderer({ children: pageContent }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { isAuthenticated, isLoading: isAuthContextLoading, logout } = useAuth();
+  const { isAuthenticated, user, isLoading: isAuthContextLoading, logout } = useAuth(); // Get user here
   const [isMounted, setIsMounted] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const router = useRouter();
@@ -114,15 +115,12 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
 
     if (didRedirect) {
       setIsRedirecting(true);
-    } else if (isRedirecting) { // If no redirect happened but we were in redirecting state
+    } else if (isRedirecting) { 
       console.log("LayoutRenderer Effect: No redirect performed, clearing redirecting state.");
       setIsRedirecting(false);
     }
 
-  // NOTE: `user` object from useAuth() was added to console.log for debugging, but not added to dependency array to avoid excessive re-runs.
-  // Key dependencies are isAuthenticated, isAuthContextLoading, pathname, and router object itself.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMounted, isAuthContextLoading, isAuthenticated, pathname, router, isAdminPath, isPublicPath]);
+  }, [isMounted, isAuthContextLoading, isAuthenticated, pathname, router, isAdminPath, isPublicPath, user]); // Added user to dependency array
 
 
   if (!isMounted || isAuthContextLoading || isRedirecting) {
