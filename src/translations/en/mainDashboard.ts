@@ -1,7 +1,7 @@
 // src/translations/en/dashboard.ts
 // Note: 'search' section has been moved to 'header.ts' as it's part of the AppHeader
 const dashboard = {
-  // dashboard: { // Assuming the key 'dashboard' is used as t('dashboard.dashboard_view_label')
+    dashboard: { // Assuming the key 'dashboard' is used as t('dashboard.dashboard_view_label')
     dashboard_view_label: 'Dashboard View',
     select_view: 'Select Dashboard View',
     general_view: 'General Dashboard',
@@ -39,7 +39,7 @@ const dashboard = {
       payment_status_desc: 'Overview of recent invoice payment statuses.',
       pie_chart_placeholder: 'Pie chart data not available.',
     },
-  // }
+  }
 };
 
 export default dashboard;

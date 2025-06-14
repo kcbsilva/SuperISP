@@ -4,7 +4,7 @@ import header from './en/header';
 import loginPage from './en/loginPage';
 import forgotPasswordPage from './en/forgotPasswordPage';
 import updatePasswordPage from './en/updatePasswordPage';
-import dashboard from './en/dashboard';
+import dashboard from './en/mainDashboard';
 import sidebar from './en/sidebar';
 import subscribers from './en/subscribers';
 // Import other English translation modules as you create them
