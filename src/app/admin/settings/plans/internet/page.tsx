@@ -1,4 +1,4 @@
-// src/app/settings/plans/internet/page.tsx
+// src/app/admin/settings/plans/internet/page.tsx
 'use client';
 
 import * as React from 'react';
@@ -19,7 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Wifi } from 'lucide-react'; // Added Wifi icon
 import { useLocale } from '@/contexts/LocaleContext';
 import { Badge } from '@/components/ui/badge';
 
@@ -65,7 +65,8 @@ const placeholderPlans: InternetPlan[] = [
 
 export default function InternetPlansPage() {
   const { t } = useLocale();
-  const iconSize = "h-3 w-3";
+  const iconSize = "h-3 w-3"; // Maintained icon size for Add button
+  const titleIconSize = "h-4 w-4"; // Slightly larger for title icon
 
   const handleAddPlan = () => {
     console.log('Add new internet plan clicked');
@@ -90,7 +91,8 @@ export default function InternetPlansPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-base font-semibold">
+        <h1 className="text-base font-semibold flex items-center gap-2"> {/* Added flex items-center gap-2 */}
+          <Wifi className={`${titleIconSize} text-primary`} /> {/* Added Wifi icon */}
           {t('settings_plans.internet_page_title', 'Internet Plans')}
         </h1>
         <Button
@@ -104,20 +106,9 @@ export default function InternetPlansPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm">
-            {t(
-              'settings_plans.existing_plans_title',
-              'Existing Internet Plans'
-            )}
-          </CardTitle>
-          <CardDescription className="text-xs">
-            {t(
-              'settings_plans.existing_plans_description_internet',
-              'Manage your internet service plans.'
-            )}
-          </CardDescription>
+          {/* CardTitle and CardDescription removed as requested */}
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0"> {/* Adjusted padding since CardHeader is now minimal or empty */}
           {placeholderPlans.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
