@@ -1,3 +1,4 @@
+
 // src/translations/en/settingsInternetPage.ts
 const settingsInternetPage = {
   settings_plans: {
@@ -17,9 +18,24 @@ const settingsInternetPage = {
     connection_type_radio: 'Radio',
     connection_type_satellite: 'Satellite',
     connection_type_utp: 'UTP',
-    // Note: table_header_actions and edit/remove_action were in the main settings_plans object previously.
-    // If they are specific to this page, they can be here. If general, they should remain in a general plans translation.
-    // For now, I'll assume they might be general and not include them here unless specified.
+    refresh_button: 'Refresh',
+    search_placeholder: 'Search plans by name or PoP...',
+    table_header_pop: 'PoP',
+    filter_pop_label: 'PoP',
+    filter_all_label: 'All',
+    filter_speed_label: 'Speed',
+    speed_lte100: '<= 100 Mbps',
+    speed_gt100: '> 100 Mbps',
+    filter_connection_type_label: 'Type',
+    sort_price_label: 'Sort Price',
+    sort_price_default: 'Default',
+    sort_price_asc: 'Low to High',
+    sort_price_desc: 'High to Low',
+    no_plans_match_filters: 'No internet plans match the current filters.',
+    add_plan_toast_title: 'Add Plan (Not Implemented)',
+    add_plan_toast_desc: 'Functionality to add new internet plans is not yet available.',
+    refresh_toast_title: 'Plans Refreshed',
+    refresh_toast_desc: 'The list of internet plans has been reloaded.',
   },
 };
 
