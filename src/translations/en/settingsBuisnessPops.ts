@@ -1,6 +1,6 @@
-//src/translations/en/pops.ts
+//src/translations/en/settingsBuisnessPops.ts
 
-const pops = {
+const settingsBuisnessPops = {
         title: 'Points of Presence (PoPs)',
         add_button: 'Add PoP',
         refresh_button: 'Refresh',
@@ -52,5 +52,4 @@ const pops = {
         edit_dialog_description: 'Update the PoP details.',
         form_update_button: 'Update PoP',
     }
-    
-      export default pops;
+      export default settingsBuisnessPops;

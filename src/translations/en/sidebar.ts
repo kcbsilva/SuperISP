@@ -71,6 +71,7 @@ const sidebar = {
       settings: 'Settings',
       settings_global: 'Global Settings',
       settings_business: 'Business',
+      settings_business_city: 'Cities',
       settings_business_pops: 'PoPs (Place of Presence)',
       settings_plans: 'Plans',
       settings_plans_internet: 'Internet',
@@ -92,12 +93,6 @@ const sidebar = {
       settings_integrations_meta: 'Meta',
       settings_integrations_sms: 'SMS',
       settings_users: 'Users',
-      settings_mysql: 'MySQL',
-      settings_mysql_databases: 'Databases',
-      settings_mysql_cli: 'CLI',
-      pilotview: "Pilot View",
-      transitos: "Transits/Peering",
-      zones: "DNS Zones",
       toggle_mobile_sidebar: "Toggle sidebar"
     }
   };

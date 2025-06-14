@@ -49,6 +49,7 @@ import {
 } from 'lucide-react';
 import type { Icon as LucideIcon } from 'lucide-react';
 import type { IconType } from 'react-icons';
+import { FaCity } from "react-icons/fa";
 
 export interface SidebarNavItem {
   title: string;
@@ -465,6 +466,12 @@ export const sidebarNav: SidebarNavItem[] = [
             href: '/admin/settings/business/pops',
             icon: Building,
             tooltip: 'sidebar.settings_business_pops',
+          },
+          {
+            title: 'sidebar.settings_business_city',
+            href: '/admin/settings/business/city',
+            icon: FaCity,
+            tooltip: 'sidebar.settings_business_city',
           },
         ],
       },

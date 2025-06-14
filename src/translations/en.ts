@@ -8,7 +8,7 @@ import dashboard from './en/mainDashboard';
 import sidebar from './en/sidebar'; // Import the new sidebar translations module
 import subscribers from './en/subscribers';
 import globalSettings from './en/globalSettings';
-import pops from './en/pops';
+import pops from './en/settingsBuisnessPops';
 import mapsPage from './en/mapsPage';
 import mapsElements from './en/mapsElements';
 import settingsUsers from './en/settingsUser';
@@ -38,6 +38,7 @@ import messengerDepartments from './en/messengerDepartments';
 import messengerChannels from './en/messengerChannels';
 import messengerFlow from './en/messengerFlow';
 import messengerConfigure from './en/messengerConfigure';
+import settingsBuisnessCities from './en/settingsBusinessCities';
 
 const en = {
   ...auth,
@@ -79,6 +80,8 @@ const en = {
   ...messengerChannels,
   ...messengerFlow,
   ...messengerConfigure,
+  ...settingsBuisnessCities,
+
 
   settings_plans: {
     internet_page_title: 'Internet Plans',
