@@ -9,8 +9,7 @@ import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
 import type { Pop, PopData } from '@/types/pops';
-import { addPop, getPops, updatePop, removePop } from '@/services/mysql/pops';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+// Removed MySQL service imports
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -22,7 +21,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
-
 const popSchema = z.object({
   name: z.string().min(1, 'PoP name is required'),
   location: z.string().min(1, 'Location is required'),
@@ -31,86 +29,23 @@ const popSchema = z.object({
 
 type PopFormData = z.infer<typeof popSchema>;
 
+// Placeholder data
+const placeholderPops: Pop[] = [
+  { id: 'pop-1', name: 'Central Hub', location: '123 Fiber Lane, Anytown', status: 'Active', createdAt: new Date() },
+  { id: 'pop-2', name: 'North Branch', location: '456 Network Rd, Anytown', status: 'Planned', createdAt: new Date(Date.now() - 86400000) },
+  { id: 'pop-3', name: 'West End POP', location: '789 Data Dr, Anytown', status: 'Inactive', createdAt: new Date(Date.now() - 172800000) },
+];
 
 export default function PoPsPage() {
-  const queryClientReact = useQueryClient();
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   const [editingPop, setEditingPop] = React.useState<Pop | null>(null);
   const [popToDelete, setPopToDelete] = React.useState<Pop | null>(null);
-
+  const [pops, setPops] = React.useState<Pop[]>(placeholderPops); // Use local state
+  const [isLoading, setIsLoading] = React.useState(false); // Simulate loading
 
   const { toast } = useToast();
   const { t } = useLocale();
-  const iconSize = "h-2.5 w-2.5"; // Reduced icon size
-
-
-  const { data: pops = [], isLoading: isLoadingPops, error: popsError, refetch: refetchPops } = useQuery<Pop[], Error>({
-    queryKey: ['pops'],
-    queryFn: getPops,
-  });
-
-  const addPopMutation = useMutation({
-    mutationFn: addPop,
-    onSuccess: (newPopId) => {
-      queryClientReact.invalidateQueries({ queryKey: ['pops'] });
-      toast({
-        title: t('pops.add_success_toast_title'),
-        description: t('pops.add_success_toast_description', '{name} has been added successfully.').replace('{name}', form.getValues('name')),
-      });
-      form.reset();
-      setIsAddModalOpen(false);
-    },
-    onError: (error: any) => {
-      toast({
-        title: t('pops.add_error_toast_title'),
-        description: error.message || t('pops.add_error_toast_description'),
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const updatePopMutation = useMutation({
-    mutationFn: (variables: { id: number | string; data: PopFormData }) => updatePop(variables.id, variables.data),
-    onSuccess: () => {
-        queryClientReact.invalidateQueries({ queryKey: ['pops'] });
-        toast({
-            title: t('pops.update_success_toast_title'),
-            description: t('pops.update_success_toast_description'),
-        });
-        form.reset();
-        setEditingPop(null);
-        setIsAddModalOpen(false);
-    },
-    onError: (error: any) => {
-        toast({
-            title: t('pops.update_error_toast_title'),
-            description: error.message || t('pops.update_error_toast_description'),
-            variant: 'destructive',
-        });
-    },
-  });
-
-  const removePopMutation = useMutation({
-    mutationFn: removePop,
-    onSuccess: () => {
-        queryClientReact.invalidateQueries({ queryKey: ['pops'] });
-        toast({
-            title: t('pops.delete_success_toast_title'),
-            description: t('pops.delete_success_toast_description'),
-            variant: 'destructive'
-        });
-        setPopToDelete(null);
-    },
-    onError: (error: any) => {
-        toast({
-            title: t('pops.delete_error_toast_title'),
-            description: error.message || t('pops.delete_error_toast_description'),
-            variant: 'destructive',
-        });
-        setPopToDelete(null);
-    },
-  });
-
+  const iconSize = "h-2.5 w-2.5";
 
   const form = useForm<PopFormData>({
     resolver: zodResolver(popSchema),
@@ -121,12 +56,53 @@ export default function PoPsPage() {
     },
   });
 
+  // Simulate fetching PoPs
+  const refetchPops = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setPops(placeholderPops); // Reset to initial placeholders or fetch new mock data
+      setIsLoading(false);
+      toast({
+        title: t('pops.refreshing_toast_title'),
+        description: t('pops.refreshing_toast_description'),
+      });
+    }, 500);
+  };
+
+  React.useEffect(() => {
+    // Initial load simulation
+    refetchPops();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
   const handleFormSubmit = (data: PopFormData) => {
-    if (editingPop) {
-        updatePopMutation.mutate({ id: editingPop.id, data });
-    } else {
-        addPopMutation.mutate(data);
-    }
+    setIsLoading(true);
+    setTimeout(() => {
+      if (editingPop) {
+        setPops(prevPops => prevPops.map(p => p.id === editingPop.id ? { ...editingPop, ...data, updatedAt: new Date() } : p));
+        toast({
+          title: t('pops.update_success_toast_title'),
+          description: t('pops.update_success_toast_description'),
+        });
+      } else {
+        const newPop: Pop = {
+          id: `pop-${Date.now()}`,
+          ...data,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        setPops(prevPops => [newPop, ...prevPops]);
+        toast({
+          title: t('pops.add_success_toast_title'),
+          description: t('pops.add_success_toast_description', '{name} has been added successfully.').replace('{name}', data.name),
+        });
+      }
+      form.reset();
+      setEditingPop(null);
+      setIsAddModalOpen(false);
+      setIsLoading(false);
+    }, 500);
   };
 
   const handleEditPop = (pop: Pop) => {
@@ -141,17 +117,19 @@ export default function PoPsPage() {
 
   const handleRemovePopConfirm = () => {
     if (popToDelete) {
-      removePopMutation.mutate(popToDelete.id);
+      setIsLoading(true);
+      setTimeout(() => {
+        setPops(prevPops => prevPops.filter(p => p.id !== popToDelete.id));
+        toast({
+          title: t('pops.delete_success_toast_title'),
+          description: t('pops.delete_success_toast_description'),
+          variant: 'destructive'
+        });
+        setPopToDelete(null);
+        setIsLoading(false);
+      }, 500);
     }
   };
-
-  const handleRefresh = () => {
-      refetchPops();
-      toast({
-        title: t('pops.refreshing_toast_title'),
-        description: t('pops.refreshing_toast_description'),
-      });
-    };
 
   const getStatusBadgeVariant = (status: string | undefined) => {
     if (!status) return 'secondary';
@@ -173,11 +151,11 @@ export default function PoPsPage() {
           <Button
               variant="default"
               size="sm"
-              onClick={handleRefresh}
-              disabled={isLoadingPops || addPopMutation.isPending || updatePopMutation.isPending || removePopMutation.isPending}
+              onClick={refetchPops}
+              disabled={isLoading}
               className="bg-primary hover:bg-primary/90"
           >
-              {isLoadingPops ? <Loader2 className={`mr-2 ${iconSize} animate-spin`} /> : <RefreshCw className={`mr-2 ${iconSize}`} />}
+              {isLoading ? <Loader2 className={`mr-2 ${iconSize} animate-spin`} /> : <RefreshCw className={`mr-2 ${iconSize}`} />}
               {t('pops.refresh_button')}
           </Button>
 
@@ -204,9 +182,9 @@ export default function PoPsPage() {
                         <FormField control={form.control} name="location" render={({ field }) => (<FormItem><FormLabel>{t('pops.form_location_label')}</FormLabel><FormControl><Input placeholder={t('pops.form_location_placeholder')} {...field} /></FormControl><FormMessage /></FormItem>)} />
                         <FormField control={form.control} name="status" render={({ field }) => (<FormItem><FormLabel>{t('pops.form_status_label')}</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder={t('pops.form_status_placeholder')} /></SelectTrigger></FormControl><SelectContent><SelectItem value="Active">{t('pops.form_status_active')}</SelectItem><SelectItem value="Inactive">{t('pops.form_status_inactive')}</SelectItem><SelectItem value="Planned">{t('pops.form_status_planned')}</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
                         <DialogFooter>
-                            <DialogClose asChild><Button type="button" variant="outline" disabled={addPopMutation.isPending || updatePopMutation.isPending}>{t('pops.form_cancel_button')}</Button></DialogClose>
-                            <Button type="submit" disabled={addPopMutation.isPending || updatePopMutation.isPending}>
-                                {(addPopMutation.isPending || updatePopMutation.isPending) && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
+                            <DialogClose asChild><Button type="button" variant="outline" disabled={isLoading}>{t('pops.form_cancel_button')}</Button></DialogClose>
+                            <Button type="submit" disabled={isLoading}>
+                                {isLoading && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
                                 {editingPop ? t('pops.form_update_button') : t('pops.form_save_button')}
                             </Button>
                         </DialogFooter>
@@ -223,14 +201,12 @@ export default function PoPsPage() {
           <CardDescription className="text-xs">{t('pops.table_description')}</CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
-          {isLoadingPops ? (
+          {isLoading && pops.length === 0 ? ( // Show skeleton only on initial load
             <div className="space-y-3 py-4">
                 <Skeleton className="h-8 w-full" />
                 <Skeleton className="h-8 w-full" />
                 <Skeleton className="h-8 w-full" />
             </div>
-          ) : popsError ? (
-             <div className="text-center text-destructive py-4 text-xs">{t('pops.loading_error', { message: popsError.message })}</div>
           ) : pops.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
@@ -259,12 +235,12 @@ export default function PoPsPage() {
                          {pop.createdAt instanceof Date ? pop.createdAt.toLocaleDateString() : pop.createdAt ? new Date(pop.createdAt).toLocaleDateString() :'N/A'}
                        </TableCell>
                       <TableCell className="text-center">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditPop(pop)} disabled={updatePopMutation.isPending}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditPop(pop)} disabled={isLoading}>
                            <Pencil className={iconSize} />
                         </Button>
                         <AlertDialog open={!!popToDelete && popToDelete.id === pop.id} onOpenChange={(open) => !open && setPopToDelete(null)}>
                             <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => handleDeleteClick(pop)} disabled={removePopMutation.isPending}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => handleDeleteClick(pop)} disabled={isLoading}>
                                     <Trash2 className={iconSize} />
                                 </Button>
                             </AlertDialogTrigger>
@@ -282,9 +258,9 @@ export default function PoPsPage() {
                                     <AlertDialogAction
                                         className={buttonVariants({ variant: "destructive" })}
                                         onClick={handleRemovePopConfirm}
-                                        disabled={removePopMutation.isPending}
+                                        disabled={isLoading}
                                     >
-                                    {removePopMutation.isPending ? <Loader2 className={`mr-2 ${iconSize} animate-spin`} /> : null}
+                                    {isLoading ? <Loader2 className={`mr-2 ${iconSize} animate-spin`} /> : null}
                                     {t('pops.delete_alert_delete')}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>

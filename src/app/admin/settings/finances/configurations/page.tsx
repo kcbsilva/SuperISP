@@ -62,8 +62,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { cn } from "@/lib/utils";
-import { useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/mysql/pops'; 
+// Removed useQuery and MySQL getPops import
 import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -87,9 +86,16 @@ interface BillingDay extends BillingDayFormData {
 }
 
 const placeholderBillingDays: BillingDay[] = [
-  { id: 'bd-1', dayOfMonth: 1, status: true, permittedPopIds: ['1'], activeContracts: 120 }, 
-  { id: 'bd-2', dayOfMonth: 15, status: true, permittedPopIds: ['1', '2'], activeContracts: 75 }, 
-  { id: 'bd-3', dayOfMonth: 'Last Day', status: false, permittedPopIds: ['3'], activeContracts: 0 }, 
+  { id: 'bd-1', dayOfMonth: 1, status: true, permittedPopIds: ['pop-1'], activeContracts: 120 }, 
+  { id: 'bd-2', dayOfMonth: 15, status: true, permittedPopIds: ['pop-1', 'pop-2'], activeContracts: 75 }, 
+  { id: 'bd-3', dayOfMonth: 'Last Day', status: false, permittedPopIds: ['pop-3'], activeContracts: 0 }, 
+];
+
+// Placeholder PoP data (used instead of fetching)
+const placeholderPops: Pop[] = [
+    { id: 'pop-1', name: 'Central Hub', location: '123 Fiber Lane, Anytown', status: 'Active', createdAt: new Date() },
+    { id: 'pop-2', name: 'North Branch', location: '456 Network Rd, Anytown', status: 'Planned', createdAt: new Date(Date.now() - 86400000) },
+    { id: 'pop-3', name: 'West End POP', location: '789 Data Dr, Anytown', status: 'Inactive', createdAt: new Date(Date.now() - 172800000) },
 ];
 
 
@@ -102,10 +108,11 @@ export default function FinancialConfigurationsPage() {
 
   const iconSize = "h-3 w-3";
 
-  const { data: pops = [], isLoading: isLoadingPops, error: popsError } = useQuery<Pop[], Error>({
-    queryKey: ['pops'],
-    queryFn: getPops,
-  });
+  // Use placeholderPops directly
+  const pops: Pop[] = placeholderPops;
+  const isLoadingPops = false; // No loading state needed for placeholders
+  const popsError = null; // No error state needed for placeholders
+
 
   const addDayForm = useForm<BillingDayFormData>({
     resolver: zodResolver(billingDaySchema),

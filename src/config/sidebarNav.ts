@@ -591,25 +591,6 @@ export const sidebarNav: SidebarNavItem[] = [
         icon: Users,
         tooltip: 'sidebar.settings_users',
       },
-       {
-        title: 'sidebar.settings_mysql',
-        icon: Database,
-        tooltip: 'sidebar.settings_mysql',
-        children: [
-            {
-            title: 'sidebar.settings_mysql_databases',
-            href: '/admin/mysql/databases',
-            icon: Database,
-            tooltip: 'sidebar.settings_mysql_databases',
-            },
-            {
-            title: 'sidebar.settings_mysql_cli',
-            href: '/admin/mysql/cli',
-            icon: Code,
-            tooltip: 'sidebar.settings_mysql_cli',
-            },
-        ]
-      }
     ],
   },
 ];
