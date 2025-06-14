@@ -253,7 +253,7 @@ export default function VlanManagementPage() {
                     </DialogHeader>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleAddVlanSubmit)} className="grid gap-4 py-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4 items-center"> {/* VLAN ID and Status */}
                                 <FormField
                                     control={form.control}
                                     name="vlanId"
@@ -271,26 +271,27 @@ export default function VlanManagementPage() {
                                     control={form.control}
                                     name="status"
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('vlan_page.form_status_label', 'Status')}</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder={t('vlan_page.form_status_placeholder', 'Select status')} />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="Active">{t('vlan_page.form_status_active', 'Active')}</SelectItem>
-                                                    <SelectItem value="Inactive">{t('vlan_page.form_status_inactive', 'Inactive')}</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
+                                      <FormItem className="flex flex-col pt-2">
+                                        <FormLabel className="mb-1.5">{t('vlan_page.form_status_label', 'Status')}</FormLabel>
+                                        <div className="flex items-center space-x-2">
+                                          <FormControl>
+                                            <Switch
+                                              checked={field.value === 'Active'}
+                                              onCheckedChange={(checked) => field.onChange(checked ? 'Active' : 'Inactive')}
+                                              id="status-switch"
+                                            />
+                                          </FormControl>
+                                          <label htmlFor="status-switch" className="text-xs">
+                                            {field.value === 'Active' ? t('vlan_page.form_status_active', 'Active') : t('vlan_page.form_status_inactive', 'Inactive')}
+                                          </label>
+                                        </div>
+                                        <FormMessage />
+                                      </FormItem>
                                     )}
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4 items-start"> {/* PoP and Description */}
                                 <FormField
                                     control={form.control}
                                     name="popId"
@@ -333,7 +334,7 @@ export default function VlanManagementPage() {
                                 />
                             </div>
                             
-                            <div className="grid grid-cols-2 gap-4 items-center">
+                            <div className="grid grid-cols-2 gap-4 items-center"> {/* Assigned To and Available in Hub */}
                                 <FormField
                                     control={form.control}
                                     name="assignedTo"
@@ -358,9 +359,6 @@ export default function VlanManagementPage() {
                                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm h-full">
                                             <div className="space-y-0.5">
                                                 <FormLabel>{t('vlan_page.form_available_in_hub_label', 'Available in Hub')}</FormLabel>
-                                                <DialogDescriptionComponent className="text-xs">
-                                                    {t('vlan_page.form_available_in_hub_description', 'Make available to Hub participants.')}
-                                                </DialogDescriptionComponent>
                                             </div>
                                             <FormControl>
                                                 <Switch
@@ -429,9 +427,6 @@ export default function VlanManagementPage() {
                                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                                         <div className="space-y-0.5">
                                             <FormLabel>{t('vlan_page.form_is_tagged_label', 'Tagged VLAN')}</FormLabel>
-                                            <DialogDescriptionComponent className="text-xs">
-                                                {t('vlan_page.form_is_tagged_description', 'Specifies if the VLAN uses 802.1Q tagging.')}
-                                            </DialogDescriptionComponent>
                                         </div>
                                         <FormControl>
                                             <Switch
