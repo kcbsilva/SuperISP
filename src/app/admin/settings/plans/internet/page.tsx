@@ -65,10 +65,11 @@ const placeholderPlans: InternetPlan[] = [
 
 export default function InternetPlansPage() {
   const { t } = useLocale();
-  const iconSize = "h-3 w-3"; // Reduced icon size
+  const iconSize = "h-3 w-3";
 
   const handleAddPlan = () => {
     console.log('Add new internet plan clicked');
+    // Future: Open a modal or navigate to an add plan page
   };
 
   const getConnectionTypeBadgeVariant = (type: InternetPlan['connectionType']) => {
@@ -80,7 +81,7 @@ export default function InternetPlansPage() {
       case 'Satellite':
         return 'outline';
       case 'UTP':
-        return 'secondary';
+        return 'secondary'; // Assuming UTP is similar to Radio for now
       default:
         return 'outline';
     }
@@ -89,7 +90,7 @@ export default function InternetPlansPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-base font-semibold"> {/* Reduced heading size */}
+        <h1 className="text-base font-semibold">
           {t('settings_plans.internet_page_title', 'Internet Plans')}
         </h1>
         <Button
@@ -103,13 +104,13 @@ export default function InternetPlansPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm"> {/* Reduced title size */}
+          <CardTitle className="text-sm">
             {t(
               'settings_plans.existing_plans_title',
               'Existing Internet Plans'
             )}
           </CardTitle>
-          <CardDescription className="text-xs"> 
+          <CardDescription className="text-xs">
             {t(
               'settings_plans.existing_plans_description_internet',
               'Manage your internet service plans.'
@@ -122,28 +123,28 @@ export default function InternetPlansPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-24 text-xs"> 
+                    <TableHead className="w-24 text-xs">
                       {t('settings_plans.table_header_id', 'ID')}
                     </TableHead>
-                    <TableHead className="text-xs"> 
+                    <TableHead className="text-xs">
                       {t('settings_plans.table_header_name', 'Name')}
                     </TableHead>
-                    <TableHead className="text-xs"> 
+                    <TableHead className="text-xs">
                       {t('settings_plans.table_header_upload', 'Upload')}
                     </TableHead>
-                    <TableHead className="text-xs"> 
+                    <TableHead className="text-xs">
                       {t('settings_plans.table_header_download', 'Download')}
                     </TableHead>
-                    <TableHead className="text-xs"> 
+                    <TableHead className="text-xs">
                       {t('settings_plans.table_header_price', 'Price')}
                     </TableHead>
-                    <TableHead className="text-xs"> 
+                    <TableHead className="text-xs">
                       {t(
                         'settings_plans.table_header_connection_type',
                         'Connection Type'
                       )}
                     </TableHead>
-                    <TableHead className="text-xs"> 
+                    <TableHead className="text-xs">
                       {t(
                         'settings_plans.table_header_client_count',
                         'Client Count'
@@ -154,21 +155,21 @@ export default function InternetPlansPage() {
                 <TableBody>
                   {placeholderPlans.map((plan) => (
                     <TableRow key={plan.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs">{plan.id}</TableCell> 
-                      <TableCell className="font-medium text-xs"> 
-                        <Link href={`/settings/plans/internet/${plan.id}`} className="hover:underline text-primary">
+                      <TableCell className="font-mono text-muted-foreground text-xs">{plan.id}</TableCell>
+                      <TableCell className="font-medium text-xs">
+                        <Link href={`/admin/settings/plans/internet/${plan.id}`} className="hover:underline text-primary">
                           {plan.name}
                         </Link>
                       </TableCell>
-                      <TableCell className="text-xs">{plan.uploadSpeed}</TableCell> 
-                      <TableCell className="text-xs">{plan.downloadSpeed}</TableCell> 
-                      <TableCell className="text-xs">{plan.price}</TableCell> 
+                      <TableCell className="text-xs">{plan.uploadSpeed}</TableCell>
+                      <TableCell className="text-xs">{plan.downloadSpeed}</TableCell>
+                      <TableCell className="text-xs">{plan.price}</TableCell>
                       <TableCell className="text-center">
-                        <Badge variant={getConnectionTypeBadgeVariant(plan.connectionType)} className="text-xs"> 
+                        <Badge variant={getConnectionTypeBadgeVariant(plan.connectionType)} className="text-xs">
                           {t(`settings_plans.connection_type_${plan.connectionType.toLowerCase()}` as any, plan.connectionType)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-center text-xs"> 
+                      <TableCell className="text-center text-xs">
                         {plan.clientCount}
                       </TableCell>
                     </TableRow>
@@ -177,7 +178,7 @@ export default function InternetPlansPage() {
               </Table>
             </div>
           ) : (
-            <p className="text-muted-foreground text-center py-4 text-xs"> 
+            <p className="text-muted-foreground text-center py-4 text-xs">
               {t(
                 'settings_plans.no_plans_found_internet',
                 'No internet plans configured yet. Click "Add Internet Plan" to create one."'
@@ -189,4 +190,3 @@ export default function InternetPlansPage() {
     </div>
   );
 }
-

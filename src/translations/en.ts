@@ -33,9 +33,6 @@ const en = {
   ...mapsPage,
   ...mapsElements,
   ...settingsUsers,
-  // Spread other imported page-specific modules here:
-  // ...settingsGlobalPage,
-  // ...popsPage,
   settings_plans: {
     internet_page_title: 'Internet Plans',
     add_plan_button: 'Add Internet Plan',
