@@ -3,6 +3,7 @@
   packages = [
     pkgs.nodejs_20
     pkgs.concurrently # For running multiple commands
+    pkgs.openssh
   ];
   
   env = {
