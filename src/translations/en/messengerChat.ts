@@ -1,0 +1,35 @@
+//src/translations/en/messengerChat.ts
+
+const messengerChat = {
+    search_conversations_placeholder: 'Search or start new chat',
+    no_conversations: 'No conversations yet.',
+    no_chat_selected_title: 'No Chat Selected',
+    no_chat_selected_desc: 'Select a conversation from the list to start chatting.',
+    attach_file_sr: 'Attach file',
+    message_input_placeholder: 'Type a message...',
+    send_message_sr: 'Send message',
+    search_in_chat_sr: 'Search in chat',
+    more_options_sr: 'More options',
+    new_conversation_aria_label: 'Start new conversation',
+    new_conversation_toast_title: 'New Conversation (Not Implemented)',
+    new_conversation_toast_desc: 'Functionality to start a new conversation is not yet available.',
+    assign_to_me: 'Assign to Me',
+    unassign_from_me: 'Unassign from Me',
+    transfer_conversation: 'Transfer Conversation',
+    assign_to_me_toast_title: 'Conversation Assignment',
+    assign_to_me_toast_desc: 'Conversation with {contactName} {status}.',
+    assigned_status: 'assigned to you',
+    unassigned_status: 'unassigned from you',
+    transfer_modal_title: 'Transfer Conversation',
+    transfer_modal_desc: 'Select a department or person to transfer this conversation to.',
+    transfer_tab_department: 'Department',
+    transfer_tab_person: 'Person',
+    transfer_modal_cancel_button: 'Cancel',
+    transfer_modal_confirm_button: 'Confirm Transfer',
+    transfer_confirmed_toast_title: 'Conversation Transferred',
+    transfer_confirmed_toast_desc: '{convoName} transferred to {targetType}: {targetName}.',
+    transfer_target_type_department: 'Department',
+    transfer_target_type_person: 'Person',
+  }
+
+  export default messengerChat;
