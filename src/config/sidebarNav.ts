@@ -469,7 +469,7 @@ export const sidebarNav: SidebarNavItem[] = [
           },
           {
             title: 'sidebar.settings_business_city',
-            href: '/admin/settings/business/city',
+            href: '/admin/settings/business/cities',
             icon: FaCity,
             tooltip: 'sidebar.settings_business_city',
           },
