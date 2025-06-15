@@ -133,11 +133,10 @@ export default function InternetPlansPage() {
 
   const handleAddPlan = () => {
     console.log('Add new internet plan clicked');
-    toast({ title: t('add_plan_toast_title'), description: t('add_plan_toast_desc') });
+    toast({ title: t('settings_plans.add_plan_toast_title'), description: t('settings_plans.add_plan_toast_desc') });
   };
   
   const handleRefresh = () => {
-    // In a real app, this would refetch data. Here, we reset to placeholders.
     setCurrentPlans(placeholderPlans);
     setSearchTerm('');
     setSelectedPop('all');
@@ -150,7 +149,6 @@ export default function InternetPlansPage() {
   const filteredAndSortedPlans = React.useMemo(() => {
     let plans = [...currentPlans];
 
-    // Search
     if (searchTerm) {
       plans = plans.filter(plan =>
         plan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -158,24 +156,20 @@ export default function InternetPlansPage() {
       );
     }
 
-    // Filter by PoP
     if (selectedPop !== 'all') {
       plans = plans.filter(plan => plan.popId === selectedPop);
     }
 
-    // Filter by Speed
     if (selectedSpeed === 'lte100') {
       plans = plans.filter(plan => plan.downloadSpeedValue <= 100);
     } else if (selectedSpeed === 'gt100') {
       plans = plans.filter(plan => plan.downloadSpeedValue > 100);
     }
 
-    // Filter by Connection Type
     if (selectedConnectionType !== 'All') {
       plans = plans.filter(plan => plan.connectionType === selectedConnectionType);
     }
 
-    // Sort by Price
     if (priceSortOrder === 'asc') {
       plans.sort((a, b) => a.priceValue - b.priceValue);
     } else if (priceSortOrder === 'desc') {
@@ -308,7 +302,7 @@ export default function InternetPlansPage() {
                   <TableRow>
                     <TableHead className="w-24 text-xs text-center font-semibold">
                       <div className="flex items-center justify-center gap-1">
-                        <Hash className={columnHeaderIconSize} />{t('table_header_id')}
+                        <Hash className={columnHeaderIconSize} />{t('settings_plans.table_header_id')}
                       </div>
                     </TableHead>
                     <TableHead className="text-xs font-semibold">
@@ -316,7 +310,7 @@ export default function InternetPlansPage() {
                     </TableHead>
                     <TableHead className="text-xs text-center font-semibold">
                       <div className="flex items-center justify-center gap-1">
-                        <Building className={columnHeaderIconSize} />{t('table_header_pop')}
+                        <Building className={columnHeaderIconSize} />{t('settings_plans.table_header_pop')}
                       </div>
                     </TableHead>
                     <TableHead className="text-xs text-center font-semibold">
