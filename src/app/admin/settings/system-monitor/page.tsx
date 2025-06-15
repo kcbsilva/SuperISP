@@ -9,12 +9,12 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Cpu, HardDrive, MemoryStick, Database, RefreshCw, Loader2, CheckCircle, XCircle, Router as RouterIcon } from 'lucide-react'; // Added RouterIcon
+import { Button } from '@/components/ui/button';
+import { Cpu, HardDrive, MemoryStick, Database, RefreshCw, Loader2, CheckCircle, XCircle, Router as RouterIcon } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
-import { testConnection as testMysqlConnection } from '@/services/mysql/db'; 
+import { testConnection as testSupabaseConnection } from '@/services/supabase/db'; // Updated import
 
 interface SystemMetric {
   nameKey: string;
@@ -22,7 +22,7 @@ interface SystemMetric {
   unit?: string;
   icon: React.ElementType;
   status?: 'ok' | 'warning' | 'error' | 'fetching';
-  progress?: number; 
+  progress?: number;
 }
 
 export default function SystemMonitorPage() {
@@ -33,11 +33,11 @@ export default function SystemMonitorPage() {
     { nameKey: 'system_monitor.cpu_usage', value: 'Fetching...', icon: Cpu, status: 'fetching', progress: 0 },
     { nameKey: 'system_monitor.ram_usage', value: 'Fetching...', icon: MemoryStick, status: 'fetching', progress: 0 },
     { nameKey: 'system_monitor.ssd_usage', value: 'Fetching...', icon: HardDrive, status: 'fetching', progress: 0 },
-    { nameKey: 'system_monitor.mysql_status', value: 'Fetching...', icon: Database, status: 'fetching' }, 
+    { nameKey: 'system_monitor.supabase_status', value: 'Fetching...', icon: Database, status: 'fetching' },
   ]);
 
-  const iconSize = "h-4 w-4"; // Adjusted icon size
-  const smallIconSize = "h-2.5 w-2.5"; // Reduced icon size
+  const iconSize = "h-4 w-4";
+  const smallIconSize = "h-2.5 w-2.5";
 
   const fetchSystemMetrics = React.useCallback(async () => {
     setIsLoading(true);
@@ -52,14 +52,14 @@ export default function SystemMonitorPage() {
     const ramUsage = parseFloat((Math.random() * 16).toFixed(1));
     const ssdUsage = Math.floor(Math.random() * 500);
 
-    // Test MySQL connection
-    const mysqlConnected = await testMysqlConnection();
+    // Test Supabase connection
+    const supabaseConnected = await testSupabaseConnection();
 
     setMetrics([
       { nameKey: 'system_monitor.cpu_usage', value: cpuUsage, unit: '%', icon: Cpu, status: cpuUsage > 80 ? 'warning' : 'ok', progress: cpuUsage },
       { nameKey: 'system_monitor.ram_usage', value: `${ramUsage} / 16`, unit: 'GB', icon: MemoryStick, status: ramUsage > 12.8 ? 'warning' : 'ok', progress: (ramUsage / 16) * 100 },
       { nameKey: 'system_monitor.ssd_usage', value: `${ssdUsage} / 512`, unit: 'GB', icon: HardDrive, status: ssdUsage > 400 ? 'warning' : 'ok', progress: (ssdUsage / 512) * 100 },
-      { nameKey: 'system_monitor.mysql_status', value: mysqlConnected ? 'Connected' : 'Disconnected', icon: Database, status: mysqlConnected ? 'ok' : 'error' },
+      { nameKey: 'system_monitor.supabase_status', value: supabaseConnected ? 'Connected' : 'Disconnected', icon: Database, status: supabaseConnected ? 'ok' : 'error' },
     ]);
     setIsLoading(false);
   }, [t, toast]);
@@ -71,13 +71,13 @@ export default function SystemMonitorPage() {
   const getStatusIndicator = (status?: 'ok' | 'warning' | 'error' | 'fetching') => {
     switch (status) {
       case 'ok':
-        return <CheckCircle className="h-3 w-3 text-green-500" />; // Reduced icon size
+        return <CheckCircle className="h-3 w-3 text-green-500" />;
       case 'warning':
-        return <XCircle className="h-3 w-3 text-yellow-500" />; // Reduced icon size
+        return <XCircle className="h-3 w-3 text-yellow-500" />;
       case 'error':
-        return <XCircle className="h-3 w-3 text-red-500" />; // Reduced icon size
+        return <XCircle className="h-3 w-3 text-red-500" />;
       case 'fetching':
-        return <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />; // Reduced icon size
+        return <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />;
       default:
         return null;
     }
@@ -87,7 +87,7 @@ export default function SystemMonitorPage() {
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <h1 className="text-base font-semibold flex items-center gap-2">
-            <RouterIcon className={`${smallIconSize} text-primary`} /> {/* Icon added */}
+            <RouterIcon className={`${smallIconSize} text-primary`} />
             {t('sidebar.settings_system_monitor', 'System Monitor')}
         </h1>
         <Button onClick={fetchSystemMetrics} disabled={isLoading}>
@@ -118,9 +118,9 @@ export default function SystemMonitorPage() {
                 {metric.progress !== undefined && (
                   <Progress value={metric.progress} className="mt-2 h-2" />
                 )}
-                 {metric.nameKey === 'system_monitor.mysql_status' && metric.status !== 'fetching' && (
+                 {metric.nameKey === 'system_monitor.supabase_status' && metric.status !== 'fetching' && (
                     <p className={`text-xs mt-1 ${metric.status === 'ok' ? 'text-green-600' : 'text-red-600'}`}>
-                        {metric.status === 'ok' ? t('system_monitor.mysql_connected') : t('system_monitor.mysql_disconnected')}
+                        {metric.status === 'ok' ? t('system_monitor.supabase_connected') : t('system_monitor.supabase_disconnected')}
                     </p>
                 )}
               </CardContent>
@@ -137,7 +137,7 @@ export default function SystemMonitorPage() {
         <CardContent>
           <div className="h-64 w-full bg-muted rounded-md p-4 overflow-y-auto">
             <pre className="text-xs text-muted-foreground whitespace-pre-wrap">
-              {`[${new Date().toLocaleTimeString()}] System initialized.\n[${new Date().toLocaleTimeString()}] Monitoring services started...\n[${new Date().toLocaleTimeString()}] MySQL connection OK.`}
+              {`[${new Date().toLocaleTimeString()}] System initialized.\n[${new Date().toLocaleTimeString()}] Monitoring services started...\n[${new Date().toLocaleTimeString()}] Supabase connection OK.`}
             </pre>
           </div>
         </CardContent>
