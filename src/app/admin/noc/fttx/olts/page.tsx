@@ -15,9 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Edit, Trash2, RefreshCw, MoreVertical, ListPlus, ListChecks, Network, Users, Filter as FilterIcon, Columns3 } from 'lucide-react'; // Added Columns3 for Slots
+import { PlusCircle, Edit, Trash2, RefreshCw, MoreVertical, ListPlus, ListChecks, Network, Users, Filter as FilterIcon, Columns3 } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -65,11 +65,11 @@ interface Onx {
 const placeholderOnxs: Onx[] = [
     { id: 'onx-001', serialNumber: 'FHTT1234ABCD', manufacturer: 'Fiberhome', model: 'AN5506-01-A1', assignedTo: 'Alice Wonderland', lightLevelTx: "+2.1 dBm", lightLevelRx: '-17.2 dBm', fdhId: 'FDH-01-A', status: 'Online' },
     { id: 'onx-002', serialNumber: 'HWTC8765EFGH', manufacturer: 'Huawei', model: 'HG8245H', assignedTo: 'Bob The Builder Inc.', lightLevelTx: "+1.8 dBm", lightLevelRx: '-22.5 dBm', fdhId: 'FDH-02-B', status: 'Offline' },
-    { id: 'onx-003', serialNumber: 'ZTEXFEDC4321', manufacturer: 'ZTE', model: 'F601', lightLevelTx: "+2.5 dBm", lightLevelRx: '-19.0 dBm', fdhId: 'FDH-01-A', status: 'Offline'}, // Changed from Alarm to Offline
+    { id: 'onx-003', serialNumber: 'ZTEXFEDC4321', manufacturer: 'ZTE', model: 'F601', lightLevelTx: "+2.5 dBm", lightLevelRx: '-19.0 dBm', fdhId: 'FDH-01-A', status: 'Offline'},
     { id: 'onx-004', serialNumber: 'FHTT5678IJKL', manufacturer: 'Fiberhome', model: 'AN5506-04-FA', assignedTo: 'Charlie Brown', lightLevelTx: "+2.0 dBm", lightLevelRx: '-25.8 dBm', fdhId: 'FDH-03-C', status: 'Online' },
     { id: 'onx-005', serialNumber: 'NKIA9012UVWX', manufacturer: 'Nokia', model: 'G-140W-C', assignedTo: 'David Copperfield', lightLevelTx: "+3.0 dBm", lightLevelRx: '-16.0 dBm', fdhId: 'FDH-01-B', status: 'Online' },
     { id: 'onx-006', serialNumber: 'UBIQ3456QRST', manufacturer: 'Ubiquiti', model: 'UF-Nano', lightLevelTx: "+1.5 dBm", lightLevelRx: '-29.5 dBm', fdhId: 'FDH-04-A', status: 'Offline' },
-    { id: 'onx-007', serialNumber: 'FHTT7890MNOP', manufacturer: 'Fiberhome', model: 'AN5506-02-B', assignedTo: 'Eve Adams', lightLevelTx: "N/A", lightLevelRx: 'LOS', fdhId: 'FDH-03-C', status: 'Offline' }, // Changed from Alarm to Offline
+    { id: 'onx-007', serialNumber: 'FHTT7890MNOP', manufacturer: 'Fiberhome', model: 'AN5506-02-B', assignedTo: 'Eve Adams', lightLevelTx: "N/A", lightLevelRx: 'LOS', fdhId: 'FDH-03-C', status: 'Offline' },
     { id: 'onx-008', serialNumber: 'HWTC1122YZAB', manufacturer: 'Huawei', model: 'EG8145V5', lightLevelTx: "+2.2 dBm", lightLevelRx: '-20.1 dBm', fdhId: 'FDH-02-A', status: 'Online' },
     { id: 'onx-009', serialNumber: 'ZTEX3344CDEF', manufacturer: 'ZTE', model: 'F670L', lightLevelTx: "+1.9 dBm", lightLevelRx: '-27.0 dBm', fdhId: 'FDH-01-C', status: 'Online' },
     { id: 'onx-010', serialNumber: 'NKIA5566GHIJ', manufacturer: 'Nokia', model: 'G-240W-A', lightLevelTx: "+2.8 dBm", lightLevelRx: '-18.8 dBm', fdhId: 'FDH-04-B', status: 'Provisioning' },
@@ -83,7 +83,7 @@ const lightLevelRanges = [
 ];
 
 const MAX_ONX_PER_PON_GPON_XGSPON = 128;
-const MAX_ONX_PER_PON_EPON = 64; // Common value, can be adjusted
+const MAX_ONX_PER_PON_EPON = 64; 
 
 const getMaxCapacityForOlt = (olt: Olt): number => {
   switch (olt.technology) {
@@ -93,10 +93,9 @@ const getMaxCapacityForOlt = (olt: Olt): number => {
     case 'EPON':
       return olt.ports * MAX_ONX_PER_PON_EPON;
     default:
-      return olt.ports * MAX_ONX_PER_PON_GPON_XGSPON; // Default to GPON if unknown
+      return olt.ports * MAX_ONX_PER_PON_GPON_XGSPON; 
   }
 };
-
 
 const isLightLevelInRange = (lightLevelRxStr: string | undefined, rangeStr: string): boolean => {
   if (!lightLevelRxStr) return false;
@@ -117,7 +116,7 @@ const isLightLevelInRange = (lightLevelRxStr: string | undefined, rangeStr: stri
 
   if (isNaN(min) || isNaN(max)) return false;
   
-  return numericLevel >= min && numericLevel < max; // Use < max to avoid overlap for exact boundary values
+  return numericLevel >= min && numericLevel < max;
 };
 
 
@@ -132,16 +131,20 @@ export default function OltsAndOnxsPage() {
   
   const initialTab = searchParams.get('tab') === 'onxs' ? 'onxs' : 'olts';
   const [activeTab, setActiveTab] = React.useState(initialTab);
-  const [lightLevelFilter, setLightLevelFilter] = React.useState<string[]>(
-    searchParams.get('lightLevelFilter') ? [decodeURIComponent(searchParams.get('lightLevelFilter')!)] : []
-  );
+
+  const [lightLevelFilter, setLightLevelFilter] = React.useState<string[]>(() => {
+    const filterFromQuery = searchParams.get('lightLevelFilter');
+    return filterFromQuery ? decodeURIComponent(filterFromQuery).split(',') : [];
+  });
 
   React.useEffect(() => {
     const filterFromQuery = searchParams.get('lightLevelFilter');
-    if (filterFromQuery) {
-      setLightLevelFilter([decodeURIComponent(filterFromQuery)]);
+    const filtersFromURL = filterFromQuery ? decodeURIComponent(filterFromQuery).split(',') : [];
+    if (JSON.stringify(filtersFromURL) !== JSON.stringify(lightLevelFilter)) {
+      setLightLevelFilter(filtersFromURL);
     }
-  }, [searchParams]);
+  }, [searchParams, lightLevelFilter]);
+
 
   const handleAddOlt = () => {
     toast({
@@ -202,18 +205,22 @@ export default function OltsAndOnxsPage() {
   }
 
   const handleLightLevelFilterChange = (range: string, checked: boolean) => {
-    setLightLevelFilter(prev => {
-      const newFilters = checked ? [...prev, range] : prev.filter(r => r !== range);
-      // Update URL to reflect filter state, but don't reload page
-      const currentParams = new URLSearchParams(searchParams.toString());
-      if (newFilters.length > 0) {
-        currentParams.set('lightLevelFilter', encodeURIComponent(newFilters.join(','))); // Example for multiple, though UI is single select now
-      } else {
-        currentParams.delete('lightLevelFilter');
-      }
-      router.replace(`/fttx/olts?tab=onxs&${currentParams.toString()}`, { scroll: false }); // Ensure tab=onxs is preserved
-      return newFilters;
-    });
+    const currentParams = new URLSearchParams(searchParams.toString());
+    let newFiltersArray: string[];
+
+    if (checked) {
+      newFiltersArray = [...lightLevelFilter, range];
+    } else {
+      newFiltersArray = lightLevelFilter.filter(r => r !== range);
+    }
+    newFiltersArray = Array.from(new Set(newFiltersArray)); // Remove duplicates
+
+    if (newFiltersArray.length > 0) {
+      currentParams.set('lightLevelFilter', encodeURIComponent(newFiltersArray.join(',')));
+    } else {
+      currentParams.delete('lightLevelFilter');
+    }
+    router.replace(`/admin/noc/fttx/olts?tab=onxs&${currentParams.toString()}`, { scroll: false });
   };
   
   const filteredOnxs = React.useMemo(() => {
@@ -269,11 +276,11 @@ export default function OltsAndOnxsPage() {
             setActiveTab(newTab);
             const currentParams = new URLSearchParams(searchParams.toString());
             currentParams.set('tab', newTab);
-            if (newTab === 'olts') { // Clear light level filter if switching to OLTs tab
+            if (newTab === 'olts') { 
                 currentParams.delete('lightLevelFilter');
                 setLightLevelFilter([]);
             }
-            router.replace(`/fttx/olts?${currentParams.toString()}`, { scroll: false });
+            router.replace(`/admin/noc/fttx/olts?${currentParams.toString()}`, { scroll: false });
         }}>
             <TabsList className="grid grid-cols-2 w-auto h-auto mb-4">
                 <TabsTrigger value="olts" className="flex items-center gap-2">
@@ -448,4 +455,3 @@ export default function OltsAndOnxsPage() {
     </div>
   );
 }
-
