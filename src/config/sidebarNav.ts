@@ -43,9 +43,11 @@ import {
   ShoppingCart,
   MessageCircle,
   Workflow,
-  Radio, // Added for Channels
-  GitMerge, // Added for Hub > Connections
-  Webhook, // Added Webhook icon
+  Radio, 
+  GitMerge, 
+  Webhook, 
+  Table2, // Added for Tables
+  Terminal, // Added for SQL CLI
 } from 'lucide-react';
 import type { Icon as LucideIcon } from 'lucide-react';
 import type { IconType } from 'react-icons';
@@ -401,7 +403,7 @@ export const sidebarNav: SidebarNavItem[] = [
         tooltip: 'sidebar.messenger_departments',
       },
       {
-        title: 'sidebar.messenger_channels', 
+        title: 'sidebar.messenger_channels',
         href: '/admin/messenger/channels',
         icon: Radio,
         tooltip: 'sidebar.messenger_channels',
@@ -546,6 +548,31 @@ export const sidebarNav: SidebarNavItem[] = [
             href: '/admin/settings/network/vlan',
             icon: Split,
             tooltip: 'sidebar.settings_network_vlan',
+          },
+        ],
+      },
+      {
+        title: 'sidebar.settings_postgres',
+        icon: Database,
+        tooltip: 'sidebar.settings_postgres',
+        children: [
+          {
+            title: 'sidebar.settings_postgres_databases',
+            href: '/admin/settings/postgres/databases',
+            icon: Database, // Or List
+            tooltip: 'sidebar.settings_postgres_databases',
+          },
+          {
+            title: 'sidebar.settings_postgres_tables',
+            href: '/admin/settings/postgres/tables',
+            icon: Table2,
+            tooltip: 'sidebar.settings_postgres_tables',
+          },
+          {
+            title: 'sidebar.settings_postgres_sql_cli',
+            href: '/admin/settings/postgres/sql-cli',
+            icon: Terminal,
+            tooltip: 'sidebar.settings_postgres_sql_cli',
           },
         ],
       },

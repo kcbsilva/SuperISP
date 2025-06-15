@@ -85,6 +85,10 @@ const sidebar = {
       settings_network_cgnat: 'CGNAT',
       settings_network_radius: 'RADIUS(NAS)',
       settings_network_vlan: 'VLAN',
+      settings_postgres: 'PostgreSQL', // New
+      settings_postgres_databases: 'Databases', // New
+      settings_postgres_tables: 'Tables', // New
+      settings_postgres_sql_cli: 'SQL CLI', // New
       settings_security: 'Security',
       settings_system_monitor: 'System Monitor',
       settings_integrations: 'Integrations',
