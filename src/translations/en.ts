@@ -8,7 +8,7 @@ import dashboard from './en/mainDashboard';
 import sidebar from './en/sidebar'; // Import the new sidebar translations module
 import subscribers from './en/subscribers';
 import globalSettings from './en/globalSettings';
-import pops from './en/settingsBuisnessPops';
+import settingsBusinessPops from './en/settingsBusinessPops'; // Corrected import name
 import mapsPage from './en/mapsPage';
 import mapsElements from './en/mapsElements';
 import settingsUsers from './en/settingsUser';
@@ -38,61 +38,64 @@ import messengerDepartments from './en/messengerDepartments';
 import messengerChannels from './en/messengerChannels';
 import messengerFlow from './en/messengerFlow';
 import messengerConfigure from './en/messengerConfigure';
-import settingsBusinessCities from './en/settingsBusinessCities'; // Added
-import postgresDatabases from './en/postgresDatabases';         // Added
-import postgresTables from './en/postgresTables';           // Added
-import postgresSqlCli from './en/postgresSqlCli'; // Ensured this is present
+import settingsBusinessCities from './en/settingsBusinessCities';
+import postgresDatabases from './en/postgresDatabases';
+import postgresTables from './en/postgresTables';
+import postgresSqlCli from './en/postgresSqlCli';
 
 const en = {
-  ...auth,
-  ...header,
-  ...loginPage,
-  ...forgotPasswordPage,
-  ...updatePasswordPage,
-  ...dashboard,
-  ...sidebar,
-  ...subscribers,
-  ...globalSettings,
-  ...pops,
-  ...mapsPage,
-  ...mapsElements,
-  ...settingsUsers,
-  ...settingsInternetPage,
-  ...financesCashbookPage,
-  ...financesEntryCategories,
-  ...nocFttxDashboard,
-  ...nocFttxOlts,
-  ...settingsSystemMonitor,
-  ...inventoryWarehouses,
-  ...nocOnxTemplates,
-  ...financesFinancialConfigs,
-  ...subscribersNewContractWizard,
-  ...serviceCallsDashboard,
-  ...serviceCallsTypes,
-  ...settingsNetworkIpPage,
-  ...hubParticipants,
-  ...settingsSecuritySettings,
-  ...settingsNetworkDevices,
-  ...settingsNetworkRadius,
-  ...settingsNetworkCgnat,
-  ...settingsNetworkVlan,
-  ...hrDashboard,
-  ...hrSalesDashboard,
-  ...messengerChat,
-  ...messengerDepartments,
-  ...messengerChannels,
-  ...messengerFlow,
-  ...messengerConfigure,
-  ...settingsBusinessCities, // Spread the new module
-  ...postgresDatabases,    // Spread the new module
-  ...postgresTables,      // Spread the new module
-  ...postgresSqlCli,      // Ensure this is spread
+  auth: auth.auth, // Assuming auth.ts exports { auth: { ... } }
+  header: header.header, // Assuming header.ts exports { header: { ... } }
+  login: loginPage.login,
+  forgot_password: forgotPasswordPage.forgot_password,
+  update_password: updatePasswordPage.update_password,
+  dashboard: dashboard.dashboard,
+  sidebar: sidebar.sidebar,
+  subscribers: subscribers.subscribers,
+  list_subscribers: subscribers.list_subscribers, // Assuming subscribers.ts exports this structure
+  add_subscriber: subscribers.add_subscriber, // Assuming subscribers.ts exports this structure
+  subscriber_profile: subscribers.subscriber_profile,
+  global_settings: globalSettings,
+  pops: settingsBusinessPops, // Assign to 'pops' key
+  maps_page: mapsPage,
+  maps_elements: mapsElements,
+  settings_users: settingsUsers,
+  settings_plans: settingsInternetPage, // Main key for internet plans, can be extended
+  settings_business_cities: settingsBusinessCities,
+  finances_cash_book: financesCashbookPage,
+  finances_entry_categories: financesEntryCategories,
+  fttx_dashboard: nocFttxDashboard,
+  fttx_olts: nocFttxOlts,
+  settingsSystemMonitor: settingsSystemMonitor, // Direct spread for system monitor keys
+  inventory_warehouses: inventoryWarehouses,
+  onx_templates: nocOnxTemplates,
+  financial_configs: financesFinancialConfigs,
+  new_contract_wizard: subscribersNewContractWizard,
+  service_calls_dashboard: serviceCallsDashboard,
+  service_types: serviceCallsTypes,
+  network_ip_page: settingsNetworkIpPage,
+  hub_participants: hubParticipants,
+  security_settings_page: settingsSecuritySettings,
+  network_devices_page: settingsNetworkDevices,
+  network_radius_page: settingsNetworkRadius,
+  cgnat_page: settingsNetworkCgnat,
+  vlan_page: settingsNetworkVlan,
+  hr_dashboard: hrDashboard,
+  sales_dashboard: hrSalesDashboard, // Note: Using hrSalesDashboard for sales_dashboard key
+  messenger_chat: messengerChat,
+  messenger_departments: messengerDepartments,
+  messenger_channels: messengerChannels,
+  messenger_flow: messengerFlow,
+  messenger_configure: messengerConfigure,
+  postgres_databases: postgresDatabases.postgres_databases,
+  postgres_tables: postgresTables.postgres_tables,
+  postgres_sql_cli: postgresSqlCli.postgres_sql_cli,
 
-  form_cancel_button: 'Cancel',
-  form_saving_button: 'Saving...',
+  form_cancel_button: 'Cancel', // Common key
+  form_saving_button: 'Saving...', // Common key
 
-  service_calls: {
-    title: 'Service Calls',
+  service_calls: { // Example of how a module with its own root key might be handled
+    title: 'Service Calls', // This would be t('service_calls.title')
     refresh_button: 'Refresh',
     new_call_button: 'New Service Call',
     list_title: 'All Service Calls',
