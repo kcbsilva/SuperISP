@@ -133,7 +133,7 @@ export default function InternetPlansPage() {
 
   const handleAddPlan = () => {
     console.log('Add new internet plan clicked');
-    toast({ title: t('settings_plans.add_plan_toast_title'), description: t('settings_plans.add_plan_toast_desc') });
+    toast({ title: t('add_plan_toast_title'), description: t('add_plan_toast_desc') });
   };
   
   const handleRefresh = () => {
@@ -308,7 +308,7 @@ export default function InternetPlansPage() {
                   <TableRow>
                     <TableHead className="w-24 text-xs text-center font-semibold">
                       <div className="flex items-center justify-center gap-1">
-                        <Hash className={columnHeaderIconSize} />{t('settings_plans.table_header_id')}
+                        <Hash className={columnHeaderIconSize} />{t('table_header_id')}
                       </div>
                     </TableHead>
                     <TableHead className="text-xs font-semibold">
@@ -316,7 +316,7 @@ export default function InternetPlansPage() {
                     </TableHead>
                     <TableHead className="text-xs text-center font-semibold">
                       <div className="flex items-center justify-center gap-1">
-                        <Building className={columnHeaderIconSize} />{t('settings_plans.table_header_pop')}
+                        <Building className={columnHeaderIconSize} />{t('table_header_pop')}
                       </div>
                     </TableHead>
                     <TableHead className="text-xs text-center font-semibold">
