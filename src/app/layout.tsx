@@ -4,7 +4,7 @@ import { Inter as FontSans, Roboto_Mono as FontMono } from 'next/font/google';
 import './globals.css';
 import { AppProviders } from '@/components/app-providers';
 import LayoutRenderer from './layout-renderer'; // Use LayoutRenderer
-import { Toaster } from '@/components/ui/toaster';
+// Toaster import removed as it's handled by AppProviders
 import type { Metadata } from 'next';
 
 const fontSans = FontSans({
@@ -43,7 +43,7 @@ export default function RootLayout({
           {/* LayoutRenderer will handle specific layouts like AdminLayout, ClientLayout, etc. */}
           <LayoutRenderer>{pageContent}</LayoutRenderer>
         </AppProviders>
-        <Toaster />
+        {/* Redundant Toaster removed from here. It's inside AppProviders. */}
       </body>
     </html>
   );
