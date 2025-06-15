@@ -14,10 +14,10 @@ import { Cpu, HardDrive, MemoryStick, Database, RefreshCw, Loader2, CheckCircle,
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
-import { testConnection as testSupabaseConnection } from '@/services/supabase/db'; // Updated import
+import { testConnection as testSupabaseConnection } from '@/services/supabase/db';
 
 interface SystemMetric {
-  nameKey: string;
+  nameKey: string; // Direct key, e.g., 'cpu_usage'
   value: string | number;
   unit?: string;
   icon: React.ElementType;
@@ -30,10 +30,10 @@ export default function SystemMonitorPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = React.useState(false);
   const [metrics, setMetrics] = React.useState<SystemMetric[]>([
-    { nameKey: 'settingsSystemMonitor.cpu_usage', value: 'Fetching...', icon: Cpu, status: 'fetching', progress: 0 },
-    { nameKey: 'settingsSystemMonitor.ram_usage', value: 'Fetching...', icon: MemoryStick, status: 'fetching', progress: 0 },
-    { nameKey: 'settingsSystemMonitor.ssd_usage', value: 'Fetching...', icon: HardDrive, status: 'fetching', progress: 0 },
-    { nameKey: 'settingsSystemMonitor.supabase_status', value: 'Fetching...', icon: Database, status: 'fetching' },
+    { nameKey: 'cpu_usage', value: 'Fetching...', icon: Cpu, status: 'fetching', progress: 0 },
+    { nameKey: 'ram_usage', value: 'Fetching...', icon: MemoryStick, status: 'fetching', progress: 0 },
+    { nameKey: 'ssd_usage', value: 'Fetching...', icon: HardDrive, status: 'fetching', progress: 0 },
+    { nameKey: 'supabase_status', value: 'Fetching...', icon: Database, status: 'fetching' },
   ]);
 
   const iconSize = "h-4 w-4";
@@ -42,8 +42,8 @@ export default function SystemMonitorPage() {
   const fetchSystemMetrics = React.useCallback(async () => {
     setIsLoading(true);
     toast({
-      title: t('settingsSystemMonitor.refresh_toast_title'),
-      description: t('settingsSystemMonitor.refresh_toast_description'),
+      title: t('refresh_toast_title'), // Direct key usage
+      description: t('refresh_toast_description'), // Direct key usage
     });
 
     // Simulate API call for system metrics
@@ -56,10 +56,10 @@ export default function SystemMonitorPage() {
     const supabaseConnected = await testSupabaseConnection();
 
     setMetrics([
-      { nameKey: 'settingsSystemMonitor.cpu_usage', value: cpuUsage, unit: '%', icon: Cpu, status: cpuUsage > 80 ? 'warning' : 'ok', progress: cpuUsage },
-      { nameKey: 'settingsSystemMonitor.ram_usage', value: `${ramUsage} / 16`, unit: 'GB', icon: MemoryStick, status: ramUsage > 12.8 ? 'warning' : 'ok', progress: (ramUsage / 16) * 100 },
-      { nameKey: 'settingsSystemMonitor.ssd_usage', value: `${ssdUsage} / 512`, unit: 'GB', icon: HardDrive, status: ssdUsage > 400 ? 'warning' : 'ok', progress: (ssdUsage / 512) * 100 },
-      { nameKey: 'settingsSystemMonitor.supabase_status', value: supabaseConnected ? 'Connected' : 'Disconnected', icon: Database, status: supabaseConnected ? 'ok' : 'error' },
+      { nameKey: 'cpu_usage', value: cpuUsage, unit: '%', icon: Cpu, status: cpuUsage > 80 ? 'warning' : 'ok', progress: cpuUsage },
+      { nameKey: 'ram_usage', value: `${ramUsage} / 16`, unit: 'GB', icon: MemoryStick, status: ramUsage > 12.8 ? 'warning' : 'ok', progress: (ramUsage / 16) * 100 },
+      { nameKey: 'ssd_usage', value: `${ssdUsage} / 512`, unit: 'GB', icon: HardDrive, status: ssdUsage > 400 ? 'warning' : 'ok', progress: (ssdUsage / 512) * 100 },
+      { nameKey: 'supabase_status', value: supabaseConnected ? 'Connected' : 'Disconnected', icon: Database, status: supabaseConnected ? 'ok' : 'error' },
     ]);
     setIsLoading(false);
   }, [t, toast]);
@@ -73,7 +73,7 @@ export default function SystemMonitorPage() {
       case 'ok':
         return <CheckCircle className="h-3 w-3 text-green-500" />;
       case 'warning':
-        return <XCircle className="h-3 w-3 text-yellow-500" />;
+        return <XCircle className="h-3 w-3 text-yellow-500" />; // Kept yellow for warning
       case 'error':
         return <XCircle className="h-3 w-3 text-red-500" />;
       case 'fetching':
@@ -88,11 +88,11 @@ export default function SystemMonitorPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-base font-semibold flex items-center gap-2">
             <RouterIcon className={`${smallIconSize} text-primary`} />
-            {t('settingsSystemMonitor.page_title')}
+            {t('page_title')} 
         </h1>
         <Button onClick={fetchSystemMetrics} disabled={isLoading}>
           <RefreshCw className={`mr-2 ${smallIconSize} ${isLoading ? 'animate-spin' : ''}`} />
-          {t('settingsSystemMonitor.refresh_button')}
+          {t('refresh_button')} 
         </Button>
       </div>
 
@@ -103,7 +103,7 @@ export default function SystemMonitorPage() {
             <Card key={metric.nameKey}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  {t(metric.nameKey)}
+                  {t(metric.nameKey)} 
                 </CardTitle>
                 <MetricIcon className={`${iconSize} text-muted-foreground`} />
               </CardHeader>
@@ -118,9 +118,9 @@ export default function SystemMonitorPage() {
                 {metric.progress !== undefined && (
                   <Progress value={metric.progress} className="mt-2 h-2" />
                 )}
-                 {metric.nameKey === 'settingsSystemMonitor.supabase_status' && metric.status !== 'fetching' && (
+                 {metric.nameKey === 'supabase_status' && metric.status !== 'fetching' && (
                     <p className={`text-xs mt-1 ${metric.status === 'ok' ? 'text-green-600' : 'text-red-600'}`}>
-                        {metric.status === 'ok' ? t('settingsSystemMonitor.supabase_connected') : t('settingsSystemMonitor.supabase_disconnected')}
+                        {metric.status === 'ok' ? t('supabase_connected') : t('supabase_disconnected')} 
                     </p>
                 )}
               </CardContent>
@@ -131,8 +131,8 @@ export default function SystemMonitorPage() {
 
        <Card>
         <CardHeader>
-          <CardTitle className="text-sm">{t('settingsSystemMonitor.live_logs_title', 'Live Logs (Placeholder)')}</CardTitle>
-          <CardDescription className="text-xs">{t('settingsSystemMonitor.live_logs_description', 'This section would display real-time system logs.')}</CardDescription>
+          <CardTitle className="text-sm">{t('live_logs_title')}</CardTitle> 
+          <CardDescription className="text-xs">{t('live_logs_description')}</CardDescription> 
         </CardHeader>
         <CardContent>
           <div className="h-64 w-full bg-muted rounded-md p-4 overflow-y-auto">
