@@ -5,14 +5,15 @@ import loginPage from './en/loginPage';
 import forgotPasswordPage from './en/forgotPasswordPage';
 import updatePasswordPage from './en/updatePasswordPage';
 import dashboard from './en/mainDashboard';
-import sidebar from './en/sidebar'; // Import the new sidebar translations module
+import sidebar from './en/sidebar';
 import subscribers from './en/subscribers';
 import globalSettings from './en/globalSettings';
-import settingsBusinessPops from './en/settingsBusinessPops'; // Corrected import name
+import settingsBusinessPops from './en/settingsBusinessPops';
 import mapsPage from './en/mapsPage';
 import mapsElements from './en/mapsElements';
 import settingsUsers from './en/settingsUser';
 import settingsInternetPage from './en/settingsInternetPage';
+import settingsBusinessCities from './en/settingsBusinessCities';
 import financesCashbookPage from './en/financesCashbookPage';
 import financesEntryCategories from './en/financesEntryCategories';
 import nocFttxDashboard from './en/nocFttxDashboard';
@@ -20,12 +21,12 @@ import nocFttxOlts from './en/nocFttxOlts';
 import settingsSystemMonitor from './en/settingsSystemMonitor';
 import inventoryWarehouses from './en/inventoryWarehouses';
 import nocOnxTemplates from './en/nocOnxTemplates';
-import financesFinancialConfigs from './en/financesFinancialConfigs';
+import financesFinancialConfigs from './en/financesFinancialConfigs'; // Import for financial_configs
 import subscribersNewContractWizard from './en/subcribersNewContractWizard';
 import serviceCallsDashboard from './en/serviceCallsDashboard';
 import serviceCallsTypes from './en/serviceCallsTypes';
 import settingsNetworkIpPage from './en/settingsNetworkIpPage';
-import hubParticipants from './en/hubParticipants';
+import hubParticipants from './en/hubParticipants'; // Import for hub_participants
 import settingsSecuritySettings from './en/settingsSecuritySettings';
 import settingsNetworkDevices from './en/settingsNetworkDevices';
 import settingsNetworkRadius from './en/settingsNetworkRadius';
@@ -38,50 +39,50 @@ import messengerDepartments from './en/messengerDepartments';
 import messengerChannels from './en/messengerChannels';
 import messengerFlow from './en/messengerFlow';
 import messengerConfigure from './en/messengerConfigure';
-import settingsBusinessCities from './en/settingsBusinessCities';
 import postgresDatabases from './en/postgresDatabases';
 import postgresTables from './en/postgresTables';
 import postgresSqlCli from './en/postgresSqlCli';
 
+
 const en = {
-  auth: auth.auth, // Assuming auth.ts exports { auth: { ... } }
-  header: header.header, // Assuming header.ts exports { header: { ... } }
+  auth: auth.auth,
+  header: header.header,
   login: loginPage.login,
   forgot_password: forgotPasswordPage.forgot_password,
   update_password: updatePasswordPage.update_password,
   dashboard: dashboard.dashboard,
   sidebar: sidebar.sidebar,
   subscribers: subscribers.subscribers,
-  list_subscribers: subscribers.list_subscribers, // Assuming subscribers.ts exports this structure
-  add_subscriber: subscribers.add_subscriber, // Assuming subscribers.ts exports this structure
+  list_subscribers: subscribers.list_subscribers,
+  add_subscriber: subscribers.add_subscriber,
   subscriber_profile: subscribers.subscriber_profile,
   global_settings: globalSettings,
-  pops: settingsBusinessPops, // Assign to 'pops' key
+  pops: settingsBusinessPops,
   maps_page: mapsPage,
   maps_elements: mapsElements,
   settings_users: settingsUsers,
-  settings_plans: settingsInternetPage, // Main key for internet plans, can be extended
+  settings_plans: settingsInternetPage,
   settings_business_cities: settingsBusinessCities,
   finances_cash_book: financesCashbookPage,
   finances_entry_categories: financesEntryCategories,
   fttx_dashboard: nocFttxDashboard,
   fttx_olts: nocFttxOlts,
-  settingsSystemMonitor: settingsSystemMonitor, // Direct spread for system monitor keys
+  settingsSystemMonitor: settingsSystemMonitor,
   inventory_warehouses: inventoryWarehouses,
   onx_templates: nocOnxTemplates,
-  financial_configs: financesFinancialConfigs,
+  financial_configs: financesFinancialConfigs, // Assign the imported object
   new_contract_wizard: subscribersNewContractWizard,
   service_calls_dashboard: serviceCallsDashboard,
   service_types: serviceCallsTypes,
   network_ip_page: settingsNetworkIpPage,
-  hub_participants: hubParticipants,
+  hub_participants: hubParticipants, // Assign the imported object
   security_settings_page: settingsSecuritySettings,
   network_devices_page: settingsNetworkDevices,
   network_radius_page: settingsNetworkRadius,
   cgnat_page: settingsNetworkCgnat,
   vlan_page: settingsNetworkVlan,
   hr_dashboard: hrDashboard,
-  sales_dashboard: hrSalesDashboard, // Note: Using hrSalesDashboard for sales_dashboard key
+  sales_dashboard: hrSalesDashboard,
   messenger_chat: messengerChat,
   messenger_departments: messengerDepartments,
   messenger_channels: messengerChannels,
@@ -91,11 +92,11 @@ const en = {
   postgres_tables: postgresTables.postgres_tables,
   postgres_sql_cli: postgresSqlCli.postgres_sql_cli,
 
-  form_cancel_button: 'Cancel', // Common key
-  form_saving_button: 'Saving...', // Common key
+  form_cancel_button: 'Cancel',
+  form_saving_button: 'Saving...',
 
-  service_calls: { // Example of how a module with its own root key might be handled
-    title: 'Service Calls', // This would be t('service_calls.title')
+  service_calls: {
+    title: 'Service Calls',
     refresh_button: 'Refresh',
     new_call_button: 'New Service Call',
     list_title: 'All Service Calls',
