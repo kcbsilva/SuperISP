@@ -5,14 +5,11 @@ import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
+  // useEffect, // No longer needed for Supabase listener
   ReactNode
 } from 'react';
-import { useRouter } // No longer using usePathname here
-from 'next/navigation';
-// Supabase import removed as we are disabling auth
+import { useRouter } from 'next/navigation';
 
-// User type can be simplified or removed if no user object is needed
 interface User { id: string; email?: string; }
 
 interface AuthContextType {
@@ -26,12 +23,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // --- Temporarily Disabled Auth ---
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Always true
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // Auth disabled: always true
   const [user, setUser] = useState<User | null>({ id: 'dev-user', email: 'dev@example.com' }); // Dummy user
-  const [isLoading, setIsLoading] = useState(false); // Always false
-  // --- End Temporarily Disabled Auth ---
-
+  const [isLoading, setIsLoading] = useState(false); // Auth disabled: always false
   const router = useRouter();
 
   const login = async (
@@ -39,24 +33,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     password?: string,
     redirectTo: string = '/admin/dashboard'
   ): Promise<void> => {
-    console.warn('AuthContext: Login function called, but auth is temporarily disabled.');
-    // Simulate successful login for local state if needed by any component, then redirect
+    console.warn('AuthContext: Login function called, but auth is temporarily disabled (PostgreSQL mode).');
     setIsAuthenticated(true);
-    setUser({ id: 'dev-user', email: email || 'dev@example.com' }); // Use provided email or default
-    router.push(redirectTo); // Manually redirect
+    setUser({ id: 'dev-user', email: email || 'dev@example.com' });
+    router.push(redirectTo);
   };
 
   const logout = async (redirectTo: string = '/admin/login'): Promise<void> => {
-    console.warn('AuthContext: Logout function called, but auth is temporarily disabled.');
-    // Simulate logout
+    console.warn('AuthContext: Logout function called, but auth is temporarily disabled (PostgreSQL mode).');
     setIsAuthenticated(false);
     setUser(null);
-    router.push(redirectTo); // Manually redirect
+    router.push(redirectTo);
   };
 
-  // The useEffect for Supabase listener and initial session check is removed.
-  // The useEffect for redirection logic is also removed as LayoutRenderer will handle it,
-  // or it's simplified because isAuthenticated is always true.
+  // Removed Supabase specific useEffect for onAuthStateChange and initial session check.
+  // Redirection logic is handled by LayoutRenderer or simplified due to disabled auth.
 
   return (
     <AuthContext.Provider

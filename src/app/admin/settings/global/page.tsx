@@ -1,4 +1,4 @@
-// src/app/settings/global/page.tsx
+// src/app/admin/settings/global/page.tsx
 'use client';
 
 import * as React from 'react';
@@ -32,13 +32,15 @@ const globalSettingsSchema = z.object({
   companyLogoUrl: z.string().url('Invalid URL format').optional().or(z.literal('')),
   defaultCurrency: z.string().length(3, 'Currency code must be 3 letters (e.g., USD)'),
   timezone: z.string().min(1, 'Timezone is required'),
-  language: z.enum(['en', 'pt'], { // Removed 'fr'
+  language: z.enum(['en'], { // Only 'en' is supported
     required_error: "Please select a default language.",
   }).default('en'),
 });
 
 type GlobalSettingsFormData = z.infer<typeof globalSettingsSchema>;
 
+// Placeholder for where settings would be stored/fetched in a real app
+// For now, it's just in-memory.
 let initialSettings: GlobalSettingsFormData = {
   companyName: 'NetHub ISP',
   companyLogoUrl: '',
@@ -47,14 +49,16 @@ let initialSettings: GlobalSettingsFormData = {
   language: 'en',
 };
 
+// Simulate API calls
 const loadGlobalSettings = async (): Promise<GlobalSettingsFormData> => {
   console.log("Simulating loading global settings...");
-  return { ...initialSettings };
+  // Ensure loaded settings conform to the new schema (language 'en')
+  return { ...initialSettings, language: 'en' };
 };
 
 const saveGlobalSettings = async (data: GlobalSettingsFormData): Promise<void> => {
   console.log("Simulating saving global settings:", data);
-  initialSettings = { ...data };
+  initialSettings = { ...data, language: 'en' }; // Ensure language is always 'en' on save
 };
 
 
@@ -70,7 +74,7 @@ export default function GlobalSettingsPage() {
       companyLogoUrl: '',
       defaultCurrency: '',
       timezone: '',
-      language: 'en',
+      language: 'en', // Default to 'en'
     },
   });
 
@@ -81,11 +85,11 @@ export default function GlobalSettingsPage() {
         companyLogoUrl: settings.companyLogoUrl || '',
         defaultCurrency: settings.defaultCurrency || '',
         timezone: settings.timezone || '',
-        language: settings.language || 'en',
+        language: 'en' as Locale, // Force language to 'en'
       };
       form.reset(validatedSettings);
-      if (validatedSettings.language && typeof window !== 'undefined') {
-         setLocale(validatedSettings.language as Locale);
+      if (typeof window !== 'undefined') {
+         setLocale('en'); // Set locale context to 'en'
       }
     }).catch(error => {
       toast({
@@ -95,13 +99,15 @@ export default function GlobalSettingsPage() {
       });
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // form removed from deps to avoid re-triggering on its own reset
 
   const onSubmit = async (data: GlobalSettingsFormData) => {
     try {
-      await saveGlobalSettings(data);
+      // Ensure language is 'en' before saving
+      const dataToSave = { ...data, language: 'en' as Locale };
+      await saveGlobalSettings(dataToSave);
       if (typeof window !== 'undefined') {
-        setLocale(data.language as Locale);
+        setLocale('en'); // Ensure context is also 'en'
       }
       toast({
         title: t('global_settings.save_success_title'),
@@ -187,9 +193,11 @@ export default function GlobalSettingsPage() {
                      <FormLabel>{t('global_settings.language_label')}</FormLabel>
                      <Select
                         onValueChange={(value) => {
-                            field.onChange(value);
+                            if (value === 'en') { // Only allow 'en'
+                                field.onChange(value as Locale);
+                            }
                         }}
-                        value={field.value || 'en'}
+                        value={field.value || 'en'} // Ensure value is always 'en'
                      >
                        <FormControl>
                          <SelectTrigger>
@@ -198,8 +206,7 @@ export default function GlobalSettingsPage() {
                        </FormControl>
                        <SelectContent>
                          <SelectItem value="en">{t('global_settings.language_english')}</SelectItem>
-                         {/* Removed French option */}
-                         <SelectItem value="pt">{t('global_settings.language_portuguese')}</SelectItem>
+                         {/* Other language options removed */}
                        </SelectContent>
                      </Select>
                      <FormMessage />

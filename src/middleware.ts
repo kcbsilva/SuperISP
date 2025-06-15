@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from 'next/server';
-// Supabase imports removed
 
 export const config = {
   matcher: ['/admin/:path*'],
@@ -10,59 +9,41 @@ export const config = {
 // const ADMIN_PUBLIC_PATHS = [ADMIN_LOGIN_PATH, '/admin/forgot-password', '/admin/update-password'];
 
 export async function middleware(request: NextRequest) {
-  // --- Temporarily Disabled Auth ---
-  console.log(`[Middleware - Auth Disabled] Path: ${request.nextUrl.pathname}. Passing through.`);
+  // --- Authentication logic is simplified due to direct PostgreSQL and placeholder auth ---
+  // In a production scenario with custom PostgreSQL auth, you'd verify a JWT token here.
+  console.log(`[Middleware - PostgreSQL Mode] Path: ${request.nextUrl.pathname}. Passing through.`);
   return NextResponse.next();
-  // --- End Temporarily Disabled Auth ---
 
-  /* Original Middleware Logic (Commented Out)
+  /* Original Middleware Logic (If you implement custom JWT auth with PostgreSQL)
   const response = NextResponse.next();
-  const supabase = createMiddlewareClient({ req: request, res: response });
-  const { data: { session } } = await supabase.auth.getSession();
+  const token = request.cookies.get('auth-token')?.value; // Example cookie name
 
-  // console.log('[Middleware] Path:', request.nextUrl.pathname);
-  // console.log('[Middleware] Session from Supabase getSession:', session ? `User ID: ${session.user.id}` : 'No session');
-  // To see all cookies:
-  // console.log('[Middleware] All incoming cookies:', JSON.stringify(request.cookies.getAll()));
-
+  let session = null;
+  if (token) {
+    // session = verifyJwtEdge(token); // You'd need a verifyJwtEdge compatible with your JWTs
+  }
 
   const pathname = request.nextUrl.pathname;
-
-  const isAuthenticated = !!session;
+  const isAuthenticated = !!session; // Based on your JWT verification
   const isAdminPath = pathname.startsWith('/admin');
-  const isAdminRootPath = pathname === '/admin'; // Specifically /admin
+  const isAdminRootPath = pathname === '/admin';
   const isPublicAdminPath = ADMIN_PUBLIC_PATHS.includes(pathname);
 
   if (isAdminPath) {
     if (isAuthenticated) {
-      // User is authenticated
       if (isPublicAdminPath || isAdminRootPath) {
-        // Authenticated user is on a public admin page (login, forgot-password) or admin root, redirect to dashboard
-        console.log('[Middleware] Authenticated user on public/root admin page. Redirecting to dashboard.');
-        const redirectResponse = NextResponse.redirect(new URL(ADMIN_DASHBOARD_PATH, request.url), {
-          headers: response.headers, // Carry over any Set-Cookie headers
-        });
-        return redirectResponse;
+        return NextResponse.redirect(new URL(ADMIN_DASHBOARD_PATH, request.url));
       }
-      // Authenticated user on a protected admin page, allow access
       return response;
     } else {
-      // User is not authenticated
       if (!isPublicAdminPath && !isAdminRootPath) {
-        // Unauthenticated user trying to access a protected admin page, redirect to login
-        console.log('[Middleware] Unauthenticated user on protected admin page. Redirecting to login.');
         const loginUrl = new URL(ADMIN_LOGIN_PATH, request.url);
-        // loginUrl.searchParams.set('redirect_url', pathname); // Temporarily removed for debugging loop
-        const redirectResponse = NextResponse.redirect(loginUrl, {
-          headers: response.headers, // Carry over any Set-Cookie headers
-        });
-        return redirectResponse;
+        // loginUrl.searchParams.set('redirect_url', pathname);
+        return NextResponse.redirect(loginUrl);
       }
-      // Unauthenticated user on a public admin page (login, forgot-password) or admin root, allow access
       return response;
     }
   }
-
   return response;
   */
 }
