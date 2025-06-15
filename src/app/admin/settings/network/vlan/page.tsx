@@ -58,9 +58,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useQuery } from '@tanstack/react-query';
-import { getPops } from '@/services/mysql/pops';
-import type { Pop } from '@/types/pops';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
@@ -80,6 +77,21 @@ const mockParticipants: Participant[] = [
   { id: '2', name: 'Jane Smith', email: 'jane@techsolutions.com', company: 'Tech Solutions Inc' },
   { id: '3', name: 'Bob Johnson', email: 'bob@innovatetech.com', company: 'Innovate Tech' },
   { id: '4', name: 'Alice Brown', email: 'alice@globalnet.com', company: 'Global Networks' },
+];
+
+// Mock PoP type and data
+interface Pop {
+  id: number;
+  name: string;
+  location: string;
+}
+
+const mockPops: Pop[] = [
+  { id: 1, name: 'PoP-SP-01', location: 'São Paulo, Brazil' },
+  { id: 2, name: 'PoP-RJ-01', location: 'Rio de Janeiro, Brazil' },
+  { id: 3, name: 'PoP-MG-01', location: 'Belo Horizonte, Brazil' },
+  { id: 4, name: 'PoP-CE-01', location: 'Fortaleza, Brazil' },
+  { id: 5, name: 'PoP-PE-01', location: 'Recife, Brazil' },
 ];
 
 // Updated VLAN Schema (removed name and subnet, added assignedTo and availableInHub)
@@ -148,10 +160,8 @@ export default function VlanManagementPage() {
   const [participantSearch, setParticipantSearch] = React.useState('');
   const iconSize = "h-2.5 w-2.5";
 
-  const { data: pops = [], isLoading: isLoadingPops, error: popsError } = useQuery<Pop[], Error>({
-    queryKey: ['pops'],
-    queryFn: getPops,
-  });
+  // Use placeholder PoPs data
+  const pops = mockPops;
 
   const form = useForm<VlanFormData>({
     resolver: zodResolver(vlanSchema),
@@ -298,21 +308,18 @@ export default function VlanManagementPage() {
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel>{t('vlan_page.form_pop_label', 'Point of Presence (PoP)')}</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingPops || !!popsError}>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                                           <FormControl>
                                             <SelectTrigger>
-                                              <SelectValue placeholder={isLoadingPops ? t('vlan_page.form_pop_loading', 'Loading PoPs...') : popsError ? t('vlan_page.form_pop_error', 'Error loading PoPs') : t('vlan_page.form_pop_placeholder', 'Select PoP')} />
+                                              <SelectValue placeholder={t('vlan_page.form_pop_placeholder', 'Select PoP')} />
                                             </SelectTrigger>
                                           </FormControl>
                                           <SelectContent>
-                                            {!isLoadingPops && !popsError && pops.map((pop) => (
+                                            {pops.map((pop) => (
                                               <SelectItem key={pop.id.toString()} value={pop.id.toString()}>
                                                 {pop.name} ({pop.location})
                                               </SelectItem>
                                             ))}
-                                             {isLoadingPops && <div className="p-2 text-center text-muted-foreground text-xs">{t('vlan_page.form_pop_loading', 'Loading PoPs...')}</div>}
-                                             {popsError && <div className="p-2 text-center text-destructive text-xs">{t('vlan_page.form_pop_error', 'Error loading PoPs')}</div>}
-                                             {!isLoadingPops && !popsError && pops.length === 0 && <div className="p-2 text-center text-muted-foreground text-xs">{t('vlan_page.form_pop_none', 'No PoPs found')}</div>}
                                           </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -457,13 +464,7 @@ export default function VlanManagementPage() {
 
       <Card>
         <CardContent className="pt-0">
-          {isLoadingPops ? (
-             <div className="space-y-3 pt-6">
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
-             </div>
-          ) : vlans.length > 0 ? (
+          {vlans.length > 0 ? (
             <div className="overflow-x-auto pt-6">
               <Table>
                 <TableHeader>
