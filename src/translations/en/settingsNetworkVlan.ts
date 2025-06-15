@@ -3,7 +3,7 @@
 const settingsNetworkVlan = {
     title: 'Virtual Local Area Network (VLAN)',
     refresh_button: 'Refresh',
-    add_button: 'Add VLAN',
+    //add_button: 'Add VLAN',
     add_dialog_title: 'Add New VLAN',
     add_dialog_description: 'Configure a new Virtual LAN.',
     form_vlan_id_label: 'VLAN ID',

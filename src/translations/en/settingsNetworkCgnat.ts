@@ -3,7 +3,7 @@
 const settingsNetworkCgnat = {
     title: 'CGNAT Configuration',
     refresh_button: 'Refresh',
-    add_button: 'Add CGNAT Rule',
+    add_vlan_button: 'Add CGNAT Rule',
     add_dialog_title: 'Add New CGNAT Rule',
     add_dialog_description: 'Configure a new Carrier-Grade NAT rule.',
     form_network_out_label: 'Network Out (Public IP)',

@@ -133,7 +133,7 @@ export default function InternetPlansPage() {
 
   const handleAddPlan = () => {
     console.log('Add new internet plan clicked');
-    toast({ title: t('settings_plans.add_plan_toast_title'), description: t('settings_plans.add_plan_toast_desc') });
+    toast({ title: t('internet_plans_add_button'), description: t('internet_plans_add_button') });
   };
   
   const handleRefresh = () => {
@@ -143,7 +143,7 @@ export default function InternetPlansPage() {
     setSelectedSpeed('all');
     setSelectedConnectionType('All');
     setPriceSortOrder('none');
-    toast({ title: t('settings_plans.refresh_toast_title'), description: t('settings_plans.refresh_toast_desc') });
+    toast({ title: t('refresh_button'), description: t('refresh_button') });
   };
 
   const filteredAndSortedPlans = React.useMemo(() => {
@@ -195,14 +195,14 @@ export default function InternetPlansPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-base font-semibold flex items-center gap-2">
           <Wifi className={`${titleIconSize} text-primary`} />
-          {t('settings_plans.internet_page_title')}
+          {t('internet_plans_page_title')}
         </h1>
         <div className="flex items-center gap-2">
             <Button onClick={handleRefresh} variant="outline" className="shrink-0">
-                <RefreshCw className={`mr-2 ${iconSize}`} /> {t('settings_plans.refresh_button')}
+                <RefreshCw className={`mr-2 ${iconSize}`} /> {t('refresh_button')}
             </Button>
             <Button onClick={handleAddPlan} className="bg-green-600 hover:bg-green-700 text-white shrink-0">
-            <PlusCircle className={`mr-2 ${iconSize}`} /> {t('settings_plans.add_plan_button')}
+            <PlusCircle className={`mr-2 ${iconSize}`} /> {t('internet_plans_add_button')}
             </Button>
         </div>
       </div>
@@ -212,7 +212,7 @@ export default function InternetPlansPage() {
             <Search className={`absolute left-2.5 top-2.5 ${iconSize} text-muted-foreground`} />
             <Input
             type="search"
-            placeholder={t('settings_plans.search_placeholder')}
+            placeholder={t('search')}
             className="pl-8 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -222,13 +222,13 @@ export default function InternetPlansPage() {
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="shrink-0 w-full sm:w-auto">
-                    {t('settings_plans.filter_pop_label')}: {selectedPop === 'all' ? t('settings_plans.filter_all_label') : mockPops.find(p=>p.id === selectedPop)?.name || 'Unknown'}
+                    {t('internet_plans_filter_pop_label')}: {selectedPop === 'all' ? t('internet_plans_filter_all_label') : mockPops.find(p=>p.id === selectedPop)?.name || 'Unknown'}
                     <ChevronDown className={`ml-2 ${iconSize}`} />
                 </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                 <DropdownMenuCheckboxItem checked={selectedPop === 'all'} onCheckedChange={() => setSelectedPop('all')}>
-                    {t('settings_plans.filter_all_label')}
+                    {t('internet_plans_filter_all_label')}
                 </DropdownMenuCheckboxItem>
                 {mockPops.map(pop => (
                     <DropdownMenuCheckboxItem key={pop.id} checked={selectedPop === pop.id} onCheckedChange={() => setSelectedPop(pop.id)}>
@@ -241,33 +241,33 @@ export default function InternetPlansPage() {
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="shrink-0 w-full sm:w-auto">
-                    {t('settings_plans.filter_speed_label')}: {
-                    selectedSpeed === 'all' ? t('settings_plans.filter_all_label') :
-                    selectedSpeed === 'lte100' ? t('settings_plans.speed_lte100') :
-                    t('settings_plans.speed_gt100')
+                    {t('internet_plans_filter_speed_label')}: {
+                    selectedSpeed === 'all' ? t('internet_plans_filter_all_label') :
+                    selectedSpeed === 'lte100' ? t('internet_plans_speed_lte100') :
+                    t('internet_plans_speed_gt100')
                     }
                     <ChevronDown className={`ml-2 ${iconSize}`} />
                 </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuCheckboxItem checked={selectedSpeed === 'all'} onCheckedChange={() => setSelectedSpeed('all')}>{t('settings_plans.filter_all_label')}</DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem checked={selectedSpeed === 'lte100'} onCheckedChange={() => setSelectedSpeed('lte100')}>{t('settings_plans.speed_lte100')}</DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem checked={selectedSpeed === 'gt100'} onCheckedChange={() => setSelectedSpeed('gt100')}>{t('settings_plans.speed_gt100')}</DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem checked={selectedSpeed === 'all'} onCheckedChange={() => setSelectedSpeed('all')}>{t('internet_plans_filter_all_label')}</DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem checked={selectedSpeed === 'lte100'} onCheckedChange={() => setSelectedSpeed('lte100')}>{t('internet_plans_speed_lte100')}</DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem checked={selectedSpeed === 'gt100'} onCheckedChange={() => setSelectedSpeed('gt100')}>{t('internet_plans_speed_gt100')}</DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="shrink-0 w-full sm:w-auto">
-                     {t('settings_plans.filter_connection_type_label')}: {selectedConnectionType === 'All' ? t('settings_plans.filter_all_label') : t(`settings_plans.connection_type_${selectedConnectionType.toLowerCase()}` as any, selectedConnectionType)}
+                     {t('internet_plans_filter_connection_type_label')}: {selectedConnectionType === 'All' ? t('internet_plans_filter_all_label') : t(`internet_plans_connection_type_${selectedConnectionType.toLowerCase()}` as any, selectedConnectionType)}
                     <ChevronDown className={`ml-2 ${iconSize}`} />
                 </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuCheckboxItem checked={selectedConnectionType === 'All'} onCheckedChange={() => setSelectedConnectionType('All')}>{t('settings_plans.filter_all_label')}</DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem checked={selectedConnectionType === 'All'} onCheckedChange={() => setSelectedConnectionType('All')}>{t('internet_plans_filter_all_label')}</DropdownMenuCheckboxItem>
                     {(['Fiber', 'Radio', 'Satellite', 'UTP'] as const).map(type => (
                         <DropdownMenuCheckboxItem key={type} checked={selectedConnectionType === type} onCheckedChange={() => setSelectedConnectionType(type)}>
-                        {t(`settings_plans.connection_type_${type.toLowerCase()}` as any, type)}
+                        {t(`internet_plans_connection_type_${type.toLowerCase()}` as any, type)}
                         </DropdownMenuCheckboxItem>
                     ))}
                 </DropdownMenuContent>
@@ -276,18 +276,18 @@ export default function InternetPlansPage() {
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="shrink-0 w-full sm:w-auto">
-                    {t('settings_plans.sort_price_label')}: {
-                    priceSortOrder === 'none' ? t('settings_plans.sort_price_default') :
-                    priceSortOrder === 'asc' ? t('settings_plans.sort_price_asc') :
-                    t('settings_plans.sort_price_desc')
+                    {t('internet_plans_sort_price_label')}: {
+                    priceSortOrder === 'none' ? t('internet_plans_sort_price_default') :
+                    priceSortOrder === 'asc' ? t('internet_plans_sort_price_asc') :
+                    t('internet_plans_sort_price_desc')
                     }
                     <ChevronDown className={`ml-2 ${iconSize}`} />
                 </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem onSelect={() => setPriceSortOrder('none')}>{t('settings_plans.sort_price_default')}</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => setPriceSortOrder('asc')}>{t('settings_plans.sort_price_asc')}</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => setPriceSortOrder('desc')}>{t('settings_plans.sort_price_desc')}</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setPriceSortOrder('none')}>{t('internet_plans_sort_price_default')}</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setPriceSortOrder('asc')}>{t('internet_plans_sort_price_asc')}</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setPriceSortOrder('desc')}>{t('internet_plans_sort_price_desc')}</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
@@ -302,38 +302,38 @@ export default function InternetPlansPage() {
                   <TableRow>
                     <TableHead className="w-24 text-xs text-center font-semibold">
                       <div className="flex items-center justify-center gap-1">
-                        <Hash className={columnHeaderIconSize} />{t('settings_plans.table_header_id')}
+                        <Hash className={columnHeaderIconSize} />{t('internet_plans_table_header_id')}
                       </div>
                     </TableHead>
                     <TableHead className="text-xs font-semibold">
-                      {t('settings_plans.table_header_name')}
+                      {t('internet_plans_table_header_name')}
                     </TableHead>
                     <TableHead className="text-xs text-center font-semibold">
                       <div className="flex items-center justify-center gap-1">
-                        <Building className={columnHeaderIconSize} />{t('settings_plans.table_header_pop')}
+                        <Building className={columnHeaderIconSize} />{t('internet_plans_table_header_pop')}
                       </div>
                     </TableHead>
                     <TableHead className="text-xs text-center font-semibold">
                       <div className="flex items-center justify-center gap-1">
-                        <ArrowUp className={columnHeaderIconSize} />{t('settings_plans.table_header_upload')}
+                        <ArrowUp className={columnHeaderIconSize} />{t('internet_plans_table_header_upload')}
                       </div>
                     </TableHead>
                     <TableHead className="text-xs text-center font-semibold">
                        <div className="flex items-center justify-center gap-1">
-                        <ArrowDown className={columnHeaderIconSize} />{t('settings_plans.table_header_download')}
+                        <ArrowDown className={columnHeaderIconSize} />{t('internet_plans_table_header_download')}
                        </div>
                     </TableHead>
                     <TableHead className="text-xs text-center font-semibold">
                       <div className="flex items-center justify-center gap-1">
-                        <DollarSign className={columnHeaderIconSize} />{t('settings_plans.table_header_price')}
+                        <DollarSign className={columnHeaderIconSize} />{t('internet_plans_table_header_price')}
                       </div>
                     </TableHead>
                     <TableHead className="text-xs text-center font-semibold">
-                      {t('settings_plans.table_header_connection_type')}
+                      {t('internet_plans_table_header_connection_type')}
                     </TableHead>
                     <TableHead className="text-xs text-center font-semibold">
                        <div className="flex items-center justify-center gap-1">
-                        <Users className={columnHeaderIconSize} />{t('settings_plans.table_header_client_count')}
+                        <Users className={columnHeaderIconSize} />{t('internet_plans_table_header_client_count')}
                        </div>
                     </TableHead>
                   </TableRow>
@@ -355,7 +355,7 @@ export default function InternetPlansPage() {
                       <TableCell className="text-xs text-center">{plan.price}</TableCell>
                       <TableCell className="text-center">
                         <Badge variant={getConnectionTypeBadgeVariant(plan.connectionType)} className="text-xs">
-                          {t(`settings_plans.connection_type_${plan.connectionType.toLowerCase()}` as any, plan.connectionType)}
+                          {t(`internet_plans_connection_type_${plan.connectionType.toLowerCase()}` as any, plan.connectionType)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center text-xs">
@@ -369,8 +369,8 @@ export default function InternetPlansPage() {
           ) : (
             <p className="text-muted-foreground text-center py-4 text-xs">
               {searchTerm || selectedPop !== 'all' || selectedSpeed !== 'all' || selectedConnectionType !== 'All'
-                ? t('settings_plans.no_plans_match_filters')
-                : t('settings_plans.no_plans_found_internet')
+                ? t('internet_plans_no_plans_match_filters')
+                : t('internet_plans_no_plans_found_internet')
               }
             </p>
           )}

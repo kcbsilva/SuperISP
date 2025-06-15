@@ -1,41 +1,45 @@
-
 // src/translations/en/settingsInternetPage.ts
+
 const settingsInternetPage = {
-    internet_page_title: 'Internet Plans',
-    add_plan_button: 'Add Internet Plan',
-    existing_plans_title: 'Existing Internet Plans',
-    existing_plans_description_internet: 'Manage your internet service plans.',
-    no_plans_found_internet: 'No internet plans configured yet. Click "Add Internet Plan" to create one.',
-    table_header_id: 'ID',
-    table_header_name: 'Name',
-    table_header_upload: 'Upload',
-    table_header_download: 'Download',
-    table_header_price: 'Price',
-    table_header_connection_type: 'Connection Type',
-    table_header_client_count: 'Client Count',
-    table_header_pop: 'PoP',
-    table_header_actions: 'Actions',
-    connection_type_fiber: 'Fiber',
-    connection_type_radio: 'Radio',
-    connection_type_satellite: 'Satellite',
-    connection_type_utp: 'UTP',
-    refresh_button: 'Refresh',
-    search_placeholder: 'Search plans by name or PoP...',
-    filter_pop_label: 'PoP',
-    filter_all_label: 'All',
-    filter_speed_label: 'Speed',
-    speed_lte100: '<= 100 Mbps',
-    speed_gt100: '> 100 Mbps',
-    filter_connection_type_label: 'Type',
-    sort_price_label: 'Sort Price',
-    sort_price_default: 'Default',
-    sort_price_asc: 'Low to High',
-    sort_price_desc: 'High to Low',
-    no_plans_match_filters: 'No internet plans match the current filters.',
-    add_plan_toast_title: 'Add Plan (Not Implemented)',
-    add_plan_toast_desc: 'Functionality to add new internet plans is not yet available.',
-    refresh_toast_title: 'Plans Refreshed',
-    refresh_toast_desc: 'The list of internet plans has been reloaded.',
-  };
+  internet_plans_page_title: 'Internet Plans',
+  internet_plans_add_button: 'Add Plan',
+  internet_plans_add_plan_toast_desc: 'New internet plan functionality is not yet implemented.',
+  
+  // Filter labels
+  internet_plans_filter_pop_label: 'POP',
+  internet_plans_filter_speed_label: 'Speed',
+  internet_plans_filter_connection_type_label: 'Type',
+  internet_plans_filter_all_label: 'All',
+  
+  // Speed filter options
+  internet_plans_speed_lte100: '≤ 100 Mbps',
+  internet_plans_speed_gt100: '> 100 Mbps',
+  
+  // Connection types
+  internet_plans_connection_type_fiber: 'Fiber',
+  internet_plans_connection_type_radio: 'Radio',
+  internet_plans_connection_type_satellite: 'Satellite',
+  internet_plans_connection_type_utp: 'UTP',
+  
+  // Sort options
+  internet_plans_sort_price_label: 'Price',
+  internet_plans_sort_price_default: 'Default',
+  internet_plans_sort_price_asc: 'Low to High',
+  internet_plans_sort_price_desc: 'High to Low',
+  
+  // Table headers
+  internet_plans_table_header_id: 'ID',
+  internet_plans_table_header_name: 'Plan Name',
+  internet_plans_table_header_pop: 'POP',
+  internet_plans_table_header_upload: 'Upload',
+  internet_plans_table_header_download: 'Download',
+  internet_plans_table_header_price: 'Price',
+  internet_plans_table_header_connection_type: 'Type',
+  internet_plans_table_header_client_count: 'Clients',
+  
+  // Empty states
+  internet_plans_no_plans_match_filters: 'No internet plans match the current filters.',
+  internet_plans_no_plans_found_internet: 'No internet plans found.',
+};
 
 export default settingsInternetPage;

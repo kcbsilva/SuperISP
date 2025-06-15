@@ -1,4 +1,5 @@
 // src/contexts/LocaleContext.tsx
+
 'use client';
 
 import type React from 'react';
@@ -24,13 +25,16 @@ const LocaleContext = createContext<LocaleContextProps | undefined>(undefined);
 const getTranslationValue = (dict: TranslationDict, key: string): string | undefined => {
   const keys = key.split('.');
   let current: string | TranslationDict | undefined = dict;
+  
   for (const k of keys) {
     if (typeof current !== 'object' || current === null || !(k in current)) {
       return undefined; // Key not found or not an object
     }
     current = current[k];
   }
-  return typeof current === 'string' ? current : undefined; // Return only if it's a string
+  
+  // Only return if it's a string, otherwise return undefined
+  return typeof current === 'string' ? current : undefined;
 };
 
 export const dateLocales: Record<string, typeof enUSLocale> = { // Simplified to just enUSLocale
@@ -66,16 +70,24 @@ export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // Return fallback or key during SSR or before hydration
       return fallback ?? key;
     }
+    
     // English is always the current and fallback translation
     const currentTranslations = (translations as Translations)['en'];
 
+    // Debug logging to help identify issues
+    console.log('Translation key:', key);
+    console.log('Current translations structure:', Object.keys(currentTranslations));
+    
     const translatedValue = getTranslationValue(currentTranslations, key);
+    console.log('Translated value:', translatedValue);
+    
     if (translatedValue !== undefined) {
         return translatedValue;
     }
+    
     // Return the provided fallback or the key itself if no translation found
     return fallback ?? key;
-  }, [isMounted]); // locale removed from dependency array as it's always 'en' effectively
+  }, [isMounted]);
 
   // Only provide context value once mounted to ensure localStorage is read
   const contextValue = useMemo(() => ({
@@ -83,7 +95,6 @@ export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setLocale,
     t,
   }), [locale, setLocale, t]);
-
 
   return (
     <LocaleContext.Provider value={contextValue}>
