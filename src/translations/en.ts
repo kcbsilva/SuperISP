@@ -39,6 +39,9 @@ import messengerChannels from './en/messengerChannels';
 import messengerFlow from './en/messengerFlow';
 import messengerConfigure from './en/messengerConfigure';
 import settingsBuisnessCities from './en/settingsBusinessCities';
+import postgresDatabases from './en/postgresDatabases';
+import postgresTables from './en/postgresTables';
+import postgresSqlCli from './en/postgresSqlCli';
 
 const en = {
   ...auth,
@@ -81,7 +84,9 @@ const en = {
   ...messengerFlow,
   ...messengerConfigure,
   ...settingsBuisnessCities,
-
+  ...postgresDatabases,
+  ...postgresTables,
+  ...postgresSqlCli,
 
   settings_plans: {
     internet_page_title: 'Internet Plans',
