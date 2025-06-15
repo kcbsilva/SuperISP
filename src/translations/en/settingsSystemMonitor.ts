@@ -1,6 +1,7 @@
 //src/translations/en/settingsSystemMonitor.ts
 
 const settingsSystemMonitor = {
+    page_title: 'System Monitor',
     cpu_usage: 'CPU Usage',
     ram_usage: 'RAM Usage',
     ssd_usage: 'SSD Usage',
