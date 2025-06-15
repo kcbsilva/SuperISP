@@ -38,10 +38,10 @@ import messengerDepartments from './en/messengerDepartments';
 import messengerChannels from './en/messengerChannels';
 import messengerFlow from './en/messengerFlow';
 import messengerConfigure from './en/messengerConfigure';
-import settingsBuisnessCities from './en/settingsBusinessCities';
-import postgresDatabases from './en/postgresDatabases';
-import postgresTables from './en/postgresTables';
-import postgresSqlCli from './en/postgresSqlCli';
+import settingsBusinessCities from './en/settingsBusinessCities'; // Added
+import postgresDatabases from './en/postgresDatabases';         // Added
+import postgresTables from './en/postgresTables';           // Added
+import postgresSqlCli from './en/postgresSqlCli'; // Ensured this is present
 
 const en = {
   ...auth,
@@ -50,45 +50,21 @@ const en = {
   ...forgotPasswordPage,
   ...updatePasswordPage,
   ...dashboard,
-  ...sidebar, // Spread the imported sidebar translations
+  ...sidebar, 
   ...subscribers,
   ...globalSettings,
   ...pops,
   ...mapsPage,
   ...mapsElements,
   ...settingsUsers,
-  ...settingsInternetPage,
-  ...financesCashbookPage,
-  ...financesEntryCategories,
-  ...nocFttxDashboard,
-  ...nocFttxOlts,
-  ...settingsSystemMonitor,
-  ...inventoryWarehouses,
-  ...nocOnxTemplates,
-  ...financesFinancialConfigs,
-  ...subscribersNewContractWizard,
-  ...serviceCallsDashboard,
-  ...serviceCallsTypes,
-  ...settingsNetworkIpPage,
-  ...hubParticipants,
-  ...settingsSecuritySettings,
-  ...settingsNetworkDevices,
-  ...settingsNetworkRadius,
-  ...settingsNetworkCgnat,
-  ...settingsNetworkVlan,
-  ...hrDashboard,
-  ...hrSalesDashboard,
-  ...messengerChat,
-  ...messengerDepartments,
-  ...messengerChannels,
-  ...messengerFlow,
-  ...messengerConfigure,
-  ...settingsBuisnessCities,
-  ...postgresDatabases,
-  ...postgresTables,
-  ...postgresSqlCli,
-
-  settings_plans: {
+  // If settingsInternetPage.ts exports an object that should be spread directly at the root:
+  // ...settingsInternetPage, 
+  // OR if settingsInternetPage.ts exports { settings_plans: { ... } }, then merge it like this:
+  settings_plans: { // Assuming this top-level key is what components expect
+    ...(settingsInternetPage.settings_plans || {}), // Merge from settingsInternetPage.ts
+    // The existing inline settings_plans object from your prompt.
+    // If settingsInternetPage.ts is meant to replace this, then this inline object can be removed.
+    // For now, I'll keep the structure from your prompt and assume settingsInternetPage.ts provides additional keys or overrides.
     internet_page_title: 'Internet Plans',
     add_plan_button: 'Add Internet Plan',
     existing_plans_title: 'Existing Plans',
@@ -124,10 +100,57 @@ const en = {
     connection_type_radio: 'Radio',
     connection_type_satellite: 'Satellite',
     connection_type_utp: 'UTP',
+    refresh_button: 'Refresh',
+    search_placeholder: 'Search plans by name or PoP...',
+    filter_pop_label: 'PoP',
+    filter_all_label: 'All',
+    filter_speed_label: 'Speed',
+    speed_lte100: '<= 100 Mbps',
+    speed_gt100: '> 100 Mbps',
+    filter_connection_type_label: 'Type',
+    sort_price_label: 'Sort Price',
+    sort_price_default: 'Default',
+    sort_price_asc: 'Low to High',
+    sort_price_desc: 'High to Low',
+    no_plans_match_filters: 'No internet plans match the current filters.',
+    add_plan_toast_title: 'Add Plan (Not Implemented)',
+    add_plan_toast_desc: 'Functionality to add new internet plans is not yet available.',
+    refresh_toast_title: 'Plans Refreshed',
+    refresh_toast_desc: 'The list of internet plans has been reloaded.',
+    table_header_pop: 'PoP',
   },
+  ...financesCashbookPage,
+  ...financesEntryCategories,
+  ...nocFttxDashboard,
+  ...nocFttxOlts,
+  ...settingsSystemMonitor,
+  ...inventoryWarehouses,
+  ...nocOnxTemplates,
+  ...financesFinancialConfigs,
+  ...subscribersNewContractWizard,
+  ...serviceCallsDashboard,
+  ...serviceCallsTypes,
+  ...settingsNetworkIpPage,
+  ...hubParticipants,
+  ...settingsSecuritySettings,
+  ...settingsNetworkDevices,
+  ...settingsNetworkRadius,
+  ...settingsNetworkCgnat,
+  ...settingsNetworkVlan,
+  ...hrDashboard,
+  ...hrSalesDashboard,
+  ...messengerChat,
+  ...messengerDepartments,
+  ...messengerChannels,
+  ...messengerFlow,
+  ...messengerConfigure,
+  ...settingsBusinessCities, // Spread the new module
+  ...postgresDatabases,    // Spread the new module
+  ...postgresTables,      // Spread the new module
+  ...postgresSqlCli,      // Ensure this is spread
+
   form_cancel_button: 'Cancel',
   form_saving_button: 'Saving...',
-
 
   service_calls: {
     title: 'Service Calls',
