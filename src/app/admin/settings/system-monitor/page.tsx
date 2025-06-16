@@ -7,7 +7,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"; // Removed CardDescription
+} from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Cpu, HardDrive, MemoryStick, Database, RefreshCw, Loader2, CheckCircle, XCircle, Router as RouterIcon, Power } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -77,7 +77,7 @@ export default function SystemMonitorPage() {
       { nameKey: 'cpu_usage', value: cpuUsage, unit: '%', icon: Cpu, status: cpuUsage > 80 ? 'warning' : 'ok', progress: cpuUsage },
       { nameKey: 'ram_usage', value: `${ramUsage} / 16`, unit: 'GB', icon: MemoryStick, status: ramUsage > 12.8 ? 'warning' : 'ok', progress: (ramUsage / 16) * 100 },
       { nameKey: 'ssd_usage', value: `${ssdUsage} / 512`, unit: 'GB', icon: HardDrive, status: ssdUsage > 400 ? 'warning' : 'ok', progress: (ssdUsage / 512) * 100 },
-      { nameKey: 'postgres_status', value: postgresConnected ? 'Connected' : 'Disconnected', icon: Database, status: postgresConnected ? 'ok' : 'error' },
+      { nameKey: 'postgres_status', value: postgresConnected ? t('postgres_connected') : t('postgres_disconnected'), icon: Database, status: postgresConnected ? 'ok' : 'error' },
     ]);
 
     setServices(prevServices => prevServices.map(s => ({
@@ -140,7 +140,7 @@ export default function SystemMonitorPage() {
           const MetricIcon = metric.icon;
           return (
             <Card key={metric.nameKey}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
                 <CardTitle className="text-sm font-medium">
                   {t(metric.nameKey)}
                 </CardTitle>
@@ -155,11 +155,11 @@ export default function SystemMonitorPage() {
                     {getStatusIndicator(metric.status)}
                 </div>
                 {metric.progress !== undefined && (
-                  <Progress value={metric.progress} className="mt-2 h-2" />
+                  <Progress value={metric.progress} className="mt-1 h-2" />
                 )}
                  {metric.nameKey === 'postgres_status' && metric.status !== 'fetching' && (
                     <p className={`text-xs mt-1 ${metric.status === 'ok' ? 'text-green-600' : 'text-red-600'}`}>
-                        {metric.status === 'ok' ? t('postgres_connected') : t('postgres_disconnected')}
+                        {metric.value}
                     </p>
                 )}
               </CardContent>
@@ -170,7 +170,7 @@ export default function SystemMonitorPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="lg:col-span-1">
-          <CardHeader>
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm">{t('live_logs_title')}</CardTitle>
           </CardHeader>
           <CardContent>
@@ -183,7 +183,7 @@ export default function SystemMonitorPage() {
         </Card>
 
         <Card className="lg:col-span-1">
-          <CardHeader>
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm">{t('services_status_title')}</CardTitle>
           </CardHeader>
           <CardContent>
@@ -195,7 +195,7 @@ export default function SystemMonitorPage() {
                     <span className="text-xs font-medium">{t(service.nameKey)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-semibold ${service.status === 'Active' ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className={`text-xs font-semibold min-w-[70px] text-center ${service.status === 'Active' ? 'text-green-600' : 'text-red-600'}`}>
                       {service.status === 'Active' ? t('service_status_active') : t('service_status_inactive')}
                     </span>
                     <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => handleRestartService(service.nameKey)} disabled={isLoading}>
