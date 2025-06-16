@@ -7,15 +7,12 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+} from "@/components/ui/card"; // Removed CardDescription
 import { Button } from '@/components/ui/button';
 import { Cpu, HardDrive, MemoryStick, Database, RefreshCw, Loader2, CheckCircle, XCircle, Router as RouterIcon, Power } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
-// Removed testConnection as it's not used for the PostgreSQL section in this component for now.
-// If you need a generic PostgreSQL status check, it can be added back.
 
 interface SystemMetric {
   nameKey: string;
@@ -53,7 +50,7 @@ export default function SystemMonitorPage() {
     { nameKey: 'cpu_usage', value: 'Fetching...', icon: Cpu, status: 'fetching', progress: 0 },
     { nameKey: 'ram_usage', value: 'Fetching...', icon: MemoryStick, status: 'fetching', progress: 0 },
     { nameKey: 'ssd_usage', value: 'Fetching...', icon: HardDrive, status: 'fetching', progress: 0 },
-    { nameKey: 'postgres_status', value: 'Fetching...', icon: Database, status: 'fetching' }, // Changed from supabase_status
+    { nameKey: 'postgres_status', value: 'Fetching...', icon: Database, status: 'fetching' },
   ]);
   const [services, setServices] = React.useState<MonitoredService[]>(placeholderServices);
 
@@ -74,8 +71,7 @@ export default function SystemMonitorPage() {
     const ramUsage = parseFloat((Math.random() * 16).toFixed(1));
     const ssdUsage = Math.floor(Math.random() * 500);
     
-    // Simulate PostgreSQL status check (no actual connection test for now in this component)
-    const postgresConnected = Math.random() > 0.2; // 80% chance of being "connected"
+    const postgresConnected = Math.random() > 0.2; 
 
     setMetrics([
       { nameKey: 'cpu_usage', value: cpuUsage, unit: '%', icon: Cpu, status: cpuUsage > 80 ? 'warning' : 'ok', progress: cpuUsage },
@@ -84,10 +80,9 @@ export default function SystemMonitorPage() {
       { nameKey: 'postgres_status', value: postgresConnected ? 'Connected' : 'Disconnected', icon: Database, status: postgresConnected ? 'ok' : 'error' },
     ]);
 
-    // Simulate fetching service statuses
     setServices(prevServices => prevServices.map(s => ({
         ...s,
-        status: Math.random() > 0.3 ? 'Active' : 'Inactive' // Randomize status on refresh
+        status: Math.random() > 0.3 ? 'Active' : 'Inactive'
     })));
 
     setIsLoading(false);
@@ -118,8 +113,6 @@ export default function SystemMonitorPage() {
       title: t('restart_action_toast_title'),
       description: t('restart_action_toast_desc', 'Restarting {serviceName}... (This is a simulation)').replace('{serviceName}', serviceName),
     });
-    // Here you would typically call an API to restart the service
-    // For simulation, we can toggle its status after a delay
     setIsLoading(true);
     setTimeout(() => {
         setServices(prevServices => prevServices.map(s =>
@@ -179,7 +172,6 @@ export default function SystemMonitorPage() {
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle className="text-sm">{t('live_logs_title')}</CardTitle>
-            <CardDescription className="text-xs">{t('live_logs_description')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-64 w-full bg-muted rounded-md p-4 overflow-y-auto">
@@ -193,7 +185,6 @@ export default function SystemMonitorPage() {
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle className="text-sm">{t('services_status_title')}</CardTitle>
-            <CardDescription className="text-xs">{t('services_status_description')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
