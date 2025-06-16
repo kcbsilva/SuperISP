@@ -5,17 +5,30 @@ const settingsSystemMonitor = {
     cpu_usage: 'CPU Usage',
     ram_usage: 'RAM Usage',
     ssd_usage: 'SSD Usage',
-    postgres_status: 'PostgreSQL Status', // Keeping this as it might be used by Supabase
-    supabase_status: 'Supabase Status', // Changed from mysql_status
+    postgres_status: 'PostgreSQL Status',
     refresh_button: 'Refresh Metrics',
     refresh_toast_title: 'Refreshing Metrics',
     refresh_toast_description: 'Fetching latest system status...',
     postgres_connected: 'Connected',
     postgres_disconnected: 'Disconnected - Check logs!',
-    supabase_connected: 'Connected', // Changed from mysql_connected
-    supabase_disconnected: 'Disconnected - Check logs!', // Changed from mysql_disconnected
     live_logs_title: 'Live Logs (Placeholder)',
     live_logs_description: 'This section would display real-time system logs.',
+    services_status_title: 'Services Status',
+    services_status_description: 'Monitor and manage critical system services.',
+    service_status_active: 'Active',
+    service_status_inactive: 'Inactive',
+    service_action_restart: 'Restart',
+    restart_action_toast_title: 'Restart Service (Simulated)',
+    restart_action_toast_desc: 'Restarting {serviceName}... (This is a simulation)',
+    service_ubuntu: 'Ubuntu System',
+    service_cron: 'CRON Scheduler',
+    service_ntp: 'NTP Service',
+    service_freeradius: 'FreeRADIUS',
+    service_nginx: 'Nginx Web Server',
+    service_nodejs: 'Node.js Runtime',
+    service_nextjs: 'Next.js Application',
+    service_postgresql: 'PostgreSQL Database',
+    service_pptpd: 'PPTPD Service',
   }
 
   export default settingsSystemMonitor;

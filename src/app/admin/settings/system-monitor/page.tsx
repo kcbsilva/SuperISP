@@ -1,4 +1,4 @@
-// src/app/settings/system-monitor/page.tsx
+// src/app/admin/settings/system-monitor/page.tsx
 'use client';
 
 import * as React from 'react';
@@ -10,20 +10,40 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Cpu, HardDrive, MemoryStick, Database, RefreshCw, Loader2, CheckCircle, XCircle, Router as RouterIcon } from 'lucide-react';
+import { Cpu, HardDrive, MemoryStick, Database, RefreshCw, Loader2, CheckCircle, XCircle, Router as RouterIcon, Power } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
-import { testConnection as testSupabaseConnection } from '@/services/supabase/db';
+// Removed testConnection as it's not used for the PostgreSQL section in this component for now.
+// If you need a generic PostgreSQL status check, it can be added back.
 
 interface SystemMetric {
-  nameKey: string; // Direct key, e.g., 'cpu_usage'
+  nameKey: string;
   value: string | number;
   unit?: string;
   icon: React.ElementType;
   status?: 'ok' | 'warning' | 'error' | 'fetching';
   progress?: number;
 }
+
+interface MonitoredService {
+  id: string;
+  nameKey: string;
+  status: 'Active' | 'Inactive';
+}
+
+const placeholderServices: MonitoredService[] = [
+  { id: 'ubuntu', nameKey: 'service_ubuntu', status: 'Active' },
+  { id: 'cron', nameKey: 'service_cron', status: 'Active' },
+  { id: 'ntp', nameKey: 'service_ntp', status: 'Inactive' },
+  { id: 'freeradius', nameKey: 'service_freeradius', status: 'Active' },
+  { id: 'nginx', nameKey: 'service_nginx', status: 'Active' },
+  { id: 'nodejs', nameKey: 'service_nodejs', status: 'Inactive' },
+  { id: 'nextjs', nameKey: 'service_nextjs', status: 'Active' },
+  { id: 'postgresql', nameKey: 'service_postgresql', status: 'Active' },
+  { id: 'pptpd', nameKey: 'service_pptpd', status: 'Inactive' },
+];
+
 
 export default function SystemMonitorPage() {
   const { t } = useLocale();
@@ -33,34 +53,43 @@ export default function SystemMonitorPage() {
     { nameKey: 'cpu_usage', value: 'Fetching...', icon: Cpu, status: 'fetching', progress: 0 },
     { nameKey: 'ram_usage', value: 'Fetching...', icon: MemoryStick, status: 'fetching', progress: 0 },
     { nameKey: 'ssd_usage', value: 'Fetching...', icon: HardDrive, status: 'fetching', progress: 0 },
-    { nameKey: 'supabase_status', value: 'Fetching...', icon: Database, status: 'fetching' },
+    { nameKey: 'postgres_status', value: 'Fetching...', icon: Database, status: 'fetching' }, // Changed from supabase_status
   ]);
+  const [services, setServices] = React.useState<MonitoredService[]>(placeholderServices);
+
 
   const iconSize = "h-4 w-4";
   const smallIconSize = "h-2.5 w-2.5";
+  const actionButtonIconSize = "h-3 w-3";
 
   const fetchSystemMetrics = React.useCallback(async () => {
     setIsLoading(true);
     toast({
-      title: t('refresh_toast_title'), // Direct key usage
-      description: t('refresh_toast_description'), // Direct key usage
+      title: t('refresh_toast_title'),
+      description: t('refresh_toast_description'),
     });
 
-    // Simulate API call for system metrics
     await new Promise(resolve => setTimeout(resolve, 1000));
     const cpuUsage = Math.floor(Math.random() * 100);
     const ramUsage = parseFloat((Math.random() * 16).toFixed(1));
     const ssdUsage = Math.floor(Math.random() * 500);
-
-    // Test Supabase connection
-    const supabaseConnected = await testSupabaseConnection();
+    
+    // Simulate PostgreSQL status check (no actual connection test for now in this component)
+    const postgresConnected = Math.random() > 0.2; // 80% chance of being "connected"
 
     setMetrics([
       { nameKey: 'cpu_usage', value: cpuUsage, unit: '%', icon: Cpu, status: cpuUsage > 80 ? 'warning' : 'ok', progress: cpuUsage },
       { nameKey: 'ram_usage', value: `${ramUsage} / 16`, unit: 'GB', icon: MemoryStick, status: ramUsage > 12.8 ? 'warning' : 'ok', progress: (ramUsage / 16) * 100 },
       { nameKey: 'ssd_usage', value: `${ssdUsage} / 512`, unit: 'GB', icon: HardDrive, status: ssdUsage > 400 ? 'warning' : 'ok', progress: (ssdUsage / 512) * 100 },
-      { nameKey: 'supabase_status', value: supabaseConnected ? 'Connected' : 'Disconnected', icon: Database, status: supabaseConnected ? 'ok' : 'error' },
+      { nameKey: 'postgres_status', value: postgresConnected ? 'Connected' : 'Disconnected', icon: Database, status: postgresConnected ? 'ok' : 'error' },
     ]);
+
+    // Simulate fetching service statuses
+    setServices(prevServices => prevServices.map(s => ({
+        ...s,
+        status: Math.random() > 0.3 ? 'Active' : 'Inactive' // Randomize status on refresh
+    })));
+
     setIsLoading(false);
   }, [t, toast]);
 
@@ -73,7 +102,7 @@ export default function SystemMonitorPage() {
       case 'ok':
         return <CheckCircle className="h-3 w-3 text-green-500" />;
       case 'warning':
-        return <XCircle className="h-3 w-3 text-yellow-500" />; // Kept yellow for warning
+        return <XCircle className="h-3 w-3 text-yellow-500" />;
       case 'error':
         return <XCircle className="h-3 w-3 text-red-500" />;
       case 'fetching':
@@ -83,16 +112,33 @@ export default function SystemMonitorPage() {
     }
   };
 
+  const handleRestartService = (serviceNameKey: string) => {
+    const serviceName = t(serviceNameKey);
+    toast({
+      title: t('restart_action_toast_title'),
+      description: t('restart_action_toast_desc', 'Restarting {serviceName}... (This is a simulation)').replace('{serviceName}', serviceName),
+    });
+    // Here you would typically call an API to restart the service
+    // For simulation, we can toggle its status after a delay
+    setIsLoading(true);
+    setTimeout(() => {
+        setServices(prevServices => prevServices.map(s =>
+            s.nameKey === serviceNameKey ? { ...s, status: 'Active' } : s
+        ));
+        setIsLoading(false);
+    }, 1500);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <h1 className="text-base font-semibold flex items-center gap-2">
             <RouterIcon className={`${smallIconSize} text-primary`} />
-            {t('page_title')} 
+            {t('page_title')}
         </h1>
         <Button onClick={fetchSystemMetrics} disabled={isLoading}>
           <RefreshCw className={`mr-2 ${smallIconSize} ${isLoading ? 'animate-spin' : ''}`} />
-          {t('refresh_button')} 
+          {t('refresh_button')}
         </Button>
       </div>
 
@@ -103,7 +149,7 @@ export default function SystemMonitorPage() {
             <Card key={metric.nameKey}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  {t(metric.nameKey)} 
+                  {t(metric.nameKey)}
                 </CardTitle>
                 <MetricIcon className={`${iconSize} text-muted-foreground`} />
               </CardHeader>
@@ -118,9 +164,9 @@ export default function SystemMonitorPage() {
                 {metric.progress !== undefined && (
                   <Progress value={metric.progress} className="mt-2 h-2" />
                 )}
-                 {metric.nameKey === 'supabase_status' && metric.status !== 'fetching' && (
+                 {metric.nameKey === 'postgres_status' && metric.status !== 'fetching' && (
                     <p className={`text-xs mt-1 ${metric.status === 'ok' ? 'text-green-600' : 'text-red-600'}`}>
-                        {metric.status === 'ok' ? t('supabase_connected') : t('supabase_disconnected')} 
+                        {metric.status === 'ok' ? t('postgres_connected') : t('postgres_disconnected')}
                     </p>
                 )}
               </CardContent>
@@ -129,20 +175,49 @@ export default function SystemMonitorPage() {
         })}
       </div>
 
-       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">{t('live_logs_title')}</CardTitle> 
-          <CardDescription className="text-xs">{t('live_logs_description')}</CardDescription> 
-        </CardHeader>
-        <CardContent>
-          <div className="h-64 w-full bg-muted rounded-md p-4 overflow-y-auto">
-            <pre className="text-xs text-muted-foreground whitespace-pre-wrap">
-              {`[${new Date().toLocaleTimeString()}] System initialized.\n[${new Date().toLocaleTimeString()}] Monitoring services started...\n[${new Date().toLocaleTimeString()}] Supabase connection OK.`}
-            </pre>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle className="text-sm">{t('live_logs_title')}</CardTitle>
+            <CardDescription className="text-xs">{t('live_logs_description')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 w-full bg-muted rounded-md p-4 overflow-y-auto">
+              <pre className="text-xs text-muted-foreground whitespace-pre-wrap">
+                {`[${new Date().toLocaleTimeString()}] System initialized.\n[${new Date().toLocaleTimeString()}] Monitoring services started...\n[${new Date().toLocaleTimeString()}] PostgreSQL connection OK.`}
+              </pre>
+            </div>
+          </CardContent>
+        </Card>
 
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle className="text-sm">{t('services_status_title')}</CardTitle>
+            <CardDescription className="text-xs">{t('services_status_description')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {services.map((service) => (
+                <div key={service.id} className="flex items-center justify-between p-2 border rounded-md hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-2">
+                    <span className={`h-2.5 w-2.5 rounded-full inline-block ${service.status === 'Active' ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                    <span className="text-xs font-medium">{t(service.nameKey)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-semibold ${service.status === 'Active' ? 'text-green-600' : 'text-red-600'}`}>
+                      {service.status === 'Active' ? t('service_status_active') : t('service_status_inactive')}
+                    </span>
+                    <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => handleRestartService(service.nameKey)} disabled={isLoading}>
+                      <Power className={`mr-1.5 ${actionButtonIconSize}`} />
+                      {t('service_action_restart')}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
