@@ -1,4 +1,3 @@
-
 // src/components/ui/sidebar.tsx
 "use client"
 
@@ -10,7 +9,7 @@ import { ChevronDown, ChevronLeft, ChevronRight, type LucideIcon } from "lucide-
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { usePathname } from 'next/navigation'; // Import usePathname
+import { usePathname } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 
 const sidebarVariants = cva(
@@ -106,7 +105,7 @@ const SidebarProvider = React.forwardRef<
     const [isOpenMobile, setIsOpenMobile] = React.useState(defaultOpenMobile ?? false)
     const [isCollapsed, setIsCollapsedState] = React.useState(defaultCollapsedDesktop);
     const sidebarNodeRef = React.useRef<HTMLElement | null>(null);
-    const pathname = usePathname(); // Get current pathname
+    const pathname = usePathname();
 
     React.useEffect(() => {
       if (typeof window !== 'undefined' && !isMobile) {
@@ -126,13 +125,12 @@ const SidebarProvider = React.forwardRef<
       }
     }, [isMobile]);
 
-    // Effect for handling click outside to collapse/close
     React.useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
         if (sidebarNodeRef.current && !sidebarNodeRef.current.contains(event.target as Node)) {
           if (isMobile && isOpenMobile) {
             setIsOpenMobile(false);
-          } else if (!isMobile && !isCollapsed) { // Only collapse if expanded on desktop
+          } else if (!isMobile && !isCollapsed) {
             setIsCollapsed(true);
           }
         }
@@ -144,13 +142,11 @@ const SidebarProvider = React.forwardRef<
       };
     }, [isMobile, isOpenMobile, isCollapsed, setIsOpenMobile, setIsCollapsed, sidebarNodeRef]);
 
-    // Effect for collapsing sidebar on navigation (desktop only)
     React.useEffect(() => {
       if (!isMobile && !isCollapsed) {
         setIsCollapsed(true);
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pathname, isMobile]); // isCollapsed is intentionally omitted to trigger collapse from expanded state
+    }, [pathname, isMobile, setIsCollapsed]); // Removed isCollapsed from dependencies
 
     const contextValue = React.useMemo<SidebarContextValue>(
       () => ({
@@ -216,12 +212,11 @@ const Sidebar = React.forwardRef<
     )
   }
 
-  // Desktop sidebar
   return (
     <nav
       className={cn(
         sidebarVariants({ variant, side, collapsible: "full" }),
-        "fixed inset-y-0 top-14 z-40 flex flex-col h-[calc(100vh-3.5rem)]", // Adjusted for header height
+        "fixed inset-y-0 top-14 z-40 flex flex-col h-[calc(100vh-3.5rem)]",
         (variant === "floating" || variant === "inset") && "p-2",
         className
       )}
@@ -244,15 +239,15 @@ const SidebarHeader = React.forwardRef<
       ref={ref}
       data-sidebar="header"
       className={cn(
-        "flex items-center shrink-0 h-14", 
-        isCollapsed && !isMobile ? "justify-center" : "justify-between", 
-        "px-3", 
+        "flex items-center shrink-0 h-14",
+        isCollapsed && !isMobile ? "justify-center" : "justify-between",
+        "px-3",
         className
       )}
       {...props}
     >
-      {(!isCollapsed || isMobile) && children} 
-      
+      {(!isCollapsed || isMobile) && children}
+
       {!isMobile && (
         <Button
           variant="ghost"
@@ -260,8 +255,7 @@ const SidebarHeader = React.forwardRef<
           onClick={() => setIsCollapsed(!isCollapsed)}
           className={cn(
             "text-muted-foreground hover:text-foreground h-7 w-7",
-            // children && !isCollapsed ? (side === "left" ? "ml-auto" : "mr-auto") : "mx-auto" // simplified positioning
-             "mx-auto" // Always center if children are hidden, or rely on justify-between
+             "mx-auto"
           )}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
@@ -288,7 +282,7 @@ const SidebarContent = React.forwardRef<
       data-sidebar="content"
       className={cn(
         "flex-1 overflow-y-auto overflow-x-hidden",
-        isCollapsed && !isMobile ? "px-0 py-2" : "p-2", // Remove horizontal padding when collapsed on desktop
+        isCollapsed && !isMobile ? "px-0 py-2" : "p-2",
         className
       )}
       {...props}
@@ -342,7 +336,7 @@ const SidebarMenuItem = React.forwardRef<
     <li
       ref={ref}
       data-sidebar="menu-item"
-      className={cn("w-full", className)} // Ensure li takes full width
+      className={cn("w-full", className)}
       {...props}
     >
       {children}
@@ -364,8 +358,8 @@ const sidebarMenuButtonVariants = cva(
         lg: "px-3 py-2 text-sm",
       },
       isCollapsed: {
-        true: "justify-center px-0", // Center icon, no horizontal padding
-        false: "" // Uses size variant padding
+        true: "justify-center px-0",
+        false: ""
       }
     },
     defaultVariants: {
@@ -401,7 +395,6 @@ const SidebarMenuButton = React.memo(React.forwardRef<
       if (isMobile) {
         setIsOpenMobile(false);
       }
-      // No need to setIsCollapsed(true) here for direct links, as per new request
       if (props.onClick) {
         props.onClick(event);
       }
@@ -418,18 +411,18 @@ const SidebarMenuButton = React.memo(React.forwardRef<
         data-size={size}
         className={cn(
           sidebarMenuButtonVariants({ isActive, size, isCollapsed: isCollapsed && !isMobile }),
-          "gap-2.5", // Changed from gap-2
+          "gap-2.5",
           className
         )}
         href={href}
         onClick={handleClick}
         {...props}
       >
-        {React.isValidElement(iconElement) ? React.cloneElement(iconElement as React.ReactElement, { className: cn((iconElement.props as any).className, "[&_svg]:size-3.5") }) : iconElement}
+        {iconElement}
         {textElement && (!isCollapsed || isMobile) && (
             React.isValidElement(textElement) ?
             React.cloneElement(textElement as React.ReactElement, {
-              className: cn((textElement.props as any).className, "truncate") 
+              className: cn((textElement.props as any).className, "truncate")
             })
             : <span className="truncate">{textElement}</span>
         )}
@@ -474,10 +467,10 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       if (isCollapsed && !isMobile) {
-        setIsCollapsed(false); // Expand main sidebar if collapsed on desktop
+        setIsCollapsed(false);
       }
       if (originalOnClick) {
-        originalOnClick(event); // Then proceed with original click (toggling sub-menu)
+        originalOnClick(event);
       }
     };
 
@@ -495,13 +488,13 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
         className={cn(
           sidebarMenuButtonVariants({ isActive, size, isCollapsed: isCollapsed && !isMobile }),
           "group/sub-trigger",
-          "gap-2.5", // Changed from gap-2
+          "gap-2.5",
           className
         )}
         {...props}
         onClick={handleClick}
       >
-        {React.isValidElement(iconElement) ? React.cloneElement(iconElement as React.ReactElement, { className: cn((iconElement.props as any).className, "[&_svg]:size-3.5") }) : iconElement}
+        {iconElement}
         {textElement && (!isCollapsed || isMobile) && (
             React.isValidElement(textElement) ?
             React.cloneElement(textElement as React.ReactElement, {
@@ -546,7 +539,7 @@ const SidebarMenuSubContent = React.forwardRef<
       className={cn(
         "overflow-hidden transition-all duration-200 ease-in-out",
         "data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up",
-        "pl-4", 
+        "pl-4",
         className
       )}
       {...props}
@@ -566,45 +559,41 @@ const SidebarMenuSub = React.memo(React.forwardRef<
   const { isMobile, isCollapsed } = useSidebar();
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
   const pathname = usePathname();
-
-  React.useEffect(() => {
-    if (isCollapsed && !isMobile) {
-      setIsOpen(false);
-    } else if (!isMobile) { 
-        let isActiveChild = false;
-        React.Children.forEach(children, child => {
-            if (React.isValidElement(child) && (child.type as any).displayName === "SidebarMenuSubContent") {
-                React.Children.forEach(child.props.children, subChild => { 
-                    if (React.isValidElement(subChild) && subChild.props.children) {
-                        React.Children.forEach(subChild.props.children, (buttonChild: any) => {
-                           if (React.isValidElement(buttonChild) && buttonChild.props.href && pathname.startsWith(buttonChild.props.href)) {
-                               isActiveChild = true;
-                           }
-                        });
-                    }
-                });
-            }
-        });
-        if (isActiveChild && !isCollapsed) {
-            setIsOpen(true);
-        } else if (!isCollapsed) { 
-            // Only reset to defaultOpen if no child is active AND not collapsed.
-            // This prevents closing an actively navigated sub-menu when simply collapsing/expanding.
-             if (!isActiveChild) setIsOpen(defaultOpen);
-        }
-    }
-  }, [pathname, isCollapsed, isMobile, children, defaultOpen]);
-
+  const justExpandedAndOpenedRef = React.useRef(false);
 
   const toggleOpen = React.useCallback(() => {
     if (isCollapsed && !isMobile) {
-      // If collapsed on desktop, expanding it will be handled by the sub-trigger's own click logic.
-      // We still want to set the sub-menu to open internally.
-      setIsOpen(true); 
+      setIsOpen(true);
+      justExpandedAndOpenedRef.current = true;
     } else {
       setIsOpen(prev => !prev);
+      // We don't reset justExpandedAndOpenedRef here; it's consumed by the useEffect
     }
   }, [isCollapsed, isMobile]);
+
+  // Effect to close submenu when main sidebar collapses
+  React.useEffect(() => {
+    if (isCollapsed && !isMobile) {
+      setIsOpen(false);
+      justExpandedAndOpenedRef.current = false; // Reset if main sidebar collapses
+    }
+  }, [isCollapsed, isMobile]);
+
+  // Effect to manage isOpen based on active children or defaultOpen, respecting recent expansion click
+  React.useEffect(() => {
+    if (!isMobile && !isCollapsed) { // Only on desktop and when sidebar is expanded
+      if (justExpandedAndOpenedRef.current) {
+        // It was just opened by a click that expanded the sidebar.
+        // Keep it open (already set by toggleOpen) and consume the flag.
+        justExpandedAndOpenedRef.current = false;
+        // No need to setIsOpen(true) again, toggleOpen handled it.
+      } else {
+        // Not just expanded by a click, so determine open state based on defaultOpen (active children).
+        setIsOpen(defaultOpen);
+      }
+    }
+  }, [pathname, isMobile, isCollapsed, defaultOpen]);
+
 
   let trigger: React.ReactNode = null;
   let content: React.ReactNode = null;
@@ -663,7 +652,6 @@ const SidebarInset = React.forwardRef<
 
   let marginClass = "";
   if (!noMargin && !isMobile) {
-    // Always use the icon width for margin on desktop, as sidebar overlays.
     marginClass = side === 'left' ? 'ml-[var(--sidebar-width-icon)]' : 'mr-[var(--sidebar-width-icon)]';
   }
 
