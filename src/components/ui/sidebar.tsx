@@ -69,6 +69,9 @@ type SidebarContextValue = {
   isCollapsed: boolean
   setIsCollapsed: (collapsed: boolean) => void
   sidebarNodeRef: React.RefObject<HTMLElement | null>;
+  // New properties for dropdown management
+  openDropdownId: string | null
+  setOpenDropdownId: (id: string | null) => void
 }
 
 const SidebarContext = React.createContext<SidebarContextValue | null>(null)
@@ -104,6 +107,7 @@ const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile()
     const [isOpenMobile, setIsOpenMobile] = React.useState(defaultOpenMobile ?? false)
     const [isCollapsed, setIsCollapsedState] = React.useState(defaultCollapsedDesktop);
+    const [openDropdownId, setOpenDropdownId] = React.useState<string | null>(null);
     const sidebarNodeRef = React.useRef<HTMLElement | null>(null);
     const pathname = usePathname();
 
@@ -146,7 +150,14 @@ const SidebarProvider = React.forwardRef<
       if (!isMobile && !isCollapsed) {
         setIsCollapsed(true);
       }
-    }, [pathname, isMobile, setIsCollapsed]); // Removed isCollapsed from dependencies
+    }, [pathname, isMobile, setIsCollapsed]);
+
+    // Close all dropdowns when sidebar collapses
+    React.useEffect(() => {
+      if (isCollapsed && !isMobile) {
+        setOpenDropdownId(null);
+      }
+    }, [isCollapsed, isMobile]);
 
     const contextValue = React.useMemo<SidebarContextValue>(
       () => ({
@@ -158,8 +169,10 @@ const SidebarProvider = React.forwardRef<
         isCollapsed,
         setIsCollapsed,
         sidebarNodeRef,
+        openDropdownId,
+        setOpenDropdownId,
       }),
-      [variant, side, isMobile, isOpenMobile, setIsOpenMobile, isCollapsed, setIsCollapsed, sidebarNodeRef]
+      [variant, side, isMobile, isOpenMobile, setIsOpenMobile, isCollapsed, setIsCollapsed, sidebarNodeRef, openDropdownId, setOpenDropdownId]
     )
 
     return (
@@ -346,7 +359,7 @@ const SidebarMenuItem = React.forwardRef<
 SidebarMenuItem.displayName = "SidebarMenuItem"
 
 const sidebarMenuButtonVariants = cva(
-  "w-full justify-start text-left text-xs transition-colors flex items-center hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none rounded-md",
+  "w-full justify-start text-left text-xs transition-all duration-150 ease-out flex items-center hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none rounded-md",
   {
     variants: {
       isActive: {
@@ -502,7 +515,12 @@ const SidebarMenuSubTrigger = React.memo(React.forwardRef<
             })
             : <span className="truncate">{textElement}</span>
         )}
-        {(!isCollapsed || isMobile) && chevronElement}
+        {(!isCollapsed || isMobile) && chevronElement && (
+          <span className="transition-transform duration-150 ease-out" 
+                style={{ transform: props["data-state"] === "open" ? "rotate(180deg)" : "rotate(0deg)" }}>
+            {chevronElement}
+          </span>
+        )}
       </button>
     );
 
@@ -527,7 +545,7 @@ const SidebarMenuSubContent = React.forwardRef<
 >(({ className, children, isOpen, ...props }, ref) => {
   const { isMobile, isCollapsed } = useSidebar();
 
-  if (!isOpen || (isCollapsed && !isMobile)) {
+  if (isCollapsed && !isMobile) {
     return null;
   }
 
@@ -537,11 +555,16 @@ const SidebarMenuSubContent = React.forwardRef<
       data-sidebar="menu-sub-content"
       data-state={isOpen ? "open" : "closed"}
       className={cn(
-        "overflow-hidden transition-all duration-200 ease-in-out",
-        "data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up",
+        "overflow-hidden transition-all duration-200 ease-out",
+        isOpen 
+          ? "max-h-96 opacity-100 transform translate-y-0" 
+          : "max-h-0 opacity-0 transform -translate-y-1",
         "pl-4",
         className
       )}
+      style={{
+        transitionProperty: 'max-height, opacity, transform',
+      }}
       {...props}
     >
       <ul className={cn("flex flex-col gap-0.5 py-1")}>
@@ -552,48 +575,86 @@ const SidebarMenuSubContent = React.forwardRef<
 });
 SidebarMenuSubContent.displayName = "SidebarMenuSubContent";
 
+// FIXED: Helper function to extract only DIRECT child href values from SidebarMenuButton components
+const extractDirectChildHrefs = (children: React.ReactNode): string[] => {
+  const hrefs: string[] = [];
+  
+  React.Children.forEach(children, (child) => {
+    if (React.isValidElement(child)) {
+      // Check if this is a direct SidebarMenuButton with href prop
+      if (child.props && typeof child.props.href === 'string') {
+        hrefs.push(child.props.href);
+      }
+      // DO NOT recursively check children - this prevents nested dropdown hrefs from being included
+    }
+  });
+  
+  return hrefs;
+};
+
+// Helper function to check if current pathname matches any of the hrefs
+const isPathActive = (pathname: string, hrefs: string[]): boolean => {
+  return hrefs.some(href => {
+    // Exact match
+    if (pathname === href) return true;
+    // Starts with href + / (for nested routes)
+    if (href !== '/' && pathname.startsWith(href + '/')) return true;
+    return false;
+  });
+};
+
 const SidebarMenuSub = React.memo(React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { defaultOpen?: boolean }
->(({ className, children, defaultOpen = false, ...props }, ref) => {
-  const { isMobile, isCollapsed } = useSidebar();
-  const [isOpen, setIsOpen] = React.useState(defaultOpen);
+  React.HTMLAttributes<HTMLDivElement> & { defaultOpen?: boolean; id?: string }
+>(({ className, children, defaultOpen = false, id, ...props }, ref) => {
+  const { isMobile, isCollapsed, openDropdownId, setOpenDropdownId } = useSidebar();
   const pathname = usePathname();
   const justExpandedAndOpenedRef = React.useRef(false);
+  
+  // Generate a unique ID if not provided
+  const dropdownId = React.useMemo(() => id || Math.random().toString(36).substr(2, 9), [id]);
+  
+  // Check if this dropdown is open
+  const isOpen = openDropdownId === dropdownId;
+
+  // FIXED: Extract only DIRECT child hrefs (not nested dropdown hrefs)
+  const directChildHrefs = React.useMemo(() => {
+    return extractDirectChildHrefs(children);
+  }, [children]);
+
+  // FIXED: Check if any DIRECT child is active (not nested dropdowns)
+  const hasActiveDirectChild = React.useMemo(() => {
+    return isPathActive(pathname, directChildHrefs);
+  }, [pathname, directChildHrefs]);
 
   const toggleOpen = React.useCallback(() => {
     if (isCollapsed && !isMobile) {
-      setIsOpen(true);
+      // If sidebar is collapsed, expand it and open this dropdown
+      setOpenDropdownId(dropdownId);
       justExpandedAndOpenedRef.current = true;
     } else {
-      setIsOpen(prev => !prev);
-      // We don't reset justExpandedAndOpenedRef here; it's consumed by the useEffect
+      // If sidebar is expanded, toggle this dropdown (close others)
+      setOpenDropdownId(isOpen ? null : dropdownId);
     }
-  }, [isCollapsed, isMobile]);
+  }, [isCollapsed, isMobile, isOpen, dropdownId, setOpenDropdownId]);
 
-  // Effect to close submenu when main sidebar collapses
-  React.useEffect(() => {
-    if (isCollapsed && !isMobile) {
-      setIsOpen(false);
-      justExpandedAndOpenedRef.current = false; // Reset if main sidebar collapses
-    }
-  }, [isCollapsed, isMobile]);
-
-  // Effect to manage isOpen based on active children or defaultOpen, respecting recent expansion click
+  // Effect to manage dropdown state based on active children
   React.useEffect(() => {
     if (!isMobile && !isCollapsed) { // Only on desktop and when sidebar is expanded
       if (justExpandedAndOpenedRef.current) {
         // It was just opened by a click that expanded the sidebar.
         // Keep it open (already set by toggleOpen) and consume the flag.
         justExpandedAndOpenedRef.current = false;
-        // No need to setIsOpen(true) again, toggleOpen handled it.
-      } else {
-        // Not just expanded by a click, so determine open state based on defaultOpen (active children).
-        setIsOpen(defaultOpen);
+      } else if (hasActiveDirectChild) {
+        // FIXED: Only open if a DIRECT child is active (not nested dropdown children)
+        setOpenDropdownId(dropdownId);
+      } else if (defaultOpen && openDropdownId === null) {
+        // Not just expanded by a click, no active children, and no dropdown is currently open
+        // Set this as the open dropdown if it should be open by default
+        setOpenDropdownId(dropdownId);
       }
     }
-  }, [pathname, isMobile, isCollapsed, defaultOpen]);
-
+  }, [pathname, isMobile, isCollapsed, hasActiveDirectChild, defaultOpen, dropdownId, openDropdownId, setOpenDropdownId]);
 
   let trigger: React.ReactNode = null;
   let content: React.ReactNode = null;
@@ -604,6 +665,7 @@ const SidebarMenuSub = React.memo(React.forwardRef<
         trigger = React.cloneElement(child as React.ReactElement<any>, {
           onClick: toggleOpen,
           "data-state": isOpen && (!isCollapsed || isMobile) ? "open" : "closed",
+          isActive: hasActiveDirectChild, // FIXED: Mark trigger as active only if DIRECT child is active
         });
       } else if ((child.type as any).displayName === "SidebarMenuSubContent") {
         content = React.cloneElement(child as React.ReactElement<any>, { isOpen });
