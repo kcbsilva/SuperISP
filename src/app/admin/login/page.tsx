@@ -1,3 +1,4 @@
+
 'use client';
 import * as React from "react";
 import { useState, useEffect } from "react";
@@ -19,7 +20,6 @@ import { useLocale } from "@/contexts/LocaleContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
-import Image from "next/image";
 import { ProlterLogo } from '@/components/prolter-logo';
 
 export default function AdminLoginPage() {
@@ -35,7 +35,6 @@ export default function AdminLoginPage() {
   const { login, isAuthenticated, isLoading: authIsLoading } = useAuth();
   const { t } = useLocale();
 
-  // Get redirect_url from query params
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -91,96 +90,93 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
-      {/* Branding section */}
-      <div className="hidden lg:flex lg:w-3/4 bg-muted flex-col items-center justify-center p-12 text-center">
-        <ProlterLogo width="200" height="48" />
-        <h1 className="mt-8 text-3xl font-bold text-primary">
-          {t("login.welcome_title", "Welcome to Prolter ISP")}
-        </h1>
-        <p className="mt-3 text-lg text-muted-foreground">
-          {t("login.welcome_subtitle", "Manage your services efficiently and effectively.")}
-        </p>
-        <div className="mt-8 w-full max-w-md aspect-video relative">
-          <Image
-            src="https://placehold.co/600x400.png"
-            alt="ISP Management Illustration"
-            layout="fill"
-            objectFit="cover"
-            className="rounded-lg shadow-xl"
+    <div className="flex flex-col min-h-screen w-full bg-background">
+      <div className="flex flex-1"> {/* Main content area that takes up available space */}
+        {/* Branding section */}
+        <div className="hidden lg:flex lg:w-3/4 bg-muted flex-col items-center justify-center p-12 text-center relative overflow-hidden">
+          <ProlterLogo 
+            className="w-4/5 max-w-2xl h-auto" // Large logo, responsive width
           />
         </div>
-      </div>
 
-      {/* Login form */}
-      <div className="w-full lg:w-1/4 flex justify-center items-center bg-card p-4 md:p-8">
-        <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg">
-          <CardHeader className="items-center pt-8 pb-4">
-            <div className="lg:hidden mb-4">
-              <ProlterLogo />
-            </div>
-            <CardTitle className="text-xl text-primary pt-4 lg:pt-0">
-              {t("login.title", "Admin Login")}
-            </CardTitle>
-            <CardDescription className="text-muted-foreground text-center px-2">
-              {t("login.description", "Enter your credentials to access the admin panel.")}
-            </CardDescription>
-            <Separator className="my-2 bg-border" />
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="email">{t("login.username_label", "Email")}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder={t("login.username_placeholder", "Enter your email")}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isSubmitting || authIsLoading}
-                />
+        {/* Login form */}
+        <div className="w-full lg:w-1/4 flex justify-center items-center bg-card p-4 md:p-8">
+          <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg">
+            <CardHeader className="items-center pt-8 pb-4">
+              <div className="lg:hidden mb-4">
+                <ProlterLogo /> {/* Default smaller logo for mobile view card */}
               </div>
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="password">{t("login.password_label", "Password")}</Label>
-                  <Link href="/admin/forgot-password" className="text-xs text-primary hover:underline">
-                    {t("login.forgot_password", "Forgot Password?")}
-                  </Link>
+              <CardTitle className="text-xl text-primary pt-4 lg:pt-0">
+                {t("login.title", "Admin Login")}
+              </CardTitle>
+              <CardDescription className="text-muted-foreground text-center px-2">
+                {t("login.description", "Enter your credentials to access the admin panel.")}
+              </CardDescription>
+              <Separator className="my-2 bg-border" />
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">{t("login.username_label", "Email")}</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder={t("login.username_placeholder", "Enter your email")}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={isSubmitting || authIsLoading}
+                  />
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder={t("login.password_placeholder", "Enter your password")}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <Label htmlFor="password">{t("login.password_label", "Password")}</Label>
+                    <Link href="/admin/forgot-password" className="text-xs text-primary hover:underline">
+                      {t("login.forgot_password", "Forgot Password?")}
+                    </Link>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder={t("login.password_placeholder", "Enter your password")}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={isSubmitting || authIsLoading}
+                  />
+                </div>
+                {error && <p className="text-xs text-destructive">{error}</p>}
+                <Button
+                  type="submit"
+                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
                   disabled={isSubmitting || authIsLoading}
-                />
+                >
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isSubmitting ? t('login.loading', 'Signing In...') : t("login.submit_button", "Sign In")}
+                </Button>
+              </form>
+            </CardContent>
+            <CardFooter className="flex justify-center items-center text-xs pt-4 pb-6 px-6">
+              <div className="text-muted-foreground">
+                {t("login.your_ip", "Your IP:")}&nbsp;
+                {ipLoading ? (
+                  <Skeleton className="h-3 w-20 inline-block bg-muted" />
+                ) : (
+                  <span className="font-medium text-foreground">{publicIP}</span>
+                )}
               </div>
-              {error && <p className="text-xs text-destructive">{error}</p>}
-              <Button
-                type="submit"
-                className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
-                disabled={isSubmitting || authIsLoading}
-              >
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isSubmitting ? t('login.loading', 'Signing In...') : t("login.submit_button", "Sign In")}
-              </Button>
-            </form>
-          </CardContent>
-          <CardFooter className="flex justify-center items-center text-xs pt-4 pb-6 px-6">
-            <div className="text-muted-foreground">
-              {t("login.your_ip", "Your IP:")}&nbsp;
-              {ipLoading ? (
-                <Skeleton className="h-3 w-20 inline-block bg-muted" />
-              ) : (
-                <span className="font-medium text-foreground">{publicIP}</span>
-              )}
-            </div>
-          </CardFooter>
-        </Card>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
+      
+      {/* Page-specific Footer */}
+      <footer className="w-full py-4 px-8 mt-auto">
+        <Separator className="mb-4 bg-border" />
+        <p className="text-center text-xs text-muted-foreground">
+          Prolter (c) - 2025 - All rights reserved.
+        </p>
+      </footer>
     </div>
   );
 }

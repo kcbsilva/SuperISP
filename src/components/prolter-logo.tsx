@@ -5,23 +5,22 @@ import * as React from 'react';
 import { useTheme } from 'next-themes';
 // Assuming your SVGR setup allows direct import of SVG as a ReactComponent.
 // Make sure 'src/app/assets/prolter-logo.svg' exists.
-import LogoComponent from '@/app/assets/prolter-logo.svg';
+import ActualLogo from '@/app/assets/prolter-logo.svg'; // Changed from LogoComponent
 
 interface ProlterLogoProps {
   fixedColor?: string;
   width?: string | number;
   height?: string | number;
   className?: string;
-  // Remove SVGProps if we are not directly rendering an <svg> tag
 }
 
 export function ProlterLogo({
   fixedColor,
-  width = "100", // Default width reduced
-  height = "24", // Default height reduced
+  width = "100", // Default width
+  height = "24", // Default height
   className,
-  ...rest // Capture any other props like aria-label
-}: ProlterLogoProps & React.HTMLAttributes<HTMLDivElement>) { // Add HTMLAttributes for the div wrapper
+  ...rest
+}: ProlterLogoProps & React.HTMLAttributes<HTMLDivElement>) {
   const { theme } = useTheme();
   const [isMounted, setIsMounted] = React.useState(false);
 
@@ -29,31 +28,31 @@ export function ProlterLogo({
     setIsMounted(true);
   }, []);
 
-  let effectiveColor = "hsl(var(--foreground))"; // Default fill if fixedColor is not provided and theme is not ready
+  let effectiveColor = "hsl(var(--foreground))";
   if (fixedColor) {
     effectiveColor = fixedColor;
   } else if (isMounted) {
-    // Theme-aware fill color if no fixedColor is provided
     effectiveColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
   }
 
+  const svgWidth = typeof width === 'number' ? `${width}px` : width;
+  const svgHeight = typeof height === 'number' ? `${height}px` : height;
+
   if (!isMounted && !fixedColor) {
-    // Fallback for SSR or when theme isn't ready
-    // Render a div with fixed dimensions to prevent layout shift.
-    return <div style={{ width: typeof width === 'number' ? `${width}px` : width, height: typeof height === 'number' ? `${height}px` : height }} aria-label="Prolter Logo" {...rest} />;
+    return <div style={{ width: svgWidth, height: svgHeight }} aria-label="Prolter Logo" {...rest} />;
   }
 
   return (
     <div
       className={className}
       style={{ 
-        width: typeof width === 'number' ? `${width}px` : width, 
-        height: typeof height === 'number' ? `${height}px` : height, 
-        color: effectiveColor // Apply color here, SVG should use currentColor for paths that need theming
+        width: svgWidth, 
+        height: svgHeight,
+        color: effectiveColor
       }}
-      {...rest} // Pass down aria-label etc.
+      {...rest}
     >
-      <LogoComponent width="100%" height="100%" />
+      <ActualLogo width="100%" height="100%" />
     </div>
   );
 }
