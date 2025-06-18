@@ -1,25 +1,27 @@
-
 // src/components/prolter-logo.tsx
 'use client';
 
 import * as React from 'react';
 import { useTheme } from 'next-themes';
+// Assuming your SVGR setup allows direct import of SVG as a ReactComponent.
+// Make sure 'src/app/assets/prolter-logo.svg' exists.
+import LogoComponent from '@/app/assets/prolter-logo.svg';
 
-// INSTRUCTIONS FOR USING YOUR ACTUAL SVG:
-// 1. Make sure your SVG file (e.g., `prolter-logo.svg`) is in a suitable public or assets folder.
-//    For example, if you place it in `public/assets/prolter-logo.svg`,
-//    you could use an <Image> component from Next.js or directly use an <img> tag.
-// 2. If you want to embed the SVG markup directly for dynamic color changes via `fill="currentColor"`,
-//    replace the placeholder <svg> below with your actual SVG content.
-//    Ensure its paths use `fill="currentColor"` or have no hardcoded fill.
-
-interface ProlterLogoProps extends React.SVGProps<SVGSVGElement> {
+interface ProlterLogoProps {
   fixedColor?: string;
   width?: string | number;
   height?: string | number;
+  className?: string;
+  // Remove SVGProps if we are not directly rendering an <svg> tag
 }
 
-export function ProlterLogo({ fixedColor, width = "131", height = "32", ...restProps }: ProlterLogoProps) {
+export function ProlterLogo({
+  fixedColor,
+  width = "131", // Default width
+  height = "32", // Default height
+  className,
+  ...rest // Capture any other props like aria-label
+}: ProlterLogoProps & React.HTMLAttributes<HTMLDivElement>) { // Add HTMLAttributes for the div wrapper
   const { theme } = useTheme();
   const [isMounted, setIsMounted] = React.useState(false);
 
@@ -27,42 +29,31 @@ export function ProlterLogo({ fixedColor, width = "131", height = "32", ...restP
     setIsMounted(true);
   }, []);
 
-  let fillColor = "hsl(var(--foreground))"; // Default fill
+  let effectiveColor = "hsl(var(--foreground))"; // Default fill if fixedColor is not provided and theme is not ready
   if (fixedColor) {
-    fillColor = fixedColor;
+    effectiveColor = fixedColor;
   } else if (isMounted) {
     // Theme-aware fill color if no fixedColor is provided
-    fillColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
+    effectiveColor = theme === "dark" ? "hsl(var(--accent))" : "hsl(var(--primary))";
   }
 
   if (!isMounted && !fixedColor) {
     // Fallback for SSR or when theme isn't ready
     // Render a div with fixed dimensions to prevent layout shift.
-    return <div style={{ width: typeof width === 'number' ? `${width}px` : width, height: typeof height === 'number' ? `${height}px` : height }} aria-label="Prolter Logo" />;
+    return <div style={{ width: typeof width === 'number' ? `${width}px` : width, height: typeof height === 'number' ? `${height}px` : height }} aria-label="Prolter Logo" {...rest} />;
   }
 
-  // Using a simple text-based SVG as a placeholder
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 131 32" // Adjust viewBox to fit "PROLTER"
-      fill={fillColor}
-      width={width}
-      height={height}
-      aria-label="Prolter Logo"
-      {...restProps}
+    <div
+      className={className}
+      style={{ 
+        width: typeof width === 'number' ? `${width}px` : width, 
+        height: typeof height === 'number' ? `${height}px` : height, 
+        color: effectiveColor // Apply color here, SVG should use currentColor for paths that need theming
+      }}
+      {...rest} // Pass down aria-label etc.
     >
-      <text
-        x="50%"
-        y="50%"
-        fontFamily="Arial, sans-serif" // Using a common font for portability
-        fontSize="20" // Adjusted font size
-        fontWeight="bold"
-        textAnchor="middle"
-        dominantBaseline="middle"
-      >
-        PROLTER
-      </text>
-    </svg>
+      <LogoComponent width="100%" height="100%" />
+    </div>
   );
 }
