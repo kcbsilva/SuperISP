@@ -95,12 +95,12 @@ export default function AdminLoginPage() {
         {/* Branding section */}
         <div className="hidden lg:flex lg:w-3/4 bg-muted flex-col items-center justify-center p-12 text-center relative overflow-hidden">
           <ProlterLogo 
-            className="w-4/5 max-w-2xl h-auto" // Large logo, responsive width
+            className="w-4/5 max-w-2xl h-auto"
           />
         </div>
 
         {/* Login form */}
-        <div className="w-full lg:w-1/4 flex justify-center items-center bg-card p-4 md:p-8">
+        <div className="w-full lg:w-1/4 flex justify-center items-center bg-muted p-4 md:p-8">
           <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg">
             <CardHeader className="items-center pt-8 pb-4">
               <div className="lg:hidden mb-4">
@@ -171,8 +171,8 @@ export default function AdminLoginPage() {
       </div>
       
       {/* Page-specific Footer */}
-      <footer className="w-full py-4 px-8 mt-auto">
-        <Separator className="mb-4 bg-border" />
+      <footer className="w-full py-3 px-8 mt-auto bg-muted">
+        <div className="mb-3 border-t-2 border-border"></div>
         <p className="text-center text-xs text-muted-foreground">
           Prolter (c) - 2025 - All rights reserved.
         </p>
