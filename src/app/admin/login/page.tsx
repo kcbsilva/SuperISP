@@ -99,7 +99,7 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Login form */}
-        <div className="w-full lg:w-1/4 flex justify-center items-center bg-muted p-4 md:py-8 md:pl-8 md:pr-12 lg:pr-16"> {/* Increased right padding for md and lg screens */}
+        <div className="w-full lg:w-1/4 flex justify-center items-center bg-muted p-4 md:py-8 md:pl-8 md:pr-12 lg:pr-16">
           <Card className="w-full max-w-xs bg-card border text-card-foreground shadow-lg">
             <CardHeader className="items-center pt-8 pb-4">
               <div className="lg:hidden mb-4">
@@ -171,9 +171,8 @@ export default function AdminLoginPage() {
       
       {/* Page-specific Footer */}
       <footer className="w-full py-3 px-8 mt-auto bg-muted">
-        <div className="mb-3 border-t-4 border-black dark:border-white"></div> {/* Thicker, black separator */}
-        <p className="text-center text-sm text-muted-foreground"> {/* Increased text size */}
-          Prolter (c) - 2025 - All rights reserved.
+        <p className="text-center text-sm text-muted-foreground">
+          Prolter © 2025 - All rights reserved.
         </p>
       </footer>
     </div>
