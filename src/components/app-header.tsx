@@ -67,19 +67,21 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
     const timerId = setInterval(() => {
       setCurrentTime(new Date().toLocaleTimeString());
     }, 1000);
-    setCurrentTime(new Date().toLocaleTimeString());
+    setCurrentTime(new Date().toLocaleTimeString()); // Set time immediately on mount
     return () => clearInterval(timerId);
   }, []);
 
   React.useEffect(() => {
     if (searchTerm.length > 1) {
+      // Simulate fetching results
       const filteredClients = searchResultsPlaceholder.clients.filter(client =>
         client.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
+      // For demo, include other types if clients are found or term is generic
       setSearchResults({
         clients: filteredClients,
-        equipment: searchResultsPlaceholder.equipment,
-        elements: searchResultsPlaceholder.elements,
+        equipment: searchResultsPlaceholder.equipment, // Can be filtered similarly
+        elements: searchResultsPlaceholder.elements, // Can be filtered similarly
       });
       setIsPopoverOpen(true);
     } else {
@@ -90,7 +92,7 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
 
   const handleResultClick = () => {
     setIsPopoverOpen(false);
-    setSearchTerm('');
+    setSearchTerm(''); // Clear search term after click
   };
 
   const handleProfileClick = () => {
@@ -130,15 +132,16 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
     <header
       className={cn(
         "sticky top-0 z-50 flex h-14 items-center justify-between px-4 md:px-6",
-        "bg-background text-foreground border-b-2 border-primary",
-        "dark:bg-background dark:text-foreground dark:border-b-2 dark:border-accent"
+        "bg-background text-foreground border-b-2 border-primary", // Light theme header
+        "dark:bg-background dark:text-foreground dark:border-b-2 dark:border-accent" // Dark theme header
       )}
     >
       <div className="flex items-center gap-2">
+        {/* Logo and Mobile Menu Toggle */}
         <Link href="/admin/dashboard" className="flex items-center mr-2">
           <ProlterLogo
-            width="100" 
-            height="24" 
+            width="75" 
+            height="18" 
             aria-label="Prolter Logo"
           />
         </Link>
@@ -147,6 +150,7 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
         </Button>
       </div>
 
+      {/* Search Bar and Clock */}
       <div className="flex flex-1 items-center justify-center gap-4 mx-4">
         <div className="relative flex-grow max-w-sm md:max-w-md">
            <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${iconSize} text-muted-foreground`} />
@@ -158,8 +162,8 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
                  placeholder={t('search.placeholder', 'Search clients, equipment, elements...')}
                  className={cn(
                    "h-8 w-full rounded-full pl-8 text-xs",
-                   "bg-card text-card-foreground",
-                   "dark:bg-muted/80 dark:text-foreground"
+                   "bg-card text-card-foreground", // Input field background in light theme
+                   "dark:bg-muted/80 dark:text-foreground" // Input field background in dark theme
                  )}
                  value={searchTerm}
                  onChange={(e) => setSearchTerm(e.target.value)}
@@ -171,8 +175,9 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
                  ref={popoverRef}
                  className="mt-1 w-[var(--radix-popover-trigger-width)] max-h-80 overflow-y-auto p-1"
                  align="start"
-                 onOpenAutoFocus={(e) => e.preventDefault()}
+                 onOpenAutoFocus={(e) => e.preventDefault()} // Prevent focus steal
                >
+                 {/* Search results rendering (clients, equipment, elements) */}
                  {(searchResults.clients?.length ?? 0) > 0 && (
                    <>
                      <div className="mb-1 px-2 py-1 text-xs font-semibold text-muted-foreground">{t('search.clients_label')}</div>
@@ -224,6 +229,7 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
         </div>
       </div>
 
+      {/* Action Icons: Theme Toggle, Changelog, User Profile */}
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={t('header.toggle_theme', 'Toggle theme')} className="text-foreground hover:bg-muted/50">
           {mounted ? (theme === 'light' ? <Moon className={iconSize} /> : <Sun className={iconSize} />) : <Settings className={iconSize} />}
