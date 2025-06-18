@@ -137,8 +137,8 @@ export function Header({ onToggleSidebar }: AppHeaderProps) {
       <div className="flex items-center gap-2">
         <Link href="/admin/dashboard" className="flex items-center mr-2">
           <ProlterLogo
-            width="131"
-            height="32"
+            width="100" 
+            height="24" 
             aria-label="Prolter Logo"
           />
         </Link>

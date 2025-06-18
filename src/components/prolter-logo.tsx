@@ -17,8 +17,8 @@ interface ProlterLogoProps {
 
 export function ProlterLogo({
   fixedColor,
-  width = "131", // Default width
-  height = "32", // Default height
+  width = "100", // Default width reduced
+  height = "24", // Default height reduced
   className,
   ...rest // Capture any other props like aria-label
 }: ProlterLogoProps & React.HTMLAttributes<HTMLDivElement>) { // Add HTMLAttributes for the div wrapper
