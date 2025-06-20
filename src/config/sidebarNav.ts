@@ -43,11 +43,12 @@ import {
   ShoppingCart,
   MessageCircle,
   Workflow,
-  Radio, 
-  GitMerge, 
-  Webhook, 
+  Radio,
+  GitMerge,
+  Webhook,
   Table2, // Added for Tables
   Terminal, // Added for SQL CLI
+  KeyRound,
 } from 'lucide-react';
 import type { Icon as LucideIcon } from 'lucide-react';
 import type { IconType } from 'react-icons';
@@ -581,6 +582,12 @@ export const sidebarNav: SidebarNavItem[] = [
         href: '/admin/settings/security',
         icon: ShieldCheck,
         tooltip: 'sidebar.settings_security',
+      },
+      {
+        title: 'sidebar.settings_license',
+        href: '/admin/settings/license',
+        icon: KeyRound,
+        tooltip: 'sidebar.settings_license',
       },
       {
         title: 'sidebar.settings_system_monitor',

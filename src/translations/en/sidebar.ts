@@ -90,6 +90,7 @@ const sidebar = {
       settings_postgres_tables: 'Tables', // New
       settings_postgres_sql_cli: 'SQL CLI', // New
       settings_security: 'Security',
+      settings_license: 'License',
       settings_system_monitor: 'System Monitor',
       settings_integrations: 'Integrations',
       settings_integrations_whatsapp: 'WhatsApp',
