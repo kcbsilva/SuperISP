@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { supabase } from '@/services/supabase/db';
+import { sendPasswordResetEmail } from '@/services/postgres/users';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -39,18 +39,8 @@ export default function ForgotPasswordPage() {
     setIsSubmitting(true);
     setMessage('');
 
-    const redirectTo = `${window.location.origin}/admin/update-password`;
-
-    const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-      redirectTo: redirectTo,
-    });
-
-    if (error) {
-      toast({
-        title: t('forgot_password.error_title', "Error"),
-        description: error.message || t('forgot_password.error_description', "Failed to send password reset email."),
-        variant: 'destructive',
-      });
+    try {
+      await sendPasswordResetEmail(data.email);
     } else {
       setMessage(t('forgot_password.success_description', "If an account exists for this email, a password reset link has been sent."));
       toast({
@@ -58,6 +48,12 @@ export default function ForgotPasswordPage() {
         description: t('forgot_password.success_description', "If an account exists for this email, a password reset link has been sent."),
       });
       form.reset();
+    } catch (error: any) {
+      toast({
+        title: t('forgot_password.error_title', "Error"),
+        description: error.message || t('forgot_password.error_description', "Failed to send password reset email."),
+        variant: 'destructive',
+      });
     }
     setIsSubmitting(false);
   };

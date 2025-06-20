@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
-  DialogDescription as DialogDescriptionComponent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -27,12 +26,12 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
@@ -58,10 +57,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { cn } from "@/lib/utils";
 
 // Mock participant type (replace with your actual type)
 interface Participant {
@@ -94,14 +91,21 @@ const mockPops: Pop[] = [
   { id: 5, name: 'PoP-PE-01', location: 'Recife, Brazil' },
 ];
 
+const DEFAULT_COMPANY_NAME = 'Your Company Name';
+const ICON_SIZE = 'h-2.5 w-2.5';
+
 // Updated VLAN Schema (removed name and subnet, added assignedTo and availableInHub)
 const vlanSchema = z.object({
-  vlanId: z.coerce.number().int().min(1, "VLAN ID must be between 1 and 4094.").max(4094, "VLAN ID must be between 1 and 4094."),
+  vlanId: z.coerce
+    .number()
+    .int()
+    .min(1, 'VLAN ID must be between 1 and 4094.')
+    .max(4094, 'VLAN ID must be between 1 and 4094.'),
   description: z.string().optional(),
-  popId: z.string().min(1, "PoP selection is required."),
+  popId: z.string().min(1, 'PoP selection is required.'),
   isTagged: z.boolean().default(true),
   status: z.enum(['Active', 'Inactive']).default('Active'),
-  assignedTo: z.string().min(1, "Assigned to is required."),
+  assignedTo: z.string().optional(),
   availableInHub: z.boolean().default(false),
   participantId: z.string().optional(),
 });
@@ -158,10 +162,7 @@ export default function VlanManagementPage() {
   const [vlans, setVlans] = React.useState<Vlan[]>(placeholderVlans);
   const [vlanToDelete, setVlanToDelete] = React.useState<Vlan | null>(null);
   const [participantSearch, setParticipantSearch] = React.useState('');
-  const iconSize = "h-2.5 w-2.5";
-
-  // Use placeholder PoPs data
-  const pops = mockPops;
+  const iconSize = ICON_SIZE;
 
   const form = useForm<VlanFormData>({
     resolver: zodResolver(vlanSchema),
@@ -171,7 +172,7 @@ export default function VlanManagementPage() {
       popId: '',
       isTagged: true,
       status: 'Active',
-      assignedTo: 'Your Company Name', // Default company name
+      assignedTo: '',
       availableInHub: false,
       participantId: '',
     },
@@ -190,28 +191,35 @@ export default function VlanManagementPage() {
   }, [participantSearch]);
 
   React.useEffect(() => {
-    if (availableInHub && selectedParticipantId) {
-      const selectedParticipant = mockParticipants.find(p => p.id === selectedParticipantId);
-      if (selectedParticipant) {
-        form.setValue('assignedTo', selectedParticipant.company);
+    if (availableInHub) {
+      if (selectedParticipantId) {
+        const selected = mockParticipants.find((p) => p.id === selectedParticipantId);
+        if (selected) {
+          form.setValue('assignedTo', selected.company);
+        }
+      } else {
+        form.setValue('assignedTo', '');
       }
-    } else if (!availableInHub) {
-      form.setValue('assignedTo', 'Your Company Name');
+    } else {
+      form.setValue('assignedTo', DEFAULT_COMPANY_NAME);
       form.setValue('participantId', '');
     }
   }, [availableInHub, selectedParticipantId, form]);
 
   const handleAddVlanSubmit = (data: VlanFormData) => {
-    console.log("New VLAN Data:", data);
+    const assignedTo = data.assignedTo?.trim() || DEFAULT_COMPANY_NAME;
     const newVlan: Vlan = {
-        ...data,
-        id: `vlan-${Date.now()}`,
-        createdAt: new Date(),
+      ...data,
+      assignedTo,
+      id: `vlan-${Date.now()}`,
+      createdAt: new Date(),
     };
-    setVlans(prev => [newVlan, ...prev]);
+    setVlans((prev) => [newVlan, ...prev]);
     toast({
       title: t('vlan_page.add_success_title', 'VLAN Added'),
-      description: t('vlan_page.add_success_description', 'VLAN {vlanId} has been added and assigned to {company}.').replace('{vlanId}', data.vlanId.toString()).replace('{company}', data.assignedTo),
+      description: t('vlan_page.add_success_description', 'VLAN {vlanId} has been added and assigned to {company}.')
+        .replace('{vlanId}', data.vlanId.toString())
+        .replace('{company}', assignedTo),
     });
     form.reset();
     setIsAddVlanDialogOpen(false);
@@ -245,220 +253,220 @@ export default function VlanManagementPage() {
           {t('vlan_page.title', 'Virtual Local Area Network (VLAN)')}
         </h1>
         <div className="flex items-center gap-2">
-            <Button variant="default" className="bg-primary hover:bg-primary/90">
-                <RefreshCw className={`mr-2 ${iconSize}`} /> {t('vlan_page.refresh_button', 'Refresh')}
-            </Button>
-             <Dialog open={isAddVlanDialogOpen} onOpenChange={setIsAddVlanDialogOpen}>
-                <DialogTrigger asChild>
-                    <Button className="bg-green-600 hover:bg-green-700 text-white">
-                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('vlan_page.add_button', 'Add VLAN')}
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="text-sm flex items-center gap-2">
-                            <PlusCircle className={iconSize} />
-                            {t('vlan_page.add_dialog_title', 'New VLAN')}
-                        </DialogTitle>
-                    </DialogHeader>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleAddVlanSubmit)} className="grid gap-4 py-4">
-                            <div className="grid grid-cols-2 gap-4 items-center"> {/* VLAN ID and Status */}
-                                <FormField
-                                    control={form.control}
-                                    name="vlanId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('vlan_page.form_vlan_id_label', 'VLAN ID')}</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" placeholder="1-4094" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="status"
-                                    render={({ field }) => (
-                                      <FormItem className="flex flex-col pt-2">
-                                        <FormLabel className="mb-1.5">{t('vlan_page.form_status_label', 'Status')}</FormLabel>
-                                        <div className="flex items-center space-x-2">
-                                          <FormControl>
-                                            <Switch
-                                              checked={field.value === 'Active'}
-                                              onCheckedChange={(checked) => field.onChange(checked ? 'Active' : 'Inactive')}
-                                              id="status-switch"
-                                            />
-                                          </FormControl>
-                                          <label htmlFor="status-switch" className="text-xs">
-                                            {field.value === 'Active' ? t('vlan_page.form_status_active', 'Active') : t('vlan_page.form_status_inactive', 'Inactive')}
-                                          </label>
-                                        </div>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                />
-                            </div>
+          <Button variant="default" className="bg-primary hover:bg-primary/90">
+            <RefreshCw className={`mr-2 ${iconSize}`} /> {t('vlan_page.refresh_button', 'Refresh')}
+          </Button>
+          <Dialog open={isAddVlanDialogOpen} onOpenChange={setIsAddVlanDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                <PlusCircle className={`mr-2 ${iconSize}`} /> {t('vlan_page.add_button', 'Add VLAN')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="text-sm flex items-center gap-2">
+                  <PlusCircle className={iconSize} />
+                  {t('vlan_page.add_dialog_title', 'New VLAN')}
+                </DialogTitle>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleAddVlanSubmit)} className="grid gap-4 py-4">
+                  <div className="grid grid-cols-2 gap-4 items-center"> {/* VLAN ID and Status */}
+                    <FormField
+                      control={form.control}
+                      name="vlanId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('vlan_page.form_vlan_id_label', 'VLAN ID')}</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="1-4094" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col pt-2">
+                          <FormLabel className="mb-1.5">{t('vlan_page.form_status_label', 'Status')}</FormLabel>
+                          <div className="flex items-center space-x-2">
+                            <FormControl>
+                              <Switch
+                                checked={field.value === 'Active'}
+                                onCheckedChange={(checked) => field.onChange(checked ? 'Active' : 'Inactive')}
+                                id="status-switch"
+                              />
+                            </FormControl>
+                            <label htmlFor="status-switch" className="text-xs">
+                              {field.value === 'Active' ? t('vlan_page.form_status_active', 'Active') : t('vlan_page.form_status_inactive', 'Inactive')}
+                            </label>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                            <div className="grid grid-cols-2 gap-4 items-start"> {/* PoP and Description */}
-                                <FormField
-                                    control={form.control}
-                                    name="popId"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>{t('vlan_page.form_pop_label', 'Point of Presence (PoP)')}</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                          <FormControl>
-                                            <SelectTrigger>
-                                              <SelectValue placeholder={t('vlan_page.form_pop_placeholder', 'Select PoP')} />
-                                            </SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                            {pops.map((pop) => (
-                                              <SelectItem key={pop.id.toString()} value={pop.id.toString()}>
-                                                {pop.name} ({pop.location})
-                                              </SelectItem>
-                                            ))}
-                                          </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="description"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('vlan_page.form_description_label', 'Description (Optional)')}</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder={t('vlan_page.form_description_placeholder', 'e.g., Main network')} {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-4 items-center"> {/* Assigned To and Available in Hub */}
-                                <FormField
-                                    control={form.control}
-                                    name="assignedTo"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('vlan_page.form_assigned_to_label', 'Assigned to')}</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    disabled={availableInHub}
-                                                    className={availableInHub ? 'bg-muted' : ''}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="availableInHub"
-                                    render={({ field }) => (
-                                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm h-full">
-                                            <div className="space-y-0.5">
-                                                <FormLabel>{t('vlan_page.form_available_in_hub_label', 'Available in Hub')}</FormLabel>
-                                            </div>
-                                            <FormControl>
-                                                <Switch
-                                                    checked={field.value}
-                                                    onCheckedChange={field.onChange}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                  <div className="grid grid-cols-2 gap-4 items-start"> {/* PoP and Description */}
+                    <FormField
+                      control={form.control}
+                      name="popId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('vlan_page.form_pop_label', 'Point of Presence (PoP)')}</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder={t('vlan_page.form_pop_placeholder', 'Select PoP')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            {mockPops.map((pop) => (
+                                <SelectItem key={pop.id.toString()} value={pop.id.toString()}>
+                                  {pop.name} ({pop.location})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('vlan_page.form_description_label', 'Description (Optional)')}</FormLabel>
+                          <FormControl>
+                            <Input placeholder={t('vlan_page.form_description_placeholder', 'e.g., Main network')} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                            {availableInHub && (
-                                <FormField
-                                    control={form.control}
-                                    name="participantId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('vlan_page.form_participant_label', 'Assign to Participant')}</FormLabel>
-                                            <div className="space-y-2">
-                                                <div className="relative">
-                                                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                                                    <Input
-                                                        placeholder={t('vlan_page.form_participant_search_placeholder', 'Search participants...')}
-                                                        value={participantSearch}
-                                                        onChange={(e) => setParticipantSearch(e.target.value)}
-                                                        className="pl-8"
-                                                    />
-                                                </div>
-                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder={t('vlan_page.form_participant_placeholder', 'Select participant')} />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {filteredParticipants.length > 0 ? (
-                                                            filteredParticipants.map((participant) => (
-                                                                <SelectItem key={participant.id} value={participant.id}>
-                                                                    <div className="flex flex-col">
-                                                                        <span className="font-medium">{participant.name}</span>
-                                                                        <span className="text-xs text-muted-foreground">{participant.email}</span>
-                                                                        <span className="text-xs text-muted-foreground">{participant.company}</span>
-                                                                    </div>
-                                                                </SelectItem>
-                                                            ))
-                                                        ) : (
-                                                            <div className="p-2 text-center text-muted-foreground text-xs">
-                                                                {t('vlan_page.form_participant_none_found', 'No participants found')}
-                                                            </div>
-                                                        )}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            )}
-
-                             <FormField
-                                control={form.control}
-                                name="isTagged"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                                        <div className="space-y-0.5">
-                                            <FormLabel>{t('vlan_page.form_is_tagged_label', 'Tagged VLAN')}</FormLabel>
-                                        </div>
-                                        <FormControl>
-                                            <Switch
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
+                  <div className="grid grid-cols-2 gap-4 items-center"> {/* Assigned To and Available in Hub */}
+                    <FormField
+                      control={form.control}
+                      name="assignedTo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('vlan_page.form_assigned_to_label', 'Assigned to')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              disabled={availableInHub}
+                              className={availableInHub ? 'bg-muted' : ''}
                             />
-                            
-                            <DialogFooter>
-                                <DialogClose asChild>
-                                    <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>{t('vlan_page.form_cancel_button', 'Cancel')}</Button>
-                                </DialogClose>
-                                <Button type="submit" disabled={form.formState.isSubmitting}>
-                                    {form.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                                    {form.formState.isSubmitting ? t('vlan_page.form_saving_button', 'Saving...') : t('vlan_page.form_save_button', 'Save VLAN')}
-                                </Button>
-                            </DialogFooter>
-                        </form>
-                    </Form>
-                </DialogContent>
-            </Dialog>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="availableInHub"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm h-full">
+                          <div className="space-y-0.5">
+                            <FormLabel>{t('vlan_page.form_available_in_hub_label', 'Available in Hub')}</FormLabel>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {availableInHub && (
+                    <FormField
+                      control={form.control}
+                      name="participantId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('vlan_page.form_participant_label', 'Assign to Participant')}</FormLabel>
+                          <div className="space-y-2">
+                            <div className="relative">
+                              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                placeholder={t('vlan_page.form_participant_search_placeholder', 'Search participants...')}
+                                value={participantSearch}
+                                onChange={(e) => setParticipantSearch(e.target.value)}
+                                className="pl-8"
+                              />
+                            </div>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={t('vlan_page.form_participant_placeholder', 'Select participant')} />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {filteredParticipants.length > 0 ? (
+                                  filteredParticipants.map((participant) => (
+                                    <SelectItem key={participant.id} value={participant.id}>
+                                      <div className="flex flex-col">
+                                        <span className="font-medium">{participant.name}</span>
+                                        <span className="text-xs text-muted-foreground">{participant.email}</span>
+                                        <span className="text-xs text-muted-foreground">{participant.company}</span>
+                                      </div>
+                                    </SelectItem>
+                                  ))
+                                ) : (
+                                  <div className="p-2 text-center text-muted-foreground text-xs">
+                                    {t('vlan_page.form_participant_none_found', 'No participants found')}
+                                  </div>
+                                )}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  <FormField
+                    control={form.control}
+                    name="isTagged"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                          <FormLabel>{t('vlan_page.form_is_tagged_label', 'Tagged VLAN')}</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>{t('vlan_page.form_cancel_button', 'Cancel')}</Button>
+                    </DialogClose>
+                    <Button type="submit" disabled={form.formState.isSubmitting}>
+                      {form.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
+                      {form.formState.isSubmitting ? t('vlan_page.form_saving_button', 'Saving...') : t('vlan_page.form_save_button', 'Save VLAN')}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -486,53 +494,53 @@ export default function VlanManagementPage() {
                       <TableCell className="text-muted-foreground text-xs text-center">{vlan.description || '-'}</TableCell>
                       <TableCell className="text-center">
                         <Badge variant={vlan.availableInHub ? 'default' : 'secondary'} className={`text-xs ${vlan.availableInHub ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-                           {vlan.availableInHub ? t('vlan_page.hub_available', 'Yes') : t('vlan_page.hub_not_available', 'No')}
+                          {vlan.availableInHub ? t('vlan_page.hub_available', 'Yes') : t('vlan_page.hub_not_available', 'No')}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center">
                         <Badge variant={vlan.isTagged ? 'default' : 'secondary'} className={`text-xs ${vlan.isTagged ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-                           {vlan.isTagged ? t('vlan_page.tagged', 'Tagged') : t('vlan_page.untagged', 'Untagged')}
+                          {vlan.isTagged ? t('vlan_page.tagged', 'Tagged') : t('vlan_page.untagged', 'Untagged')}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center">
-                         <Badge variant={vlan.status === 'Active' ? 'default' : 'secondary'} className={`text-xs ${vlan.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                           {t(`vlan_page.status_${vlan.status.toLowerCase()}` as any, vlan.status)}
-                         </Badge>
+                        <Badge variant={vlan.status === 'Active' ? 'default' : 'secondary'} className={`text-xs ${vlan.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                          {t(`vlan_page.status_${vlan.status.toLowerCase()}` as any, vlan.status)}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditVlan(vlan)}>
-                                <Edit className={iconSize} />
-                                <span className="sr-only">{t('vlan_page.action_edit', 'Edit')}</span>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditVlan(vlan)}>
+                          <Edit className={iconSize} />
+                          <span className="sr-only">{t('vlan_page.action_edit', 'Edit')}</span>
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10">
+                              <Trash2 className={iconSize} />
+                              <span className="sr-only">{t('vlan_page.action_delete', 'Delete')}</span>
                             </Button>
-                             <AlertDialog>
-                               <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10">
-                                    <Trash2 className={iconSize} />
-                                    <span className="sr-only">{t('vlan_page.action_delete', 'Delete')}</span>
-                                </Button>
-                               </AlertDialogTrigger>
-                               <AlertDialogContent>
-                                 <AlertDialogHeader>
-                                   <AlertDialogTitle>{t('vlan_page.delete_confirm_title', 'Are you sure?')}</AlertDialogTitle>
-                                   <AlertDialogDescription className="text-xs">
-                                     {t('vlan_page.delete_confirm_description', 'This action is irreversible. This will permanently delete VLAN {vlanId}.').replace('{vlanId}', vlan.vlanId.toString())}
-                                   </AlertDialogDescription>
-                                 </AlertDialogHeader>
-                                 <AlertDialogFooter>
-                                   <AlertDialogCancel onClick={() => setVlanToDelete(null)}>{t('vlan_page.delete_confirm_cancel', 'Cancel')}</AlertDialogCancel>
-                                   <AlertDialogAction
-                                     className={buttonVariants({ variant: "destructive" })}
-                                     onClick={() => {
-                                       setVlanToDelete(vlan);
-                                       confirmDeleteVlan();
-                                     }}
-                                   >
-                                     {t('vlan_page.delete_confirm_delete', 'Delete')}
-                                   </AlertDialogAction>
-                                 </AlertDialogFooter>
-                               </AlertDialogContent>
-                             </AlertDialog>
-                        </TableCell>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>{t('vlan_page.delete_confirm_title', 'Are you sure?')}</AlertDialogTitle>
+                              <AlertDialogDescription className="text-xs">
+                                {t('vlan_page.delete_confirm_description', 'This action is irreversible. This will permanently delete VLAN {vlanId}.').replace('{vlanId}', vlan.vlanId.toString())}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel onClick={() => setVlanToDelete(null)}>{t('vlan_page.delete_confirm_cancel', 'Cancel')}</AlertDialogCancel>
+                              <AlertDialogAction
+                                className={buttonVariants({ variant: "destructive" })}
+                                onClick={() => {
+                                  setVlanToDelete(vlan);
+                                  confirmDeleteVlan();
+                                }}
+                              >
+                                {t('vlan_page.delete_confirm_delete', 'Delete')}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

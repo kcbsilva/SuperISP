@@ -23,7 +23,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -36,28 +35,27 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
-import { addSubscriberToSupabase } from '@/services/supabase/subscribers'; // UPDATED IMPORT
-import type { SubscriberData } from '@/types/subscribers'; // Import SubscriberData type
-import { useRouter } from 'next/navigation'; // Import useRouter
-
+import { addSubscriber } from '@/services/postgres/subscribers';
+import type { SubscriberData } from '@/types/subscribers';
+import { useRouter } from 'next/navigation';
 
 const subscriberSchema = z.object({
-  subscriber_type: z.enum(['Residential', 'Commercial'], { // Matches Supabase column
+  subscriber_type: z.enum(['Residential', 'Commercial'], {
     required_error: "You need to select a subscriber type.",
   }),
-  full_name: z.string().optional(), // Matches Supabase column
-  company_name: z.string().optional(), // Matches Supabase column
+  full_name: z.string().optional(),
+  company_name: z.string().optional(),
   birthday: z.date().optional(),
-  established_date: z.date().optional(), // Matches Supabase column
+  established_date: z.date().optional(),
   address: z.string().min(1, 'Address is required'),
-  point_of_reference: z.string().optional(), // Matches Supabase column
+  point_of_reference: z.string().optional(),
   email: z.string().email('Invalid email address'),
-  phone_number: z.string().min(1, 'Phone number is required'), // Matches Supabase column
-  mobile_number: z.string().optional(), // Matches Supabase column
-  tax_id: z.string().optional(), // Matches Supabase column
-  business_number: z.string().optional(), // Matches Supabase column
-  id_number: z.string().optional(), // Matches Supabase column
-  signup_date: z.date().optional(), // Matches Supabase column
+  phone_number: z.string().min(1, 'Phone number is required'),
+  mobile_number: z.string().optional(),
+  tax_id: z.string().optional(),
+  business_number: z.string().optional(),
+  id_number: z.string().optional(),
+  signup_date: z.date().optional(), 
   status: z.enum(['Active', 'Inactive', 'Suspended', 'Planned', 'Canceled']).default('Active').optional(),
 }).refine(data => data.subscriber_type !== 'Residential' || (data.full_name && data.full_name.length > 0), {
   message: "Full Name is required for Residential subscribers.",
@@ -74,9 +72,9 @@ const subscriberSchema = z.object({
 }).refine(data => data.subscriber_type !== 'Commercial' || data.established_date, {
     message: "Established Date is required for Commercial subscribers.",
     path: ["established_date"],
-}).refine(data => data.subscriber_type !== 'Commercial' || (data.tax_id && data.tax_id.length > 0), { // Changed business_number to tax_id for CNPJ
+}).refine(data => data.subscriber_type !== 'Commercial' || (data.tax_id && data.tax_id.length > 0), {
     message: "CNPJ (Tax ID) is required for Commercial subscribers.",
-    path: ["tax_id"], // Ensure path points to tax_id
+    path: ["tax_id"],
 });
 
 
@@ -110,24 +108,22 @@ export default function AddSubscriberPage() {
 
   const subscriberType = form.watch('subscriber_type');
 
-  const onSubmit = async (data: SubscriberFormZodData) => {
+  const onSubmit = React.useCallback(async (data: SubscriberFormZodData) => {
     try {
-      // Map form data to SubscriberData type expected by the service
       const subscriberServiceData: SubscriberData = {
         ...data,
-        // Ensure dates are correctly formatted if needed, though Supabase client handles Date objects well
         birthday: data.birthday ? data.birthday : null,
         established_date: data.established_date ? data.established_date : null,
         signup_date: data.signup_date ? data.signup_date : new Date(),
       };
-      const newSubscriber = await addSubscriberToSupabase(subscriberServiceData);
+      const newSubscriber = await addSubscriber(subscriberServiceData);
       const name = newSubscriber.subscriberType === 'Residential' ? newSubscriber.fullName : newSubscriber.companyName;
       toast({
         title: t('add_subscriber.add_success_toast_title'),
         description: t('add_subscriber.add_success_toast_description', 'Details for {name} saved with ID {id}.').replace('{name}', name || 'N/A').replace('{id}', newSubscriber.id.toString()),
       });
       form.reset();
-      router.push('/admin/subscribers/list'); // Redirect to list page on success
+      router.push('/admin/subscribers/list');
     } catch (error: any) {
       toast({
         title: t('add_subscriber.add_error_toast_title', 'Error Adding Subscriber'),
@@ -135,7 +131,7 @@ export default function AddSubscriberPage() {
         variant: 'destructive',
       });
     }
-  };
+  }, [router, toast, t]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -324,7 +320,7 @@ export default function AddSubscriberPage() {
                   />
                    <FormField
                       control={form.control}
-                      name="tax_id" // Using tax_id for CNPJ
+                      name="tax_id"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>{t('add_subscriber.cnpj_label', 'CNPJ *')}</FormLabel>
@@ -337,7 +333,7 @@ export default function AddSubscriberPage() {
                    />
                     <FormField
                       control={form.control}
-                      name="business_number" // Using business_number for State Registration
+                      name="business_number"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>{t('add_subscriber.state_registration_label', 'State Registration')}</FormLabel>

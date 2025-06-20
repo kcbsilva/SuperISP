@@ -64,7 +64,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
-import { supabase } from '@/services/supabase/db';
 import {
   getRoles,
   getPermissions,
@@ -74,7 +73,8 @@ import {
   deleteUserTemplate,
   getUserProfiles,
   updateUserProfile,
-} from '@/services/supabase/users';
+  createUser,
+} from '@/services/postgres/users';
 import type { Role, Permission, UserTemplate, UserTemplateData, UserProfile } from '@/types/users';
 
 // Schema for User Template Form
@@ -261,28 +261,13 @@ export default function UsersPage() {
   const addUserMutation = useMutation({
     mutationFn: async (userData: AddUserFormValues) => {
       const { email, password, fullName, roleId } = userData;
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      const newUser = await createUser({
         email,
         password,
-        options: {
-          data: { 
-            full_name: fullName, 
-          },
-        },
-      });
-
-      if (signUpError) throw signUpError;
-      if (!signUpData.user) throw new Error("User not created in auth.");
-
-      await new Promise(resolve => setTimeout(resolve, 500)); 
-
-      await updateUserProfile(signUpData.user.id, {
         full_name: fullName,
         role_id: roleId || null,
-        // email: email // Email is already handled by the trigger
       });
-      
-      return signUpData.user;
+      return newUser;
     },
     onSuccess: (user) => {
       refetchUserProfiles();
