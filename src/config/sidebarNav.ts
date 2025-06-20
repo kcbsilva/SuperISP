@@ -45,7 +45,8 @@ import {
   Workflow,
   Radio, 
   GitMerge, 
-  Webhook, 
+  Webhook,
+  KeyRound, 
   Table2, // Added for Tables
   Terminal, // Added for SQL CLI
 } from 'lucide-react';
@@ -581,6 +582,12 @@ export const sidebarNav: SidebarNavItem[] = [
         href: '/admin/settings/security',
         icon: ShieldCheck,
         tooltip: 'sidebar.settings_security',
+      },
+      {
+        title: 'sidebar.settings_license',
+        href: '/admin/settings/license',
+        icon: KeyRound,
+        tooltip: 'sidebar.settings_license',
       },
       {
         title: 'sidebar.settings_system_monitor',

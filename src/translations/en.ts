@@ -43,7 +43,7 @@ import messengerConfigure from './en/messengerConfigure';
 import postgresDatabases from './en/postgresDatabases';
 import postgresTables from './en/postgresTables';
 import postgresSqlCli from './en/postgresSqlCli';
-
+import settingsLicense from './en/settingsLicense';
 
 
 const en = {
@@ -91,6 +91,7 @@ const en = {
   ...postgresDatabases,
   ...postgresTables,
   ...postgresSqlCli,
+  ...settingsLicense,
   
 
   form_cancel_button: 'Cancel',
