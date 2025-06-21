@@ -31,6 +31,14 @@ export default function LayoutRenderer({ children: pageContent }: { children: Re
   }, []);
 
   useEffect(() => {
+    if (!isMounted) return;
+    const setupComplete = localStorage.getItem('setupComplete') === 'true';
+    if (!setupComplete && pathname !== '/admin/setup-wizard') {
+      router.replace('/admin/setup-wizard');
+    }
+  }, [isMounted, pathname, router]);
+  
+  useEffect(() => {
     if (!isMounted || isAuthContextLoading) return;
 
     // With auth disabled, isAuthenticated is always true, isLoading false.

@@ -5,9 +5,9 @@
 import type React from 'react';
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import translations from '@/translations'; // Import translation data
-import { enUS as enUSLocale } from 'date-fns/locale'; // Only import enUSLocale
+import { enUS as enUSLocale, ptBR as ptBRLocale, fr as frLocale } from 'date-fns/locale';
 
-export type Locale = 'en'; // Only English is supported
+export type Locale = 'en' | 'pt' | 'fr';
 
 // Define the shape of the translation dictionary
 type TranslationDict = { [key: string]: string | TranslationDict };
@@ -37,28 +37,29 @@ const getTranslationValue = (dict: TranslationDict, key: string): string | undef
   return typeof current === 'string' ? current : undefined;
 };
 
-export const dateLocales: Record<string, typeof enUSLocale> = { // Simplified to just enUSLocale
+export const dateLocales: Record<string, typeof enUSLocale> = {
   en: enUSLocale,
+  pt: ptBRLocale,
+  fr: frLocale,
 };
 
 export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [locale, setLocaleState] = useState<Locale>('en'); // Default to English
+  const [locale, setLocaleState] = useState<Locale>('en');
   const [isMounted, setIsMounted] = useState(false); // Prevent hydration mismatch
 
   useEffect(() => {
     setIsMounted(true);
     const storedLocale = localStorage.getItem('locale') as Locale | null;
-    if (storedLocale && storedLocale === 'en') { // Only 'en' is valid
+    if (storedLocale && ['en', 'pt', 'fr'].includes(storedLocale)) {
       setLocaleState(storedLocale);
     } else {
-      // If stored locale is invalid or not 'en', default to 'en'
       setLocaleState('en');
       localStorage.setItem('locale', 'en');
     }
   }, []);
 
   const setLocale = useCallback((newLocale: Locale) => {
-    if (newLocale === 'en') { // Only allow setting to 'en'
+    if (['en', 'pt', 'fr'].includes(newLocale)) {
       setLocaleState(newLocale);
       localStorage.setItem('locale', newLocale);
     }
@@ -71,8 +72,7 @@ export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return fallback ?? key;
     }
     
-    // English is always the current and fallback translation
-    const currentTranslations = (translations as Translations)['en'];
+    const currentTranslations = (translations as Translations)[locale] || (translations as Translations)['en'];
 
     // Debug logging to help identify issues
     console.log('Translation key:', key);

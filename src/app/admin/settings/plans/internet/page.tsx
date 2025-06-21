@@ -19,6 +19,34 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+  DialogClose,
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -27,11 +55,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PlusCircle, Wifi, ArrowUp, ArrowDown, DollarSign, Hash, Users, Building, RefreshCw, Search, Filter as FilterIcon, ChevronDown } from 'lucide-react';
+import { PlusCircle, Wifi, ArrowUp, ArrowDown, DollarSign, Hash, Users, Building, RefreshCw, Search, ChevronDown } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 
 interface Pop {
   id: string;
@@ -117,6 +144,17 @@ type SpeedFilter = 'all' | 'lte100' | 'gt100';
 type PriceSortOrder = 'none' | 'asc' | 'desc';
 type ConnectionTypeFilter = 'All' | InternetPlan['connectionType'];
 
+const planSchema = z.object({
+  name: z.string().min(1, 'Required'),
+  popId: z.string().min(1, 'Required'),
+  uploadSpeedValue: z.coerce.number().positive(),
+  downloadSpeedValue: z.coerce.number().positive(),
+  priceValue: z.coerce.number().nonnegative(),
+  connectionType: z.enum(['Fiber', 'Radio', 'Satellite', 'UTP']),
+});
+
+type PlanFormData = z.infer<typeof planSchema>;
+
 export default function InternetPlansPage() {
   const { t } = useLocale();
   const { toast } = useToast();
@@ -130,10 +168,41 @@ export default function InternetPlansPage() {
   const [selectedConnectionType, setSelectedConnectionType] = React.useState<ConnectionTypeFilter>('All');
   const [priceSortOrder, setPriceSortOrder] = React.useState<PriceSortOrder>('none');
   const [currentPlans, setCurrentPlans] = React.useState<InternetPlan[]>(placeholderPlans);
+  const [isAddPlanDialogOpen, setIsAddPlanDialogOpen] = React.useState(false);
 
-  const handleAddPlan = () => {
-    console.log('Add new internet plan clicked');
-    toast({ title: t('internet_plans_add_button'), description: t('internet_plans_add_button') });
+  const form = useForm<PlanFormData>({
+    resolver: zodResolver(planSchema),
+    defaultValues: {
+      name: '',
+      popId: '',
+      uploadSpeedValue: 0,
+      downloadSpeedValue: 0,
+      priceValue: 0,
+      connectionType: 'Fiber',
+    },
+  });
+
+  const handleAddPlanSubmit = (data: PlanFormData) => {
+    const newPlan: InternetPlan = {
+      id: `plan-${Date.now()}`,
+      name: data.name,
+      uploadSpeed: data.uploadSpeedValue >= 1000 ? `${data.uploadSpeedValue / 1000} Gbps` : `${data.uploadSpeedValue} Mbps`,
+      downloadSpeed: data.downloadSpeedValue >= 1000 ? `${data.downloadSpeedValue / 1000} Gbps` : `${data.downloadSpeedValue} Mbps`,
+      price: `$${data.priceValue.toFixed(2)}/mo`,
+      uploadSpeedValue: data.uploadSpeedValue,
+      downloadSpeedValue: data.downloadSpeedValue,
+      priceValue: data.priceValue,
+      connectionType: data.connectionType,
+      clientCount: 0,
+      popId: data.popId,
+    };
+    setCurrentPlans(prev => [newPlan, ...prev]);
+    toast({
+      title: t('internet_plans_add_success_title', 'Plan Added'),
+      description: t('internet_plans_add_success_description', 'Plan "{name}" added.').replace('{name}', data.name),
+    });
+    form.reset();
+    setIsAddPlanDialogOpen(false);
   };
   
   const handleRefresh = () => {
@@ -201,9 +270,103 @@ export default function InternetPlansPage() {
             <Button onClick={handleRefresh} variant="outline" className="shrink-0">
                 <RefreshCw className={`mr-2 ${iconSize}`} /> {t('refresh_button')}
             </Button>
-            <Button onClick={handleAddPlan} className="bg-green-600 hover:bg-green-700 text-white shrink-0">
-            <PlusCircle className={`mr-2 ${iconSize}`} /> {t('internet_plans_add_button')}
-            </Button>
+            <Dialog open={isAddPlanDialogOpen} onOpenChange={setIsAddPlanDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-green-600 hover:bg-green-700 text-white shrink-0">
+                  <PlusCircle className={`mr-2 ${iconSize}`} /> {t('internet_plans_add_button')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>{t('internet_plans_add_dialog_title', 'Add Internet Plan')}</DialogTitle>
+                  <DialogDescription>{t('internet_plans_add_dialog_description', 'Fill in the details for the new plan.')}</DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleAddPlanSubmit)} className="grid gap-4 py-4">
+                    <FormField control={form.control} name="name" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('internet_plans_form_name_label', 'Plan Name')}</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="popId" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('internet_plans_form_pop_label', 'POP')}</FormLabel>
+                        <FormControl>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('internet_plans_form_pop_label', 'POP')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {mockPops.map(pop => (
+                                <SelectItem key={pop.id} value={pop.id}>{pop.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="uploadSpeedValue" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('internet_plans_form_upload_label', 'Upload Speed (Mbps)')}</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="downloadSpeedValue" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('internet_plans_form_download_label', 'Download Speed (Mbps)')}</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="priceValue" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('internet_plans_form_price_label', 'Monthly Price ($)')}</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.01" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="connectionType" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('internet_plans_form_connection_type_label', 'Connection Type')}</FormLabel>
+                        <FormControl>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('internet_plans_form_connection_type_label', 'Connection Type')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {(['Fiber','Radio','Satellite','UTP'] as const).map(type => (
+                                <SelectItem key={type} value={type}>{type}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>{t('internet_plans_form_cancel_button', 'Cancel')}</Button>
+                      </DialogClose>
+                      <Button type="submit" disabled={form.formState.isSubmitting}>
+                        {form.formState.isSubmitting ? t('internet_plans_form_saving_button', 'Saving...') : t('internet_plans_form_save_button', 'Save Plan')}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
         </div>
       </div>
       

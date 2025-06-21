@@ -11,7 +11,8 @@ export default function RootRedirectPage() {
   const { t } = useLocale(); // Use t function for any text if needed
 
   React.useEffect(() => {
-    router.replace('/admin/login');
+    const done = localStorage.getItem('setupComplete') === 'true';
+    router.replace(done ? '/admin/login' : '/admin/setup-wizard');
   }, [router]);
 
   // Display a loader while redirecting

@@ -15,6 +15,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     '/admin', // Admin root might be a redirector or a very simple page
     '/admin/forgot-password',
     '/admin/update-password',
+    '/admin/setup-wizard',
   ];
 
   if (noShellPaths.includes(pathname)) {
