@@ -1,5 +1,3 @@
-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
-
 # /install-cloud.sh
 #!/bin/bash
 
