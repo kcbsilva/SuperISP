@@ -2,10 +2,16 @@
 'use client';
 
 import * as React from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { type Locale, useLocale } from '@/contexts/LocaleContext';
-import { ProlterLogo } from '@/components/prolter-logo'; // Replace with your actual logo if needed
+import { ProlterLogo } from '@/components/prolter-logo';
 
 interface WelcomeStepProps {
   onNext: () => void;
@@ -28,9 +34,11 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
   const handleNext = () => {
     localStorage.setItem('setupLang', selectedLanguage);
     setLocale(selectedLanguage);
+    localStorage.setItem('setupStep', '1'); // 👈 Skip welcome step on reload
 
-    // ✅ Force reload so translation context updates
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload(); // 👈 Apply language on full reload
+    }, 100);
   };
 
   const resetWizard = () => {
@@ -64,7 +72,10 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
 
       {/* Language Selector */}
       <div className="max-w-xs w-full">
-        <Select onValueChange={(val) => setSelectedLanguage(val as Locale)} defaultValue={selectedLanguage}>
+        <Select
+          onValueChange={(val) => setSelectedLanguage(val as Locale)}
+          defaultValue={selectedLanguage}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select language" />
           </SelectTrigger>
@@ -85,7 +96,11 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
 
       {/* Optional Developer Reset */}
       <div className="pt-4">
-        <Button variant="ghost" className="text-xs opacity-50 hover:opacity-100" onClick={resetWizard}>
+        <Button
+          variant="ghost"
+          className="text-xs opacity-50 hover:opacity-100"
+          onClick={resetWizard}
+        >
           Reset Wizard (Dev Only)
         </Button>
       </div>
