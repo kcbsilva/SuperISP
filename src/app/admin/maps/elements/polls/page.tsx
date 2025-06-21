@@ -68,11 +68,14 @@ interface PollHistoryEntry {
   details?: string;
 }
 
+const pollTypes = ['Circular', 'Square'] as const;
+type PollType = (typeof pollTypes)[number];
+
 interface HydroPoll {
   id: string;
   description: string;
   height: string;
-  type: 'Circular' | 'Square';
+  type: PollType;
   address: string;
   gpsCoordinates: string;
   transformer: 'Yes' | 'No';
@@ -99,7 +102,7 @@ const pollTemplateSchema = z.object({
   manufacturer: z.string().optional(),
   material: z.string().min(1, "Material is required."),
   height: z.string().min(1, "Height description is required (e.g., 12m Concrete Pole)."),
-  type: z.enum(['Circular', 'Square'], { required_error: "Poll type is required." }),
+  type: z.enum(pollTypes, { required_error: "Poll type is required." }),
 });
 type PollTemplateFormData = z.infer<typeof pollTemplateSchema>;
 
@@ -110,11 +113,149 @@ interface PollTemplate extends PollTemplateFormData {
 const placeholderPollManufacturers = ["Manufacturer A", "Manufacturer B", "Manufacturer C", "Other"];
 const placeholderPollMaterials = ["Concrete", "Wood", "Steel", "Composite"];
 
-const placeholderExistingPollTemplates: PollTemplate[] = [
+const initialPollTemplates: PollTemplate[] = [
   { id: 'tpl-poll-1', manufacturer: 'Manufacturer A', material: 'Concrete', height: '12m Reinforced Concrete', type: 'Circular' },
   { id: 'tpl-poll-2', manufacturer: 'Manufacturer B', material: 'Wood', height: '10m Treated Pine', type: 'Square' },
 ];
 
+function PollDetailsTab({ poll }: { poll: HydroPoll | null }) {
+  const { t } = useLocale();
+  if (!poll) return null;
+  return (
+    <div className="grid gap-3 py-2 text-xs">
+      <div className="grid grid-cols-3 items-center gap-3">
+        <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_id_label', 'ID')}:</span>
+        <span className="col-span-2 font-medium">{poll.id}</span>
+      </div>
+      <div className="grid grid-cols-3 items-center gap-3">
+        <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_description_label', 'Description')}:</span>
+        <span className="col-span-2">{poll.description}</span>
+      </div>
+      <div className="grid grid-cols-3 items-center gap-3">
+        <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_project_label', 'Project')}:</span>
+        <span className="col-span-2">{poll.project || '-'}</span>
+      </div>
+      <div className="grid grid-cols-3 items-center gap-3">
+        <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_height_label', 'Height')}:</span>
+        <span className="col-span-2">{poll.height}</span>
+      </div>
+      <div className="grid grid-cols-3 items-center gap-3">
+        <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_type_label', 'Type')}:</span>
+        <span className="col-span-2">{poll.type}</span>
+      </div>
+      <div className="grid grid-cols-3 items-center gap-3">
+        <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_address_label', 'Address')}:</span>
+        <span className="col-span-2">{poll.address}</span>
+      </div>
+      <div className="grid grid-cols-3 items-center gap-3">
+        <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_gps_label', 'GPS Coordinates')}:</span>
+        <span className="col-span-2">{poll.gpsCoordinates}</span>
+      </div>
+      <div className="grid grid-cols-3 items-center gap-3">
+        <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_transformer_label', 'Transformer')}:</span>
+        <span className="col-span-2">
+          <Badge variant={poll.transformer === 'Yes' ? 'destructive' : 'default'} className={`text-xs ${poll.transformer === 'Yes' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>{poll.transformer}</Badge>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function PollCablesTab({ poll }: { poll: HydroPoll | null }) {
+  const { t } = useLocale();
+  if (!poll) return null;
+  return (
+    <div className="mt-2 flex-grow overflow-y-auto text-xs">
+      <h3 className="text-sm font-semibold mb-2">{t('maps_elements.poll_modal_cables_passed_heading', 'Cables Passed')}</h3>
+      {poll.cablesPassed && poll.cablesPassed.length > 0 ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-xs text-center">ID/Name</TableHead>
+              <TableHead className="text-xs text-center">Fiber Count</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {poll.cablesPassed.map(cable => (
+              <TableRow key={cable.id}>
+                <TableCell className="text-xs text-center">{cable.name}</TableCell>
+                <TableCell className="text-xs text-center">{cable.fiberCount || '-'}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.poll_modal_no_cables', 'No cables passed through this poll.')}</p>
+      )}
+    </div>
+  );
+}
+
+function PollEnclosuresTab({ poll }: { poll: HydroPoll | null }) {
+  const { t } = useLocale();
+  if (!poll) return null;
+  return (
+    <div className="mt-2 flex-grow overflow-y-auto text-xs">
+      <h3 className="text-sm font-semibold mb-2">{t('maps_elements.poll_modal_enclosures_heading', 'Attached Enclosures')}</h3>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <h4 className="text-xs font-medium mb-1">{t('maps_elements.poll_modal_foscs_heading', 'FOSCs')}:</h4>
+          {poll.attachedFoscs && poll.attachedFoscs.length > 0 ? (
+            <ul className="list-disc list-inside space-y-0.5">
+              {poll.attachedFoscs.map(foscId => <li key={foscId}>{foscId}</li>)}
+            </ul>
+          ) : (
+            <p className="text-xs text-muted-foreground">{t('maps_elements.poll_modal_no_foscs', 'No FOSCs attached.')}</p>
+          )}
+        </div>
+        <div>
+          <h4 className="text-xs font-medium mb-1">{t('maps_elements.poll_modal_fdhs_heading', 'FDHs')}:</h4>
+          {poll.attachedFdhs && poll.attachedFdhs.length > 0 ? (
+            <ul className="list-disc list-inside space-y-0.5">
+              {poll.attachedFdhs.map(fdhId => <li key={fdhId}>{fdhId}</li>)}
+            </ul>
+          ) : (
+            <p className="text-xs text-muted-foreground">{t('maps_elements.poll_modal_no_fdhs', 'No FDHs attached.')}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PollHistoryTab({ poll }: { poll: HydroPoll | null }) {
+  const { t } = useLocale();
+  if (!poll) return null;
+  return (
+    <div className="mt-2 flex-grow overflow-y-auto text-xs">
+      <h3 className="text-sm font-semibold mb-2">{t('maps_elements.poll_modal_history_heading', 'Poll History')}</h3>
+      {poll.history && poll.history.length > 0 ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_date', 'Date')}</TableHead>
+              <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_user', 'User')}</TableHead>
+              <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_description', 'Description')}</TableHead>
+              <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_details', 'Details')}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {poll.history.map(entry => (
+              <TableRow key={entry.id}>
+                <TableCell className="text-xs text-center">{entry.date}</TableCell>
+                <TableCell className="text-xs text-center">{entry.user}</TableCell>
+                <TableCell className="text-xs text-center">{entry.description}</TableCell>
+                <TableCell className="text-xs text-center">{entry.details || '-'}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.poll_modal_no_history', 'No history entries available.')}</p>
+      )}
+    </div>
+  );
+}
 
 export default function HydroPollsPage() {
   const { t } = useLocale();
@@ -125,6 +266,17 @@ export default function HydroPollsPage() {
   const [selectedPoll, setSelectedPoll] = React.useState<HydroPoll | null>(null);
   const [isPollModalOpen, setIsPollModalOpen] = React.useState(false);
   const [activePollModalTab, setActivePollModalTab] = React.useState('details');
+  const [pollTemplates, setPollTemplates] = React.useState<PollTemplate[]>(initialPollTemplates);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [typeFilter, setTypeFilter] = React.useState<'all' | PollType>('all');
+  const filteredPolls = React.useMemo(() => {
+    return placeholderPolls.filter((p) => {
+      const matchesQuery = p.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesType = typeFilter === 'all' || p.type === typeFilter;
+      return matchesQuery && matchesType;
+    });
+  }, [searchQuery, typeFilter]);
 
   const templateForm = useForm<PollTemplateFormData>({
     resolver: zodResolver(pollTemplateSchema),
@@ -139,7 +291,7 @@ export default function HydroPollsPage() {
   const handleAddTemplateSubmit = (data: PollTemplateFormData) => {
     console.log("New Poll Template Data:", data);
     const newTemplate: PollTemplate = { ...data, id: `tpl-poll-${Date.now()}` };
-    placeholderExistingPollTemplates.push(newTemplate);
+    setPollTemplates((prev) => [...prev, newTemplate]);
     toast({
       title: t('maps_elements.poll_template_add_success_title', 'Poll Template Added'),
       description: t('maps_elements.poll_template_add_success_desc_new', 'Poll template for {height} {material} poles added.').replace('{height}', data.height).replace('{material}', data.material),
@@ -285,8 +437,8 @@ export default function HydroPollsPage() {
                   {t('maps_elements.existing_poll_templates_list_title', 'Existing Templates')}
                 </legend>
                 <ScrollArea className="h-[260px] bg-muted/50 rounded-md p-2">
-                  {placeholderExistingPollTemplates.length > 0 ? (
-                    placeholderExistingPollTemplates.map(template => (
+                  {pollTemplates.length > 0 ? (
+                    pollTemplates.map(template => (
                       <div key={template.id} className="text-xs p-1.5 border-b last:border-b-0 hover:bg-background rounded-sm cursor-default">
                         <div className="font-medium">{template.manufacturer ? `${template.manufacturer} - ` : ''}{template.material} - {template.type}</div>
                         <div className="text-muted-foreground">
@@ -306,7 +458,28 @@ export default function HydroPollsPage() {
 
       <Card>
         <CardContent className="pt-6">
-          {placeholderPolls.length > 0 ? (
+          <div className="flex items-center gap-2 pb-4">
+            <Input
+              placeholder={t('maps_elements.poll_search_placeholder', 'Search polls')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-8 text-xs"
+            />
+            <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as 'all' | PollType)}>
+              <FormControl>
+                <SelectTrigger className="h-8 w-[100px] text-xs">
+                  <SelectValue placeholder="Type" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="all">{t('maps_elements.poll_filter_all', 'All')}</SelectItem>
+                {pollTypes.map((pt) => (
+                  <SelectItem key={pt} value={pt}>{pt}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {filteredPolls.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -322,10 +495,11 @@ export default function HydroPollsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {placeholderPolls.map((poll) => (
+                  {filteredPolls.map((poll) => (
                     <TableRow
                       key={poll.id}
                       data-state={selectedPoll?.id === poll.id ? 'selected' : undefined}
+                      className={cn(selectedPoll?.id === poll.id && 'bg-muted')}
                     >
                       <TableCell className="font-mono text-muted-foreground text-xs text-center">
                         <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => handlePollIdClick(poll)}>
@@ -371,121 +545,16 @@ export default function HydroPollsPage() {
               <TabsTrigger value="history">{t('maps_elements.poll_modal_tab_history', 'History')}</TabsTrigger>
             </TabsList>
             <TabsContent value="details" className="mt-2 flex-grow overflow-y-auto">
-              {selectedPoll && (
-                <div className="grid gap-3 py-2 text-xs">
-                  <div className="grid grid-cols-3 items-center gap-3">
-                    <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_id_label', 'ID')}:</span>
-                    <span className="col-span-2 font-medium">{selectedPoll.id}</span>
-                  </div>
-                  <div className="grid grid-cols-3 items-center gap-3">
-                    <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_description_label', 'Description')}:</span>
-                    <span className="col-span-2">{selectedPoll.description}</span>
-                  </div>
-                  <div className="grid grid-cols-3 items-center gap-3">
-                    <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_project_label', 'Project')}:</span>
-                    <span className="col-span-2">{selectedPoll.project || '-'}</span>
-                  </div>
-                  <div className="grid grid-cols-3 items-center gap-3">
-                    <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_height_label', 'Height')}:</span>
-                    <span className="col-span-2">{selectedPoll.height}</span>
-                  </div>
-                  <div className="grid grid-cols-3 items-center gap-3">
-                    <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_type_label', 'Type')}:</span>
-                    <span className="col-span-2">{selectedPoll.type}</span>
-                  </div>
-                  <div className="grid grid-cols-3 items-center gap-3">
-                    <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_address_label', 'Address')}:</span>
-                    <span className="col-span-2">{selectedPoll.address}</span>
-                  </div>
-                  <div className="grid grid-cols-3 items-center gap-3">
-                    <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_gps_label', 'GPS Coordinates')}:</span>
-                    <span className="col-span-2">{selectedPoll.gpsCoordinates}</span>
-                  </div>
-                  <div className="grid grid-cols-3 items-center gap-3">
-                    <span className="text-muted-foreground col-span-1">{t('maps_elements.poll_profile_transformer_label', 'Transformer')}:</span>
-                    <span className="col-span-2">
-                      <Badge variant={selectedPoll.transformer === 'Yes' ? 'destructive' : 'default'} className={`text-xs ${selectedPoll.transformer === 'Yes' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                        {selectedPoll.transformer}
-                      </Badge>
-                    </span>
-                  </div>
-                </div>
-              )}
+              <PollDetailsTab poll={selectedPoll} />
             </TabsContent>
             <TabsContent value="cables" className="mt-2 flex-grow overflow-y-auto text-xs">
-              <h3 className="text-sm font-semibold mb-2">{t('maps_elements.poll_modal_cables_passed_heading', 'Cables Passed')}</h3>
-              {selectedPoll?.cablesPassed && selectedPoll.cablesPassed.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs text-center">ID/Name</TableHead>
-                      <TableHead className="text-xs text-center">Fiber Count</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {selectedPoll.cablesPassed.map(cable => (
-                      <TableRow key={cable.id}>
-                        <TableCell className="text-xs text-center">{cable.name}</TableCell>
-                        <TableCell className="text-xs text-center">{cable.fiberCount || '-'}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.poll_modal_no_cables', 'No cables passed through this poll.')}</p>
-              )}
+              <PollCablesTab poll={selectedPoll} />
             </TabsContent>
             <TabsContent value="enclosures" className="mt-2 flex-grow overflow-y-auto text-xs">
-              <h3 className="text-sm font-semibold mb-2">{t('maps_elements.poll_modal_enclosures_heading', 'Attached Enclosures')}</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h4 className="text-xs font-medium mb-1">{t('maps_elements.poll_modal_foscs_heading', 'FOSCs')}:</h4>
-                  {selectedPoll?.attachedFoscs && selectedPoll.attachedFoscs.length > 0 ? (
-                    <ul className="list-disc list-inside space-y-0.5">
-                      {selectedPoll.attachedFoscs.map(foscId => <li key={foscId}>{foscId}</li>)}
-                    </ul>
-                  ) : (
-                    <p className="text-xs text-muted-foreground">{t('maps_elements.poll_modal_no_foscs', 'No FOSCs attached.')}</p>
-                  )}
-                </div>
-                <div>
-                  <h4 className="text-xs font-medium mb-1">{t('maps_elements.poll_modal_fdhs_heading', 'FDHs')}:</h4>
-                  {selectedPoll?.attachedFdhs && selectedPoll.attachedFdhs.length > 0 ? (
-                    <ul className="list-disc list-inside space-y-0.5">
-                      {selectedPoll.attachedFdhs.map(fdhId => <li key={fdhId}>{fdhId}</li>)}
-                    </ul>
-                  ) : (
-                    <p className="text-xs text-muted-foreground">{t('maps_elements.poll_modal_no_fdhs', 'No FDHs attached.')}</p>
-                  )}
-                </div>
-              </div>
+            <PollEnclosuresTab poll={selectedPoll} />
             </TabsContent>
             <TabsContent value="history" className="mt-2 flex-grow overflow-y-auto text-xs">
-              <h3 className="text-sm font-semibold mb-2">{t('maps_elements.poll_modal_history_heading', 'Poll History')}</h3>
-              {selectedPoll?.history && selectedPoll.history.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_date', 'Date')}</TableHead>
-                      <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_user', 'User')}</TableHead>
-                      <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_description', 'Description')}</TableHead>
-                      <TableHead className="text-xs text-center">{t('maps_elements.poll_modal_history_details', 'Details')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {selectedPoll.history.map(entry => (
-                      <TableRow key={entry.id}>
-                        <TableCell className="text-xs text-center">{entry.date}</TableCell>
-                        <TableCell className="text-xs text-center">{entry.user}</TableCell>
-                        <TableCell className="text-xs text-center">{entry.description}</TableCell>
-                        <TableCell className="text-xs text-center">{entry.details || '-'}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p className="text-xs text-muted-foreground text-center py-4">{t('maps_elements.poll_modal_no_history', 'No history entries available.')}</p>
-              )}
+            <PollHistoryTab poll={selectedPoll} />
             </TabsContent>
           </Tabs>
           <DialogFooter className="gap-2 sm:justify-end">

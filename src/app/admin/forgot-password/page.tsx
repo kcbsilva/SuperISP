@@ -38,10 +38,10 @@ export default function ForgotPasswordPage() {
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsSubmitting(true);
     setMessage('');
-
+  
     try {
       await sendPasswordResetEmail(data.email);
-    } else {
+      
       setMessage(t('forgot_password.success_description', "If an account exists for this email, a password reset link has been sent."));
       toast({
         title: t('forgot_password.success_title', "Check Your Email"),
@@ -55,6 +55,7 @@ export default function ForgotPasswordPage() {
         variant: 'destructive',
       });
     }
+  
     setIsSubmitting(false);
   };
 
