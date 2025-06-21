@@ -87,16 +87,7 @@ interface HydroPoll {
 }
 
 
-const placeholderPolls: HydroPoll[] = [
-  {
-    id: 'poll-001', description: 'Main Street - Corner Oak', height: '12m', type: 'Circular', address: '123 Main St, Anytown', gpsCoordinates: '40.7128° N, 74.0060° W', transformer: 'Yes', project: 'Downtown Expansion',
-    history: [{ id: 'hist-p1', date: '2023-01-10', user: 'Install Team', description: 'Pole installed' }, { id: 'hist-p2', date: '2023-05-20', user: 'Maintenance', description: 'Inspected for storm damage', details: 'Minor cosmetic scuffs' }],
-    cablesPassed: [{ id: 'cable-p1', name: 'Feeder 1', fiberCount: 144 }, { id: 'cable-p2', name: 'Distribution A', fiberCount: 48 }],
-    attachedFoscs: ['fosc-001'],
-    attachedFdhs: []
-  },
-  { id: 'poll-002', description: 'Park Entrance', height: '10m', type: 'Square', address: '456 Park Ave, Anytown', gpsCoordinates: '40.7135° N, 74.0055° W', transformer: 'No', project: 'City Beautification', cablesPassed: [{ id: 'cable-p3', name: 'Feeder 2', fiberCount: 72 }], attachedFdhs: ['fdh-002', 'fdh-003'] },
-];
+const placeholderPolls: HydroPoll[] = [];
 
 const pollTemplateSchema = z.object({
   manufacturer: z.string().optional(),
@@ -110,13 +101,10 @@ interface PollTemplate extends PollTemplateFormData {
   id: string;
 }
 
-const placeholderPollManufacturers = ["Manufacturer A", "Manufacturer B", "Manufacturer C", "Other"];
-const placeholderPollMaterials = ["Concrete", "Wood", "Steel", "Composite"];
+const placeholderPollManufacturers: string[] = [];
+const placeholderPollMaterials: string[] = [];
 
-const initialPollTemplates: PollTemplate[] = [
-  { id: 'tpl-poll-1', manufacturer: 'Manufacturer A', material: 'Concrete', height: '12m Reinforced Concrete', type: 'Circular' },
-  { id: 'tpl-poll-2', manufacturer: 'Manufacturer B', material: 'Wood', height: '10m Treated Pine', type: 'Square' },
-];
+const initialPollTemplates: PollTemplate[] = [];
 
 function PollDetailsTab({ poll }: { poll: HydroPoll | null }) {
   const { t } = useLocale();

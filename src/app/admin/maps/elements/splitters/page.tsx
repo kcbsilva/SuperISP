@@ -66,12 +66,7 @@ interface Splitter {
   ratio?: SplitterRatioEnum;
 }
 
-const placeholderSplitters: Splitter[] = [
-  { id: 'splt-001', description: 'Main Splitter - FDH-001', enclosureId: 'fdh-001', connectorized: true, connectorType: 'APC', distributionType: 'PON', category: '1x8' },
-  { id: 'splt-002', description: 'Secondary Splitter - FOSC-002', enclosureId: 'fosc-002', connectorized: true, connectorType: 'UPC', distributionType: 'Network', category: '1x2', ratio: '50/50' },
-  { id: 'splt-003', description: 'Tap Splitter - FDH-003', enclosureId: 'fdh-003', connectorized: false, distributionType: 'PON', category: '1x4' },
-  { id: 'splt-004', description: 'Distribution Splitter - FOSC-001', enclosureId: 'fosc-001', connectorized: true, connectorType: 'APC', distributionType: 'PON', category: '1x16' },
-];
+const placeholderSplitters: Splitter[] = [];
 
 // Schema for Splitter Template
 const splitterTemplateSchema = z.object({
@@ -88,13 +83,9 @@ interface SplitterTemplate extends SplitterTemplateFormData {
   id: string;
 }
 
-const placeholderSplitterManufacturers = ["Corning", "CommScope", "Prysmian", "Furukawa", "SENKO", "Generic"];
+const placeholderSplitterManufacturers: string[] = [];
 
-const placeholderExistingSplitterTemplates: SplitterTemplate[] = [
-  { id: 'tpl-splt-1', manufacturer: 'Corning', model: 'OptiTap® Splitter Module', category: '1x8', inputConnectorType: 'APC', outputConnectorType: 'APC', distributionType: 'PON' },
-  { id: 'tpl-splt-2', manufacturer: 'CommScope', model: 'NG4access® Splitter Cassette', category: '1x16', inputConnectorType: 'APC', outputConnectorType: 'APC', distributionType: 'PON' },
-  { id: 'tpl-splt-3', manufacturer: 'SENKO', model: 'PLC Splitter - Unbalanced', category: '1x2', inputConnectorType: 'UPC', outputConnectorType: 'UPC', distributionType: 'Network' },
-];
+const placeholderExistingSplitterTemplates: SplitterTemplate[] = [];
 
 export default function SplittersPage() {
   const { t } = useLocale();

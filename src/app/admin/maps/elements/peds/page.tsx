@@ -26,12 +26,12 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
 import {
@@ -56,17 +56,13 @@ interface Ped {
   address?: string;
 }
 
-const placeholderPeds: Ped[] = [
-  { id: 'ped-001', description: 'Street Corner PED', pedType: 'Cabinet', isEnergized: true, manufacturer: 'Alpha Technologies', gpsCoordinates: '34.0522° N, 118.2437° W', address: '101 Main St, Anytown' },
-  { id: 'ped-002', description: 'Parkside Distribution', pedType: 'Column', isEnergized: false, manufacturer: 'Emerson Network Power', gpsCoordinates: '34.0550° N, 118.2450° W' },
-  { id: 'ped-003', description: 'Residential Block Unit', pedType: 'Cabinet', isEnergized: true, manufacturer: 'Charles Industries', gpsCoordinates: '34.0500° N, 118.2400° W', address: '202 Suburbia Dr, Anytown' },
-];
+const placeholderPeds: Ped[] = [];
 
 const pedTemplateSchema = z.object({
   manufacturer: z.string().min(1, "Manufacturer is required."),
   model: z.string().min(1, "Model is required."),
   maxCapacity: z.coerce.number().int().positive("Max capacity must be a positive number (e.g., equipment slots)."),
-  pedType: z.enum(['Column', 'Cabinet'], { required_error: "PED type is required."}),
+  pedType: z.enum(['Column', 'Cabinet'], { required_error: "PED type is required." }),
 });
 type PedTemplateFormData = z.infer<typeof pedTemplateSchema>;
 
@@ -74,12 +70,9 @@ interface PedTemplate extends PedTemplateFormData {
   id: string;
 }
 
-const placeholderPedManufacturers = ["Alpha Technologies", "Emerson Network Power", "Charles Industries", "Steren", "Hubbell"];
+const placeholderPedManufacturers: string[] = [];
 
-const placeholderExistingPedTemplates: PedTemplate[] = [
-  { id: 'tpl-ped-1', manufacturer: 'Alpha Technologies', model: 'Alpha PED 2000', maxCapacity: 12, pedType: 'Cabinet' },
-  { id: 'tpl-ped-2', manufacturer: 'Emerson Network Power', model: 'NetSure Column PED', maxCapacity: 4, pedType: 'Column' },
-];
+const placeholderExistingPedTemplates: PedTemplate[] = [];
 
 export default function PedsPage() {
   const { t } = useLocale();

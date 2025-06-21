@@ -1,27 +1,10 @@
-
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
 export async function POST(request: Request) {
-  const { email, password } = await request.json();
+  const { email } = await request.json();
 
-  // Dummy auth check - Restored to demo@demo.com/demo
-  if (email === 'demo@demo.com' && password === 'demo') {
-    const token = jwt.sign({ email }, process.env.JWT_SECRET!, { expiresIn: '1d' });
+  console.warn('Login attempt for', email, '- authentication not implemented.');
 
-    const response = NextResponse.json({ success: true });
-
-    response.cookies.set({
-      name: 'token',
-      value: token,
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-    });
-
-    return response;
-  }
-
-  return NextResponse.json({ success: false }, { status: 401 });
+  return NextResponse.json({ message: 'Authentication not implemented' }, { status: 501 });
 }

@@ -73,19 +73,13 @@ interface Warehouse extends WarehouseFormData {
   itemCount: number; // Placeholder for number of items in warehouse
 }
 
-const placeholderWarehouses: Warehouse[] = [
-  { id: 'wh-1', name: 'Main Warehouse', address: '100 Inventory Rd, Anytown', isMain: true, notes: 'Primary storage facility.', createdAt: new Date(), itemCount: 1250 },
-  { id: 'wh-2', name: 'North Branch Storage', address: '200 Distribution Way, Northville', isMain: false, createdAt: new Date(Date.now() - 86400000), itemCount: 340 },
-  { id: 'wh-3', name: 'Technician Van Stock', address: 'Mobile Unit 1', isMain: false, notes: 'Restock daily.', createdAt: new Date(Date.now() - 172800000), itemCount: 55 },
-];
-
 export default function WarehousesPage() {
   const { t } = useLocale();
   const { toast } = useToast();
   const [isAddWarehouseDialogOpen, setIsAddWarehouseDialogOpen] = React.useState(false);
   const [editingWarehouse, setEditingWarehouse] = React.useState<Warehouse | null>(null);
   const [warehouseToDelete, setWarehouseToDelete] = React.useState<Warehouse | null>(null);
-  const [warehouses, setWarehouses] = React.useState<Warehouse[]>(placeholderWarehouses);
+  const [warehouses, setWarehouses] = React.useState<Warehouse[]>([]);
   const [searchTerm, setSearchTerm] = React.useState('');
   const iconSize = "h-3 w-3";
 
@@ -283,7 +277,7 @@ export default function WarehousesPage() {
                       <TableCell className="font-mono text-muted-foreground text-xs">{warehouse.id.substring(0,8)}</TableCell>
                       <TableCell className="font-medium text-xs">
                         {warehouse.name}
-                        {warehouse.isMain && <Home className="inline-block ml-2 h-3 w-3 text-primary" title={t('inventory_warehouses.main_warehouse_indicator_tooltip', 'Main Warehouse')} />}
+                        {warehouse.isMain && <Home className="inline-block ml-2 h-3 w-3 text-primary" />}
                       </TableCell>
                       <TableCell className="text-muted-foreground text-xs">{warehouse.address}</TableCell>
                       <TableCell className="text-center">

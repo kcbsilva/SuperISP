@@ -12,7 +12,7 @@ export default function RootRedirectPage() {
 
   React.useEffect(() => {
     const done = localStorage.getItem('setupComplete') === 'true';
-    router.replace(done ? '/admin/login' : '/admin/setup-wizard');
+    router.replace('/admin/login');
   }, [router]);
 
   // Display a loader while redirecting

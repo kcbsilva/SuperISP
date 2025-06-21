@@ -105,34 +105,7 @@ interface Fdh {
   history?: FdhHistoryEntry[];
 }
 
-const placeholderFdhs: Fdh[] = [
-  {
-    id: 'fdh-001',
-    gpsCoordinates: '40.7128° N, 74.0060° W',
-    type: 'Aerial',
-    ports: 16,
-    project: 'Downtown Expansion',
-    pon: '1/1/1',
-    status: 'Active',
-    brand: 'Corning',
-    clients: Array.from({ length: 8 }, (_, i) => ({ port: i + 1, id: `client-${i+1}`, name: `Client ${i+1} (FDH-001)`, lightLevelRx: `${-(18 + Math.random()*5).toFixed(1)}dBm`, lightLevelTx: `+${(2 + Math.random()).toFixed(1)}dBm`})),
-    spliceLogs: [{id: 'log-a1', date: '2024-07-10', technician: 'Jane Doe', tubeIdA: 'Tube 1', fiberNumberA: 'Blue', tubeIdB: 'Tube 2', fiberNumberB: 'Orange', tray: '1A', slot: 'S1', description: 'Initial connection for client A.'}],
-    cableInfo: [{id: 'cable-1', cableNumber: 'CB-001', serialNumber: 'SN-CB-001', count: '12F', manufacturer: 'Corning', description: 'Main feeder cable', tubeIds: '1-4', meterMark: '150m'}],
-    history: [{id: 'hist-1', date: '2024-07-01', user: 'Admin', action: 'Created FDH'}]
-  },
-  {
-    id: 'fdh-002',
-    gpsCoordinates: '34.0522° N, 118.2437° W',
-    type: 'Underground',
-    ports: 32,
-    project: 'Suburb Rollout',
-    pon: '1/1/2',
-    status: 'Active',
-    brand: 'CommScope',
-    clients: Array.from({ length: 15 }, (_, i) => ({ port: i + 100, id: `client-${i+100}`, name: `Business ${i+1} (FDH-002)`, lightLevelRx: `${-(17 + Math.random()*3).toFixed(1)}dBm`, lightLevelTx: `+${(2.5 + Math.random()).toFixed(1)}dBm`})),
-  },
-  { id: 'fdh-003', gpsCoordinates: '41.8781° N, 87.6298° W', type: 'Aerial', ports: 8, project: 'Industrial Park', pon: '1/2/1', status: 'Inactive', brand: 'Prysmian', clients: [] },
-];
+const placeholderFdhs: Fdh[] = [];
 
 const fdhTemplateSchema = z.object({
   manufacturer: z.string().min(1, "Manufacturer is required."),
@@ -146,13 +119,9 @@ interface FdhTemplate extends FdhTemplateFormData {
   id: string;
 }
 
-const placeholderManufacturers = ["Corning", "CommScope", "Prysmian", "Furukawa", "TE Connectivity"];
+const placeholderManufacturers: string[] = [];
 
-const placeholderExistingFdhTemplates: FdhTemplate[] = [
-  { id: 'tpl-fdh-1', manufacturer: 'Corning', model: 'OptiSheath® MultiPort Terminal', maxPortCapacity: 16, fdhType: 'Aerial' },
-  { id: 'tpl-fdh-2', manufacturer: 'CommScope', model: 'FACT Pedestal', maxPortCapacity: 32, fdhType: 'Underground' },
-];
-
+const placeholderExistingFdhTemplates: FdhTemplate[] = [];
 
 export default function FdhsPage() {
   const { t } = useLocale();

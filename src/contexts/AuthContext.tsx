@@ -23,9 +23,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Auth disabled: always true
-  const [user, setUser] = useState<User | null>({ id: 'dev-user', email: 'dev@example.com' }); // Dummy user
-  const [isLoading, setIsLoading] = useState(false); // Auth disabled: always false
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const login = async (
@@ -33,9 +33,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     password?: string,
     redirectTo: string = '/admin/dashboard'
   ): Promise<void> => {
-    console.warn('AuthContext: Login function called, but auth is temporarily disabled (PostgreSQL mode).');
+    console.warn('AuthContext: login called for', email, '- authentication not implemented.');
     setIsAuthenticated(true);
-    setUser({ id: 'dev-user', email: email || 'dev@example.com' });
+    setUser(email ? { id: 'dev-user', email } : { id: 'dev-user' });
     router.push(redirectTo);
   };
 
