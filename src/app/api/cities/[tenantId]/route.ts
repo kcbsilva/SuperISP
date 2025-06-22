@@ -11,6 +11,14 @@ interface Params {
 export async function GET(req: Request, { params }: Params) {
   try {
     const { tenantId } = params;
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS cities (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        tenant_id VARCHAR(255) NOT NULL
+      )
+    `);
+
     const result = await db.query(
       'SELECT * FROM cities WHERE tenant_id = $1 ORDER BY name ASC',
       [tenantId]
@@ -32,11 +40,18 @@ export async function POST(req: Request, { params }: Params) {
       return NextResponse.json({ error: 'Missing city name' }, { status: 400 });
     }
 
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS cities (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        tenant_id VARCHAR(255) NOT NULL
+      )
+    `);
+
     const result = await db.query(
-      `
-      INSERT INTO cities (name, tenant_id)
-      VALUES ($1, $2)
-      RETURNING *`,
+      `INSERT INTO cities (name, tenant_id)
+       VALUES ($1, $2)
+       RETURNING *`,
       [name, tenantId]
     );
 

@@ -156,10 +156,29 @@ export default function SetupWizardPage() {
           <NASInfoStep
             defaultValues={step5Data}
             onBack={delayedPrev}
-            onFinish={(data) => {
+            onFinish={async (data) => {
               setStep5Data(data);
               localStorage.setItem('setupStep5', JSON.stringify(data));
               localStorage.setItem('setupComplete', 'true');
+
+              const payload = {
+                step1: step1Data,
+                step2: step2Data,
+                user: stepUserData,
+                step3: step3Data,
+                step4: step4Data,
+                step5: data,
+              };
+
+              try {
+                await fetch('/api/setup/prolter', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload),
+                });
+              } catch (err) {
+                console.error('Failed to save setup data:', err);
+              }
 
               [
                 'setupStep',

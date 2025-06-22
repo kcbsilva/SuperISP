@@ -11,6 +11,16 @@ interface Params {
 export async function GET(req: Request, { params }: Params) {
   try {
     const { tenantId } = params;
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS countries (
+        id SERIAL PRIMARY KEY,
+        description VARCHAR(255) NOT NULL,
+        date_format VARCHAR(50) NOT NULL,
+        currency VARCHAR(10) NOT NULL,
+        tenant_id VARCHAR(255) NOT NULL
+      )
+    `);
+
     const result = await db.query(
       'SELECT * FROM countries WHERE tenant_id = $1 ORDER BY description ASC',
       [tenantId]
@@ -32,11 +42,20 @@ export async function POST(req: Request, { params }: Params) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS countries (
+        id SERIAL PRIMARY KEY,
+        description VARCHAR(255) NOT NULL,
+        date_format VARCHAR(50) NOT NULL,
+        currency VARCHAR(10) NOT NULL,
+        tenant_id VARCHAR(255) NOT NULL
+      )
+    `);
+
     const result = await db.query(
-      `
-      INSERT INTO countries (description, date_format, currency, tenant_id)
-      VALUES ($1, $2, $3, $4)
-      RETURNING *`,
+      `INSERT INTO countries (description, date_format, currency, tenant_id)
+       VALUES ($1, $2, $3, $4)
+       RETURNING *`,
       [description, date_format, currency, tenantId]
     );
 
