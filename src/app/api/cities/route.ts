@@ -1,4 +1,4 @@
-// src/app/api/cities/[tenantId]/route.ts
+// src/app/api/cities/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 

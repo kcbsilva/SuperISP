@@ -14,6 +14,13 @@ import ChurnRetentionChart from '@/components/dashboard/charts/ChurnRetentionCha
 import UpcomingPaymentsPanel from '@/components/dashboard/widgets/UpcomingPaymentsPanel';
 import RealTimeNetworkMap from '@/components/dashboard/widgets/RealTimeNetworkMap';
 
+import TotalSubscribersCard from '@/components/dashboard/widgets/TotalSubscribersCard';
+import MRRCard from '@/components/dashboard/widgets/MRRCard';
+import NetworkUptimeCard from '@/components/dashboard/widgets/NetworkUptimeCard';
+import OpenTicketsCard from '@/components/dashboard/widgets/OpenTicketsCard';
+import SubscriberGrowthChart from '@/components/dashboard/widgets/SubscriberGrowthChart';
+import RecentActivityList from '@/components/dashboard/widgets/RecentActivityList';
+
 const role: 'admin' | 'technician' = 'admin';
 
 type DashboardView = 'General' | 'Financial' | 'Network' | 'Technician';
@@ -28,6 +35,14 @@ const widgetConfigs: Record<DashboardView, Record<string, WidgetConfig>> = {
     planPerformance: { component: <PlanPerformanceChart />, roles: ['admin'] },
     alerts: { component: <AlertsTimeline />, roles: ['admin', 'technician'] },
     technician: { component: <TechnicianInsightsCard />, roles: ['technician'] },
+
+    // New widgets
+    totalSubscribers: { component: <TotalSubscribersCard />, roles: ['admin'] },
+    mrr: { component: <MRRCard />, roles: ['admin'] },
+    networkUptime: { component: <NetworkUptimeCard />, roles: ['admin'] },
+    openTickets: { component: <OpenTicketsCard />, roles: ['admin'] },
+    subscriberGrowth: { component: <SubscriberGrowthChart />, roles: ['admin'] },
+    recentActivity: { component: <RecentActivityList />, roles: ['admin'] },
   },
   Financial: {
     topSubscribers: { component: <TopSubscribersTable />, roles: ['admin'] },
@@ -56,6 +71,14 @@ const defaultLayouts: DashboardStorage['layouts'] = {
     { i: 'planPerformance', x: 0, y: 0, w: 4, h: 2 },
     { i: 'alerts', x: 4, y: 0, w: 2, h: 2 },
     { i: 'technician', x: 6, y: 0, w: 2, h: 2 },
+
+    // New widgets
+    { i: 'totalSubscribers', x: 0, y: 2, w: 2, h: 2 },
+    { i: 'mrr', x: 2, y: 2, w: 2, h: 2 },
+    { i: 'networkUptime', x: 4, y: 2, w: 2, h: 2 },
+    { i: 'openTickets', x: 6, y: 2, w: 2, h: 2 },
+    { i: 'subscriberGrowth', x: 0, y: 4, w: 5, h: 3 },
+    { i: 'recentActivity', x: 5, y: 4, w: 3, h: 3 },
   ],
   Financial: [
     { i: 'topSubscribers', x: 0, y: 0, w: 4, h: 3 },
@@ -207,6 +230,8 @@ export default function CustomDashboardPage() {
           onLayoutChange={handleLayoutChange}
           isDraggable={isDraggable}
           isResizable={isResizable}
+          preventCollision={true}
+          compactType={null}
         >
           {visibleWidgets.map((key) => {
             const config = viewWidgets[key as keyof typeof viewWidgets];
@@ -228,7 +253,7 @@ export default function CustomDashboardPage() {
           })}
         </GridLayout>
       </div>
-    </div>
+    </div >
   );
 }
 
