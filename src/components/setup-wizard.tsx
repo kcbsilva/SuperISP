@@ -3,22 +3,23 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { Card, CardContent } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
+import { StepProgressBar } from '@/components/setup-wizard/StepProgressBar';
 import { WelcomeStep } from '@/components/setup-wizard/welcome';
 import { CountryCityStep, Step1Data } from '@/components/setup-wizard/countrycity';
 import { BusinessInfoStep, Step2Data } from '@/components/setup-wizard/businessinfo';
+import { UserInfoStep, StepUserData } from '@/components/setup-wizard/userinfo';
 import { PopInfoStep, Step3Data } from '@/components/setup-wizard/popinfo';
 import { IPInfoStep, Step4Data } from '@/components/setup-wizard/ipinfo';
 import { NASInfoStep, Step5Data } from '@/components/setup-wizard/nasinfo';
 
 export default function SetupWizardPage() {
   const router = useRouter();
-  const totalSteps = 5;
+  const totalSteps = 6;
 
   const [currentStep, setCurrentStep] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -26,11 +27,19 @@ export default function SetupWizardPage() {
 
   const [step1Data, setStep1Data] = React.useState<Step1Data>();
   const [step2Data, setStep2Data] = React.useState<Step2Data>();
+  const [stepUserData, setStepUserData] = React.useState<StepUserData>();
   const [step3Data, setStep3Data] = React.useState<Step3Data>();
   const [step4Data, setStep4Data] = React.useState<Step4Data>();
   const [step5Data, setStep5Data] = React.useState<Step5Data>();
 
-  const stepLabels = ['Location', 'Business Info', 'PoP Info', 'IP Info', 'NAS Info'];
+  const stepLabels = [
+    'Location',
+    'Business Info',
+    'Admin User',
+    'PoP Info',
+    'IP Info',
+    'NAS Info',
+  ];
 
   React.useEffect(() => {
     const complete = localStorage.getItem('setupComplete');
@@ -41,11 +50,13 @@ export default function SetupWizardPage() {
     try {
       const s1 = localStorage.getItem('setupStep1');
       const s2 = localStorage.getItem('setupStep2');
+      const su = localStorage.getItem('setupStepUser');
       const s3 = localStorage.getItem('setupStep3');
       const s4 = localStorage.getItem('setupStep4');
       const s5 = localStorage.getItem('setupStep5');
       if (s1) setStep1Data(JSON.parse(s1));
       if (s2) setStep2Data(JSON.parse(s2));
+      if (su) setStepUserData(JSON.parse(su));
       if (s3) setStep3Data(JSON.parse(s3));
       if (s4) setStep4Data(JSON.parse(s4));
       if (s5) setStep5Data(JSON.parse(s5));
@@ -88,6 +99,7 @@ export default function SetupWizardPage() {
               localStorage.setItem('setupStep1', JSON.stringify(data));
               delayedNext();
             }}
+            tenantId="prolter"
           />
         );
       case 2:
@@ -104,6 +116,19 @@ export default function SetupWizardPage() {
         );
       case 3:
         return (
+          <UserInfoStep
+            defaultValues={stepUserData}
+            onBack={delayedPrev}
+            onNext={(data) => {
+              setStepUserData(data);
+              localStorage.setItem('setupStepUser', JSON.stringify(data));
+              delayedNext();
+            }}
+            tenantId="prolter"
+          />
+        );
+      case 4:
+        return (
           <PopInfoStep
             defaultValues={step3Data}
             onBack={delayedPrev}
@@ -114,7 +139,7 @@ export default function SetupWizardPage() {
             }}
           />
         );
-      case 4:
+      case 5:
         return (
           <IPInfoStep
             defaultValues={step4Data}
@@ -126,7 +151,7 @@ export default function SetupWizardPage() {
             }}
           />
         );
-      case 5:
+      case 6:
         return (
           <NASInfoStep
             defaultValues={step5Data}
@@ -136,12 +161,16 @@ export default function SetupWizardPage() {
               localStorage.setItem('setupStep5', JSON.stringify(data));
               localStorage.setItem('setupComplete', 'true');
 
-              // Clear all setup data
-              ['setupStep', 'setupStep1', 'setupStep2', 'setupStep3', 'setupStep4', 'setupStep5'].forEach((key) =>
-                localStorage.removeItem(key)
-              );
+              [
+                'setupStep',
+                'setupStep1',
+                'setupStep2',
+                'setupStepUser',
+                'setupStep3',
+                'setupStep4',
+                'setupStep5',
+              ].forEach((key) => localStorage.removeItem(key));
 
-              // 🎉 Trigger confetti and show final screen
               confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
               setShowFinalScreen(true);
             }}
@@ -153,34 +182,14 @@ export default function SetupWizardPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen p-4">
+    <div className="flex justify-center items-center min-h-screen p-4 pt-8">
       <div className="w-full max-w-2xl border border-[#fca311] rounded-lg shadow-xl bg-card">
         <Card className="border-none shadow-none bg-transparent">
           {!showFinalScreen && currentStep > 0 && (
-            <CardHeader>
-              <CardTitle className="text-yellow-500">
-                Setup Wizard - Step {currentStep} of {totalSteps}
-              </CardTitle>
-            </CardHeader>
+            <StepProgressBar currentStep={currentStep} labels={stepLabels} />
           )}
 
           <CardContent>
-            {!showFinalScreen && currentStep > 0 && (
-              <div className="mb-4 space-y-1">
-                <div className="relative w-full h-2 bg-muted rounded-full overflow-hidden">
-                  <motion.div
-                    className="absolute top-0 left-0 h-full bg-yellow-500"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
-                    transition={{ duration: 0.5 }}
-                  />
-                </div>
-                <div className="text-sm text-center text-muted-foreground">
-                  {stepLabels[currentStep - 1]}
-                </div>
-              </div>
-            )}
-
             <AnimatePresence mode="wait">
               {isLoading ? (
                 <motion.div

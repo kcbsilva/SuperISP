@@ -83,10 +83,7 @@ interface OnxTemplate extends OnxTemplateFormData {
   createdAt: Date;
 }
 
-const placeholderTemplates: OnxTemplate[] = [
-  { id: 'tpl-1', templateName: 'Fiberhome GPON Residential', manufacturer: 'Fiberhome', model: 'AN5506-01-A1', provisioningScript: '# Sample Provisioning Script\ncd onu\nset whitelist phy_addr address {{onuSerial}} action add slot {{slot}} pon {{port}} onu {{onuId}} type {{model}}', unprovisioningScript: '# Sample Unprovisioning Script\ncd onu\ndelete whitelist phy_addr address {{onuSerial}}', successConditionType: 'responseContains', successConditionText: 'success', createdAt: new Date() },
-  { id: 'tpl-2', templateName: 'Huawei EPON Business', manufacturer: 'Huawei', model: 'HG8245H', provisioningScript: '# Another Sample Provisioning Script\nconfig\ninterface gpon 0/{{slot}}\nonu add {{port}} {{onuId}} sn {{onuSerial}} type {{model}}\nquit', successConditionType: 'responseDoesNotContain', successConditionText: 'error', createdAt: new Date(Date.now() - 86400000) },
-];
+const placeholderTemplates: OnxTemplate[] = [];
 
 const manufacturers = ["Fiberhome", "Huawei", "ZTE", "Nokia", "Ubiquiti"];
 

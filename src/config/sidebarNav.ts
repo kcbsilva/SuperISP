@@ -50,7 +50,8 @@ import {
   Table2, // Added for Tables
   Terminal, // Added for SQL CLI
 } from 'lucide-react';
-import type { Icon as LucideIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { SlGlobe } from "react-icons/sl";
 import type { IconType } from 'react-icons';
 import { FaCity } from "react-icons/fa";
 
@@ -475,6 +476,12 @@ export const sidebarNav: SidebarNavItem[] = [
             href: '/admin/settings/business/cities',
             icon: FaCity,
             tooltip: 'sidebar.settings_business_city',
+          },
+          {
+            title: 'sidebar.settings_business_city',
+            href: '/admin/settings/business/contries',
+            icon: SlGlobe,
+            tooltip: 'sidebar.settings_business_countries',
           },
         ],
       },

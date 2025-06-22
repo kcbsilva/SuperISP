@@ -44,11 +44,7 @@ interface Olt {
   managementPort: number;
 }
 
-const placeholderOlts: Olt[] = [
-  { id: 'olt-001', description: 'Central Office OLT', manufacturer: 'Huawei', model: 'MA5800-X17', technology: 'GPON', ports: 16, slots: 17, clients: 512, ipAddress: '10.0.1.5', managementPort: 80 },
-  { id: 'olt-002', description: 'North Hub OLT', manufacturer: 'Fiberhome', model: 'AN6000-17', technology: 'XGS-PON', ports: 32, slots: 17, clients: 1024, ipAddress: '10.0.2.5', managementPort: 443 },
-  { id: 'olt-003', description: 'South Branch OLT', manufacturer: 'ZTE', model: 'C600', technology: 'EPON', ports: 8, slots: 8, clients: 256, ipAddress: '10.0.3.5', managementPort: 8080 },
-];
+const placeholderOlts: Olt[] = [];
 
 interface Onx {
   id: string;
@@ -62,18 +58,7 @@ interface Onx {
   status: 'Online' | 'Offline' | 'Provisioning';
 }
 
-const placeholderOnxs: Onx[] = [
-    { id: 'onx-001', serialNumber: 'FHTT1234ABCD', manufacturer: 'Fiberhome', model: 'AN5506-01-A1', assignedTo: 'Alice Wonderland', lightLevelTx: "+2.1 dBm", lightLevelRx: '-17.2 dBm', fdhId: 'FDH-01-A', status: 'Online' },
-    { id: 'onx-002', serialNumber: 'HWTC8765EFGH', manufacturer: 'Huawei', model: 'HG8245H', assignedTo: 'Bob The Builder Inc.', lightLevelTx: "+1.8 dBm", lightLevelRx: '-22.5 dBm', fdhId: 'FDH-02-B', status: 'Offline' },
-    { id: 'onx-003', serialNumber: 'ZTEXFEDC4321', manufacturer: 'ZTE', model: 'F601', lightLevelTx: "+2.5 dBm", lightLevelRx: '-19.0 dBm', fdhId: 'FDH-01-A', status: 'Offline'},
-    { id: 'onx-004', serialNumber: 'FHTT5678IJKL', manufacturer: 'Fiberhome', model: 'AN5506-04-FA', assignedTo: 'Charlie Brown', lightLevelTx: "+2.0 dBm", lightLevelRx: '-25.8 dBm', fdhId: 'FDH-03-C', status: 'Online' },
-    { id: 'onx-005', serialNumber: 'NKIA9012UVWX', manufacturer: 'Nokia', model: 'G-140W-C', assignedTo: 'David Copperfield', lightLevelTx: "+3.0 dBm", lightLevelRx: '-16.0 dBm', fdhId: 'FDH-01-B', status: 'Online' },
-    { id: 'onx-006', serialNumber: 'UBIQ3456QRST', manufacturer: 'Ubiquiti', model: 'UF-Nano', lightLevelTx: "+1.5 dBm", lightLevelRx: '-29.5 dBm', fdhId: 'FDH-04-A', status: 'Offline' },
-    { id: 'onx-007', serialNumber: 'FHTT7890MNOP', manufacturer: 'Fiberhome', model: 'AN5506-02-B', assignedTo: 'Eve Adams', lightLevelTx: "N/A", lightLevelRx: 'LOS', fdhId: 'FDH-03-C', status: 'Offline' },
-    { id: 'onx-008', serialNumber: 'HWTC1122YZAB', manufacturer: 'Huawei', model: 'EG8145V5', lightLevelTx: "+2.2 dBm", lightLevelRx: '-20.1 dBm', fdhId: 'FDH-02-A', status: 'Online' },
-    { id: 'onx-009', serialNumber: 'ZTEX3344CDEF', manufacturer: 'ZTE', model: 'F670L', lightLevelTx: "+1.9 dBm", lightLevelRx: '-27.0 dBm', fdhId: 'FDH-01-C', status: 'Online' },
-    { id: 'onx-010', serialNumber: 'NKIA5566GHIJ', manufacturer: 'Nokia', model: 'G-240W-A', lightLevelTx: "+2.8 dBm", lightLevelRx: '-18.8 dBm', fdhId: 'FDH-04-B', status: 'Provisioning' },
-];
+const placeholderOnxs: Onx[] = [];
 
 const lightLevelRanges = [
   '-15dBm - -19dBm',

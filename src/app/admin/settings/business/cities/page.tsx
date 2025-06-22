@@ -37,11 +37,7 @@ const citySchema = z.object({
 
 type CityFormData = z.infer<typeof citySchema>;
 
-const placeholderCities: City[] = [
-  { id: 'city-1', name: 'Anytown', state_province: 'Anystate', country: 'USA', status: 'Active', createdAt: new Date() },
-  { id: 'city-2', name: 'Metroville', state_province: 'New State', country: 'USA', status: 'Active', createdAt: new Date(Date.now() - 86400000) },
-  { id: 'city-3', name: 'Outskirts', state_province: 'Old Province', country: 'Canada', status: 'Inactive', createdAt: new Date(Date.now() - 172800000) },
-];
+const placeholderCities: City[] = [];
 
 export default function CitiesPage() {
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);

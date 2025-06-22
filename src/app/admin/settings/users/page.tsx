@@ -29,6 +29,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Table,
@@ -107,20 +108,6 @@ const editUserFormSchema = z.object({
 type EditUserFormValues = z.infer<typeof editUserFormSchema>;
 
 
-const STATIC_ALL_PERMISSIONS: Permission[] = [
-  { id: 'perm_sub_view', slug: 'subscribers.view', group_name: 'Subscribers', created_at: new Date().toISOString(), description: 'Can view subscriber information' },
-  { id: 'perm_sub_add', slug: 'subscribers.add', group_name: 'Subscribers', created_at: new Date().toISOString(), description: 'Can add new subscribers' },
-  { id: 'perm_sub_edit', slug: 'subscribers.edit', group_name: 'Subscribers', created_at: new Date().toISOString(), description: 'Can edit existing subscribers' },
-  { id: 'perm_sub_delete', slug: 'subscribers.delete', group_name: 'Subscribers', created_at: new Date().toISOString(), description: 'Can delete subscribers' },
-  { id: 'perm_net_view_olts', slug: 'network.view_olts', group_name: 'Network', created_at: new Date().toISOString(), description: 'Can view OLTs and network status' },
-  { id: 'perm_net_manage_olts', slug: 'network.manage_olts', group_name: 'Network', created_at: new Date().toISOString(), description: 'Can manage OLTs (add, edit, delete)' },
-  { id: 'perm_fin_view_reports', slug: 'finances.view_reports', group_name: 'Finances', created_at: new Date().toISOString(), description: 'Can view financial reports' },
-  { id: 'perm_set_manage_global', slug: 'settings.manage_global', group_name: 'Settings', created_at: new Date().toISOString(), description: 'Can manage global system settings' },
-  { id: 'perm_pops_view', slug: 'pops.view', group_name: 'PoPs', created_at: new Date().toISOString(), description: 'Can view Points of Presence' },
-  { id: 'perm_pops_add', slug: 'pops.add', group_name: 'PoPs', created_at: new Date().toISOString(), description: 'Can add new PoPs' },
-  { id: 'perm_pops_edit', slug: 'pops.edit', group_name: 'PoPs', created_at: new Date().toISOString(), description: 'Can edit PoPs' },
-  { id: 'perm_pops_delete', slug: 'pops.delete', group_name: 'PoPs', created_at: new Date().toISOString(), description: 'Can delete PoPs' },
-];
 
 
 export default function UsersPage() {
@@ -146,7 +133,6 @@ export default function UsersPage() {
   const { data: allPermissions = [], isLoading: isLoadingPermissions, error: permissionsError } = useQuery<Permission[], Error>({
     queryKey: ['permissions'],
     queryFn: getPermissions,
-    initialData: STATIC_ALL_PERMISSIONS,
   });
 
   const { data: userTemplates = [], isLoading: isLoadingTemplates, error: templatesError } = useQuery<UserTemplate[], Error>({

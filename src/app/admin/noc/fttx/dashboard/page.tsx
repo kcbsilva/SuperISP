@@ -14,24 +14,19 @@ import { Network, Wifi, Users, AlertCircle, CheckCircle, XCircle, Signal, Signal
 import { useLocale } from '@/contexts/LocaleContext';
 import Link from 'next/link';
 
-// Placeholder data - replace with actual data fetching logic
 const fttxDashboardData = {
-  olts: [
-    { id: 'olt-001', name: 'Central Office OLT', status: 'Online', clients: 480, capacity: 512, utilization: '93.75%' },
-    { id: 'olt-002', name: 'North Hub OLT', status: 'Online', clients: 950, capacity: 1024, utilization: '92.77%' },
-    { id: 'olt-003', name: 'South Branch OLT', status: 'Offline', clients: 0, capacity: 256, utilization: '0.00%' },
-  ],
+  olts: [] as { id: string; name: string; status: string; clients: number; capacity: number; utilization: string }[],
   onxStats: {
-    total: 1430,
-    online: 1385,
-    offline: 30,
-    nonProvisioned: 15,
+    total: 0,
+    online: 0,
+    offline: 0,
+    nonProvisioned: 0,
   },
   onxLightLevels: [
-    { range: '-15dBm - -19dBm', count: 152, color: 'text-green-600', icon: SignalHigh },
-    { range: '-19dBm - -24dBm', count: 10, color: 'text-yellow-600', icon: SignalMedium },
-    { range: '-24dBm - -28dBm', count: 1, color: 'text-purple-600', icon: SignalLow },
-    { range: '-28dBm - LOS', count: 60, color: 'text-red-600', icon: SignalLow },
+    { range: '-15dBm - -19dBm', count: 0, color: 'text-green-600', icon: SignalHigh },
+    { range: '-19dBm - -24dBm', count: 0, color: 'text-yellow-600', icon: SignalMedium },
+    { range: '-24dBm - -28dBm', count: 0, color: 'text-purple-600', icon: SignalLow },
+    { range: '-28dBm - LOS', count: 0, color: 'text-red-600', icon: SignalLow },
   ],
 };
 
