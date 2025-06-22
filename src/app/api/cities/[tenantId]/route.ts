@@ -18,7 +18,7 @@ export async function GET(req: Request, { params }: Params) {
     return NextResponse.json(result.rows);
   } catch (error) {
     console.error('[CITIES_GET_ERROR]', error);
-    return NextResponse.json({ error: 'Failed to fetch cities' }, { status: 500 });
+    return NextResponse.json([], { status: 200 });
   }
 }
 

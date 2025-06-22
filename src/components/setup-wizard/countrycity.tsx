@@ -64,12 +64,26 @@ export function CountryCityStep({
 
     fetch(`/api/countries/${tenantId}`)
       .then((res) => res.json())
-      .then((data) => setCountries(data.map((c: any) => c.description)))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setCountries(data.map((c: any) => c.description));
+        } else {
+          console.error('Invalid countries data:', data);
+          setCountries([]);
+        }
+      })
       .catch(console.error);
 
     fetch(`/api/cities/${tenantId}`)
       .then((res) => res.json())
-      .then((data) => setCities(data.map((c: any) => c.name)))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setCities(data.map((c: any) => c.name));
+        } else {
+          console.error('Invalid cities data:', data);
+          setCities([]);
+        }
+      })
       .catch(console.error);
   }, [form, tenantId]);
 
