@@ -1,0 +1,30 @@
+// src/translations/en/inventoryManufacturers.ts
+const inventoryManufacturers = {
+    title: 'Manufacturers',
+    add_manufacturer_button: 'Add Manufacturer',
+    refresh_button: 'Refresh',
+    search_placeholder: 'Search manufacturers...',
+    form_name_label: 'Manufacturer Name',
+    form_name_placeholder: 'e.g., Acme Corp',
+    form_cancel_button: 'Cancel',
+    form_save_button: 'Save Manufacturer',
+    form_update_button: 'Update Manufacturer',
+    form_saving_button: 'Saving...',
+    add_success_title: 'Manufacturer Added',
+    add_success_description: 'Manufacturer "{name}" added.',
+    update_success_title: 'Manufacturer Updated',
+    update_success_description: 'Manufacturer "{name}" updated.',
+    delete_success_title: 'Manufacturer Deleted',
+    delete_success_description: 'Manufacturer "{name}" deleted.',
+    delete_confirm_title: 'Are you sure?',
+    delete_confirm_description: 'This will permanently delete manufacturer "{name}". This action cannot be undone.',
+    delete_confirm_delete: 'Delete',
+    table_header_id: 'ID',
+    table_header_name: 'Name',
+    table_header_actions: 'Actions',
+    action_edit: 'Edit',
+    action_delete: 'Delete',
+    no_manufacturers_found: 'No manufacturers configured yet.',
+    no_manufacturers_found_search: 'No manufacturers found matching your search.'
+  };
+  export default inventoryManufacturers;

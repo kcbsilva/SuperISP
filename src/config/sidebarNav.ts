@@ -21,6 +21,7 @@ import {
   ListFilter,
   Archive,
   Factory,
+  LayoutGrid,
   Package as PackageIcon,
   Truck,
   FileText as FileTextIcon,
@@ -294,6 +295,12 @@ export const sidebarNav: SidebarNavItem[] = [
     tooltip: 'sidebar.inventory',
     children: [
       {
+        title: 'sidebar.inventory_dashboard',
+        href: '/admin/inventory/dashboard',
+        icon: LayoutGrid,
+        tooltip: 'sidebar.inventory_dashboard',
+      },
+      {
         title: 'sidebar.inventory_categories',
         href: '/admin/inventory/categories',
         icon: ListFilter,
@@ -478,8 +485,8 @@ export const sidebarNav: SidebarNavItem[] = [
             tooltip: 'sidebar.settings_business_city',
           },
           {
-            title: 'sidebar.settings_business_city',
-            href: '/admin/settings/business/contries',
+            title: 'sidebar.settings_business_countries',
+            href: '/admin/settings/business/countries',
             icon: SlGlobe,
             tooltip: 'sidebar.settings_business_countries',
           },

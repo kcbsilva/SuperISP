@@ -1,0 +1,30 @@
+// src/translations/en/inventoryCategories.ts
+const inventoryCategories = {
+    title: 'Categories',
+    add_category_button: 'Add Category',
+    refresh_button: 'Refresh',
+    search_placeholder: 'Search categories...',
+    form_name_label: 'Category Name',
+    form_name_placeholder: 'e.g., Electronics',
+    form_cancel_button: 'Cancel',
+    form_save_button: 'Save Category',
+    form_update_button: 'Update Category',
+    form_saving_button: 'Saving...',
+    add_success_title: 'Category Added',
+    add_success_description: 'Category "{name}" added.',
+    update_success_title: 'Category Updated',
+    update_success_description: 'Category "{name}" updated.',
+    delete_success_title: 'Category Deleted',
+    delete_success_description: 'Category "{name}" deleted.',
+    delete_confirm_title: 'Are you sure?',
+    delete_confirm_description: 'This will permanently delete category "{name}". This action cannot be undone.',
+    delete_confirm_delete: 'Delete',
+    table_header_id: 'ID',
+    table_header_name: 'Name',
+    table_header_actions: 'Actions',
+    action_edit: 'Edit',
+    action_delete: 'Delete',
+    no_categories_found: 'No categories configured yet.',
+    no_categories_found_search: 'No categories found matching your search.'
+  };
+  export default inventoryCategories;

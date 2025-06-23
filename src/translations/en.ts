@@ -21,6 +21,11 @@ import nocFttxDashboard from './en/nocFttxDashboard';
 import nocFttxOlts from './en/nocFttxOlts';
 import settingsSystemMonitor from './en/settingsSystemMonitor';
 import inventoryWarehouses from './en/inventoryWarehouses';
+import inventoryCategories from './en/inventoryCategories';
+import inventoryManufacturers from './en/inventoryManufacturers';
+import inventorySuppliers from './en/inventorySuppliers';
+import inventoryProducts from './en/inventoryProducts';
+import inventoryDashboard from './en/inventoryDashboard';
 import nocOnxTemplates from './en/nocOnxTemplates';
 import financesFinancialConfigs from './en/financesFinancialConfigs'; // Import for financial_configs
 import subscribersNewContractWizard from './en/subcribersNewContractWizard';
@@ -69,6 +74,11 @@ const en = {
   ...nocFttxOlts,
   ...settingsSystemMonitor,
   ...inventoryWarehouses,
+  ...inventoryCategories,
+  ...inventoryManufacturers,
+  ...inventorySuppliers,
+  ...inventoryProducts,
+  ...inventoryDashboard,
   ...nocOnxTemplates,
   ...financesFinancialConfigs, // Add financial_configs
   ...subscribersNewContractWizard,

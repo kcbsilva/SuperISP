@@ -1,0 +1,30 @@
+// src/translations/en/inventorySuppliers.ts
+const inventorySuppliers = {
+    title: 'Suppliers',
+    add_supplier_button: 'Add Supplier',
+    refresh_button: 'Refresh',
+    search_placeholder: 'Search suppliers...',
+    form_name_label: 'Supplier Name',
+    form_name_placeholder: 'e.g., Global Supply',
+    form_cancel_button: 'Cancel',
+    form_save_button: 'Save Supplier',
+    form_update_button: 'Update Supplier',
+    form_saving_button: 'Saving...',
+    add_success_title: 'Supplier Added',
+    add_success_description: 'Supplier "{name}" added.',
+    update_success_title: 'Supplier Updated',
+    update_success_description: 'Supplier "{name}" updated.',
+    delete_success_title: 'Supplier Deleted',
+    delete_success_description: 'Supplier "{name}" deleted.',
+    delete_confirm_title: 'Are you sure?',
+    delete_confirm_description: 'This will permanently delete supplier "{name}". This action cannot be undone.',
+    delete_confirm_delete: 'Delete',
+    table_header_id: 'ID',
+    table_header_name: 'Name',
+    table_header_actions: 'Actions',
+    action_edit: 'Edit',
+    action_delete: 'Delete',
+    no_suppliers_found: 'No suppliers configured yet.',
+    no_suppliers_found_search: 'No suppliers found matching your search.'
+  };
+  export default inventorySuppliers;
