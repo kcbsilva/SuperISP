@@ -1,5 +1,5 @@
 
-// src/config/sidebarNav.ts
+// src/components/sidebar/sidebar.ts
 import {
     LayoutDashboard, ShieldCheck, Settings, Users, MapPin, TowerControl, Cable, Power, Box, Puzzle, Warehouse, Globe, GitFork,
     Split,

@@ -5,6 +5,7 @@ import * as React from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
+import { Pencil, Check } from 'lucide-react';
 
 import PlanPerformanceChart from '@/components/dashboard/charts/PlanPerformanceChart';
 import AlertsTimeline from '@/components/dashboard/widgets/AlertsTimeline';
@@ -13,7 +14,6 @@ import TopSubscribersTable from '@/components/dashboard/widgets/TopSubscribersTa
 import ChurnRetentionChart from '@/components/dashboard/charts/ChurnRetentionChart';
 import UpcomingPaymentsPanel from '@/components/dashboard/widgets/UpcomingPaymentsPanel';
 import RealTimeNetworkMap from '@/components/dashboard/widgets/RealTimeNetworkMap';
-
 import TotalSubscribersCard from '@/components/dashboard/widgets/TotalSubscribersCard';
 import MRRCard from '@/components/dashboard/widgets/MRRCard';
 import NetworkUptimeCard from '@/components/dashboard/widgets/NetworkUptimeCard';
@@ -21,130 +21,107 @@ import OpenTicketsCard from '@/components/dashboard/widgets/OpenTicketsCard';
 import SubscriberGrowthChart from '@/components/dashboard/widgets/SubscriberGrowthChart';
 import RecentActivityList from '@/components/dashboard/widgets/RecentActivityList';
 
-const role: 'admin' | 'technician' = 'admin';
+const currentDepartment: Department = 'supervisor';
 
-type DashboardView = 'General' | 'Financial' | 'Network' | 'Technician';
+const departments = ['commercial', 'financial', 'network', 'support', 'supervisor'] as const;
+type Department = typeof departments[number];
+type DashboardView = 'General' | 'Financial' | 'Network' | 'Technician' | 'Supervisor';
 
 interface WidgetConfig {
   component: React.ReactNode;
-  roles: ('admin' | 'technician')[];
+  departments: Department[];
 }
 
 const widgetConfigs: Record<DashboardView, Record<string, WidgetConfig>> = {
   General: {
-    planPerformance: { component: <PlanPerformanceChart />, roles: ['admin'] },
-    alerts: { component: <AlertsTimeline />, roles: ['admin', 'technician'] },
-    technician: { component: <TechnicianInsightsCard />, roles: ['technician'] },
-
-    // New widgets
-    totalSubscribers: { component: <TotalSubscribersCard />, roles: ['admin'] },
-    mrr: { component: <MRRCard />, roles: ['admin'] },
-    networkUptime: { component: <NetworkUptimeCard />, roles: ['admin'] },
-    openTickets: { component: <OpenTicketsCard />, roles: ['admin'] },
-    subscriberGrowth: { component: <SubscriberGrowthChart />, roles: ['admin'] },
-    recentActivity: { component: <RecentActivityList />, roles: ['admin'] },
+    planPerformance: { component: <PlanPerformanceChart />, departments: ['commercial', 'supervisor'] },
+    alerts: { component: <AlertsTimeline />, departments: ['network', 'support', 'supervisor'] },
+    technician: { component: <TechnicianInsightsCard />, departments: ['support', 'supervisor'] },
+    totalSubscribers: { component: <TotalSubscribersCard />, departments: ['commercial', 'supervisor'] },
+    mrr: { component: <MRRCard />, departments: ['financial', 'supervisor'] },
+    networkUptime: { component: <NetworkUptimeCard />, departments: ['network', 'supervisor'] },
+    openTickets: { component: <OpenTicketsCard />, departments: ['support', 'supervisor'] },
+    subscriberGrowth: { component: <SubscriberGrowthChart />, departments: ['commercial', 'supervisor'] },
+    recentActivity: { component: <RecentActivityList />, departments: ['supervisor'] },
   },
   Financial: {
-    topSubscribers: { component: <TopSubscribersTable />, roles: ['admin'] },
-    churnRetention: { component: <ChurnRetentionChart />, roles: ['admin'] },
-    upcomingPayments: { component: <UpcomingPaymentsPanel />, roles: ['admin'] },
+    topSubscribers: { component: <TopSubscribersTable />, departments: ['financial', 'supervisor'] },
+    churnRetention: { component: <ChurnRetentionChart />, departments: ['financial', 'supervisor'] },
+    upcomingPayments: { component: <UpcomingPaymentsPanel />, departments: ['financial', 'supervisor'] },
   },
   Network: {
-    realtimeMap: { component: <RealTimeNetworkMap />, roles: ['admin', 'technician'] },
+    realtimeMap: { component: <RealTimeNetworkMap />, departments: ['network', 'supervisor'] },
   },
   Technician: {},
+  Supervisor: {},
 };
 
-type DashboardStorage = {
-  layouts: Record<DashboardView, Layout[]>;
-  hidden: Record<DashboardView, string[]>;
-  editing: {
-    isDraggable: boolean;
-    isResizable: boolean;
-    isEditing: boolean;
-  };
-  lastView: DashboardView;
-};
-
-const defaultLayouts: DashboardStorage['layouts'] = {
+const defaultLayouts: Record<DashboardView, Layout[]> = {
   General: [
-    { i: 'planPerformance', x: 0, y: 0, w: 4, h: 2 },
-    { i: 'alerts', x: 4, y: 0, w: 2, h: 2 },
-    { i: 'technician', x: 6, y: 0, w: 2, h: 2 },
-
-    // New widgets
+    { i: 'planPerformance', x: 0, y: 0, w: 2, h: 2 },
+    { i: 'alerts', x: 2, y: 0, w: 2, h: 2 },
+    { i: 'technician', x: 4, y: 0, w: 2, h: 2 },
     { i: 'totalSubscribers', x: 0, y: 2, w: 2, h: 2 },
     { i: 'mrr', x: 2, y: 2, w: 2, h: 2 },
     { i: 'networkUptime', x: 4, y: 2, w: 2, h: 2 },
     { i: 'openTickets', x: 6, y: 2, w: 2, h: 2 },
-    { i: 'subscriberGrowth', x: 0, y: 4, w: 5, h: 3 },
-    { i: 'recentActivity', x: 5, y: 4, w: 3, h: 3 },
+    { i: 'subscriberGrowth', x: 0, y: 4, w: 4, h: 2 },
+    { i: 'recentActivity', x: 4, y: 4, w: 4, h: 2 },
   ],
   Financial: [
-    { i: 'topSubscribers', x: 0, y: 0, w: 4, h: 3 },
-    { i: 'churnRetention', x: 4, y: 0, w: 4, h: 3 },
-    { i: 'upcomingPayments', x: 0, y: 3, w: 8, h: 2 },
+    { i: 'topSubscribers', x: 0, y: 0, w: 4, h: 2 },
+    { i: 'churnRetention', x: 4, y: 0, w: 4, h: 2 },
+    { i: 'upcomingPayments', x: 0, y: 2, w: 8, h: 2 },
   ],
   Network: [
-    { i: 'realtimeMap', x: 0, y: 0, w: 8, h: 5 },
+    { i: 'realtimeMap', x: 0, y: 0, w: 8, h: 4 },
   ],
   Technician: [],
-};
-
-const defaultHidden: DashboardStorage['hidden'] = {
-  General: [],
-  Financial: [],
-  Network: [],
-  Technician: [],
-};
-
-const defaultEditing: DashboardStorage['editing'] = {
-  isDraggable: false,
-  isResizable: false,
-  isEditing: false,
+  Supervisor: [],
 };
 
 export default function CustomDashboardPage() {
+  const [hydrated, setHydrated] = React.useState(false);
+  React.useEffect(() => setHydrated(true), []);
+
   const [currentView, setCurrentView] = React.useState<DashboardView>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('dashboard-view');
-      if (saved) return saved as DashboardView;
+      return (localStorage.getItem('dashboard-view') as DashboardView) || 'General';
     }
     return 'General';
   });
 
-  const [layouts, setLayouts] = React.useState<DashboardStorage['layouts']>(() => {
+  const [layouts, setLayouts] = React.useState<Record<DashboardView, Layout[]>>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('dashboard-layouts');
-      if (saved) return JSON.parse(saved);
+      return saved ? JSON.parse(saved) : defaultLayouts;
     }
     return defaultLayouts;
   });
 
-  const [hidden, setHidden] = React.useState<DashboardStorage['hidden']>(() => {
+  const [hidden, setHidden] = React.useState<Record<DashboardView, string[]>>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('dashboard-hidden');
-      if (saved) return JSON.parse(saved);
+      return saved ? JSON.parse(saved) : { General: [], Financial: [], Network: [], Technician: [], Supervisor: [] };
     }
-    return defaultHidden;
+    return { General: [], Financial: [], Network: [], Technician: [], Supervisor: [] };
   });
 
-  const [editingState, setEditingState] = React.useState<DashboardStorage['editing']>(() => {
+  const [isEditing, setIsEditing] = React.useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('dashboard-editing');
-      if (saved) return JSON.parse(saved);
+      return saved ? JSON.parse(saved) : false;
     }
-    return defaultEditing;
+    return false;
   });
 
-  const { isDraggable, isResizable, isEditing } = editingState;
-  const layout = layouts[currentView];
-  const hiddenWidgets = hidden[currentView];
-  const viewWidgets = widgetConfigs[currentView];
+  if (!hydrated) return <div className="p-4 text-muted-foreground">Loading dashboard...</div>;
 
-  const visibleWidgets = Object.entries(viewWidgets)
-    .filter(([key, config]) => config.roles.includes(role) && !hiddenWidgets.includes(key))
-    .map(([key]) => key);
+  const viewWidgets = widgetConfigs[currentView];
+  const hiddenWidgets = hidden[currentView] || [];
+  const visibleWidgets = Object.entries(viewWidgets).filter(
+    ([key, config]: [string, WidgetConfig]) => config.departments.includes(currentDepartment) && !hiddenWidgets.includes(key)
+  );
 
   const handleLayoutChange = (newLayout: Layout[]) => {
     const updated = { ...layouts, [currentView]: newLayout };
@@ -152,109 +129,98 @@ export default function CustomDashboardPage() {
     localStorage.setItem('dashboard-layouts', JSON.stringify(updated));
   };
 
-  const handleRemoveWidget = (key: string) => {
+  const handleRemove = (key: string) => {
     const updated = { ...hidden, [currentView]: [...hiddenWidgets, key] };
     setHidden(updated);
     localStorage.setItem('dashboard-hidden', JSON.stringify(updated));
   };
 
-  const handleRestoreWidget = (key: string) => {
-    const updated = { ...hidden, [currentView]: hiddenWidgets.filter((w) => w !== key) };
+  const handleRestore = (key: string) => {
+    const updated = { ...hidden, [currentView]: hiddenWidgets.filter((k: string) => k !== key) };
     setHidden(updated);
     localStorage.setItem('dashboard-hidden', JSON.stringify(updated));
   };
 
-  const toggleEditMode = () => {
-    const updated = {
-      isEditing: !isEditing,
-      isDraggable: !isDraggable,
-      isResizable: !isResizable,
-    };
-    setEditingState(updated);
+  const toggleEdit = () => {
+    const updated = !isEditing;
+    setIsEditing(updated);
     localStorage.setItem('dashboard-editing', JSON.stringify(updated));
   };
 
-  const handleViewChange = (view: DashboardView) => {
-    setCurrentView(view);
-    localStorage.setItem('dashboard-view', view);
-  };
-
   return (
-    <div className="p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col">
-            <span className="text-xs text-muted-foreground">Dashboard View</span>
-            <select
-              value={currentView}
-              onChange={(e) => handleViewChange(e.target.value as DashboardView)}
-              className="px-3 py-1 text-sm border rounded"
-            >
-              {Object.keys(widgetConfigs).map((view) => (
-                <option key={view} value={view}>{view} Dashboard</option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            onClick={toggleEditMode}
-            className="px-3 py-1 rounded bg-primary text-white hover:bg-primary/90 text-sm"
+    <div className="p-4 w-full overflow-x-auto bg-background">
+      <div className="mb-4 flex gap-4 min-w-[1200px] items-end bg-transparent">
+        <div className="flex flex-col">
+          <span className="text-xs text-muted-foreground">Dashboard View</span>
+          <select
+            value={currentView}
+            onChange={(e) => {
+              setCurrentView(e.target.value as DashboardView);
+              localStorage.setItem('dashboard-view', e.target.value);
+            }}
+            className="px-3 py-2 text-sm border rounded h-[36px]"
           >
-            {isEditing ? 'Finish Editing' : 'Edit Layout'}
-          </button>
-
-          {hiddenWidgets.length > 0 && (
-            <div className="p-2 bg-muted border rounded flex items-center gap-2 text-sm">
-              <span className="font-medium">Restore Widgets:</span>
-              {hiddenWidgets.map((key) => (
-                <button
-                  key={key}
-                  onClick={() => handleRestoreWidget(key)}
-                  className="px-2 py-1 rounded bg-primary text-white hover:bg-primary/90"
-                >
-                  + {key}
-                </button>
-              ))}
-            </div>
-          )}
+            {Object.keys(widgetConfigs).map((view: string) => (
+              <option key={view} value={view}>{view} Dashboard</option>
+            ))}
+          </select>
         </div>
+
+        <button
+          onClick={toggleEdit}
+          className="h-[36px] px-3 py-1 rounded bg-primary text-white text-sm flex items-center gap-1"
+          title={isEditing ? 'Finish Editing' : 'Edit Layout'}
+        >
+          {isEditing ? <Check className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
+        </button>
+
+        {hiddenWidgets.length > 0 && (
+          <div className="flex gap-2 items-center text-sm">
+            <span className="font-medium">Restore Widgets:</span>
+            {hiddenWidgets.map((key: string) => (
+              <button
+                key={key}
+                onClick={() => handleRestore(key)}
+                className="px-2 py-1 bg-primary text-white rounded"
+              >
+                + {key}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      <div className={isEditing ? 'relative before:absolute before:inset-0 before:z-0 before:bg-grid-pattern before:opacity-20' : ''}>
+      <div className="min-w-[1200px] bg-transparent">
         <GridLayout
-          className="layout z-10"
-          layout={layout.filter((item) => visibleWidgets.includes(item.i))}
+          className="layout"
+          layout={layouts[currentView].filter((item: Layout) =>
+            visibleWidgets.some(([key]) => key === item.i)
+          )}
           cols={8}
           rowHeight={100}
           width={1200}
+          isDraggable={isEditing}
+          isResizable={isEditing}
           onLayoutChange={handleLayoutChange}
-          isDraggable={isDraggable}
-          isResizable={isResizable}
           preventCollision={true}
           compactType={null}
         >
-          {visibleWidgets.map((key) => {
-            const config = viewWidgets[key as keyof typeof viewWidgets];
-            if (!config) return null;
-            return (
-              <div key={key} className="rounded-md shadow relative group bg-background">
-                {isEditing && (
-                  <button
-                    className="absolute top-1 right-1 z-10 text-xs opacity-100"
-                    onClick={() => handleRemoveWidget(key)}
-                    title="Remove widget"
-                  >
-                    ✕
-                  </button>
-                )}
-                {config.component}
-              </div>
-            );
-          })}
+          {visibleWidgets.map(([key, config]: [string, WidgetConfig]) => (
+            <div key={key} className="rounded-md shadow relative bg-background">
+              {isEditing && (
+                <button
+                  onClick={() => handleRemove(key)}
+                  className="absolute top-1 right-1 z-10 text-xs"
+                  title="Remove widget"
+                >
+                  ✕
+                </button>
+              )}
+              {config.component}
+            </div>
+          ))}
         </GridLayout>
       </div>
-    </div >
+    </div>
   );
 }
-
-declare module 'react-grid-layout';
