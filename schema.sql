@@ -275,3 +275,26 @@ CREATE TABLE system_logs (
   level TEXT DEFAULT 'info',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- /prisma/migrations/.../migration.sql or via SQL directly
+CREATE TABLE vlans (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  vlan_id INTEGER NOT NULL CHECK (vlan_id BETWEEN 1 AND 4094),
+  description TEXT,
+  pop_id UUID NOT NULL REFERENCES pops(id),
+  is_tagged BOOLEAN DEFAULT TRUE,
+  status VARCHAR(10) NOT NULL CHECK (status IN ('Active', 'Inactive')),
+  assigned_to TEXT,
+  available_in_hub BOOLEAN DEFAULT FALSE,
+  participant_id UUID REFERENCES participants(id),
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE participants (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_name TEXT NOT NULL,
+  business_number TEXT NOT NULL UNIQUE,
+  device_count INTEGER DEFAULT 0,
+  vlan_count INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);

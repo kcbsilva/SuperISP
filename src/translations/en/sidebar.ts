@@ -73,7 +73,7 @@ const sidebar = {
       settings_global: 'Global Settings',
       settings_business: 'Business',
       settings_business_city: 'Cities',
-      ettings_business_countries: 'Countries',
+      settings_business_countries: 'Countries',
       settings_business_pops: 'PoPs (Place of Presence)',
       settings_plans: 'Plans',
       settings_plans_internet: 'Internet',

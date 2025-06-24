@@ -1,246 +1,52 @@
 // src/app/settings/network/vlan/page.tsx
 'use client';
 
-import * as React from 'react';
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { PlusCircle, Edit, Trash2, Loader2, RefreshCw, Split, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Split, RefreshCw, PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-
-// Mock participant type (replace with your actual type)
-interface Participant {
-  id: string;
-  name: string;
-  email: string;
-  company: string;
-}
-
-// Mock participants data (replace with actual API call)
-const mockParticipants: Participant[] = [
-  { id: '1', name: 'John Doe', email: 'john@acmecorp.com', company: 'Acme Corporation' },
-  { id: '2', name: 'Jane Smith', email: 'jane@techsolutions.com', company: 'Tech Solutions Inc' },
-  { id: '3', name: 'Bob Johnson', email: 'bob@innovatetech.com', company: 'Innovate Tech' },
-  { id: '4', name: 'Alice Brown', email: 'alice@globalnet.com', company: 'Global Networks' },
-];
-
-// Mock PoP type and data
-interface Pop {
-  id: number;
-  name: string;
-  location: string;
-}
-
-const mockPops: Pop[] = [
-  { id: 1, name: 'PoP-SP-01', location: 'São Paulo, Brazil' },
-  { id: 2, name: 'PoP-RJ-01', location: 'Rio de Janeiro, Brazil' },
-  { id: 3, name: 'PoP-MG-01', location: 'Belo Horizonte, Brazil' },
-  { id: 4, name: 'PoP-CE-01', location: 'Fortaleza, Brazil' },
-  { id: 5, name: 'PoP-PE-01', location: 'Recife, Brazil' },
-];
-
-const DEFAULT_COMPANY_NAME = 'Your Company Name';
-const ICON_SIZE = 'h-2.5 w-2.5';
-
-// Updated VLAN Schema (removed name and subnet, added assignedTo and availableInHub)
-const vlanSchema = z.object({
-  vlanId: z.coerce
-    .number()
-    .int()
-    .min(1, 'VLAN ID must be between 1 and 4094.')
-    .max(4094, 'VLAN ID must be between 1 and 4094.'),
-  description: z.string().optional(),
-  popId: z.string().min(1, 'PoP selection is required.'),
-  isTagged: z.boolean().default(true),
-  status: z.enum(['Active', 'Inactive']).default('Active'),
-  assignedTo: z.string().optional(),
-  availableInHub: z.boolean().default(false),
-  participantId: z.string().optional(),
-});
-
-type VlanFormData = z.infer<typeof vlanSchema>;
-
-interface Vlan extends VlanFormData {
-  id: string;
-  createdAt: Date;
-}
-
-const placeholderVlans: Vlan[] = [
-  {
-    id: 'vlan-1',
-    vlanId: 10,
-    description: 'Main data network for headquarters',
-    popId: '1',
-    createdAt: new Date(),
-    isTagged: true,
-    status: 'Active',
-    assignedTo: 'Acme Corporation',
-    availableInHub: false,
-    participantId: undefined
-  },
-  {
-    id: 'vlan-2',
-    vlanId: 20,
-    popId: '2',
-    createdAt: new Date(Date.now() - 86400000),
-    isTagged: false,
-    status: 'Active',
-    assignedTo: 'Tech Solutions Inc',
-    availableInHub: true,
-    participantId: '2'
-  },
-  {
-    id: 'vlan-3',
-    vlanId: 30,
-    description: 'Isolated network for guests',
-    popId: '1',
-    createdAt: new Date(Date.now() - 172800000),
-    isTagged: true,
-    status: 'Inactive',
-    assignedTo: 'Global Networks',
-    availableInHub: false,
-    participantId: undefined
-  },
-];
+import { AddVlanModal } from '@/components/network/vlan/AddVlanModal';
+import { EditVlanModal } from '@/components/network/vlan/EditVlanModal';
+import { fetchVlans, deleteVlan } from '@/components/network/vlan/actions';
+import { Vlan } from '@/types/vlan';
 
 export default function VlanManagementPage() {
   const { t } = useLocale();
   const { toast } = useToast();
-  const [isAddVlanDialogOpen, setIsAddVlanDialogOpen] = React.useState(false);
-  const [vlans, setVlans] = React.useState<Vlan[]>(placeholderVlans);
-  const [vlanToDelete, setVlanToDelete] = React.useState<Vlan | null>(null);
-  const [participantSearch, setParticipantSearch] = React.useState('');
-  const iconSize = ICON_SIZE;
+  const [vlans, setVlans] = useState<Vlan[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [editVlan, setEditVlan] = useState<Vlan | null>(null);
+  const [vlanToDelete, setVlanToDelete] = useState<Vlan | null>(null);
+  const iconSize = 'h-2.5 w-2.5';
 
-  const form = useForm<VlanFormData>({
-    resolver: zodResolver(vlanSchema),
-    defaultValues: {
-      vlanId: undefined,
-      description: '',
-      popId: '',
-      isTagged: true,
-      status: 'Active',
-      assignedTo: '',
-      availableInHub: false,
-      participantId: '',
-    },
-  });
-
-  const availableInHub = form.watch('availableInHub');
-  const selectedParticipantId = form.watch('participantId');
-
-  const filteredParticipants = React.useMemo(() => {
-    if (!participantSearch) return mockParticipants;
-    return mockParticipants.filter(participant =>
-      participant.name.toLowerCase().includes(participantSearch.toLowerCase()) ||
-      participant.email.toLowerCase().includes(participantSearch.toLowerCase()) ||
-      participant.company.toLowerCase().includes(participantSearch.toLowerCase())
-    );
-  }, [participantSearch]);
-
-  React.useEffect(() => {
-    if (availableInHub) {
-      if (selectedParticipantId) {
-        const selected = mockParticipants.find((p) => p.id === selectedParticipantId);
-        if (selected) {
-          form.setValue('assignedTo', selected.company);
-        }
-      } else {
-        form.setValue('assignedTo', '');
-      }
-    } else {
-      form.setValue('assignedTo', DEFAULT_COMPANY_NAME);
-      form.setValue('participantId', '');
+  const refreshVlans = async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetchVlans();
+      setVlans(data);
+    } catch {
+      toast({ title: 'Failed to load VLANs.', variant: 'destructive' });
+    } finally {
+      setIsLoading(false);
     }
-  }, [availableInHub, selectedParticipantId, form]);
-
-  const handleAddVlanSubmit = (data: VlanFormData) => {
-    const assignedTo = data.assignedTo?.trim() || DEFAULT_COMPANY_NAME;
-    const newVlan: Vlan = {
-      ...data,
-      assignedTo,
-      id: `vlan-${Date.now()}`,
-      createdAt: new Date(),
-    };
-    setVlans((prev) => [newVlan, ...prev]);
-    toast({
-      title: t('vlan_page.add_success_title', 'VLAN Added'),
-      description: t('vlan_page.add_success_description', 'VLAN {vlanId} has been added and assigned to {company}.')
-        .replace('{vlanId}', data.vlanId.toString())
-        .replace('{company}', assignedTo),
-    });
-    form.reset();
-    setIsAddVlanDialogOpen(false);
-    setParticipantSearch('');
   };
 
-  const handleEditVlan = (vlan: Vlan) => {
-    toast({
-      title: t('vlan_page.edit_not_implemented_title', 'Edit Not Implemented'),
-      description: t('vlan_page.edit_not_implemented_desc', 'Editing VLAN {vlanId} is not yet available.').replace('{vlanId}', vlan.vlanId.toString()),
-    });
-  };
+  useEffect(() => { refreshVlans(); }, []);
 
-  const confirmDeleteVlan = () => {
-    if (vlanToDelete) {
+  const handleDelete = async () => {
+    if (!vlanToDelete) return;
+    try {
+      await deleteVlan(vlanToDelete.id);
       setVlans(prev => prev.filter(v => v.id !== vlanToDelete.id));
-      toast({
-        title: t('vlan_page.delete_success_title', 'VLAN Deleted'),
-        description: t('vlan_page.delete_success_description', 'VLAN {vlanId} has been deleted.').replace('{vlanId}', vlanToDelete.vlanId.toString()),
-        variant: 'destructive',
-      });
+      toast({ title: 'VLAN deleted.' });
+    } catch {
+      toast({ title: 'Delete failed.', variant: 'destructive' });
+    } finally {
       setVlanToDelete(null);
     }
   };
@@ -249,294 +55,57 @@ export default function VlanManagementPage() {
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <h1 className="text-base font-semibold flex items-center gap-2">
-          <Split className={`${iconSize} text-primary`} />
-          {t('vlan_page.title', 'Virtual Local Area Network (VLAN)')}
+          <Split className={`${iconSize} text-primary`} /> VLAN Management
         </h1>
         <div className="flex items-center gap-2">
-          <Button variant="default" className="bg-primary hover:bg-primary/90">
-            <RefreshCw className={`mr-2 ${iconSize}`} /> {t('vlan_page.refresh_button', 'Refresh')}
-          </Button>
-          <Dialog open={isAddVlanDialogOpen} onOpenChange={setIsAddVlanDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-green-600 hover:bg-green-700 text-white">
-                <PlusCircle className={`mr-2 ${iconSize}`} /> {t('vlan_page.add_button', 'Add VLAN')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle className="text-sm flex items-center gap-2">
-                  <PlusCircle className={iconSize} />
-                  {t('vlan_page.add_dialog_title', 'New VLAN')}
-                </DialogTitle>
-              </DialogHeader>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleAddVlanSubmit)} className="grid gap-4 py-4">
-                  <div className="grid grid-cols-2 gap-4 items-center"> {/* VLAN ID and Status */}
-                    <FormField
-                      control={form.control}
-                      name="vlanId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('vlan_page.form_vlan_id_label', 'VLAN ID')}</FormLabel>
-                          <FormControl>
-                            <Input type="number" placeholder="1-4094" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col pt-2">
-                          <FormLabel className="mb-1.5">{t('vlan_page.form_status_label', 'Status')}</FormLabel>
-                          <div className="flex items-center space-x-2">
-                            <FormControl>
-                              <Switch
-                                checked={field.value === 'Active'}
-                                onCheckedChange={(checked) => field.onChange(checked ? 'Active' : 'Inactive')}
-                                id="status-switch"
-                              />
-                            </FormControl>
-                            <label htmlFor="status-switch" className="text-xs">
-                              {field.value === 'Active' ? t('vlan_page.form_status_active', 'Active') : t('vlan_page.form_status_inactive', 'Inactive')}
-                            </label>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 items-start"> {/* PoP and Description */}
-                    <FormField
-                      control={form.control}
-                      name="popId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('vlan_page.form_pop_label', 'Point of Presence (PoP)')}</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder={t('vlan_page.form_pop_placeholder', 'Select PoP')} />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                            {mockPops.map((pop) => (
-                                <SelectItem key={pop.id.toString()} value={pop.id.toString()}>
-                                  {pop.name} ({pop.location})
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('vlan_page.form_description_label', 'Description (Optional)')}</FormLabel>
-                          <FormControl>
-                            <Input placeholder={t('vlan_page.form_description_placeholder', 'e.g., Main network')} {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 items-center"> {/* Assigned To and Available in Hub */}
-                    <FormField
-                      control={form.control}
-                      name="assignedTo"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('vlan_page.form_assigned_to_label', 'Assigned to')}</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              disabled={availableInHub}
-                              className={availableInHub ? 'bg-muted' : ''}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="availableInHub"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm h-full">
-                          <div className="space-y-0.5">
-                            <FormLabel>{t('vlan_page.form_available_in_hub_label', 'Available in Hub')}</FormLabel>
-                          </div>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  {availableInHub && (
-                    <FormField
-                      control={form.control}
-                      name="participantId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('vlan_page.form_participant_label', 'Assign to Participant')}</FormLabel>
-                          <div className="space-y-2">
-                            <div className="relative">
-                              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                placeholder={t('vlan_page.form_participant_search_placeholder', 'Search participants...')}
-                                value={participantSearch}
-                                onChange={(e) => setParticipantSearch(e.target.value)}
-                                className="pl-8"
-                              />
-                            </div>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder={t('vlan_page.form_participant_placeholder', 'Select participant')} />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {filteredParticipants.length > 0 ? (
-                                  filteredParticipants.map((participant) => (
-                                    <SelectItem key={participant.id} value={participant.id}>
-                                      <div className="flex flex-col">
-                                        <span className="font-medium">{participant.name}</span>
-                                        <span className="text-xs text-muted-foreground">{participant.email}</span>
-                                        <span className="text-xs text-muted-foreground">{participant.company}</span>
-                                      </div>
-                                    </SelectItem>
-                                  ))
-                                ) : (
-                                  <div className="p-2 text-center text-muted-foreground text-xs">
-                                    {t('vlan_page.form_participant_none_found', 'No participants found')}
-                                  </div>
-                                )}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-
-                  <FormField
-                    control={form.control}
-                    name="isTagged"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5">
-                          <FormLabel>{t('vlan_page.form_is_tagged_label', 'Tagged VLAN')}</FormLabel>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>{t('vlan_page.form_cancel_button', 'Cancel')}</Button>
-                    </DialogClose>
-                    <Button type="submit" disabled={form.formState.isSubmitting}>
-                      {form.formState.isSubmitting && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                      {form.formState.isSubmitting ? t('vlan_page.form_saving_button', 'Saving...') : t('vlan_page.form_save_button', 'Save VLAN')}
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
+          <Button onClick={refreshVlans}><RefreshCw className={`mr-2 ${iconSize}`} /> Refresh</Button>
+          <AddVlanModal onVlanAdded={(newVlan) => setVlans(prev => [newVlan, ...prev])} />
         </div>
       </div>
 
       <Card>
         <CardContent className="pt-0">
-          {vlans.length > 0 ? (
+          {!isLoading && vlans.length > 0 ? (
             <div className="overflow-x-auto pt-6">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-20 text-xs text-center">{t('vlan_page.table_header_vlan_id', 'VLAN ID')}</TableHead>
-                    <TableHead className="text-xs text-center">{t('vlan_page.table_header_assigned_to', 'Assigned To')}</TableHead>
-                    <TableHead className="text-xs text-center">{t('vlan_page.table_header_description', 'Description')}</TableHead>
-                    <TableHead className="text-xs text-center">{t('vlan_page.table_header_hub_available', 'Hub Available')}</TableHead>
-                    <TableHead className="text-xs text-center">{t('vlan_page.table_header_tagged', 'Tagged/Untagged')}</TableHead>
-                    <TableHead className="text-xs text-center">{t('vlan_page.table_header_status', 'Status')}</TableHead>
-                    <TableHead className="text-right w-28 text-xs text-center">{t('vlan_page.table_header_actions', 'Actions')}</TableHead>
+                    <TableHead className="text-xs text-center">VLAN ID</TableHead>
+                    <TableHead className="text-xs text-center">Assigned To</TableHead>
+                    <TableHead className="text-xs text-center">PoP</TableHead>
+                    <TableHead className="text-xs text-center">Tagged</TableHead>
+                    <TableHead className="text-xs text-center">Status</TableHead>
+                    <TableHead className="text-xs text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {vlans.map((vlan) => (
                     <TableRow key={vlan.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{vlan.vlanId}</TableCell>
-                      <TableCell className="text-muted-foreground text-xs text-center">{vlan.assignedTo}</TableCell>
-                      <TableCell className="text-muted-foreground text-xs text-center">{vlan.description || '-'}</TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant={vlan.availableInHub ? 'default' : 'secondary'} className={`text-xs ${vlan.availableInHub ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-                          {vlan.availableInHub ? t('vlan_page.hub_available', 'Yes') : t('vlan_page.hub_not_available', 'No')}
-                        </Badge>
+                      <TableCell className="text-center font-mono text-xs">{vlan.vlanId}</TableCell>
+                      <TableCell className="text-center text-xs">{vlan.assignedTo || '-'}</TableCell>
+                      <TableCell className="text-center text-xs">{vlan.pop?.name || vlan.popId}</TableCell>
+                      <TableCell className="text-center text-xs">
+                        <Badge>{vlan.isTagged ? 'Tagged' : 'Untagged'}</Badge>
                       </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant={vlan.isTagged ? 'default' : 'secondary'} className={`text-xs ${vlan.isTagged ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-                          {vlan.isTagged ? t('vlan_page.tagged', 'Tagged') : t('vlan_page.untagged', 'Untagged')}
-                        </Badge>
+                      <TableCell className="text-center text-xs">
+                        <Badge variant={vlan.status === 'Active' ? 'default' : 'secondary'}>{vlan.status}</Badge>
                       </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant={vlan.status === 'Active' ? 'default' : 'secondary'} className={`text-xs ${vlan.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                          {t(`vlan_page.status_${vlan.status.toLowerCase()}` as any, vlan.status)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditVlan(vlan)}>
-                          <Edit className={iconSize} />
-                          <span className="sr-only">{t('vlan_page.action_edit', 'Edit')}</span>
-                        </Button>
+                      <TableCell className="flex gap-1 justify-center">
+                        <EditVlanModal vlan={vlan} onVlanUpdated={(updated) => setVlans(prev => prev.map(v => v.id === updated.id ? updated : v))} />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10">
-                              <Trash2 className={iconSize} />
-                              <span className="sr-only">{t('vlan_page.action_delete', 'Delete')}</span>
+                            <Button size="icon" variant="ghost" className="text-destructive">
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>{t('vlan_page.delete_confirm_title', 'Are you sure?')}</AlertDialogTitle>
-                              <AlertDialogDescription className="text-xs">
-                                {t('vlan_page.delete_confirm_description', 'This action is irreversible. This will permanently delete VLAN {vlanId}.').replace('{vlanId}', vlan.vlanId.toString())}
-                              </AlertDialogDescription>
+                              <AlertDialogTitle>Delete VLAN {vlan.vlanId}?</AlertDialogTitle>
+                              <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel onClick={() => setVlanToDelete(null)}>{t('vlan_page.delete_confirm_cancel', 'Cancel')}</AlertDialogCancel>
-                              <AlertDialogAction
-                                className={buttonVariants({ variant: "destructive" })}
-                                onClick={() => {
-                                  setVlanToDelete(vlan);
-                                  confirmDeleteVlan();
-                                }}
-                              >
-                                {t('vlan_page.delete_confirm_delete', 'Delete')}
-                              </AlertDialogAction>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => { setVlanToDelete(vlan); handleDelete(); }}>Delete</AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
@@ -547,7 +116,9 @@ export default function VlanManagementPage() {
               </Table>
             </div>
           ) : (
-            <p className="text-center text-muted-foreground py-4 text-xs pt-6">{t('vlan_page.no_vlans_found', 'No VLANs configured yet. Click "Add VLAN" to create one.')}</p>
+            <p className="text-center text-muted-foreground py-4 text-xs pt-6">
+              {isLoading ? 'Loading VLANs...' : 'No VLANs configured.'}
+            </p>
           )}
         </CardContent>
       </Card>
