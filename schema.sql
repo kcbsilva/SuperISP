@@ -55,6 +55,7 @@ CREATE TABLE pops (
   description TEXT,
   status VARCHAR(50) NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMPTZ,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -262,4 +263,15 @@ CREATE TABLE nas (
   last_checked_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT now(),
   updated_at TIMESTAMP DEFAULT now()
+);
+
+CREATE TABLE system_logs (
+  id SERIAL PRIMARY KEY,
+  user_id TEXT,
+  action TEXT NOT NULL,
+  target TEXT NOT NULL,
+  target_id TEXT,
+  message TEXT NOT NULL,
+  level TEXT DEFAULT 'info',
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
