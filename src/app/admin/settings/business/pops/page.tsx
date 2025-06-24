@@ -9,7 +9,6 @@ import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
 import type { Pop, PopData } from '@/types/pops';
-// Removed MySQL service imports
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -29,14 +28,12 @@ const popSchema = z.object({
 
 type PopFormData = z.infer<typeof popSchema>;
 
-const placeholderPops: Pop[] = [];
-
 export default function PoPsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   const [editingPop, setEditingPop] = React.useState<Pop | null>(null);
   const [popToDelete, setPopToDelete] = React.useState<Pop | null>(null);
-  const [pops, setPops] = React.useState<Pop[]>(placeholderPops); // Use local state
-  const [isLoading, setIsLoading] = React.useState(false); // Simulate loading
+  const [pops, setPops] = React.useState<Pop[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const { toast } = useToast();
   const { t } = useLocale();
@@ -51,84 +48,36 @@ export default function PoPsPage() {
     },
   });
 
-  // Simulate fetching PoPs
-  const refetchPops = () => {
+  const refetchPops = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setPops(placeholderPops);
-      setIsLoading(false);
+    try {
+      const res = await fetch('/api/pops/list');
+      if (!res.ok) throw new Error('Failed to fetch PoPs');
+      const data = await res.json();
+      const transformed = data.map((p: any): Pop => ({
+        id: p.id,
+        name: p.name,
+        location: p.location,
+        status: p.status,
+        createdAt: p.created_at,
+        updatedAt: p.updated_at,
+      }));
+      setPops(transformed);
+    } catch (err) {
+      console.error('Failed to fetch PoPs', err);
       toast({
-        title: t('pops.refreshing_toast_title'),
-        description: t('pops.refreshing_toast_description'),
+        variant: 'destructive',
+        title: 'Error loading PoPs',
+        description: 'Please check your server or database connection.',
       });
-    }, 500);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   React.useEffect(() => {
-    // Initial load simulation
     refetchPops();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-
-  const handleFormSubmit = (data: PopFormData) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      if (editingPop) {
-        setPops(prevPops => prevPops.map(p => p.id === editingPop.id ? { ...editingPop, ...data, updatedAt: new Date() } : p));
-        toast({
-          title: t('pops.update_success_toast_title'),
-          description: t('pops.update_success_toast_description'),
-        });
-      } else {
-        const newPop: Pop = {
-          id: `pop-${Date.now()}`,
-          ...data,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-        setPops(prevPops => [newPop, ...prevPops]);
-        toast({
-          title: t('pops.add_success_toast_title'),
-          description: t('pops.add_success_toast_description', '{name} has been added successfully.').replace('{name}', data.name),
-        });
-      }
-      form.reset();
-      setEditingPop(null);
-      setIsAddModalOpen(false);
-      setIsLoading(false);
-    }, 500);
-  };
-
-  const handleEditPop = (pop: Pop) => {
-    setEditingPop(pop);
-    form.reset({
-      name: pop.name,
-      location: pop.location,
-      status: pop.status as 'Active' | 'Inactive' | 'Planned',
-    });
-    setIsAddModalOpen(true);
-  };
-
-  const handleDeleteClick = (pop: Pop) => {
-    setPopToDelete(pop);
-  }
-
-  const handleRemovePopConfirm = () => {
-    if (popToDelete) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setPops(prevPops => prevPops.filter(p => p.id !== popToDelete.id));
-        toast({
-          title: t('pops.delete_success_toast_title'),
-          description: t('pops.delete_success_toast_description'),
-          variant: 'destructive'
-        });
-        setPopToDelete(null);
-        setIsLoading(false);
-      }, 500);
-    }
-  };
 
   const getStatusBadgeVariant = (status: string | undefined) => {
     if (!status) return 'secondary';
@@ -142,13 +91,8 @@ export default function PoPsPage() {
 
   function safeToDate(value: any): Date | null {
     if (!value) return null;
-  
     if (value instanceof Date) return value;
-  
-    // Firestore Timestamp check
     if (typeof value.toDate === 'function') return value.toDate();
-  
-    // ISO string or number fallback
     try {
       const date = new Date(value);
       return isNaN(date.getTime()) ? null : date;
@@ -156,57 +100,16 @@ export default function PoPsPage() {
       return null;
     }
   }
-  
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <h1 className="text-base font-semibold">{t('pops.title')}</h1>
-
         <div className="flex items-center gap-2">
-          <Button
-            variant="default"
-            size="sm"
-            onClick={refetchPops}
-            disabled={isLoading}
-            className="bg-primary hover:bg-primary/90"
-          >
+          <Button variant="default" size="sm" onClick={refetchPops} disabled={isLoading} className="bg-primary hover:bg-primary/90">
             {isLoading ? <Loader2 className={`mr-2 ${iconSize} animate-spin`} /> : <RefreshCw className={`mr-2 ${iconSize}`} />}
             {t('pops.refresh_button')}
           </Button>
-
-          <Dialog open={isAddModalOpen} onOpenChange={(isOpen) => {
-            setIsAddModalOpen(isOpen);
-            if (!isOpen) {
-              setEditingPop(null);
-              form.reset({ name: '', location: '', status: 'Active' });
-            }
-          }}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                <PlusCircle className={`mr-2 ${iconSize}`} /> {t('pops.add_button')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle className="text-sm">{editingPop ? t('pops.edit_dialog_title') : t('pops.add_dialog_title')}</DialogTitle>
-                <DialogDescription className="text-xs">{editingPop ? t('pops.edit_dialog_description') : t('pops.add_dialog_description')}</DialogDescription>
-              </DialogHeader>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleFormSubmit)} className="grid gap-4 py-4">
-                  <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>{t('pops.form_name_label')}</FormLabel><FormControl><Input placeholder={t('pops.form_name_placeholder')} {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <FormField control={form.control} name="location" render={({ field }) => (<FormItem><FormLabel>{t('pops.form_location_label')}</FormLabel><FormControl><Input placeholder={t('pops.form_location_placeholder')} {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <FormField control={form.control} name="status" render={({ field }) => (<FormItem><FormLabel>{t('pops.form_status_label')}</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder={t('pops.form_status_placeholder')} /></SelectTrigger></FormControl><SelectContent><SelectItem value="Active">{t('pops.form_status_active')}</SelectItem><SelectItem value="Inactive">{t('pops.form_status_inactive')}</SelectItem><SelectItem value="Planned">{t('pops.form_status_planned')}</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
-                  <DialogFooter>
-                    <DialogClose asChild><Button type="button" variant="outline" disabled={isLoading}>{t('pops.form_cancel_button')}</Button></DialogClose>
-                    <Button type="submit" disabled={isLoading}>
-                      {isLoading && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                      {editingPop ? t('pops.form_update_button') : t('pops.form_save_button')}
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
 
@@ -216,7 +119,7 @@ export default function PoPsPage() {
           <CardDescription className="text-xs">{t('pops.table_description')}</CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
-          {isLoading && pops.length === 0 ? ( // Show skeleton only on initial load
+          {isLoading && pops.length === 0 ? (
             <div className="space-y-3 py-4">
               <Skeleton className="h-8 w-full" />
               <Skeleton className="h-8 w-full" />
@@ -232,7 +135,6 @@ export default function PoPsPage() {
                     <TableHead className="text-xs text-center">{t('pops.table_header_location')}</TableHead>
                     <TableHead className="text-xs text-center">{t('pops.table_header_status')}</TableHead>
                     <TableHead className="w-32 text-xs text-center">{t('pops.table_header_created')}</TableHead>
-                    <TableHead className="w-28 text-xs text-center">{t('pops.table_header_actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -247,42 +149,7 @@ export default function PoPsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-xs text-center">
-                        {
-                          safeToDate(pop.createdAt)?.toLocaleDateString() ?? 'N/A'
-                        }
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditPop(pop)} disabled={isLoading}>
-                          <Pencil className={iconSize} />
-                        </Button>
-                        <AlertDialog open={!!popToDelete && popToDelete.id === pop.id} onOpenChange={(open) => !open && setPopToDelete(null)}>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => handleDeleteClick(pop)} disabled={isLoading}>
-                              <Trash2 className={iconSize} />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>{t('pops.delete_alert_title')}</AlertDialogTitle>
-                              <AlertDialogDescription className="text-xs">
-                                {t('pops.delete_alert_description', 'This action cannot be undone. This will permanently delete the PoP named "{name}" (ID: {id}).')
-                                  .replace('{name}', pop.name || '')
-                                  .replace('{id}', pop.id.toString() || '')}
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel onClick={() => setPopToDelete(null)}>{t('pops.delete_alert_cancel')}</AlertDialogCancel>
-                              <AlertDialogAction
-                                className={buttonVariants({ variant: "destructive" })}
-                                onClick={handleRemovePopConfirm}
-                                disabled={isLoading}
-                              >
-                                {isLoading ? <Loader2 className={`mr-2 ${iconSize} animate-spin`} /> : null}
-                                {t('pops.delete_alert_delete')}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        {safeToDate(pop.createdAt)?.toLocaleDateString() ?? 'N/A'}
                       </TableCell>
                     </TableRow>
                   ))}

@@ -49,6 +49,7 @@ import postgresDatabases from './en/postgresDatabases';
 import postgresTables from './en/postgresTables';
 import postgresSqlCli from './en/postgresSqlCli';
 import settingsLicense from './en/settingsLicense';
+import salesLeads from './en/salesLeads';
 
 
 const en = {
@@ -102,6 +103,7 @@ const en = {
   ...postgresTables,
   ...postgresSqlCli,
   ...settingsLicense,
+  ...salesLeads,
   
 
   form_cancel_button: 'Cancel',

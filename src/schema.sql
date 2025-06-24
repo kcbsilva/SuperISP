@@ -236,3 +236,29 @@ CREATE TABLE users (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE nas (
+  id SERIAL PRIMARY KEY,
+  nasname TEXT NOT NULL UNIQUE,       -- IP Address
+  shortname TEXT NOT NULL UNIQUE,     -- Friendly Name
+  type TEXT NOT NULL,                 -- Type (Mikrotik, Cisco, etc.)
+  ports INTEGER,                      -- FreeRADIUS: Number of ports
+  secret TEXT NOT NULL,               -- FreeRADIUS shared secret
+  server TEXT,                        -- FreeRADIUS: server (optional)
+  community TEXT,                     -- SNMP community (encrypted)
+  snmp_version TEXT,
+  snmp_port INTEGER DEFAULT 161,
+  timeout INTEGER,
+  username TEXT,
+  password TEXT,                      -- Encrypted login password
+  http_port INTEGER,
+  dns1 TEXT,
+  dns2 TEXT,
+  pop_id UUID REFERENCES pops(id),
+  description TEXT,
+  snmp_status TEXT DEFAULT 'pending', -- ok, fail, pending
+  ping_time_ms INTEGER,
+  last_checked_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT now(),
+  updated_at TIMESTAMP DEFAULT now()
+);
