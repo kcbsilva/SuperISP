@@ -5,7 +5,7 @@ import { db } from '@/lib/db';
 export async function GET() {
   try {
     const result = await db.query(`
-      SELECT id, name, location, status, created_at, updated_at
+      SELECT id, name, location, description, status, created_at, updated_at
       FROM pops
       ORDER BY name ASC
     `);

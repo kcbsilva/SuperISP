@@ -80,9 +80,9 @@ export function NasFormModal({ open, onClose, onSubmit, pops, defaultValues }: P
               <div className="flex-1">
                 <Label>PoP</Label>
                 <Select
-                  value={form.pop?.id}
+                  value={form.pop?.id?.toString()}
                   onValueChange={(val) => {
-                    const selected = localPops.find((p) => p.id === val);
+                    const selected = localPops.find((p) => p.id.toString() === val);
                     handleChange('pop', selected || null);
                   }}
                 >
@@ -91,7 +91,7 @@ export function NasFormModal({ open, onClose, onSubmit, pops, defaultValues }: P
                   </SelectTrigger>
                   <SelectContent>
                     {localPops.map((pop) => (
-                      <SelectItem key={pop.id} value={pop.id}>
+                      <SelectItem key={pop.id} value={pop.id.toString()}>
                         {pop.name}
                       </SelectItem>
                     ))}

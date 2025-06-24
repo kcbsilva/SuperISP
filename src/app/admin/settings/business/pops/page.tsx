@@ -59,8 +59,8 @@ export default function PoPsPage() {
         name: p.name,
         location: p.location,
         status: p.status,
-        createdAt: p.created_at,
-        updatedAt: p.updated_at,
+        created_at: p.created_at,
+        updated_at: p.updated_at,
       }));
       setPops(transformed);
     } catch (err) {
@@ -140,7 +140,7 @@ export default function PoPsPage() {
                 <TableBody>
                   {pops.map((pop) => (
                     <TableRow key={pop.id}>
-                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{(pop.id as string).toString().substring(0, 8)}</TableCell>
+                      <TableCell className="font-mono text-muted-foreground text-xs text-center">{pop.id.toString().substring(0, 8)}</TableCell>
                       <TableCell className="font-medium text-xs text-center">{pop.name}</TableCell>
                       <TableCell className="text-muted-foreground text-xs text-center">{pop.location}</TableCell>
                       <TableCell className="text-center">
@@ -149,7 +149,7 @@ export default function PoPsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-xs text-center">
-                        {safeToDate(pop.createdAt)?.toLocaleDateString() ?? 'N/A'}
+                        {safeToDate(pop.created_at)?.toLocaleDateString() ?? 'N/A'}
                       </TableCell>
                     </TableRow>
                   ))}

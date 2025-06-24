@@ -5,6 +5,7 @@ export interface PopData {
   name: string;
   location: string;
   status?: string; // Optional when creating, default to 'active'
+  description?: string;
 }
 
 // Full PoP object structure returned from DB/API
