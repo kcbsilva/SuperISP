@@ -14,6 +14,6 @@ export async function GET(
 
     return Response.json(nasList);
   } catch (error) {
-    return new Response('Failed to fetch NAS for PoP', { status: 500 });
+    return new Response('Failed to fetch NAS for PoP', { status: 500 })
   }
 }
