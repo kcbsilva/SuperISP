@@ -8,9 +8,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Server } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
-import { NasTable, NasType } from '@/components/network-radius/NasTable';
-import { NasFormModal } from '@/components/network-radius/NasFormModal';
-import { DeleteNasDialog } from '@/components/network-radius/DeleteNasDialog';
+import { NasTable, NasType } from '@/components/settings/network/radius/NasTable';
+import { NasFormModal } from '@/components/settings/network/radius/NasFormModal';
+import { DeleteNasDialog } from '@/components/settings/network/radius/DeleteNasDialog';
 import { Pop } from '@/types/pops';
 
 export default function NetworkRadiusPage() {

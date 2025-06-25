@@ -52,9 +52,8 @@ import {
   Terminal, // Added for SQL CLI
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { SlGlobe } from "react-icons/sl";
 import type { IconType } from 'react-icons';
-import { FaCity } from "react-icons/fa";
+import { GrSystem } from "react-icons/gr";
 
 export interface SidebarNavItem {
   title: string;
@@ -468,27 +467,15 @@ export const sidebarNav: SidebarNavItem[] = [
         tooltip: 'sidebar.settings_global',
       },
       {
-        title: 'sidebar.settings_business',
-        icon: Briefcase,
-        tooltip: 'sidebar.settings_business',
+        title: 'sidebar.settings_system',
+        icon: GrSystem,
+        tooltip: 'sidebar.settings_system',
         children: [
           {
-            title: 'sidebar.settings_business_pops',
-            href: '/admin/settings/business/pops',
+            title: 'sidebar.settings_system_pops',
+            href: '/admin/settings/system/pops',
             icon: Building,
-            tooltip: 'sidebar.settings_business_pops',
-          },
-          {
-            title: 'sidebar.settings_business_city',
-            href: '/admin/settings/business/cities',
-            icon: FaCity,
-            tooltip: 'sidebar.settings_business_city',
-          },
-          {
-            title: 'sidebar.settings_business_countries',
-            href: '/admin/settings/business/countries',
-            icon: SlGlobe,
-            tooltip: 'sidebar.settings_business_countries',
+            tooltip: 'sidebar.settings_system_pops',
           },
         ],
       },

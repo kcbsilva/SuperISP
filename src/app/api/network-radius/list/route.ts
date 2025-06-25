@@ -1,7 +1,7 @@
 // src/app/api/network-radius/list/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db'; // Your PostgreSQL connection
-import { NasType } from '@/components/network-radius/NasTable';
+import { NasType } from '@/components/settings/network/radius/NasTable';
 
 export async function GET() {
   try {

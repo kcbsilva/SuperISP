@@ -1,17 +1,25 @@
 // src/types/pops.ts
 
-// Data needed to create/update a PoP
 export interface PopData {
   name: string;
-  location: string;
-  status?: string; // Optional when creating, default to 'active'
-  description?: string;
+  fullAddress: string;
+  latitude: number;
+  longitude: number;
+  type: 'site' | 'tower' | 'presence';
+  ownership: 'own' | 'rent';
+  monthlyRent?: number;
+  rentDueDate?: string;
+  onContract?: boolean;
+  contractLengthMonths?: number;
+  contractStartDate?: string;
+  alertRenewal?: boolean;
+  alertBefore?: number;
+  alertPeriodType?: 'days' | 'weeks' | 'months';
 }
 
-// Full PoP object structure returned from DB/API
 export interface Pop extends PopData {
-  id: number; // PostgreSQL SERIAL = number
-  status: string; // Always present in DB
-  created_at?: string; // Timestamps come as ISO strings from PostgreSQL
+  id: string; // 🟢 Ensure it's a string
+  status?: string; // 🟢 Optional if it's not always present
+  created_at?: string;
   updated_at?: string;
 }

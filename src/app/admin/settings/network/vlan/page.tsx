@@ -10,9 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
-import { AddVlanModal } from '@/components/network/vlan/AddVlanModal';
-import { EditVlanModal } from '@/components/network/vlan/EditVlanModal';
-import { fetchVlans, deleteVlan } from '@/components/network/vlan/actions';
+import { AddVlanModal } from '@/components/settings/network/vlan/AddVlanModal';
+import { EditVlanModal } from '@/components/settings/network/vlan/EditVlanModal';
+import { fetchVlans, deleteVlan } from '@/components/settings/network/vlan/actions';
 import { Vlan } from '@/types/vlan';
 
 export default function VlanManagementPage() {

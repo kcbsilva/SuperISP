@@ -10,9 +10,6 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   
-  // FONT FIX: Disable font optimization to prevent 403 errors
-  optimizeFonts: false,
-  
   images: {
     remotePatterns: [
       {
