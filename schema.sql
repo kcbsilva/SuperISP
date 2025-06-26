@@ -298,3 +298,36 @@ CREATE TABLE participants (
   vlan_count INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create the devices table
+CREATE TABLE devices (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  description TEXT,
+  ip_address INET NOT NULL,
+  type TEXT CHECK (type IN ('Router', 'Switch', 'Access Point', 'NVR', 'Server', 'OLT', 'Other')),
+  manufacturer TEXT,
+  pop_id UUID REFERENCES pops(id) ON DELETE SET NULL,
+  monitor BOOLEAN DEFAULT FALSE,
+  readable BOOLEAN DEFAULT FALSE,
+  radius BOOLEAN DEFAULT FALSE,
+  provision BOOLEAN DEFAULT FALSE,
+  backup BOOLEAN DEFAULT FALSE,
+  connection_type TEXT CHECK (connection_type IN ('SSH', 'Web', 'Telnet', 'API')),
+  username TEXT,
+  password TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Create the enum type
+CREATE TYPE device_type AS ENUM (
+  'Router',
+  'Switch',
+  'Access Point',
+  'NVR',
+  'Server',
+  'OLT',
+  'Other'
+);

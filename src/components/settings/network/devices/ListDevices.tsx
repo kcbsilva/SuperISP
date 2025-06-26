@@ -6,11 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
+import { Device } from './AddDeviceModal';
 
 interface Props {
-  devices: any[];
-  onEdit: (device: any) => void;
-  onDelete: (device: any) => void;
+  devices: Device[];
+  onEdit: (device: Device) => void;
+  onDelete: (device: Device) => void;
 }
 
 export function ListDevices({ devices, onEdit, onDelete }: Props) {

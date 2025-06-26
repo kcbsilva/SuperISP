@@ -7,12 +7,13 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/contexts/LocaleContext';
+import { Device } from './AddDeviceModal';
 
 interface Props {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  device: any;
+  device: Device;
 }
 
 export function RemoveDeviceModal({ open, onClose, onConfirm, device }: Props) {
