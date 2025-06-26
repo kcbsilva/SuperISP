@@ -1,21 +1,29 @@
-// /src/app/api/nas/interfaces/[nasIdentifier]/route.ts
+// src/app/api/nas/interfaces/[nasIdentifier]/route.ts
 import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 
 export async function GET(
   req: NextRequest,
   { params }: { params: { nasIdentifier: string } }
 ) {
   try {
-    const nas = await prisma.nas.findUnique({
-      where: { identifier: params.nasIdentifier },
-      select: { interfaces: true },
-    });
+    const result = await query(
+      `
+      SELECT i.*
+      FROM interfaces i
+      JOIN nas n ON i.nas_id = n.id
+      WHERE n.identifier = $1
+      `,
+      [params.nasIdentifier]
+    );
 
-    if (!nas) return new Response('NAS not found', { status: 404 });
+    if (result.rows.length === 0) {
+      return new Response('NAS not found or no interfaces', { status: 404 });
+    }
 
-    return Response.json(nas.interfaces || []);
+    return Response.json(result.rows);
   } catch (error) {
+    console.error('Error fetching NAS interfaces:', error);
     return new Response('Failed to fetch interfaces', { status: 500 });
   }
 }

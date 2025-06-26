@@ -9,6 +9,4 @@ const pool = new Pool({
   database: process.env.PGDATABASE || 'your_database_name',
 });
 
-export const db = {
-  query: (text: string, params?: any[]) => pool.query(text, params),
-};
+export const query = (text: string, params?: any[]) => pool.query(text, params);
