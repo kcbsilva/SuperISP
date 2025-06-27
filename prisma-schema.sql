@@ -24,3 +24,15 @@ model Device {
 
   @@map("devices") // maps to existing SQL table if already created manually
 }
+
+model EntryCategory {
+  id               String   @id @default(uuid())
+  name             String
+  type             String   // 'Income' or 'Expense'
+  description      String?
+  parentCategoryId String?  @map("parent_category_id")
+  createdAt        DateTime @default(now())
+  
+  parentCategory   EntryCategory? @relation("ParentChild", fields: [parentCategoryId], references: [id])
+  children         EntryCategory[] @relation("ParentChild")
+}

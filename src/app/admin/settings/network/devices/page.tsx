@@ -73,7 +73,7 @@ export default function NetworkDevicesPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-base font-semibold flex items-center gap-2">
           <Router className="h-4 w-4 text-primary" />
-          {t('sidebar.network_devices', 'Network Devices')}
+          {t('sidebar.network_devices_title', 'Devices')}
         </h1>
         <Button
           className="bg-green-600 hover:bg-green-700 text-white"

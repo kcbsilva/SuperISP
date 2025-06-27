@@ -73,7 +73,7 @@ export const sidebarNav: SidebarNavItem[] = [
   },
   {
     title: 'sidebar.subscribers',
-    href: '/admin/subscribers/list',
+    href: '/admin/subscribers/',
     icon: Users,
     tooltip: 'sidebar.subscribers',
   },

@@ -331,3 +331,14 @@ CREATE TYPE device_type AS ENUM (
   'OLT',
   'Other'
 );
+
+CREATE TABLE entry_categories (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  type TEXT CHECK (type IN ('Income', 'Expense')) NOT NULL,
+  description TEXT,
+  parent_category_id UUID,
+  created_at TIMESTAMPTZ DEFAULT now(),
+
+  CONSTRAINT fk_parent FOREIGN KEY (parent_category_id) REFERENCES entry_categories(id) ON DELETE SET NULL
+);
