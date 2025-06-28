@@ -8,739 +8,113 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription as DialogDescriptionComponent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlusCircle, ListChecks, Edit, Trash2, Loader2, ShieldCheck, Users as UsersIcon } from 'lucide-react';
+} from '@/components/ui/card';
+import { PlusCircle, ListChecks } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useToast } from '@/hooks/use-toast';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useQuery } from '@tanstack/react-query';
 import {
   getRoles,
   getPermissions,
   getUserTemplates,
-  addUserTemplate,
-  updateUserTemplate,
-  deleteUserTemplate,
   getUserProfiles,
-  updateUserProfile,
-  createUser,
 } from '@/services/postgres/users';
-import type { Role, Permission, UserTemplate, UserTemplateData, UserProfile } from '@/types/users';
+import type { Role, Permission, UserTemplate, UserProfile } from '@/types/users';
 
-// Schema for User Template Form
-const userTemplateFormSchema = z.object({
-  template_name: z.string().min(1, "Template name is required."),
-  description: z.string().optional(),
-  default_role_id: z.string().uuid("Invalid role ID.").nullable().optional(),
-  permission_ids: z.array(z.string().uuid()).optional().default([]),
-});
-type UserTemplateFormValues = z.infer<typeof userTemplateFormSchema>;
+import { ListUsers } from '@/components/settings/users/ListUsers';
+import { AddUserModal } from '@/components/settings/users/AddUserModal';
+import { UpdateUserModal } from '@/components/settings/users/UpdateUserModal';
+import { RemoveUserDialog } from '@/components/settings/users/RemoveUserDialog';
 
-// Schema for Add User Form
-const addUserFormSchema = z.object({
-  email: z.string().email("Invalid email address."),
-  password: z.string().min(6, "Password must be at least 6 characters."),
-  confirmPassword: z.string().min(1, "Please confirm your password."),
-  fullName: z.string().min(1, "Full name is required."),
-  roleId: z.string().uuid("Invalid role ID.").nullable().optional(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
-type AddUserFormValues = z.infer<typeof addUserFormSchema>;
-
-// Schema for Edit User Form (only full_name and role_id are editable here)
-const editUserFormSchema = z.object({
-  fullName: z.string().min(1, "Full name is required."),
-  roleId: z.string().uuid("Invalid role ID.").nullable().optional(),
-});
-type EditUserFormValues = z.infer<typeof editUserFormSchema>;
-
-
-
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return 'An unexpected error occurred';
+}
 
 export default function UsersPage() {
   const { t } = useLocale();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  const [isUserTemplatesModalOpen, setIsUserTemplatesModalOpen] = React.useState(false);
-  const [isAddTemplateModalOpen, setIsAddTemplateModalOpen] = React.useState(false);
-  const [editingTemplate, setEditingTemplate] = React.useState<UserTemplate | null>(null);
-  const [templateToDelete, setTemplateToDelete] = React.useState<UserTemplate | null>(null);
-  const [isAddUserModalOpen, setIsAddUserModalOpen] = React.useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = React.useState(false);
   const [editingUserProfile, setEditingUserProfile] = React.useState<UserProfile | null>(null);
 
-  const iconSize = "h-3 w-3";
-
-  const { data: roles = [], isLoading: isLoadingRoles, error: rolesError } = useQuery<Role[], Error>({
+  const {
+    data: roles = [],
+    isLoading: isLoadingRoles,
+    error: rolesError,
+  } = useQuery<Role[], Error>({
     queryKey: ['roles'],
     queryFn: getRoles,
   });
 
-  const { data: allPermissions = [], isLoading: isLoadingPermissions, error: permissionsError } = useQuery<Permission[], Error>({
-    queryKey: ['permissions'],
-    queryFn: getPermissions,
-  });
-
-  const { data: userTemplates = [], isLoading: isLoadingTemplates, error: templatesError } = useQuery<UserTemplate[], Error>({
-    queryKey: ['userTemplates'],
-    queryFn: getUserTemplates,
-  });
-
-  const { data: userProfiles = [], isLoading: isLoadingUserProfiles, error: userProfilesError, refetch: refetchUserProfiles } = useQuery<UserProfile[], Error>({
+  const {
+    data: userProfiles = [],
+    isLoading: isLoadingUserProfiles,
+    error: userProfilesError,
+    refetch: refetchUserProfiles,
+  } = useQuery<UserProfile[], Error>({
     queryKey: ['userProfiles'],
     queryFn: getUserProfiles,
   });
 
-  const permissionGroups = React.useMemo(() => 
-    Array.from(new Set(allPermissions.map(p => p.group_name || 'Other'))).sort(), 
-  [allPermissions]);
-
-  const templateForm = useForm<UserTemplateFormValues>({
-    resolver: zodResolver(userTemplateFormSchema),
-    defaultValues: {
-      template_name: '',
-      description: '',
-      default_role_id: null,
-      permission_ids: [],
-    },
-  });
-
-  const addUserForm = useForm<AddUserFormValues>({
-    resolver: zodResolver(addUserFormSchema),
-    defaultValues: {
-        email: '',
-        password: '',
-        confirmPassword: '',
-        fullName: '',
-        roleId: null,
-    },
-  });
-
-  const editUserForm = useForm<EditUserFormValues>({
-    resolver: zodResolver(editUserFormSchema),
-    defaultValues: {
-        fullName: '',
-        roleId: null,
-    },
-  });
-
-  React.useEffect(() => {
-    if (isAddTemplateModalOpen && editingTemplate) {
-      templateForm.reset({
-        template_name: editingTemplate.template_name,
-        description: editingTemplate.description || '',
-        default_role_id: editingTemplate.default_role_id || null,
-        permission_ids: editingTemplate.permissions || [],
-      });
-    } else if (isAddTemplateModalOpen && !editingTemplate) {
-      templateForm.reset({
-        template_name: '',
-        description: '',
-        default_role_id: null,
-        permission_ids: [],
-      });
-    }
-  }, [isAddTemplateModalOpen, editingTemplate, templateForm]);
-
-  React.useEffect(() => {
-    if (isEditUserModalOpen && editingUserProfile) {
-      editUserForm.reset({
-        fullName: editingUserProfile.full_name || '',
-        roleId: editingUserProfile.role_id || null,
-      });
-    }
-  }, [isEditUserModalOpen, editingUserProfile, editUserForm]);
-
-  const addTemplateMutation = useMutation({
-    mutationFn: addUserTemplate,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userTemplates'] });
-      toast({ title: t('settings_users.add_template_success_title'), description: t('settings_users.add_template_success_desc', 'User template "{name}" added.').replace('{name}', templateForm.getValues('template_name'))});
-      setIsAddTemplateModalOpen(false);
-      setEditingTemplate(null);
-    },
-    onError: (error: any) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    },
-  });
-
-  const updateTemplateMutation = useMutation({
-    mutationFn: (data: { templateId: string; templateData: UserTemplateData }) => updateUserTemplate(data.templateId, data.templateData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userTemplates'] });
-      toast({ title: t('settings_users.update_template_success_title'), description: t('settings_users.update_template_success_desc', 'User template "{name}" updated.').replace('{name}', templateForm.getValues('template_name'))});
-      setIsAddTemplateModalOpen(false);
-      setEditingTemplate(null);
-    },
-    onError: (error: any) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    },
-  });
-
-  const deleteTemplateMutation = useMutation({
-    mutationFn: deleteUserTemplate,
-    onSuccess: (_, templateId) => {
-      queryClient.invalidateQueries({ queryKey: ['userTemplates'] });
-      toast({ title: t('settings_users.delete_template_toast_title'), description: `Template deleted.` , variant: 'destructive' });
-      setTemplateToDelete(null);
-    },
-    onError: (error: any) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-      setTemplateToDelete(null);
-    },
-  });
-
-  const addUserMutation = useMutation({
-    mutationFn: async (userData: AddUserFormValues) => {
-      const { email, password, fullName, roleId } = userData;
-      const newUser = await createUser({
-        email,
-        password,
-        full_name: fullName,
-        role_id: roleId || null,
-      });
-      return newUser;
-    },
-    onSuccess: (user) => {
-      refetchUserProfiles();
-      toast({
-        title: t('settings_users.add_user_success_title'),
-        description: t('settings_users.add_user_success_desc', 'User {email} created successfully.').replace('{email}', user?.email || ''),
-      });
-      setIsAddUserModalOpen(false);
-      addUserForm.reset();
-    },
-    onError: (error: any) => {
-      toast({
-        title: t('settings_users.add_user_error_title'),
-        description: error.message || t('settings_users.add_user_error_desc'),
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const updateUserProfileMutation = useMutation({
-    mutationFn: (data: { userId: string; profileData: Pick<UserProfile, 'full_name' | 'role_id'> }) => 
-      updateUserProfile(data.userId, data.profileData),
-    onSuccess: () => {
-      refetchUserProfiles();
-      toast({
-        title: t('settings_users.update_user_success_title'),
-        description: t('settings_users.update_user_success_desc', 'User profile for {name} updated.').replace('{name}', editUserForm.getValues('fullName')),
-      });
-      setIsEditUserModalOpen(false);
-      setEditingUserProfile(null);
-    },
-    onError: (error: any) => {
-      toast({
-        title: t('settings_users.update_user_error_title'),
-        description: error.message || t('settings_users.update_user_error_desc'),
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const handleTemplateSubmit = (data: UserTemplateFormValues) => {
-    const templateDataToSubmit: UserTemplateData = {
-        template_name: data.template_name,
-        description: data.description,
-        default_role_id: data.default_role_id || null,
-        permission_ids: data.permission_ids || [],
-    };
-
-    if (editingTemplate) {
-      updateTemplateMutation.mutate({ templateId: editingTemplate.id, templateData: templateDataToSubmit });
-    } else {
-      addTemplateMutation.mutate(templateDataToSubmit);
-    }
-  };
-  
-  const onAddUserFormSubmit = (values: AddUserFormValues) => {
-    addUserMutation.mutate(values);
-  };
-
-  const onEditUserFormSubmit = (values: EditUserFormValues) => {
-    if (editingUserProfile) {
-        updateUserProfileMutation.mutate({
-            userId: editingUserProfile.id,
-            profileData: { full_name: values.fullName, role_id: values.roleId },
-        });
-    }
-  };
-
-
-  const handleOpenEditUserModal = (userProfile: UserProfile) => {
-    setEditingUserProfile(userProfile);
+  const handleOpenEditUserModal = (user: UserProfile) => {
+    setEditingUserProfile(user);
     setIsEditUserModalOpen(true);
   };
 
-  const handleEditTemplate = (template: UserTemplate) => {
-    setEditingTemplate(template);
-    setIsAddTemplateModalOpen(true);
-  }
-
-  const handleDeleteTemplateConfirm = () => {
-    if (templateToDelete) {
-      deleteTemplateMutation.mutate(templateToDelete.id);
-    }
-  };
-
-  if (rolesError) return <p>Error loading roles: {rolesError.message}</p>;
-  if (permissionsError && !isLoadingPermissions) return <p>Error loading permissions: {permissionsError.message}</p>;
-  if (templatesError) return <p>Error loading templates: {templatesError.message}</p>;
-
+  if (rolesError) return <p>Error loading roles: {getErrorMessage(rolesError)}</p>;
+  if (userProfilesError) return <p>Error loading users: {getErrorMessage(userProfilesError)}</p>;
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-base font-semibold">{t('sidebar.settings_users', 'Users')}</h1>
-      <div className="flex flex-col gap-6">
-          <div className="flex justify-end items-center gap-2">
-            <Dialog open={isUserTemplatesModalOpen} onOpenChange={setIsUserTemplatesModalOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline">
-                  <ListChecks className={`mr-2 ${iconSize}`} /> {t('settings_users.user_templates_button', 'User Templates')}
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                  <DialogTitle className="text-sm">{t('settings_users.user_templates_modal_title', 'User Templates')}</DialogTitle>
-                  <DialogDescriptionComponent className="text-xs">{t('settings_users.user_templates_modal_desc', 'Manage predefined user templates.')}</DialogDescriptionComponent>
-                </DialogHeader>
-                <div className="mt-4">
-                  {isLoadingTemplates ? <Skeleton className="h-20 w-full" /> : userTemplates.length > 0 ? (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-xs">{t('settings_users.template_table_name', 'Template Name')}</TableHead>
-                          <TableHead className="text-xs">{t('settings_users.template_table_description', 'Description')}</TableHead>
-                          <TableHead className="text-xs">{t('settings_users.template_table_role', 'Default Role')}</TableHead>
-                          <TableHead className="text-right w-20 text-xs">{t('settings_users.template_table_actions', 'Actions')}</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {userTemplates.map((template) => {
-                          const role = roles.find(r => r.id === template.default_role_id);
-                          return (
-                            <TableRow key={template.id}>
-                              <TableCell className="font-medium text-xs">{template.template_name}</TableCell>
-                              <TableCell className="text-muted-foreground text-xs">{template.description || '-'}</TableCell>
-                              <TableCell className="text-muted-foreground text-xs">{role ? role.name : '-'}</TableCell>
-                              <TableCell className="text-right">
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditTemplate(template)}>
-                                  <Edit className={iconSize} />
-                                </Button>
-                               <AlertDialog open={!!templateToDelete && templateToDelete.id === template.id} onOpenChange={(open) => !open && setTemplateToDelete(null)}>
-                                  <AlertDialogTrigger asChild>
-                                       <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setTemplateToDelete(template)}>
-                                        <Trash2 className={iconSize} />
-                                      </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                       <AlertDialogHeader>
-                                          <AlertDialogTitle>{t('settings_users.delete_template_confirm_title')}</AlertDialogTitle>
-                                          <AlertDialogDescription className="text-xs">
-                                              {t('settings_users.delete_template_confirm_desc', 'Are you sure you want to delete the template "{name}"? This action cannot be undone.').replace('{name}', template.template_name)}
-                                          </AlertDialogDescription>
-                                       </AlertDialogHeader>
-                                       <AlertDialogFooter>
-                                          <AlertDialogCancel onClick={() => setTemplateToDelete(null)}>{t('settings_users.form_cancel_button')}</AlertDialogCancel>
-                                          <AlertDialogAction
-                                              className={buttonVariants({ variant: "destructive" })}
-                                              onClick={handleDeleteTemplateConfirm}
-                                              disabled={deleteTemplateMutation.isPending}
-                                          >
-                                              {deleteTemplateMutation.isPending && <Loader2 className={`mr-2 ${iconSize} animate-spin`}/>}
-                                              {t('settings_users.form_delete_button')}
-                                          </AlertDialogAction>
-                                       </AlertDialogFooter>
-                                  </AlertDialogContent>
-                               </AlertDialog>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  ) : (
-                    <p className="text-center text-muted-foreground py-4 text-xs">{t('settings_users.no_templates_found', 'No user templates found.')}</p>
-                  )}
-                </div>
-                <DialogFooter className="mt-4">
-                  <Button size="sm" onClick={() => { setEditingTemplate(null); setIsAddTemplateModalOpen(true); setIsUserTemplatesModalOpen(false); }}>
-                    <PlusCircle className={`mr-2 ${iconSize}`} /> {t('settings_users.add_new_template_button', 'Add New Template')}
-                  </Button>
-                   <DialogClose asChild>
-                      <Button variant="outline">{t('settings_users.close_button', 'Close')}</Button>
-                   </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+      <h1 className="text-base font-semibold">
+        {t('sidebar.settings_users', 'Users')}
+      </h1>
 
-            <Dialog open={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen}>
-                <DialogTrigger asChild>
-                    <Button className="bg-green-600 hover:bg-green-700 text-white">
-                        <PlusCircle className={`mr-2 ${iconSize}`} /> {t('settings_users.add_user_button', 'Add User')}
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="text-sm">{t('settings_users.add_user_modal_title')}</DialogTitle>
-                        <DialogDescriptionComponent className="text-xs">{t('settings_users.add_user_modal_desc')}</DialogDescriptionComponent>
-                    </DialogHeader>
-                    <Form {...addUserForm}>
-                        <form onSubmit={addUserForm.handleSubmit(onAddUserFormSubmit)} className="space-y-4 py-4">
-                            <FormField
-                                control={addUserForm.control}
-                                name="fullName"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('settings_users.form_fullname_label')}</FormLabel>
-                                        <FormControl><Input placeholder={t('settings_users.form_fullname_placeholder')} {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={addUserForm.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('settings_users.form_email_label')}</FormLabel>
-                                        <FormControl><Input type="email" placeholder={t('settings_users.form_email_placeholder')} {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={addUserForm.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('settings_users.form_password_label')}</FormLabel>
-                                        <FormControl><Input type="password" placeholder={t('settings_users.form_password_placeholder')} {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={addUserForm.control}
-                                name="confirmPassword"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('settings_users.form_confirm_password_label')}</FormLabel>
-                                        <FormControl><Input type="password" placeholder={t('settings_users.form_confirm_password_placeholder')} {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={addUserForm.control}
-                                name="roleId"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('settings_users.form_role_label')}</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value || undefined} disabled={isLoadingRoles}>
-                                            <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? t('settings_users.loading_roles_placeholder') : t('settings_users.select_role_placeholder')} /></SelectTrigger></FormControl>
-                                            <SelectContent>
-                                                {roles.map(role => (
-                                                    <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <DialogFooter>
-                                <DialogClose asChild>
-                                    <Button type="button" variant="outline" disabled={addUserMutation.isPending}>{t('settings_users.form_cancel_button')}</Button>
-                                </DialogClose>
-                                <Button type="submit" disabled={addUserMutation.isPending}>
-                                    {addUserMutation.isPending && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                                    {t('settings_users.form_create_user_button')}
-                                </Button>
-                            </DialogFooter>
-                        </form>
-                    </Form>
-                </DialogContent>
-            </Dialog>
-          </div>
+      <div className="flex justify-end items-center gap-2">
+        <AddUserModal
+          roles={roles}
+          isLoadingRoles={isLoadingRoles}
+          onSuccess={refetchUserProfiles}
+        />
+      </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">{t('settings_users.manage_users_title', 'Manage Users')}</CardTitle>
-              <CardDescription className="text-xs">{t('settings_users.manage_users_desc', 'View, add, and manage system users and their permissions.')}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {isLoadingUserProfiles ? <Skeleton className="h-40 w-full" /> : userProfilesError ? <p className="text-destructive">Error: {userProfilesError.message}</p> : userProfiles.length > 0 ? (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="text-xs">{t('settings_users.user_table_fullname', 'Full Name')}</TableHead>
-                                <TableHead className="text-xs">{t('settings_users.user_table_email', 'Email')}</TableHead>
-                                <TableHead className="text-xs">{t('settings_users.user_table_role', 'Role')}</TableHead>
-                                <TableHead className="text-xs text-right">{t('settings_users.user_table_actions', 'Actions')}</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {userProfiles.map(profile => (
-                                <TableRow key={profile.id}>
-                                    <TableCell className="text-xs">{profile.full_name || 'N/A'}</TableCell>
-                                    <TableCell className="text-xs">{profile.email || 'N/A'}</TableCell>
-                                    <TableCell className="text-xs">{profile.role?.name || t('settings_users.no_role_assigned')}</TableCell>
-                                    <TableCell className="text-right">
-                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleOpenEditUserModal(profile)}>
-                                            <Edit className={iconSize} />
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                ) : (
-                    <p className="text-muted-foreground text-xs text-center py-4">
-                        {t('settings_users.no_users_placeholder', 'No users found. Users are typically added via Supabase Auth and then appear here.')}
-                    </p>
-                )}
-            </CardContent>
-          </Card>
-        </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">
+            {t('settings_users.manage_users_title', 'Manage Users')}
+          </CardTitle>
+          <CardDescription className="text-xs">
+            {t(
+              'settings_users.manage_users_desc',
+              'View, add, and manage system users and their permissions.'
+            )}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ListUsers
+            userProfiles={userProfiles}
+            roles={roles}
+            isLoading={isLoadingUserProfiles}
+            error={getErrorMessage(userProfilesError)}
+            onEditClick={handleOpenEditUserModal}
+          />
+        </CardContent>
+      </Card>
 
-        {/* Add/Edit Template Modal */}
-        <Dialog open={isAddTemplateModalOpen} onOpenChange={(isOpen) => {
-            setIsAddTemplateModalOpen(isOpen);
-            if (!isOpen) setEditingTemplate(null);
-        }}>
-            <DialogContent className="sm:max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle className="text-sm">{editingTemplate ? t('settings_users.edit_template_modal_title', 'Edit User Template') : t('settings_users.add_template_modal_title', 'Add New User Template')}</DialogTitle>
-                     <DialogDescriptionComponent className="text-xs">
-                        {editingTemplate ? t('settings_users.edit_template_modal_desc', 'Update the details and permissions for this template.') : t('settings_users.add_template_modal_desc_permissions', 'Define the template details and assign permissions.')}
-                    </DialogDescriptionComponent>
-                </DialogHeader>
-                <Form {...templateForm}>
-                    <form onSubmit={templateForm.handleSubmit(handleTemplateSubmit)} className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
-                        <div className="md:col-span-1 space-y-4">
-                            <FormField
-                                control={templateForm.control}
-                                name="template_name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('settings_users.template_form_name_label', 'Template Name')}</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder={t('settings_users.template_form_name_placeholder', 'e.g., Sales Team')} {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={templateForm.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('settings_users.template_form_description_label', 'Description (Optional)')}</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder={t('settings_users.template_form_description_placeholder', 'Brief description of the template')} {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={templateForm.control}
-                                name="default_role_id"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t('settings_users.template_form_role_label', 'Default Role (Optional)')}</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value || undefined} disabled={isLoadingRoles}>
-                                            <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? t("settings_users.loading_roles_placeholder", "Loading roles...") : t("settings_users.select_role_placeholder", "Select a role")} /></SelectTrigger></FormControl>
-                                            <SelectContent>
-                                                {roles.map(role => (
-                                                    <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-
-                        <div className="md:col-span-2">
-                             <FormLabel className="text-xs font-medium mb-2 block flex items-center gap-2">
-                                <ShieldCheck className={`${iconSize} text-primary`} />
-                                {t('settings_users.permissions_title', 'Permissions')}
-                            </FormLabel>
-                            <ScrollArea className="h-[300px] border rounded-md p-3 pr-1">
-                                {isLoadingPermissions ? <Skeleton className="h-full w-full" /> : permissionGroups.map(group => (
-                                    <div key={group} className="mb-3">
-                                        <h3 className="text-xs font-semibold mb-1.5 text-muted-foreground">{t(`settings_users.permission_group_${group?.toLowerCase().replace(/\s+/g, '_') || 'other'}` as any, group || 'Other Permissions')}</h3>
-                                        <div className="space-y-1.5 pl-2">
-                                            {allPermissions.filter(p => (p.group_name || 'Other') === group).map(permission => (
-                                                <FormField
-                                                    key={permission.id}
-                                                    control={templateForm.control}
-                                                    name="permission_ids"
-                                                    render={({ field }) => (
-                                                        <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                                                            <FormControl>
-                                                                <Checkbox
-                                                                    checked={field.value?.includes(permission.id)}
-                                                                    onCheckedChange={(checked) => {
-                                                                        return checked
-                                                                            ? field.onChange([...(field.value || []), permission.id])
-                                                                            : field.onChange(
-                                                                                (field.value || []).filter(
-                                                                                    (value) => value !== permission.id
-                                                                                )
-                                                                            );
-                                                                    }}
-                                                                />
-                                                            </FormControl>
-                                                            <FormLabel className="text-xs font-normal cursor-pointer">
-                                                                {permission.description ? `${permission.slug} (${permission.description})` : permission.slug}
-                                                            </FormLabel>
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </ScrollArea>
-                            <FormMessage>{templateForm.formState.errors.permission_ids?.message}</FormMessage>
-                        </div>
-                        
-                        <DialogFooter className="md:col-span-3">
-                            <DialogClose asChild>
-                                <Button type="button" variant="outline" disabled={templateForm.formState.isSubmitting || addTemplateMutation.isPending || updateTemplateMutation.isPending}>{t('settings_users.form_cancel_button', 'Cancel')}</Button>
-                            </DialogClose>
-                            <Button type="submit" disabled={templateForm.formState.isSubmitting || addTemplateMutation.isPending || updateTemplateMutation.isPending}>
-                                {(templateForm.formState.isSubmitting || addTemplateMutation.isPending || updateTemplateMutation.isPending) && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                                {editingTemplate ? t('settings_users.form_update_template_button', 'Update Template') : t('settings_users.form_save_template_button', 'Save Template')}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
-
-        {/* Edit User Modal */}
-        <Dialog open={isEditUserModalOpen} onOpenChange={(isOpen) => {
-            setIsEditUserModalOpen(isOpen);
-            if (!isOpen) setEditingUserProfile(null);
-        }}>
-            <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle className="text-sm">{t('settings_users.edit_user_modal_title')}</DialogTitle>
-                    <DialogDescriptionComponent className="text-xs">
-                        {t('settings_users.edit_user_modal_desc', 'Update user details for {email}. Email and password cannot be changed here.')
-                            .replace('{email}', editingUserProfile?.email || t('settings_users.unknown_user'))}
-                    </DialogDescriptionComponent>
-                </DialogHeader>
-                <Form {...editUserForm}>
-                    <form onSubmit={editUserForm.handleSubmit(onEditUserFormSubmit)} className="space-y-4 py-4">
-                        <FormItem>
-                            <FormLabel>{t('settings_users.form_email_label')}</FormLabel>
-                            <FormControl><Input type="email" value={editingUserProfile?.email || ''} disabled className="bg-muted" /></FormControl>
-                        </FormItem>
-                        <FormField
-                            control={editUserForm.control}
-                            name="fullName"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('settings_users.form_fullname_label')}</FormLabel>
-                                    <FormControl><Input placeholder={t('settings_users.form_fullname_placeholder')} {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={editUserForm.control}
-                            name="roleId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>{t('settings_users.form_role_label')}</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value || undefined} disabled={isLoadingRoles}>
-                                        <FormControl><SelectTrigger><SelectValue placeholder={isLoadingRoles ? t('settings_users.loading_roles_placeholder') : t('settings_users.select_role_placeholder')} /></SelectTrigger></FormControl>
-                                        <SelectContent>
-                                            {roles.map(role => (
-                                                <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button type="button" variant="outline" disabled={updateUserProfileMutation.isPending}>{t('settings_users.form_cancel_button')}</Button>
-                            </DialogClose>
-                            <Button type="submit" disabled={updateUserProfileMutation.isPending}>
-                                {updateUserProfileMutation.isPending && <Loader2 className={`mr-2 ${iconSize} animate-spin`} />}
-                                {t('settings_users.form_update_user_button')}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
+      <UpdateUserModal
+        roles={roles}
+        isLoadingRoles={isLoadingRoles}
+        userProfile={editingUserProfile}
+        open={isEditUserModalOpen}
+        onOpenChange={(open) => {
+          setIsEditUserModalOpen(open);
+          if (!open) setEditingUserProfile(null);
+        }}
+        onSuccess={refetchUserProfiles}
+      />
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default function NetworkRadiusPage() {
     setLoading(true);
     try {
       const [nasRes, popsRes] = await Promise.all([
-        fetch('/api/network-radius/list'),
+        fetch('/api/network/radius/list'),
         fetch('/api/pops/list'), // You must have this or mock it
       ]);
       const nasData = await nasRes.json();
@@ -65,7 +65,7 @@ export default function NetworkRadiusPage() {
 
   const handleSubmitNas = async (form: Partial<NasType>) => {
     const isEdit = !!form.id;
-    const url = isEdit ? '/api/network-radius/update' : '/api/network-radius/create';
+    const url = isEdit ? '/api/network/radius/update' : '/api/network/radius/create';
     try {
       await fetch(url, {
         method: 'POST',
@@ -80,7 +80,7 @@ export default function NetworkRadiusPage() {
 
   const confirmDelete = async () => {
     try {
-      await fetch('/api/network-radius/delete', {
+      await fetch('/api/network/radius/delete', {
         method: 'POST',
         body: JSON.stringify({ id: selectedNas?.id }),
         headers: { 'Content-Type': 'application/json' },
@@ -94,7 +94,7 @@ export default function NetworkRadiusPage() {
 
   const handleRefreshStatus = async (nasId: number) => {
     try {
-      await fetch(`/api/network-radius/status-check/${nasId}`);
+      await fetch(`/api/network/radius/status-check/${nasId}`);
       fetchData();
     } catch (err) {
       console.error('Status check failed', err);

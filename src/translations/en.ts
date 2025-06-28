@@ -81,12 +81,12 @@ const en = {
   ...inventoryProducts,
   ...inventoryDashboard,
   ...nocOnxTemplates,
-  ...financesFinancialConfigs, // Add financial_configs
+  ...financesFinancialConfigs,
   ...subscribersNewContractWizard,
   ...serviceCallsDashboard,
   ...serviceCallsTypes,
   ...settingsNetworkIpPage,
-  ...hubParticipants, // Add hub_participants
+  ...hubParticipants,
   ...settingsSecuritySettings,
   ...settingsNetworkDevices,
   ...settingsNetworkRadius,

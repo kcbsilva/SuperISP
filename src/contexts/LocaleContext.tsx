@@ -73,13 +73,8 @@ export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
     
     const currentTranslations = (translations as Translations)[locale] || (translations as Translations)['en'];
-
-    // Debug logging to help identify issues
-    console.log('Translation key:', key);
-    console.log('Current translations structure:', Object.keys(currentTranslations));
     
     const translatedValue = getTranslationValue(currentTranslations, key);
-    console.log('Translated value:', translatedValue);
     
     if (translatedValue !== undefined) {
         return translatedValue;
