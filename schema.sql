@@ -342,3 +342,25 @@ CREATE TABLE entry_categories (
 
   CONSTRAINT fk_parent FOREIGN KEY (parent_category_id) REFERENCES entry_categories(id) ON DELETE SET NULL
 );
+
+CREATE TABLE vpn_connections (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  remote_address TEXT NOT NULL,
+  local_subnet TEXT NOT NULL,
+  remote_subnet TEXT NOT NULL,
+  pre_shared_key TEXT NOT NULL,
+  enabled BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE vpn_users (
+  id SERIAL PRIMARY KEY,
+  username TEXT NOT NULL UNIQUE,
+  password TEXT NOT NULL,
+  client_ip INET NOT NULL,
+  routes TEXT[], -- supports multiple CIDRs
+  psk TEXT NOT NULL,
+  enabled BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

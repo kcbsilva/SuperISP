@@ -54,6 +54,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import type { IconType } from 'react-icons';
 import { GrSystem } from "react-icons/gr";
+import { MdOutlineVpnKey } from "react-icons/md";
 
 export interface SidebarNavItem {
   title: string;
@@ -550,6 +551,12 @@ export const sidebarNav: SidebarNavItem[] = [
             href: '/admin/settings/network/vlan',
             icon: Split,
             tooltip: 'sidebar.settings_network_vlan',
+          },
+          {
+            title: 'sidebar.settings_network_vpn',
+            href: '/admin/settings/network/vpn',
+            icon: MdOutlineVpnKey,
+            tooltip: 'sidebar.settings_network_vpn',
           },
         ],
       },
