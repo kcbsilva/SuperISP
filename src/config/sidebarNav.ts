@@ -176,6 +176,12 @@ export const sidebarNav: SidebarNavItem[] = [
     tooltip: 'sidebar.finances',
     children: [
       {
+        title: 'sidebar.finances_dashboard',
+        href: '/admin/finances/dashboard',
+        icon: LayoutDashboard,
+        tooltip: 'sidebar.finances_dashboard',
+      },
+      {
         title: 'sidebar.finances_cash_book',
         href: '/admin/finances/cash-book',
         icon: BookOpen,
