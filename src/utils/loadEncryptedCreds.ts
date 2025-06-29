@@ -1,11 +1,16 @@
 // /opt/Prolter/src/utils/loadEncryptedCreds.ts
 import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
 
 export function loadEncryptedCreds() {
   try {
+    // Read the passphrase from the .gpgpass file
+    const passphrase = readFileSync('/opt/Prolter/.gpgpass', 'utf8').trim();
+    
     const decrypted = execSync(
-      `gpg --quiet --batch --yes --decrypt --passphrase '${process.env.PGPASSWORD}' /opt/Prolter/db/creds.ts.gpg`
-    ).toString();
+      `gpg --quiet --batch --yes --decrypt --passphrase '${passphrase}' /opt/Prolter/db/creds.ts.gpg`,
+      { encoding: 'utf8' }
+    );
 
     const dbVars = {
       dbUser: '',
@@ -15,8 +20,13 @@ export function loadEncryptedCreds() {
 
     decrypted.split('\n').forEach((line) => {
       if (line.includes('export const')) {
-        const [, key, value] = line.match(/export const (\w+) = ['"](.+)['"]/) || [];
-        if (key && value) dbVars[key as keyof typeof dbVars] = value;
+        const match = line.match(/export const (\w+) = ['"](.+)['"]/);
+        if (match) {
+          const [, key, value] = match;
+          if (key in dbVars) {
+            dbVars[key as keyof typeof dbVars] = value;
+          }
+        }
       }
     });
 
