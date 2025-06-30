@@ -7,9 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
-import { deleteSubscriber } from '@/services/postgres/subscribers';
 
-type RemoveSubscriberModalProps = {
+export type RemoveSubscriberModalProps = {
   open: boolean;
   onClose: () => void;
   subscriberId: string;
@@ -17,7 +16,13 @@ type RemoveSubscriberModalProps = {
   onSuccess?: () => void;
 };
 
-export function RemoveSubscriberModal({ open, onClose, subscriberId, subscriberName, onSuccess }: RemoveSubscriberModalProps) {
+export function RemoveSubscriberModal({
+  open,
+  onClose,
+  subscriberId,
+  subscriberName,
+  onSuccess,
+}: RemoveSubscriberModalProps) {
   const { toast } = useToast();
   const { t } = useLocale();
   const [busy, setBusy] = React.useState(false);
@@ -26,12 +31,24 @@ export function RemoveSubscriberModal({ open, onClose, subscriberId, subscriberN
   const handleDelete = async () => {
     setBusy(true);
     try {
-      await deleteSubscriber(subscriberId);
+      const res = await fetch(`/api/subscribers/remove/${subscriberId}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to delete.');
+      }
+
       toast({ title: t('remove_subscriber.success_toast') });
       onSuccess?.();
       onClose();
     } catch (err: any) {
-      toast({ title: t('remove_subscriber.error_toast'), description: err.message, variant: 'destructive' });
+      toast({
+        title: t('remove_subscriber.error_toast'),
+        description: err.message,
+        variant: 'destructive',
+      });
       setBusy(false);
     }
   };
@@ -51,7 +68,9 @@ export function RemoveSubscriberModal({ open, onClose, subscriberId, subscriberN
         </p>
 
         <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={onClose} disabled={busy}>{t('remove_subscriber.cancel_button', 'Cancel')}</Button>
+          <Button variant="outline" onClick={onClose} disabled={busy}>
+            {t('remove_subscriber.cancel_button', 'Cancel')}
+          </Button>
           <Button variant="destructive" onClick={handleDelete} disabled={busy}>
             {busy ? <Loader2 className={`mr-2 ${iconSize} animate-spin`} /> : <Trash2 className={`mr-2 ${iconSize}`} />}
             {t('remove_subscriber.delete_button', 'Delete')}

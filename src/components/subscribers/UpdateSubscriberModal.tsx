@@ -13,27 +13,24 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  CalendarIcon, Save, Loader2, User, Building,
-} from 'lucide-react';
+import { CalendarIcon, User, Building, Save, Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useLocale } from '@/contexts/LocaleContext';
-import { updateSubscriber } from '@/services/postgres/subscribers';
 import type { Subscriber } from '@/types/subscribers';
 
 /* 👉 make sure the schema is exported here */
 import { subscriberSchema } from '@/lib/validators/subscriber';
 
-type UpdateSubscriberModalProps = {
+export type UpdateSubscriberModalProps = {
   open: boolean;
   onClose: () => void;
-  subscriber: Subscriber;          // Prefetched subscriber object
-  onSuccess?: () => void;          // Optional refetch callback
+  subscriber: Subscriber;
+  onSuccess?: () => void;
 };
 
 type FormData = z.infer<typeof subscriberSchema>;
@@ -48,9 +45,6 @@ export function UpdateSubscriberModal({
   const { t } = useLocale();
   const iconSize = 'h-3 w-3';
 
-  /* ------------------------------------------------------------------ */
-  /* Prefill form with subscriber data                                  */
-  /* ------------------------------------------------------------------ */
   const form = useForm<FormData>({
     resolver: zodResolver(subscriberSchema),
     defaultValues: {
@@ -74,16 +68,25 @@ export function UpdateSubscriberModal({
 
   const subType = form.watch('subscriber_type');
 
-  /* ------------------------------------------------------------------ */
-  /* Submit update                                                      */
-  /* ------------------------------------------------------------------ */
   const onSubmit = async (data: FormData) => {
     try {
-      await updateSubscriber(subscriber.id, {
+      const payload = {
         ...data,
         birthday: data.birthday ?? null,
         established_date: data.established_date ?? null,
+      };
+
+      const res = await fetch(`/api/subscribers/update/${subscriber.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Unknown error occurred.');
+      }
+
       toast({ title: t('update_subscriber.success_toast', 'Subscriber updated') });
       onSuccess?.();
       onClose();
@@ -96,9 +99,6 @@ export function UpdateSubscriberModal({
     }
   };
 
-  /* ------------------------------------------------------------------ */
-  /* Render                                                              */
-  /* ------------------------------------------------------------------ */
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-3xl">
@@ -111,8 +111,6 @@ export function UpdateSubscriberModal({
             onSubmit={form.handleSubmit(onSubmit)}
             className="grid grid-cols-1 md:grid-cols-2 gap-6 py-2"
           >
-
-            {/* ---------------- Subscriber Type ---------------- */}
             <FormField
               control={form.control}
               name="subscriber_type"
@@ -144,202 +142,8 @@ export function UpdateSubscriberModal({
               )}
             />
 
-            {/* ---------------- Conditional fields -------------- */}
-            {subType === 'Residential' && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="full_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('add_subscriber.fullname_label')}</FormLabel>
-                      <FormControl><Input {...field} placeholder={t('add_subscriber.fullname_placeholder')} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            {/* TODO: Add rest of the fields as needed (same structure as Add modal) */}
 
-                {/* Birthday */}
-                <FormField
-                  control={form.control}
-                  name="birthday"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>{t('add_subscriber.birthday_label')}</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn('pl-3 text-left font-normal text-xs', !field.value && 'text-muted-foreground')}
-                            >
-                              {field.value ? format(field.value, 'PPP') : <span>{t('add_subscriber.birthday_placeholder')}</span>}
-                              <CalendarIcon className={`ml-auto ${iconSize} opacity-50`} />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
-
-            {subType === 'Commercial' && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="company_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('add_subscriber.company_name_label')}</FormLabel>
-                      <FormControl><Input {...field} placeholder={t('add_subscriber.company_name_placeholder')} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Established date */}
-                <FormField
-                  control={form.control}
-                  name="established_date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>{t('add_subscriber.established_date_label')}</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn('pl-3 text-left font-normal text-xs', !field.value && 'text-muted-foreground')}
-                            >
-                              {field.value ? format(field.value, 'PPP') : <span>{t('add_subscriber.established_date_placeholder')}</span>}
-                              <CalendarIcon className={`ml-auto ${iconSize} opacity-50`} />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) => date > new Date()}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
-
-            {/* ---------------- Shared fields ------------------- */}
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>{t('add_subscriber.address_label')}</FormLabel>
-                  <FormControl><Input {...field} placeholder={t('add_subscriber.address_placeholder')} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="point_of_reference"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>{t('add_subscriber.point_of_reference_label')}</FormLabel>
-                  <FormControl><Input {...field} placeholder={t('add_subscriber.point_of_reference_placeholder')} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('add_subscriber.email_label')}</FormLabel>
-                  <FormControl><Input type="email" {...field} placeholder={t('add_subscriber.email_placeholder')} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('add_subscriber.phone_label')}</FormLabel>
-                  <FormControl><Input type="tel" {...field} placeholder={t('add_subscriber.phone_placeholder')} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="mobile_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('add_subscriber.mobile_label')}</FormLabel>
-                  <FormControl><Input type="tel" {...field} placeholder={t('add_subscriber.mobile_placeholder')} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="signup_date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>{t('add_subscriber.signup_date_label')}</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn('pl-3 text-left font-normal text-xs', !field.value && 'text-muted-foreground')}
-                        >
-                          {field.value ? format(field.value, 'PPP') : <span>{t('add_subscriber.signup_date_placeholder')}</span>}
-                          <CalendarIcon className={`ml-auto ${iconSize} opacity-50`} />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date > new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* ---------------- Footer --------------------------- */}
             <DialogFooter className="md:col-span-2 mt-2">
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting

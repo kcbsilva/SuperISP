@@ -289,15 +289,39 @@ CREATE TABLE vlans (
   participant_id UUID REFERENCES participants(id),
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+ -- Participants --
+-- Enable extension for UUID generation if not already enabled
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE participants (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  -- Core Info
   company_name TEXT NOT NULL,
-  business_number TEXT NOT NULL UNIQUE,
+  business_number TEXT NOT NULL UNIQUE, -- e.g. CNPJ or Tax ID
+
+  -- Contact Details (optional but useful)
+  email TEXT,
+  phone_number TEXT,
+  address TEXT,
+
+  -- CRM/Operational metadata
+  notes TEXT,
+  is_active BOOLEAN DEFAULT TRUE,
+
+  -- Counts (can be used for display, but not mission-critical)
   device_count INTEGER DEFAULT 0,
   vlan_count INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+
+  -- Foreign keys for optional integrations
+  auth_user_id UUID,   -- link to user in auth table (if portal login)
+  billing_id UUID,     -- link to billing/customer record if needed
+
+  -- Timestamps
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+
 
 -- Create the devices table
 CREATE TABLE devices (

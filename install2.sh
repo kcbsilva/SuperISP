@@ -295,7 +295,7 @@ WorkingDirectory=/opt/Prolter
 ExecStart=/usr/bin/npm run start
 Restart=always
 RestartSec=10
-Environment=NODE_ENV=production
+Environment=GNUPGHOME=/opt/Prolter/.gnupg
 Environment=PORT=3000
 StandardOutput=journal
 StandardError=journal
