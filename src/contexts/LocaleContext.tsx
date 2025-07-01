@@ -3,37 +3,56 @@
 'use client';
 
 import type React from 'react';
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import translations from '@/translations'; // Import translation data
-import { enUS as enUSLocale, ptBR as ptBRLocale, fr as frLocale } from 'date-fns/locale';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
+import translations from '@/translations';
+import {
+  enUS as enUSLocale,
+  ptBR as ptBRLocale,
+  fr as frLocale,
+} from 'date-fns/locale';
 
 export type Locale = 'en' | 'pt' | 'fr';
 
-// Define the shape of the translation dictionary
 type TranslationDict = { [key: string]: string | TranslationDict };
 type Translations = { [key in Locale]: TranslationDict };
 
 interface LocaleContextProps {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string, fallback?: string) => string; // Translation function
+  t: (
+    key: string,
+    varsOrFallback?: Record<string, string | number> | string,
+    maybeFallback?: string
+  ) => string;
 }
 
 const LocaleContext = createContext<LocaleContextProps | undefined>(undefined);
 
-// Helper function to get nested translation values
-const getTranslationValue = (dict: TranslationDict, key: string): string | undefined => {
+const getTranslationValue = (
+  dict: TranslationDict,
+  key: string
+): string | undefined => {
   const keys = key.split('.');
   let current: string | TranslationDict | undefined = dict;
-  
+
   for (const k of keys) {
-    if (typeof current !== 'object' || current === null || !(k in current)) {
-      return undefined; // Key not found or not an object
+    if (
+      typeof current !== 'object' ||
+      current === null ||
+      !(k in current)
+    ) {
+      return undefined;
     }
     current = current[k];
   }
-  
-  // Only return if it's a string, otherwise return undefined
+
   return typeof current === 'string' ? current : undefined;
 };
 
@@ -43,9 +62,11 @@ export const dateLocales: Record<string, typeof enUSLocale> = {
   fr: frLocale,
 };
 
-export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [locale, setLocaleState] = useState<Locale>('en');
-  const [isMounted, setIsMounted] = useState(false); // Prevent hydration mismatch
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -65,31 +86,50 @@ export const LocaleProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
-  // Memoize the translation function to avoid unnecessary re-renders
-  const t = useCallback((key: string, fallback?: string): string => {
-    if (!isMounted) {
-      // Return fallback or key during SSR or before hydration
-      return fallback ?? key;
-    }
-    
-    const currentTranslations = (translations as Translations)[locale] || (translations as Translations)['en'];
-    
-    const translatedValue = getTranslationValue(currentTranslations, key);
-    
-    if (translatedValue !== undefined) {
-        return translatedValue;
-    }
-    
-    // Return the provided fallback or the key itself if no translation found
-    return fallback ?? key;
-  }, [isMounted]);
+  const t = useCallback(
+    (
+      key: string,
+      varsOrFallback?: Record<string, string | number> | string,
+      maybeFallback?: string
+    ): string => {
+      if (!isMounted) {
+        return typeof varsOrFallback === 'string'
+          ? varsOrFallback
+          : maybeFallback ?? key;
+      }
 
-  // Only provide context value once mounted to ensure localStorage is read
-  const contextValue = useMemo(() => ({
-    locale,
-    setLocale,
-    t,
-  }), [locale, setLocale, t]);
+      const currentTranslations =
+        (translations as Translations)[locale] || translations['en'];
+      let translated =
+        getTranslationValue(currentTranslations, key) ??
+        (typeof varsOrFallback === 'string'
+          ? varsOrFallback
+          : maybeFallback ?? key);
+
+      if (typeof translated !== 'string') {
+        return key;
+      }
+
+      // Interpolation: replace {key} in string
+      if (varsOrFallback && typeof varsOrFallback === 'object') {
+        for (const [k, v] of Object.entries(varsOrFallback)) {
+          translated = translated.replace(new RegExp(`{${k}}`, 'g'), String(v));
+        }
+      }
+
+      return translated;
+    },
+    [isMounted, locale]
+  );
+
+  const contextValue = useMemo(
+    () => ({
+      locale,
+      setLocale,
+      t,
+    }),
+    [locale, setLocale, t]
+  );
 
   return (
     <LocaleContext.Provider value={contextValue}>
