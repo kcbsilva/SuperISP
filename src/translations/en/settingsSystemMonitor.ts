@@ -17,7 +17,7 @@ const settingsSystemMonitor = {
   postgres_disconnected: 'Disconnected - Check logs!',
 
   // Logs
-  live_logs_title: 'Live Logs (Placeholder)',
+  live_logs_title: 'Live Logs',
 
   // Services
   services_status_title: 'Services Status',

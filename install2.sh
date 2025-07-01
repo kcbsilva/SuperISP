@@ -112,7 +112,7 @@ if id "prolteradmin" &>/dev/null; then
 else
     sudo useradd -m -s /bin/bash prolteradmin
     echo "prolteradmin:$ADMIN_PASS" | sudo chpasswd
-    sudo usermod -aG sudo prolteradmin
+    sudo usermod -aG sudo,adm prolteradmin
     echo "prolteradmin ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/prolteradmin > /dev/null
     sudo chmod 440 /etc/sudoers.d/prolteradmin
 fi
