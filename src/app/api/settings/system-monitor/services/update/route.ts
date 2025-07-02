@@ -9,16 +9,25 @@ const updateScripts = {
 
 type UpdatableService = keyof typeof updateScripts;
 
+function isUpdatableService(service: any): service is UpdatableService {
+  return Object.keys(updateScripts).includes(service);
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { service } = await req.json();
-    const command = updateScripts[service as UpdatableService];
 
-    if (!command) {
+    if (!isUpdatableService(service)) {
       return NextResponse.json({ error: 'Invalid update target' }, { status: 400 });
     }
 
-    const output = execSync(command, { encoding: 'utf-8' });
+    const command = updateScripts[service];
+    console.log(`[UPDATE] Running command for ${service}: ${command}`);
+
+    const output = execSync(command, {
+      encoding: 'utf-8',
+      timeout: 300_000, // 5 minutes
+    });
 
     return NextResponse.json({ success: true, output });
   } catch (error: any) {
