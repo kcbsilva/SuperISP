@@ -56,7 +56,7 @@ export function UpdateSupplierModal({ supplier, onSubmit, onClose }: Props) {
   React.useEffect(() => {
     if (supplier) {
       form.reset({
-        name: supplier.name,
+        name: supplier.businessName,
         email: supplier.email,
         telephone: supplier.telephone,
       });

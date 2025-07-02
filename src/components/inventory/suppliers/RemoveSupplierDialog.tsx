@@ -33,7 +33,7 @@ export function RemoveSupplierDialog({ supplier, onConfirm, onCancel }: Props) {
             {t('inventory_suppliers.delete_confirm_title', 'Are you sure?')}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-xs">
-            {t('inventory_suppliers.delete_confirm_description', 'This will permanently delete supplier "{name}". This action cannot be undone.').replace('{name}', supplier?.name || '')}
+            {t('inventory_suppliers.delete_confirm_description', 'This will permanently delete supplier "{businessName}". This action cannot be undone.').replace('{businessName}', supplier?.businessName || '')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

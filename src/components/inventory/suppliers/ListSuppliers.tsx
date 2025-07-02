@@ -62,7 +62,7 @@ export function ListSuppliers({
             ) : suppliers.length > 0 ? (
               suppliers.map((supplier) => (
                 <TableRow key={supplier.id}>
-                  <TableCell className="text-xs">{supplier.name}</TableCell>
+                  <TableCell className="text-xs">{supplier.businessName}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">{supplier.email}</TableCell>
                   <TableCell className="text-xs">{supplier.telephone}</TableCell>
                   <TableCell className="text-right">

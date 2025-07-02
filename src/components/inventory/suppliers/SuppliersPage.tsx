@@ -45,7 +45,7 @@ export function SuppliersPageContent() {
 
   useEffect(() => {
     const filteredResults = suppliers.filter((s) =>
-      s.name.toLowerCase().includes(searchTerm.toLowerCase())
+      s.businessName.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFiltered(filteredResults);
     setPage(1);
@@ -97,7 +97,7 @@ export function SuppliersPageContent() {
       await fetchSuppliers();
       toast({
         title: 'Supplier Deleted',
-        description: `Supplier "${deleting.name}" deleted.`,
+        description: `Supplier "${deleting.businessName}" deleted.`,
         variant: 'destructive',
       });
     } catch {
