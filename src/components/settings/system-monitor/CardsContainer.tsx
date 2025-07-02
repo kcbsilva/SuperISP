@@ -11,6 +11,8 @@ import {
 import { Cpu, MemoryStick, HardDrive, Database, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { Progress } from '@/components/ui/progress';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { Button } from '@/components/ui/button';
 
 interface SystemMetric {
   nameKey: string;
@@ -32,9 +34,29 @@ const iconMap = {
   Database: Database,
 };
 
+const intervalOptions = ['1sec', '1min', '5min', '30min', '1h', '1d'];
+
 export function CardsContainer({ metrics }: Props) {
   const { t } = useLocale();
   const iconSize = 'h-4 w-4';
+  const [interval, setInterval] = React.useState('1min');
+  const [chartData, setChartData] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/settings/system-monitor/history?interval=${interval}`);
+        const data = await res.json();
+        setChartData(data);
+      } catch (error) {
+        console.error('Failed to fetch chart data:', error);
+      }
+    };
+
+    fetchData();
+    const timer = setInterval(fetchData, 5000);
+    return () => clearInterval(timer);
+  }, [interval]);
 
   const getStatusIndicator = (status?: 'ok' | 'warning' | 'error' | 'fetching') => {
     switch (status) {
@@ -52,11 +74,43 @@ export function CardsContainer({ metrics }: Props) {
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+      {/* Combined CPU & RAM Card */}
+      <Card className="xl:col-span-4">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+          <CardTitle className="text-sm font-medium">{t('cpu_and_ram_usage')}</CardTitle>
+          <div className="flex gap-1">
+            {intervalOptions.map((option) => (
+              <Button
+                key={option}
+                variant={interval === option ? 'default' : 'ghost'}
+                size="xs"
+                onClick={() => setInterval(option)}
+              >
+                {option}
+              </Button>
+            ))}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={180}>
+            <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+              <XAxis dataKey="time" hide={false} />
+              <YAxis hide={false} />
+              <Tooltip />
+              <Line type="monotone" dataKey="cpu" stroke="#ef4444" dot={false} strokeWidth={2} />
+              <Line type="monotone" dataKey="ram" stroke="#facc15" dot={false} strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Remaining cards */}
       {metrics.map((metric) => {
+        if (metric.nameKey === 'cpu_usage' || metric.nameKey === 'ram_usage') return null; // skip cpu/ram
         const MetricIcon = iconMap[metric.icon];
         return (
-          <Card key={metric.nameKey}>
+          <Card key={metric.nameKey} className="xl:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
               <CardTitle className="text-sm font-medium">
                 {t(metric.nameKey)}

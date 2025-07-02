@@ -1,15 +1,13 @@
 // src/components/inventory/suppliers/UpdateSupplierModal.tsx
 'use client';
 
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
 } from '@/components/ui/dialog';
 import {
   Form,
@@ -21,20 +19,18 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Supplier } from '@/types/inventory';
-import { useLocale } from '@/contexts/LocaleContext';
 
-const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Valid email required'),
+const supplierSchema = z.object({
+  businessName: z.string().min(1, 'Business name is required'),
+  email: z.string().email('Valid email is required'),
   telephone: z.string().min(6, 'Telephone is required'),
 });
 
-export type UpdateSupplierFormData = z.infer<typeof schema>;
+export type UpdateSupplierFormData = z.infer<typeof supplierSchema>;
 
 interface Props {
   supplier: Supplier | null;
@@ -43,20 +39,19 @@ interface Props {
 }
 
 export function UpdateSupplierModal({ supplier, onSubmit, onClose }: Props) {
-  const { t } = useLocale();
   const form = useForm<UpdateSupplierFormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(supplierSchema),
     defaultValues: {
-      name: '',
+      businessName: '',
       email: '',
       telephone: '',
     },
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (supplier) {
       form.reset({
-        name: supplier.businessName,
+        businessName: supplier.businessName,
         email: supplier.email,
         telephone: supplier.telephone,
       });
@@ -65,77 +60,63 @@ export function UpdateSupplierModal({ supplier, onSubmit, onClose }: Props) {
 
   if (!supplier) return null;
 
-  const handleSubmit = (data: UpdateSupplierFormData) => {
-    onSubmit(data);
-    onClose();
-    form.reset();
-  };
-
   return (
     <Dialog open={!!supplier} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-sm">
-            {t('inventory_suppliers.edit_dialog_title', 'Edit Supplier')}
-          </DialogTitle>
-          <DialogDescription className="text-xs">
-            {t('inventory_suppliers.edit_dialog_description', 'Update supplier details.')}
-          </DialogDescription>
+          <DialogTitle className="text-sm">Edit Supplier</DialogTitle>
+          <DialogDescription className="text-xs">Update supplier details.</DialogDescription>
         </DialogHeader>
-
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4 py-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
             <FormField
               control={form.control}
-              name="name"
+              name="businessName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('inventory_suppliers.form_name_label', 'Name')}</FormLabel>
+                  <FormLabel>Business Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Supplier Name" {...field} />
+                    <Input placeholder="Business Name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('inventory_suppliers.form_email_label', 'Email')}</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="email@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="telephone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('inventory_suppliers.form_telephone_label', 'Telephone')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="+55 88 99859-8235" {...field} />
+                    <Input type="email" placeholder="Email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <DialogFooter className="mt-4">
-              <DialogClose asChild>
-                <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>
-                  {t('inventory_suppliers.form_cancel_button', 'Cancel')}
-                </Button>
-              </DialogClose>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
-                {t('inventory_suppliers.form_update_button', 'Update')}
+            <FormField
+              control={form.control}
+              name="telephone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Telephone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Telephone" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end gap-2 mt-4">
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancel
               </Button>
-            </DialogFooter>
+              <Button type="submit">Update Supplier</Button>
+            </div>
           </form>
         </Form>
       </DialogContent>

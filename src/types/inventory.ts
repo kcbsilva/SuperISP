@@ -17,6 +17,8 @@ export interface InventoryCategory {
   export interface Supplier {
     id: string;
     businessName: string;
+    businessNumber: string;
+    address: string;
     email: string;
     telephone: string;
   }

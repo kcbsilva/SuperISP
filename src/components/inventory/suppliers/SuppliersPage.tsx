@@ -1,4 +1,4 @@
-// src/components/inventory/suppliers/SuppliersPageContent.tsx
+// src/components/inventory/suppliers/SuppliersPage.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -6,12 +6,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Supplier } from '@/types/inventory';
-
 import { AddSupplierModal, AddSupplierFormData } from './AddSupplierModal';
 import { UpdateSupplierModal } from './UpdateSupplierModal';
 import { ListSuppliers } from './ListSuppliers';
 import { RemoveSupplierDialog } from './RemoveSupplierDialog';
-import { Button } from '@/components/ui/button';
 
 export function SuppliersPageContent() {
   const { toast } = useToast();
@@ -45,7 +43,8 @@ export function SuppliersPageContent() {
 
   useEffect(() => {
     const filteredResults = suppliers.filter((s) =>
-      s.businessName.toLowerCase().includes(searchTerm.toLowerCase())
+      s.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      s.businessNumber.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFiltered(filteredResults);
     setPage(1);
@@ -62,7 +61,7 @@ export function SuppliersPageContent() {
       await fetchSuppliers();
       toast({
         title: 'Supplier Added',
-        description: `Supplier "${data.name}" added.`,
+        description: `Supplier "${data.businessName}" added.`,
       });
     } catch {
       toast({ title: 'Error', description: 'Failed to add supplier', variant: 'destructive' });
@@ -81,7 +80,7 @@ export function SuppliersPageContent() {
       await fetchSuppliers();
       setIsEditOpen(false);
       setEditing(null);
-      toast({ title: 'Supplier Updated', description: `Supplier "${data.name}" updated.` });
+      toast({ title: 'Supplier Updated', description: `Supplier "${data.businessName}" updated.` });
     } catch {
       toast({ title: 'Error', description: 'Failed to update supplier', variant: 'destructive' });
     }
@@ -107,7 +106,7 @@ export function SuppliersPageContent() {
     }
   };
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+  const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   return (
@@ -132,7 +131,7 @@ export function SuppliersPageContent() {
             suppliers={paginated}
             currentPage={page}
             totalPages={totalPages}
-            loading={loading} // ✅ important for skeletons
+            loading={loading}
             onEdit={(s) => {
               setEditing(s);
               setIsEditOpen(true);
@@ -140,29 +139,6 @@ export function SuppliersPageContent() {
             onDelete={(s) => setDeleting(s)}
             onPageChange={setPage}
           />
-
-          {/* ✅ move pagination here if needed */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-6">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
-                Previous
-              </Button>
-              <span className="text-xs">Page {page} / {totalPages}</span>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page === totalPages}
-                onClick={() => setPage(page + 1)}
-              >
-                Next
-              </Button>
-            </div>
-          )}
         </CardContent>
       </Card>
 

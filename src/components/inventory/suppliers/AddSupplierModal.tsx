@@ -4,14 +4,14 @@
 import * as React from 'react';
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -21,35 +21,35 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { PlusCircle, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useLocale } from '@/contexts/LocaleContext';
 
-const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Valid email required'),
+const supplierSchema = z.object({
+  businessName: z.string().min(1, 'Business name is required'),
+  email: z.string().email('Valid email is required'),
   telephone: z.string().min(6, 'Telephone is required'),
 });
 
-export type AddSupplierFormData = z.infer<typeof schema>;
+export type AddSupplierFormData = z.infer<typeof supplierSchema>;
 
 interface Props {
   onSubmit: (data: AddSupplierFormData) => void;
 }
 
 export function AddSupplierModal({ onSubmit }: Props) {
-  const { t } = useLocale();
   const [open, setOpen] = React.useState(false);
-
   const form = useForm<AddSupplierFormData>({
-    resolver: zodResolver(schema),
-    defaultValues: { name: '', email: '', telephone: '' },
+    resolver: zodResolver(supplierSchema),
+    defaultValues: {
+      businessName: '',
+      email: '',
+      telephone: '',
+    },
   });
 
-  const handleFormSubmit = (data: AddSupplierFormData) => {
+  const handleSubmit = (data: AddSupplierFormData) => {
     onSubmit(data);
     setOpen(false);
     form.reset();
@@ -59,30 +59,26 @@ export function AddSupplierModal({ onSubmit }: Props) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="bg-green-600 hover:bg-green-700 text-white">
-          <PlusCircle className="mr-2 h-3 w-3" />
-          {t('inventory_suppliers.add_supplier_button', 'Add Supplier')}
+          <PlusCircle className="mr-2 h-4 w-4" /> Add Supplier
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-sm">
-            {t('inventory_suppliers.add_dialog_title', 'Add New Supplier')}
-          </DialogTitle>
+          <DialogTitle className="text-sm">Add New Supplier</DialogTitle>
           <DialogDescription className="text-xs">
-            {t('inventory_suppliers.add_dialog_description', 'Fill in the details for the new supplier.')}
+            Fill in the details for the new supplier.
           </DialogDescription>
         </DialogHeader>
-
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="grid gap-4 py-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4 py-4">
             <FormField
               control={form.control}
-              name="name"
+              name="businessName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('inventory_suppliers.form_name_label', 'Name')}</FormLabel>
+                  <FormLabel>Business Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Supplier Name" {...field} />
+                    <Input placeholder="e.g., Acme Corp" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -93,9 +89,9 @@ export function AddSupplierModal({ onSubmit }: Props) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('inventory_suppliers.form_email_label', 'Email')}</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="email@example.com" {...field} />
+                    <Input type="email" placeholder="e.g., contact@acme.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -106,24 +102,18 @@ export function AddSupplierModal({ onSubmit }: Props) {
               name="telephone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('inventory_suppliers.form_telephone_label', 'Telephone')}</FormLabel>
+                  <FormLabel>Telephone</FormLabel>
                   <FormControl>
-                    <Input placeholder="+55 88 99859-8235" {...field} />
+                    <Input placeholder="e.g., (123) 456-7890" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <DialogFooter className="mt-4">
-              <DialogClose asChild>
-                <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>
-                  {t('inventory_suppliers.form_cancel_button', 'Cancel')}
-                </Button>
-              </DialogClose>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
-                {t('inventory_suppliers.form_save_button', 'Save')}
+                {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {form.formState.isSubmitting ? 'Saving...' : 'Save Supplier'}
               </Button>
             </DialogFooter>
           </form>
