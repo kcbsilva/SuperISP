@@ -21,6 +21,7 @@ interface SystemMetric {
   icon: 'Cpu' | 'MemoryStick' | 'HardDrive' | 'Database';
   status?: 'ok' | 'warning' | 'error' | 'fetching';
   progress?: number;
+  free?: string;
 }
 
 interface Props {
@@ -39,8 +40,9 @@ const intervalOptions = ['1sec', '1min', '5min', '30min', '1h', '1d'];
 export function CardsContainer({ metrics }: Props) {
   const { t } = useLocale();
   const iconSize = 'h-4 w-4';
-  const [interval, setInterval] = React.useState('1min');
+  const [interval, setIntervalState] = React.useState('1min');
   const [chartData, setChartData] = React.useState<any[]>([]);
+  const diskMetric = metrics.find((m) => m.nameKey === 'disk_usage');
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -54,7 +56,7 @@ export function CardsContainer({ metrics }: Props) {
     };
 
     fetchData();
-    const timer = setInterval(fetchData, 5000);
+    const timer = window.setInterval(fetchData, 5000);
     return () => clearInterval(timer);
   }, [interval]);
 
@@ -77,15 +79,39 @@ export function CardsContainer({ metrics }: Props) {
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
       {/* Combined CPU & RAM Card */}
       <Card className="xl:col-span-4">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
-          <CardTitle className="text-sm font-medium">{t('cpu_and_ram_usage')}</CardTitle>
-          <div className="flex gap-1">
+        <CardHeader className="pb-1">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium">{t('cpu_and_ram_usage')}</CardTitle>
+            {diskMetric && (
+              <div className="text-xs text-muted-foreground text-right w-40">
+                <div className="font-semibold flex items-center gap-1">
+                  <HardDrive className="w-3 h-3" />
+                  {t('disk_usage')}
+                </div>
+                <div className="relative group mt-0.5">
+                  <Progress
+                    value={diskMetric.progress}
+                    className={`h-2 transition-colors
+                      ${diskMetric.progress && diskMetric.progress > 80
+                        ? 'bg-red-200 [&>div]:bg-red-500'
+                        : diskMetric.progress && diskMetric.progress > 60
+                        ? 'bg-yellow-200 [&>div]:bg-yellow-500'
+                        : 'bg-muted [&>div]:bg-green-500'}`}
+                  />
+                  <div className="absolute bottom-full left-0 mb-1 hidden group-hover:flex bg-black text-white text-xs px-2 py-1 rounded shadow z-10">
+                    {diskMetric.free} GB free
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="flex gap-1 mt-2 justify-end">
             {intervalOptions.map((option) => (
               <Button
                 key={option}
                 variant={interval === option ? 'default' : 'ghost'}
-                size="xs"
-                onClick={() => setInterval(option)}
+                size="sm"
+                onClick={() => setIntervalState(option)}
               >
                 {option}
               </Button>
@@ -102,19 +128,25 @@ export function CardsContainer({ metrics }: Props) {
               <Line type="monotone" dataKey="ram" stroke="#facc15" dot={false} strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
+          <div className="mt-2 text-xs text-muted-foreground flex justify-center gap-4">
+            <div className="flex items-center gap-1">
+              <span className="w-3 h-1.5 rounded bg-red-500" /> CPU
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="w-3 h-1.5 rounded bg-yellow-400" /> RAM
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Remaining cards */}
+      {/* Remaining metrics */}
       {metrics.map((metric) => {
-        if (metric.nameKey === 'cpu_usage' || metric.nameKey === 'ram_usage') return null; // skip cpu/ram
+        if (['cpu_usage', 'ram_usage', 'disk_usage'].includes(metric.nameKey)) return null;
         const MetricIcon = iconMap[metric.icon];
         return (
           <Card key={metric.nameKey} className="xl:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
-              <CardTitle className="text-sm font-medium">
-                {t(metric.nameKey)}
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">{t(metric.nameKey)}</CardTitle>
               <MetricIcon className={`${iconSize} text-muted-foreground`} />
             </CardHeader>
             <CardContent>

@@ -5,7 +5,7 @@ import { execSync } from 'child_process';
 
 export async function GET() {
   try {
-    // CPU usage estimate
+    // CPU usage
     const load = os.loadavg()[0];
     const cores = os.cpus().length;
     const cpuUsage = Math.min(Math.round((load / cores) * 100), 100);
@@ -27,12 +27,40 @@ export async function GET() {
     const pgStatus = execSync('pg_isready').toString();
     const postgresConnected = pgStatus.includes('accepting connections');
 
-    return NextResponse.json({
-      cpu: { usage: cpuUsage },
-      ram: { used: ramUsedGB, total: ramTotalGB },
-      disk: { used: diskUsed, total: diskTotal },
-      postgres: { connected: postgresConnected },
-    });
+    const metrics = [
+      {
+        nameKey: 'cpu_usage',
+        value: cpuUsage,
+        unit: '%',
+        icon: 'Cpu',
+        status: 'ok',
+        progress: cpuUsage,
+      },
+      {
+        nameKey: 'ram_usage',
+        value: ramUsedGB,
+        unit: `/${ramTotalGB} GB`,
+        icon: 'MemoryStick',
+        status: 'ok',
+        progress: Math.round((ramUsedGB / ramTotalGB) * 100),
+      },
+      {
+        nameKey: 'disk_usage',
+        value: diskUsed,
+        unit: `/${diskTotal} GB`,
+        icon: 'HardDrive',
+        status: 'ok',
+        progress: Math.round((diskUsed / diskTotal) * 100),
+      },
+      {
+        nameKey: 'postgres_status',
+        value: postgresConnected ? 'Connected' : 'Not Connected',
+        icon: 'Database',
+        status: postgresConnected ? 'ok' : 'error',
+      },
+    ];
+
+    return NextResponse.json(metrics);
   } catch (error) {
     console.error('[SYSTEM_MONITOR_API_ERROR]', error);
     return NextResponse.json({ error: 'Failed to retrieve system metrics.' }, { status: 500 });

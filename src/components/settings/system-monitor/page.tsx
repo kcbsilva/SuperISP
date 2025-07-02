@@ -17,6 +17,7 @@ interface SystemMetric {
   icon: 'Cpu' | 'MemoryStick' | 'HardDrive' | 'Database';
   status?: 'ok' | 'warning' | 'error' | 'fetching';
   progress?: number;
+  free?: string;
 }
 
 interface MonitoredService {
@@ -68,12 +69,13 @@ export default function SystemMonitorPage() {
           progress: (cardsData.ram.used / cardsData.ram.total) * 100,
         },
         {
-          nameKey: 'ssd_usage',
+          nameKey: 'disk_usage',
           value: `${cardsData.disk.used} / ${cardsData.disk.total}`,
           unit: 'GB',
           icon: 'HardDrive',
           status: cardsData.disk.used > cardsData.disk.total * 0.8 ? 'warning' : 'ok',
           progress: (cardsData.disk.used / cardsData.disk.total) * 100,
+          free: (cardsData.disk.total - cardsData.disk.used).toFixed(1),
         },
         {
           nameKey: 'postgres_status',

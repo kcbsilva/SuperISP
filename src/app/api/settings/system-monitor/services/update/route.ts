@@ -4,7 +4,7 @@ import { execSync } from 'child_process';
 
 const updateScripts = {
   ubuntu: `sudo apt-get update && sudo apt-get upgrade -y`,
-  prolter: `cd /opt/Prolter && git pull`,
+  prolter: `cd /opt/Prolter && sudo systemctl stop prolter && git pull && npm run build && sudo systemctl start prolter`,
 } as const;
 
 type UpdatableService = keyof typeof updateScripts;

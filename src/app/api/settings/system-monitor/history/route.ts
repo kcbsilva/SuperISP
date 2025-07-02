@@ -2,25 +2,60 @@
 import { NextRequest, NextResponse } from 'next/server';
 import os from 'os';
 
-export async function GET(req: NextRequest) {
-  const url = new URL(req.url || '');
-  const interval = url.searchParams.get('interval') || '1min';
+const memory = {
+  data: [] as { time: string; cpu: number; ram: number }[],
+  maxLength: 500,
+};
 
-  // Simulate 30 data points
-  const data = Array.from({ length: 30 }, (_, i) => {
-    const timeLabel = `${i}${interval === '1sec' ? 's' : 'm'}`; // label based on interval
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const interval = searchParams.get('interval') || '1min';
+
     const load = os.loadavg()[0];
     const cores = os.cpus().length;
-    const cpu = Math.min(Math.round((load / cores) * 100 + Math.random() * 10), 100);
-    const ram = Math.min(
-      Math.round(
-        ((os.totalmem() - os.freemem()) / os.totalmem()) * 100 + Math.random() * 10
-      ),
-      100
-    );
+    const cpuUsage = Math.min(Math.round((load / cores) * 100), 100);
 
-    return { time: timeLabel, cpu, ram };
-  });
+    const totalMem = os.totalmem();
+    const freeMem = os.freemem();
+    const usedMem = totalMem - freeMem;
+    const ramUsage = Math.round((usedMem / totalMem) * 100);
 
-  return NextResponse.json(data);
+    const now = new Date();
+    const timeLabel = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    memory.data.push({ time: timeLabel, cpu: cpuUsage, ram: ramUsage });
+    if (memory.data.length > memory.maxLength) memory.data.shift();
+
+    let result: typeof memory.data = [];
+
+    switch (interval) {
+      case '1sec':
+        result = memory.data.slice(-10);
+        break;
+      case '1min':
+        result = memory.data.slice(-60);
+        break;
+      case '5min':
+        result = memory.data.slice(-300);
+        break;
+      case '30min':
+        result = memory.data.slice(-1800);
+        break;
+      case '1h':
+        result = memory.data.slice(-3600);
+        break;
+      case '1d':
+        result = memory.data.slice(-86400);
+        break;
+      default:
+        result = memory.data.slice(-60);
+        break;
+    }
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('[SYSTEM_MONITOR_HISTORY_API_ERROR]', error);
+    return NextResponse.json({ error: 'Failed to fetch system monitor history.' }, { status: 500 });
+  }
 }
