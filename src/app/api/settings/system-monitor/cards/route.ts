@@ -27,40 +27,22 @@ export async function GET() {
     const pgStatus = execSync('pg_isready').toString();
     const postgresConnected = pgStatus.includes('accepting connections');
 
-    const metrics = [
-      {
-        nameKey: 'cpu_usage',
-        value: cpuUsage,
-        unit: '%',
-        icon: 'Cpu',
-        status: 'ok',
-        progress: cpuUsage,
+    return NextResponse.json({
+      cpu: {
+        usage: cpuUsage,
       },
-      {
-        nameKey: 'ram_usage',
-        value: ramUsedGB,
-        unit: `/${ramTotalGB} GB`,
-        icon: 'MemoryStick',
-        status: 'ok',
-        progress: Math.round((ramUsedGB / ramTotalGB) * 100),
+      ram: {
+        used: ramUsedGB,
+        total: ramTotalGB,
       },
-      {
-        nameKey: 'disk_usage',
-        value: diskUsed,
-        unit: `/${diskTotal} GB`,
-        icon: 'HardDrive',
-        status: 'ok',
-        progress: Math.round((diskUsed / diskTotal) * 100),
+      disk: {
+        used: diskUsed,
+        total: diskTotal,
       },
-      {
-        nameKey: 'postgres_status',
-        value: postgresConnected ? 'Connected' : 'Not Connected',
-        icon: 'Database',
-        status: postgresConnected ? 'ok' : 'error',
+      postgres: {
+        connected: postgresConnected,
       },
-    ];
-
-    return NextResponse.json(metrics);
+    });
   } catch (error) {
     console.error('[SYSTEM_MONITOR_API_ERROR]', error);
     return NextResponse.json({ error: 'Failed to retrieve system metrics.' }, { status: 500 });

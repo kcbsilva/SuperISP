@@ -42,7 +42,6 @@ export function CardsContainer({ metrics }: Props) {
   const iconSize = 'h-4 w-4';
   const [interval, setIntervalState] = React.useState('1min');
   const [chartData, setChartData] = React.useState<any[]>([]);
-  const diskMetric = metrics.find((m) => m.nameKey === 'disk_usage');
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -82,28 +81,6 @@ export function CardsContainer({ metrics }: Props) {
         <CardHeader className="pb-1">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-medium">{t('cpu_and_ram_usage')}</CardTitle>
-            {diskMetric && (
-              <div className="text-xs text-muted-foreground text-right w-40">
-                <div className="font-semibold flex items-center gap-1">
-                  <HardDrive className="w-3 h-3" />
-                  {t('disk_usage')}
-                </div>
-                <div className="relative group mt-0.5">
-                  <Progress
-                    value={diskMetric.progress}
-                    className={`h-2 transition-colors
-                      ${diskMetric.progress && diskMetric.progress > 80
-                        ? 'bg-red-200 [&>div]:bg-red-500'
-                        : diskMetric.progress && diskMetric.progress > 60
-                        ? 'bg-yellow-200 [&>div]:bg-yellow-500'
-                        : 'bg-muted [&>div]:bg-green-500'}`}
-                  />
-                  <div className="absolute bottom-full left-0 mb-1 hidden group-hover:flex bg-black text-white text-xs px-2 py-1 rounded shadow z-10">
-                    {diskMetric.free} GB free
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
           <div className="flex gap-1 mt-2 justify-end">
             {intervalOptions.map((option) => (
@@ -139,9 +116,44 @@ export function CardsContainer({ metrics }: Props) {
         </CardContent>
       </Card>
 
+      {/* SSD Card */}
+      {metrics.find((m) => m.nameKey === 'disk_usage') && (
+        <Card className="xl:col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+            <CardTitle className="text-sm font-medium">{t('disk_usage')}</CardTitle>
+            <HardDrive className={`${iconSize} text-muted-foreground`} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold flex justify-between items-center">
+              <span>
+                {metrics.find((m) => m.nameKey === 'disk_usage')?.value}
+                <span className="text-sm font-normal text-muted-foreground ml-1">
+                  {metrics.find((m) => m.nameKey === 'disk_usage')?.unit}
+                </span>
+              </span>
+              {getStatusIndicator(metrics.find((m) => m.nameKey === 'disk_usage')?.status)}
+            </div>
+            <div className="relative group mt-2">
+              <Progress
+                value={metrics.find((m) => m.nameKey === 'disk_usage')?.progress}
+                className={`h-2 transition-colors
+                  ${metrics.find((m) => m.nameKey === 'disk_usage')?.progress! > 80
+                    ? 'bg-red-200 [&>div]:bg-red-500'
+                    : metrics.find((m) => m.nameKey === 'disk_usage')?.progress! > 60
+                    ? 'bg-yellow-200 [&>div]:bg-yellow-500'
+                    : 'bg-muted [&>div]:bg-green-500'}`}
+              />
+              <div className="absolute bottom-full left-0 mb-1 hidden group-hover:flex bg-black text-white text-xs px-2 py-1 rounded shadow z-10">
+                {metrics.find((m) => m.nameKey === 'disk_usage')?.free} GB free
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Remaining metrics */}
       {metrics.map((metric) => {
-        if (['cpu_usage', 'ram_usage', 'disk_usage'].includes(metric.nameKey)) return null;
+        if (['cpu_usage', 'ram_usage', 'disk_usage', 'postgres_status'].includes(metric.nameKey)) return null;
         const MetricIcon = iconMap[metric.icon];
         return (
           <Card key={metric.nameKey} className="xl:col-span-2">
@@ -163,15 +175,6 @@ export function CardsContainer({ metrics }: Props) {
               </div>
               {metric.progress !== undefined && (
                 <Progress value={metric.progress} className="mt-1 h-2" />
-              )}
-              {metric.nameKey === 'postgres_status' && metric.status !== 'fetching' && (
-                <p
-                  className={`text-xs mt-1 ${
-                    metric.status === 'ok' ? 'text-green-600' : 'text-red-600'
-                  }`}
-                >
-                  {metric.value}
-                </p>
               )}
             </CardContent>
           </Card>

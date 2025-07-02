@@ -68,6 +68,8 @@ export function SystemChecks({ services, setServices, isLoading }: Props) {
     }
   };
 
+  console.log('SystemChecks props:', { services, isLoading });
+
   const handleUpdateService = async (serviceId: string) => {
     toast({
       title: t('update_started'),
