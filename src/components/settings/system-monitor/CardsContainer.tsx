@@ -75,9 +75,9 @@ export function CardsContainer({ metrics }: Props) {
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {/* Combined CPU & RAM Card */}
-      <Card className="xl:col-span-4">
+      <Card className="xl:col-span-2">
         <CardHeader className="pb-1">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-medium">{t('cpu_and_ram_usage')}</CardTitle>
@@ -118,7 +118,7 @@ export function CardsContainer({ metrics }: Props) {
 
       {/* SSD Card */}
       {metrics.find((m) => m.nameKey === 'disk_usage') && (
-        <Card className="xl:col-span-2">
+        <Card className="xl:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
             <CardTitle className="text-sm font-medium">{t('disk_usage')}</CardTitle>
             <HardDrive className={`${iconSize} text-muted-foreground`} />
@@ -156,7 +156,7 @@ export function CardsContainer({ metrics }: Props) {
         if (['cpu_usage', 'ram_usage', 'disk_usage', 'postgres_status'].includes(metric.nameKey)) return null;
         const MetricIcon = iconMap[metric.icon];
         return (
-          <Card key={metric.nameKey} className="xl:col-span-2">
+          <Card key={metric.nameKey} className="xl:col-span-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
               <CardTitle className="text-sm font-medium">{t(metric.nameKey)}</CardTitle>
               <MetricIcon className={`${iconSize} text-muted-foreground`} />
