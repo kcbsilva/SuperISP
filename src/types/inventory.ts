@@ -7,14 +7,18 @@ export interface InventoryCategory {
   
   export interface Manufacturer {
     id: string;
-    name: string;
-    notes?: string;
+    businessName: string;
+    businessNumber: string;
+    address: string;
+    telephone: string;
+    email: string;
   }
   
   export interface Supplier {
     id: string;
     name: string;
-    contact?: string;
+    email: string;
+    telephone: string;
   }
   
   export interface Product {
