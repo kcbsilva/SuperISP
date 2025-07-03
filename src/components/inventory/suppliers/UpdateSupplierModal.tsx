@@ -30,16 +30,22 @@ const supplierSchema = z.object({
   telephone: z.string().min(6, 'Telephone is required'),
 });
 
-export type UpdateSupplierFormData = z.infer<typeof supplierSchema>;
+export type SupplierFormData = z.infer<typeof supplierSchema>;
 
 interface Props {
   supplier: Supplier | null;
-  onSubmit: (data: UpdateSupplierFormData) => void;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onUpdate: (data: SupplierFormData) => Promise<void>;
 }
 
-export function UpdateSupplierModal({ supplier, onSubmit, onClose }: Props) {
-  const form = useForm<UpdateSupplierFormData>({
+export function UpdateSupplierModal({
+  supplier,
+  open,
+  onOpenChange,
+  onUpdate,
+}: Props) {
+  const form = useForm<SupplierFormData>({
     resolver: zodResolver(supplierSchema),
     defaultValues: {
       businessName: '',
@@ -58,17 +64,15 @@ export function UpdateSupplierModal({ supplier, onSubmit, onClose }: Props) {
     }
   }, [supplier, form]);
 
-  if (!supplier) return null;
-
   return (
-    <Dialog open={!!supplier} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-sm">Edit Supplier</DialogTitle>
           <DialogDescription className="text-xs">Update supplier details.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
+          <form onSubmit={form.handleSubmit(onUpdate)} className="grid gap-4 py-4">
             <FormField
               control={form.control}
               name="businessName"
@@ -112,7 +116,7 @@ export function UpdateSupplierModal({ supplier, onSubmit, onClose }: Props) {
             />
 
             <div className="flex justify-end gap-2 mt-4">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit">Update Supplier</Button>

@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { useLocale } from '@/contexts/LocaleContext';
 import { Manufacturer } from '@/types/inventory';
 import { AddManufacturerModal, ManufacturerFormData } from './AddManufacturerModal';
 import { UpdateManufacturerModal } from './UpdateManufacturerModal';
@@ -12,6 +13,7 @@ import { ListManufacturers } from './ListManufacturers';
 
 export function ManufacturersPageContent() {
   const { toast } = useToast();
+  const { t: translate } = useLocale();
 
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [filtered, setFiltered] = useState<Manufacturer[]>([]);
@@ -93,17 +95,19 @@ export function ManufacturersPageContent() {
     }
   };
 
-  const totalPages = Math.ceil(filtered.length / perPage);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap justify-between items-center gap-4">
-        <h1 className="text-base font-semibold">Manufacturers</h1>
+        <h1 className="text-base font-semibold">
+          {translate('inventory_manufacturers.title', 'Manufacturers')}
+        </h1>
         <div className="flex items-center gap-4 w-full md:w-auto flex-1 md:flex-none">
           <Input
             type="search"
-            placeholder="Search manufacturers..."
+            placeholder={translate('inventory_manufacturers.search_placeholder', 'Search manufacturers...')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full md:w-64"

@@ -12,7 +12,7 @@ import type { InventoryCategory } from '@/types/inventory';
 
 export default function CategoriesPage() {
   const { toast } = useToast();
-  const { t } = useLocale();
+  const { t: translate } = useLocale();
 
   const [categories, setCategories] = React.useState<InventoryCategory[]>([]);
   const [editingCategory, setEditingCategory] = React.useState<InventoryCategory | null>(null);
@@ -86,12 +86,12 @@ export default function CategoriesPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-base font-semibold whitespace-nowrap">
-          {t('inventory_categories.title', 'Categories')}
+          {translate('inventory_categories.title', 'Categories')}
         </h1>
         <div className="relative w-full max-w-xs flex-1">
           <input
             type="search"
-            placeholder={t('inventory_categories.search_placeholder', 'Search categories...')}
+            placeholder={translate('inventory_categories.search_placeholder', 'Search categories...')}
             className="pl-8 w-full border border-gray-300 rounded px-3 py-2 text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

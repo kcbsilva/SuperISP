@@ -26,22 +26,24 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
-const supplierSchema = z.object({
+// Schema
+const schema = z.object({
   businessName: z.string().min(1, 'Business name is required'),
   email: z.string().email('Valid email is required'),
   telephone: z.string().min(6, 'Telephone is required'),
 });
 
-export type AddSupplierFormData = z.infer<typeof supplierSchema>;
+export type SupplierFormData = z.infer<typeof schema>;
 
 interface Props {
-  onSubmit: (data: AddSupplierFormData) => void;
+  onSubmit: (data: SupplierFormData) => void;
 }
 
 export function AddSupplierModal({ onSubmit }: Props) {
   const [open, setOpen] = React.useState(false);
-  const form = useForm<AddSupplierFormData>({
-    resolver: zodResolver(supplierSchema),
+
+  const form = useForm<SupplierFormData>({
+    resolver: zodResolver(schema),
     defaultValues: {
       businessName: '',
       email: '',
@@ -49,7 +51,7 @@ export function AddSupplierModal({ onSubmit }: Props) {
     },
   });
 
-  const handleSubmit = (data: AddSupplierFormData) => {
+  const handleSubmit = (data: SupplierFormData) => {
     onSubmit(data);
     setOpen(false);
     form.reset();

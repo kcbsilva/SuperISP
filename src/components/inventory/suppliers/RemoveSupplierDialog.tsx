@@ -26,14 +26,19 @@ export function RemoveSupplierDialog({ supplier, onConfirm, onCancel }: Props) {
   const { t } = useLocale();
 
   return (
-    <AlertDialog open={!!supplier} onOpenChange={open => !open && onCancel()}>
+    <AlertDialog open={!!supplier} onOpenChange={(open) => {
+      if (!open) onCancel();
+    }}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
             {t('inventory_suppliers.delete_confirm_title', 'Are you sure?')}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-xs">
-            {t('inventory_suppliers.delete_confirm_description', 'This will permanently delete supplier "{businessName}". This action cannot be undone.').replace('{businessName}', supplier?.businessName || '')}
+            {t(
+              'inventory_suppliers.delete_confirm_description',
+              'This will permanently delete supplier "{businessName}". This action cannot be undone.'
+            ).replace('{businessName}', supplier?.businessName || '')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
