@@ -130,7 +130,7 @@ export function SuppliersPageContent() {
               setIsEditOpen(true);
             }}
             onDelete={handleDelete}
-            page={page}
+            currentPage={page}
             totalPages={totalPages}
             onPageChange={setPage}
           />

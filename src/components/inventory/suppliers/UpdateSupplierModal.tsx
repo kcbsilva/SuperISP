@@ -26,29 +26,28 @@ import { Supplier } from '@/types/inventory';
 
 const supplierSchema = z.object({
   businessName: z.string().min(1, 'Business name is required'),
+  businessNumber: z.string().min(3, 'Business number is required'),
+  address: z.string().min(3, 'Address is required'),
   email: z.string().email('Valid email is required'),
   telephone: z.string().min(6, 'Telephone is required'),
 });
 
-export type SupplierFormData = z.infer<typeof supplierSchema>;
+export type UpdateSupplierFormData = z.infer<typeof supplierSchema>;
 
 interface Props {
   supplier: Supplier | null;
+  onUpdate: (data: UpdateSupplierFormData) => Promise<void>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onUpdate: (data: SupplierFormData) => Promise<void>;
 }
 
-export function UpdateSupplierModal({
-  supplier,
-  open,
-  onOpenChange,
-  onUpdate,
-}: Props) {
-  const form = useForm<SupplierFormData>({
+export function UpdateSupplierModal({ supplier, onUpdate, open, onOpenChange }: Props) {
+  const form = useForm<UpdateSupplierFormData>({
     resolver: zodResolver(supplierSchema),
     defaultValues: {
       businessName: '',
+      businessNumber: '',
+      address: '',
       email: '',
       telephone: '',
     },
@@ -58,11 +57,18 @@ export function UpdateSupplierModal({
     if (supplier) {
       form.reset({
         businessName: supplier.businessName,
+        businessNumber: supplier.businessNumber,
+        address: supplier.address,
         email: supplier.email,
         telephone: supplier.telephone,
       });
     }
   }, [supplier, form]);
+
+  const handleSubmit = async (data: UpdateSupplierFormData) => {
+    await onUpdate(data);
+    form.reset();
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -72,7 +78,7 @@ export function UpdateSupplierModal({
           <DialogDescription className="text-xs">Update supplier details.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onUpdate)} className="grid gap-4 py-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4 py-4">
             <FormField
               control={form.control}
               name="businessName"
@@ -81,6 +87,34 @@ export function UpdateSupplierModal({
                   <FormLabel>Business Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Business Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="businessNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Business Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="CNPJ / Registration #" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Full Address" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
