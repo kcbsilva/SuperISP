@@ -13,7 +13,7 @@ export default function DatabasesContent() {
   const [isAddOpen, setIsAddOpen] = React.useState(false);
 
   return (
-    <div className="p-6 flex flex-col gap-6">
+    <div className="bg-white dark:bg-[--background] rounded-md shadow-sm p-6 flex flex-col gap-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-base font-semibold flex items-center gap-2">

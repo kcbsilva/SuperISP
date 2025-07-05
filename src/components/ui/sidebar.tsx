@@ -17,9 +17,9 @@ const sidebarVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-card text-card-foreground",
-        inset: "m-2 rounded-lg border bg-card text-card-foreground shadow-lg",
-        floating: "m-2 rounded-lg border bg-card text-card-foreground shadow-lg",
+        default: "bg-gray-200 text-card-foreground", // 👈 light grey background
+        inset: "m-2 rounded-lg border bg-gray-200 text-card-foreground shadow-lg",
+        floating: "m-2 rounded-lg border bg-gray-200 text-card-foreground shadow-lg",
       },
       side: {
         left: "inset-y-0 left-0 border-r",
@@ -191,10 +191,29 @@ const Sidebar = React.forwardRef<
   SidebarProps
 >(({ className, children, ...props }, ref) => {
   const { variant, side, isMobile, isOpenMobile, setIsOpenMobile, isCollapsed, sidebarNodeRef } = useSidebar()
-  const internalRef = sidebarNodeRef;
+
+  // Create a callback ref that updates both the internal ref and the forwarded ref
+  const mergedRef = React.useCallback((node: HTMLElement | null) => {
+    // Update the internal ref
+    if (sidebarNodeRef) {
+      sidebarNodeRef.current = node;
+    }
+    
+    // Update the forwarded ref - handle both function refs and object refs
+    if (typeof ref === 'function') {
+      ref(node);
+    } else if (ref && typeof ref === 'object' && 'current' in ref) {
+      // Only assign if it's a mutable ref object
+      try {
+        (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+      } catch (error) {
+        // Silently ignore if ref is read-only
+        console.warn('Unable to assign to ref.current - ref may be read-only');
+      }
+    }
+  }, [ref, sidebarNodeRef]);
 
   const commonProps = {
-    ref: internalRef,
     "data-sidebar": "sidebar",
     "data-variant": variant,
     "data-side": side,
@@ -208,12 +227,12 @@ const Sidebar = React.forwardRef<
       <>
         {isOpenMobile && <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={() => setIsOpenMobile(false)} />}
         <nav
-          ref={sidebarNodeRef as React.Ref<HTMLElement>}
+          ref={mergedRef}
           className={cn(
-            sidebarMobileVariants({ side }),
-            "w-[var(--sidebar-width)] top-0",
-            variant === "inset" && "m-0 rounded-none border-none shadow-none",
-            variant === "floating" && "m-0 rounded-none border-none shadow-none",
+            sidebarVariants({ variant, side, collapsible: "full" }),
+            "fixed inset-y-0 top-14 z-40 flex flex-col h-[calc(100vh-3.5rem)]",
+            "border-r-2 border-primary", // ✅ You added this line
+            (variant === "floating" || variant === "inset") && "p-2",
             className
           )}
           data-state={isOpenMobile ? "open" : "closed"}
@@ -226,7 +245,7 @@ const Sidebar = React.forwardRef<
   }
   return (
     <nav
-      ref={sidebarNodeRef as React.Ref<HTMLElement>}
+      ref={mergedRef}
       className={cn(
         sidebarVariants({ variant, side, collapsible: "full" }),
         "fixed inset-y-0 top-14 z-40 flex flex-col h-[calc(100vh-3.5rem)]",
@@ -469,7 +488,7 @@ interface SidebarMenuSubTriggerProps extends React.ButtonHTMLAttributes<HTMLButt
 
 const SidebarMenuSubTrigger = React.memo(React.forwardRef<
   HTMLButtonElement,
-  SidebarMenuSubTriggerProps & { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void; "data-state": "open" | "closed" }
+  SidebarMenuSubTriggerProps & { "data-state"?: "open" | "closed" }
 >(
   (
     { className, children, isActive, tooltip, size = "default", ...props },
